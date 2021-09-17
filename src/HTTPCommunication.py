@@ -295,7 +295,7 @@ class HTTPConnection(object):
             if produktname != None and npc_preis != None:
                 
                 #Produktname aufbereiten
-                if type(produktname) == unicode:
+                if type(produktname) == str:
                     produktname = produktname.encode('utf-8')
                     produktname = str(produktname)
                 
