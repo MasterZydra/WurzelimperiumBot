@@ -115,23 +115,24 @@ class Garden():
         else:
             pass
 
-    def growPlant(self, plantID, sx, sy):
+    def growPlant(self, plantID, sx, sy, amount):
         """
         Pflanzt eine Pflanze beliebiger Größe an.
         """
-        #TODO: Soll nur so viele anpflanzen wie gewünscht (neuer Übergabeparameter)
-        #TODO: Soll nur so viele anfpflanzen wie verfügbar (Muss im Wurzelbot geprüft werden)
         
+        planted = 0
         emptyFields = self.getEmptyFields()
         
         for field in range(1, self._nMaxFields + 1):
-            
+            if planted == amount: return
+
             fieldsToPlant = self._getAllFieldIDsFromFieldIDAndSizeAsIntList(field, sx, sy)
             
             if (self._isPlantGrowableOnField(field, emptyFields, fieldsToPlant, sx)):
                 fields = self._getAllFieldIDsFromFieldIDAndSizeAsString(field, sx, sy)
                 self._httpConn.growPlant(field, plantID, self._id, fields)
-                
+                planted += 1
+
                 #Nach dem Anbau belegte Felder aus der Liste der leeren Felder loeschen
                 fieldsToPlantSet = set(fieldsToPlant)
                 emptyFieldsSet = set(emptyFields)
