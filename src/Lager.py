@@ -37,4 +37,15 @@ class Storage():
     
     def getKeys(self):
         return self.__products.keys()
+    
+    def getLowestStockEntry(self):
+        lowestEntryID = -1
+        lowestEntryStock = -1
+        for productID in self.__products.keys():
+            if self.__products[str(productID)] == 0: continue
 
+            if lowestEntryID == -1 or lowestEntryStock > self.__products[str(productID)]:
+                lowestEntryID = productID
+                lowestEntryStock = self.__products[str(productID)]
+        
+        return lowestEntryID
