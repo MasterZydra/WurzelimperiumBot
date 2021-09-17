@@ -26,7 +26,7 @@ class Product():
         return self.__id
     
     def getName(self):
-        return self.__name
+        return self.__name.decode('UTF-8')
     
     def getSX(self):
         return self.__sx
