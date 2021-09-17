@@ -44,12 +44,12 @@ class Product():
         self.__priceNPC = price
         
     def printAll(self):
-        print 'ID: ', str(self.__id).ljust(5), \
+        print('ID: ', str(self.__id).ljust(5), \
               'CAT: ', str(self.__category).ljust(8), ' ', \
               'Name: ', str(self.__name).ljust(50), ' ', \
               'NPC: ', str(self.__priceNPC).ljust(10), ' ', \
               'SX: ', str(self.__sx).ljust(4), ' ', \
-              'SY: ', str(self.__sy).ljust(4)
+              'SY: ', str(self.__sy).ljust(4))
 
 
 
