@@ -126,7 +126,7 @@ class Garden():
         
         try:
             for field in range(1, self._nMaxFields + 1):
-                if planted == amount: return
+                if planted == amount: return planted
 
                 fieldsToPlant = self._getAllFieldIDsFromFieldIDAndSizeAsIntList(field, sx, sy)
                 
