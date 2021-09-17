@@ -83,6 +83,7 @@ class WurzelBot(object):
         Diese Methode startet und initialisiert den Wurzelbot. Dazu wird ein Login mit den
         übergebenen Logindaten durchgeführt und alles nötige initialisiert.
         """
+        self.__logBot.info('-------------------------------------------')
         self.__logBot.info('Starte Wurzelbot')
         loginDaten = Login(server=server, user=user, password=pw)
 
@@ -225,7 +226,7 @@ class WurzelBot(object):
         except:
             self.__logBot.error(productName + ' konnte nicht gepflanzt werden')
         else:
-            self.__logBot.info(productName + ' wurde angepflanzt')
+            self.__logBot.info(productName + ' wurde ' + str(amount) + ' Mal angepflanzt')
 
 
     def test(self):
