@@ -46,10 +46,10 @@ class ProductData():
         for product in self.__products:
             if int(id) == int(product.getID()): return product
             
-    def getProductByName(self, name):
+    def getProductByName(self, name : str):
         try:
             for product in self.__products:
-                if (name == product.getName()): return product
+                if (name.lower() == product.getName().lower()): return product
         except:
             pass #TODO: Exception-Fall definieren
         else:
