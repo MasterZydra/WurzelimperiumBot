@@ -143,10 +143,12 @@ class Garden():
 
         except:
             self._logGarden.error('Im Garten ' + str(self._id) + ' konnte nicht gepflant werden.')
+            return 0
         else:
             msg = 'Im Garten ' + str(self._id) + ' wurden ' + str(planted) + ' Pflanzen gepflant.'
             self._logGarden.info(msg)
             print(msg)
+            return planted
 
 
 class AquaGarden(Garden):
