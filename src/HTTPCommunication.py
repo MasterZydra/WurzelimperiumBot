@@ -87,7 +87,7 @@ class HTTPConnection(object):
         else: raise JSONError()
 
 
-    def __generateJSONContentAndCheckForOK(self, content):
+    def __generateJSONContentAndCheckForOK(self, content : str):
         """
         Aufbereitung und Prüfung der vom Server empfangenen JSON Daten.
         """
@@ -164,7 +164,7 @@ class HTTPConnection(object):
         """
         result = False
         for i in range(0, len(jContent['table'])):
-            sGartenAnz = str(jContent['table'][i].encode('utf-8'))   
+            sGartenAnz = str(jContent['table'][i])
             if 'Gärten' in sGartenAnz:
                 sGartenAnz = sGartenAnz.replace('<tr>', '')
                 sGartenAnz = sGartenAnz.replace('<td>', '')
@@ -386,7 +386,7 @@ class HTTPConnection(object):
         try:
             response, content = self.__webclient.request(adresse, 'GET', headers = headers)
             self.__checkIfHTTPStateIsOK(response)
-            jContent = self.__generateJSONContentAndCheckForOK(content)
+            jContent = self.__generateJSONContentAndCheckForOK(content.decode('UTF-8'))
             iNumber = self.__getNumberOfGardensFromJSONContent(jContent)
         except:
             raise
