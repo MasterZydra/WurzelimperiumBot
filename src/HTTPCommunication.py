@@ -838,6 +838,7 @@ class HTTPConnection(object):
 
         try:
             response, content = self.__webclient.request(adresse, 'GET', headers = headers)
+            content = content.decode('UTF-8')
             self.__checkIfHTTPStateIsOK(response)
             reToken = re.search(r'ajax\.setToken\(\"(.*)\"\);', content)
             self.__token = reToken.group(1) #TODO: except, wenn token nicht aktualisiert werden kann
