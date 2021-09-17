@@ -207,6 +207,7 @@ class WurzelBot(object):
         except:
             self.__logBot.error('Konnte nicht alle Gärten ernten.')
         else:
+            self.__logBot.info('Konnte alle Gärten ernten.')
             pass
 
 
