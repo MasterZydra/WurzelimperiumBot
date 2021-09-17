@@ -205,6 +205,7 @@ class WurzelBot(object):
             if self.spieler.isAquaGardenAvailable():
                 pass#self.waterPlantsInAquaGarden()
 
+            self.storage.updateNumberInStock()
         except:
             self.__logBot.error('Konnte nicht alle Gärten ernten.')
         else:
@@ -228,6 +229,7 @@ class WurzelBot(object):
         else:
             self.__logBot.info(productName + ' wurde ' + str(amount) + ' Mal angepflanzt')
 
+        self.storage.updateNumberInStock()
 
     def test(self):
         #TODO: Für Testzwecke, kann später entfernt werden.
