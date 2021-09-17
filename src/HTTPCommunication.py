@@ -755,7 +755,17 @@ class HTTPConnection(object):
         try:
             self.__changeGarden(gardenID)
             response, content = self.__webclient.request(adresse, 'GET', headers = headers)
-        # TODO: Response auf HTTP Fehler prüfen?
+            jContent = json.loads(content)
+            #print(content.decode('UTF-8'))
+
+            if jContent['status'] == 'error':
+                print(jContent['message'])
+                self.__logHTTPConn.info(jContent['message'])
+            elif jContent['status'] == 'ok':
+                msg = jContent['harvestMsg'].replace('<div>', '').replace('</div>', '\n').replace('&nbsp;', ' ')
+                msg = msg.strip()
+                print(msg)
+                self.__logHTTPConn.info(msg)
         except:
             raise
         else:
