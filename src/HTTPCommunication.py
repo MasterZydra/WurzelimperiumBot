@@ -340,6 +340,7 @@ class HTTPConnection(object):
             raise
         else:
             cookie = SimpleCookie(response['set-cookie'])
+            cookie.load(str(response["set-cookie"]).replace("secure, ", "", -1))
             self.__Session.openSession(cookie['PHPSESSID'].value, str(loginDaten.server))
             self.__cookie = cookie
             self.__userID = cookie['wunr'].value
