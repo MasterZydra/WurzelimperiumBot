@@ -34,4 +34,7 @@ class Storage():
 
     def getStockByProductID(self, productID):
         return self.__products[str(productID)]
+    
+    def getKeys(self):
+        return self.__products.keys()
 
