@@ -234,7 +234,7 @@ class HTTPConnection(object):
         """
         content = content.replace('\n', ' ')
         content = content.replace('\t', ' ')
-        yContent = yaml.load(content)
+        yContent = yaml.load(content, Loader=yaml.FullLoader)
         
         if (yContent['success'] != 1):
             raise YAMLError()
@@ -246,7 +246,7 @@ class HTTPConnection(object):
         """
         content = content.replace('\n', ' ')
         content = content.replace('\t', ' ')
-        yContent = yaml.load(content)
+        yContent = yaml.load(content, Loader=yaml.FullLoader)
         
         if (yContent['status'] != 'ok'):
             raise YAMLError()
