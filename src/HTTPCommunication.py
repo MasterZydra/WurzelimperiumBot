@@ -228,7 +228,7 @@ class HTTPConnection(object):
 
         return emptyFields
 
-    def __generateYAMLContentAndCheckForSuccess(self, content):
+    def __generateYAMLContentAndCheckForSuccess(self, content : str):
         """
         Aufbereitung und Prüfung der vom Server empfangenen YAML Daten auf Erfolg.
         """
