@@ -474,7 +474,7 @@ class HTTPConnection(object):
         try:
             response, content = self.__webclient.request(adresse, 'GET', headers = headers)
             self.__checkIfHTTPStateIsOK(response)
-            self.__generateYAMLContentAndCheckForSuccess(content)
+            self.__generateYAMLContentAndCheckForSuccess(content.decode('UTF-8'))
         except:
             raise
 
