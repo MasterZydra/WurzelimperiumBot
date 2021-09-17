@@ -7,7 +7,6 @@ Created on 24.10.2018
 
 from collections import namedtuple
 import re
-from types import ListType
 
 # Message States
 MSG_STATE_UNKNOWN = 1
