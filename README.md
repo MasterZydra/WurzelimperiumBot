@@ -2,27 +2,25 @@
 # Wurzelimperium-Bot
 Ein Bot für das Browserspiel Wurzelimperium von Upjers. Mit ihm wird es den kostenlosen Spielern ermöglicht die Vorzüge eines Premiumaccounts zu nutzen.
 
-Hinweis:
-Der Bot kann derzeit nur über ein Python-Skript gesteuert werden. Ein GUI ist in Arbeit.
+Die Nutzung des Bots ist über verschiedene Arten möglich:
+- **Skript**:  
+Wie in [example.py](./example.py) kann die Aufgabe als Skript erstellt und manuell auf dem PC ausgeführt werden.
+- **Automatisiert**:  
+Ähnlich wie beim Skript kann eine komplexeres Skript erstellt werden, welches beispielsweise durch GitHub Actions zyklisch ausgeführt wird.
+- **Interaktiv**:  
+Über das Programm [console.py](./console.py) kann über Eingaben wie zum Beispiel `water` der gesamte Garten bewässert werden.
 
-Features:
+Für die Verwendung ist jeweils das Hinterlegen von der Servernummer, dem Benutzernamen und des Passworts in den Dateien notwendig.
+
+**Features:**
 - Login ohne zusätzliche Verwendung eines Browsers
-- vollautomatische Bewässerung aller Gärten inkl. Wassergarten
-- Versenden von erstellten Standardnachrichten an eine Liste von Empfängern
-- automatisiertes Anpflanzen
+- Vollautomatische Bewässerung aller Gärten inkl. Wassergarten
+- Automatisiertes Anpflanzen
 - Abfrage aller aktuellen Marktpreise (Keine Abhängigkeit von Preislistenpflegern und deren Aktualisierungsintervall!)
 
-Geplante Features:
-- automatisiertes Anpflanzen im Wassergarten
-- Bewertung der aktuellen Marktpreise hinsichtlich NPC-Preise
-- Erfassung aller Wimps
-- Bewertung der Wimpangebote in Bezug auf aktuelle Marktpreise
-- Wegschicken aller Wimps mit schlechtem Angebot (siehe vorherigen Punkt)
-- Bedienung der Wimps nach Wahl
-
-
 # Installation
-
-Voraussetzung: Python 2.7
-
-Klonen des Repositorys von GitHub. Wichtig ist dabei der src Ordner und die Datei example.py. Anschließend kann die example.py ausgeführt werden. In ihr können dann auch die Tätigkeiten des Bots definiert werden.
+**Voraussetzung:** Python 3
+1. Installation der Abhängigkeiten:  
+`pip install -r ./requirements.txt`
+2. Anmeldedaten im Skript hinterlegen
+3. Skript ausführen
