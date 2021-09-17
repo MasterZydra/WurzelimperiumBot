@@ -883,7 +883,10 @@ class HTTPConnection(object):
         #try:
         response, content = self.__webclient.request(adresse, 'GET', headers = headers)
         self.__checkIfHTTPStateIsOK(response)
-        content = content.replace('&', 'und')
+
+        content = content.decode('UTF-8').replace('Gärten & Regale', 'Gärten und Regale')
+        content = bytearray(content, encoding='UTF-8')
+
         dictNPCPrices = self.__parseNPCPricesFromHtml(content)
         #except:
         #    pass #TODO Exception definieren
