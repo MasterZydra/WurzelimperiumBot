@@ -217,18 +217,13 @@ class WurzelBot(object):
         """
         Pflanzt so viele Pflanzen von einer Sorte wie möglich über alle Gärten hinweg an.
         """
-        try:
-            product = self.productData.getProductByName(productName)
-            if (product.isProductPlantable()):
-                for garden in self.garten:
-                    if amount == -1 or amount > self.storage.getStockByProductID(product.getID()):
-                        amount = self.storage.getStockByProductID(product.getID())
-                    garden.growPlant(product.getID(), product.getSX(), product.getSY(), amount)
-        except:
-            self.__logBot.error(productName + ' konnte nicht gepflanzt werden')
-        else:
-            self.__logBot.info(productName + ' wurde ' + str(amount) + ' Mal angepflanzt')
-
+        product = self.productData.getProductByName(productName)
+        if (product.isProductPlantable()):
+            for garden in self.garten:
+                if amount == -1 or amount > self.storage.getStockByProductID(product.getID()):
+                    amount = self.storage.getStockByProductID(product.getID())
+                garden.growPlant(product.getID(), product.getSX(), product.getSY(), amount)
+        
         self.storage.updateNumberInStock()
 
     def test(self):
