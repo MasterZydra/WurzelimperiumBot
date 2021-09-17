@@ -32,5 +32,6 @@ class Storage():
         for i in inventory:
             self.__products[i] = inventory[i]
 
-
+    def getStockByProductID(self, productID):
+        return self.__products[str(productID)]
 
