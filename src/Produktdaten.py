@@ -7,7 +7,7 @@ Created on 23.05.2019
 '''
  
 import json
-from Produkt import Product
+from src.Produkt import Product
 
 CATEGORY_DECORATION       = 'd'
 CATEGORY_HERBS            = 'h'
