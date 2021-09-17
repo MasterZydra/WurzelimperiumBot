@@ -678,9 +678,9 @@ class HTTPConnection(object):
         
         headers = {'Cookie': 'PHPSESSID=' + self.__Session.getSessionID() + '; ' + \
                              'wunr=' + self.__userID}
-        print iCalls
+        print(iCalls)
         for i in range(iCalls):
-            print i
+            print(i)
             adress = 'http://s' + str(self.__Session.getServer()) + '.wurzelimperium.de/ajax/ajax.php?do=statsGetStats&which=1&start='+str(iStartCorr)+'&showMe=0&additional=0&token=' + self.__token
             try:
                 response, content = self.__webclient.request(adress, 'GET', headers = headers)
@@ -719,7 +719,7 @@ class HTTPConnection(object):
         except:
             raise
         else:
-            print jContent['produkte']
+            print(jContent['produkte'])
 
     def getEmptyFieldsOfGarden(self, gardenID):
         """
@@ -799,7 +799,7 @@ class HTTPConnection(object):
         try:
             response, content = self.__webclient.request(adresse, 'GET', headers = headers)
         except:
-            print 'except'
+            print('except')
             raise
         else:
             pass
@@ -820,10 +820,10 @@ class HTTPConnection(object):
     
         try:
             response, content = self.__webclient.request(adresse, 'GET', headers = headers)
-            print response
-            print content
+            print(response)
+            print(content)
         except:
-            print 'except'
+            print('except')
             raise
         else:
             pass    

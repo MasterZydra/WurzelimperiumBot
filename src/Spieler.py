@@ -66,7 +66,7 @@ class Spieler():
         try:
             tmpUserData = http.readUserDataFromServer()
         except:
-            print 'Status der E-Mail Adresse konnte nicht ermittelt werden.'
+            print('Status der E-Mail Adresse konnte nicht ermittelt werden.')
         else:
             self.__userData = tmpUserData
             
