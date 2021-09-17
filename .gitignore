@@ -6,3 +6,9 @@
 
 # Log files
 *.log
+
+# Python virtual environment
+bin/
+include/
+lib/
+pyvenv.cfg
