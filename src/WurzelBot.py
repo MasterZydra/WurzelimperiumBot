@@ -242,4 +242,21 @@ class WurzelBot(object):
         #self.__HTTPConn.growPlantInAquaGarden(162, 9)
         self.wassergarten.waterPlants()
 
-
+    def printStock(self):
+        isSmthPrinted = False
+        for productID in self.storage.getKeys():
+            product = self.productData.getProductByID(productID)
+            
+            amount = self.storage.getStockByProductID(productID)
+            if amount == 0: continue
+            
+            print(str(product.getName()).ljust(30) + 'Amount: ' + str(amount).rjust(5))
+            isSmthPrinted = True
+    
+        if not isSmthPrinted:
+            print('Your stock is empty')
+    
+    def getLowestStockEntry(self):
+        entryID = self.storage.getLowestStockEntry()
+        if entryID == -1: return 'Your stock is empty'
+        return self.productData.getProductByID(entryID).getName()
