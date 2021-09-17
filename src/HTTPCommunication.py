@@ -6,15 +6,13 @@ Created on 21.03.2017
 @author: MrFlamez
 '''
 
-from urllib import urlencode
+from urllib.parse import urlencode
 import json, re, httplib2
-from Cookie import SimpleCookie
+from http.cookies import SimpleCookie
 from src.Session import Session
 import yaml, time, logging, math, io
 import xml.etree.ElementTree as eTree
 from lxml import html
-
-
 
 #Defines
 HTTP_STATE_CONTINUE            = 100
