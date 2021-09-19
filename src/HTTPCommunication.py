@@ -140,7 +140,7 @@ class HTTPConnection(object):
         """
         result = False
         for i in range(0, len(jContent['table'])):
-            sUserName = str(jContent['table'][i].encode('utf-8'))  
+            sUserName = str(jContent['table'][i])  
             if 'Spielername' in sUserName:
                 sUserName = sUserName.replace('<tr>', '')
                 sUserName = sUserName.replace('<td>', '')
