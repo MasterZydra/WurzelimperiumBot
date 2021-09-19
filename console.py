@@ -74,6 +74,7 @@ def grow(argStr : str):
     if len(args) > 2 or len(args) < 1 or args[0] == '' or (len(args) == 2 and not args[1].isnumeric()):
         print('Cannot parse input.')
         print('Expected format: grow [plant name] [opt. amount]')
+        return
     
     if len(args) == 1:
         print('Grow ' + args[0] + '...')
