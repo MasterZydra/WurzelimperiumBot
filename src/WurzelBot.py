@@ -266,7 +266,9 @@ class WurzelBot(object):
         return self.productData.getProductByID(entryID).getName()
 
     def getOrderedStockList(self):
-        orderedList = list()
+        orderedList = ''
         for productID in self.storage.getOrderedStockList():
-            orderedList.append(self.productData.getProductByID(productID).getName())
-        return orderedList
+            orderedList += str(self.productData.getProductByID(productID).getName()).ljust(20)
+            orderedList += str(self.storage.getOrderedStockList()[productID]).rjust(5)
+            orderedList += str('\n')
+        return orderedList.strip()
