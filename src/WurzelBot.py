@@ -264,3 +264,9 @@ class WurzelBot(object):
         entryID = self.storage.getLowestStockEntry()
         if entryID == -1: return 'Your stock is empty'
         return self.productData.getProductByID(entryID).getName()
+
+    def getOrderedStockList(self):
+        orderedList = list()
+        for productID in self.storage.getOrderedStockList():
+            orderedList.append(self.productData.getProductByID(productID).getName())
+        return orderedList
