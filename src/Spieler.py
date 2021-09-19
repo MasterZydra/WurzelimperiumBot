@@ -43,7 +43,7 @@ class Spieler():
         return self.__eMailAdressConfirmed
     
     def getUserName(self):
-        return self.userName
+        return self.__userName
     
     def getLevelNr(self):
         return self.__userData['levelnr']
