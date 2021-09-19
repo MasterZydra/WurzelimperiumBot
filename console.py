@@ -59,6 +59,7 @@ def help():
     print('grow         Grow a given plant')
     print('harvest      Harvest all gardens')
     print('help         Show all available commands')
+    print('lowest       Show the plant with the lowest stock (unequal zero)')
     print('stock        Show all plants in stock')
     print('water        Water all plants')
 
