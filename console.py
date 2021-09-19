@@ -23,7 +23,7 @@ def main():
         elif inputLower == '?' or inputLower == 'help': help()
         elif inputLower.startswith('grow'): grow(userInput)
         elif inputLower == 'lowest': lowest()
-        elif inputLower == 'stock': getStock()
+        elif inputLower.startswith('stock'): getStock(userInput)
         elif inputLower == 'water': water()
         else:
             print('Unknown command type \'help\' or \'?\' to see all available commands')
@@ -85,8 +85,19 @@ def grow(argStr : str):
 def lowest():
     print(wurzelBot.getLowestStockEntry())
 
-def getStock():
-    wurzelBot.printStock()
+def getStock(argStr : str):
+    argStr = argStr.replace('stock', '', 1).strip()
+    args = argStr.split(' ')
+    
+    if len(args) > 1 or (len(args) == 1 and args[0] != 'sort' and args[0] != ''):
+        print('Cannot parse input.')
+        print('Expected format: stock [sort]')
+        return
+
+    if args[0] == '':
+        wurzelBot.printStock()
+    elif args[0] == 'sort':
+        print(wurzelBot.getOrderedStockList())
 
 def water():
     print('Water all plants in all gardens...')
