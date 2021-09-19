@@ -261,9 +261,9 @@ class WurzelBot(object):
             print('Your stock is empty')
     
     def getLowestStockEntry(self):
-        entryID = self.storage.getLowestStockEntry()
-        if entryID == -1: return 'Your stock is empty'
-        return self.productData.getProductByID(entryID).getName()
+        stockList = self.getOrderedStockList()
+        if stockList == '': return 'Your stock is empty'
+        return stockList.split('\n')[0]
 
     def getOrderedStockList(self):
         orderedList = ''
