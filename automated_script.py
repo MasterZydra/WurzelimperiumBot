@@ -32,7 +32,3 @@ wurzelBot.waterPlantsInAllGardens()
 
 # Close connection
 wurzelBot.exitBot()
-
-
-
-
