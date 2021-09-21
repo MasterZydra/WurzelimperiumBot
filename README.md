@@ -1,4 +1,4 @@
-[![Python application](https://github.com/MasterZydra/Wurzelimperium-Bot/actions/workflows/python-app.yml/badge.svg)](https://github.com/MasterZydra/Wurzelimperium-Bot/actions/workflows/python-app.yml)
+[![Python application](https://github.com/MasterZydra/WurzelimperiumBot/actions/workflows/python-app.yml/badge.svg)](https://github.com/MasterZydra/WurzelimperiumBot/actions/workflows/python-app.yml)
 
 A forked from [MrFlamez/Wurzelimperium-Bot](https://github.com/MrFlamez/Wurzelimperium-Bot)
 
