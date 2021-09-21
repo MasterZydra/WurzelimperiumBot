@@ -28,6 +28,7 @@ while planted != 0:
 
 # Water plants
 time.sleep(3)
+print('Alle Pflanzen gießen...')
 wurzelBot.waterPlantsInAllGardens()
 
 # Close connection
