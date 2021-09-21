@@ -1,4 +1,7 @@
 [![Python application](https://github.com/MasterZydra/Wurzelimperium-Bot/actions/workflows/python-app.yml/badge.svg)](https://github.com/MasterZydra/Wurzelimperium-Bot/actions/workflows/python-app.yml)
+
+A forked from [MrFlamez/Wurzelimperium-Bot](https://github.com/MrFlamez/Wurzelimperium-Bot)
+
 # Wurzelimperium-Bot
 Ein Bot für das Browserspiel Wurzelimperium von Upjers. Mit ihm wird es den kostenlosen Spielern ermöglicht die Vorzüge eines Premiumaccounts zu nutzen.
 
