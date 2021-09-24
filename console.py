@@ -24,6 +24,7 @@ def main():
         elif inputLower.startswith('grow'): grow(userInput)
         elif inputLower == 'lowest': lowest()
         elif inputLower.startswith('stock'): getStock(userInput)
+        elif inputLower == 'user': userData()
         elif inputLower == 'water': water()
         else:
             print('Unknown command type \'help\' or \'?\' to see all available commands')
@@ -61,6 +62,7 @@ def help():
     print('help         Show all available commands')
     print('lowest       Show the plant with the lowest stock (unequal zero)')
     print('stock        Show all plants in stock')
+    print('user         Show details to the current user')
     print('water        Water all plants')
 
 def harvest():
@@ -100,6 +102,15 @@ def getStock(argStr : str):
     elif args[0] == 'sort':
         print(wurzelBot.getOrderedStockList())
 
+def userData():
+    colWidth = 20
+    print('User:'.ljust(colWidth) + wurzelBot.spieler.getUserName())
+    print('Anzahl der Gärten:'.ljust(colWidth) + str(wurzelBot.spieler.numberOfGardens))
+    print('Level:'.ljust(colWidth) + str(wurzelBot.spieler.getLevelNr()) + ' (' + wurzelBot.spieler.getLevelName() + ')')
+    print('Bar:'.ljust(colWidth) + wurzelBot.spieler.getBar())
+    print('Points:'.ljust(colWidth) + f'{wurzelBot.spieler.getPoints():,}'.replace(',', '.'))
+    print('Coins:'.ljust(colWidth) + str(wurzelBot.spieler.getCoins()))
+    
 def water():
     print('Water all plants in all gardens...')
     wurzelBot.waterPlantsInAllGardens()
