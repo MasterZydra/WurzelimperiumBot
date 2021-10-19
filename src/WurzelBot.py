@@ -220,6 +220,13 @@ class WurzelBot(object):
         planted = 0
 
         product = self.productData.getProductByName(productName)
+
+        if product is None:
+            logMsg = 'Pflanze "' + productName + '" nicht gefunden'
+            self.__logBot.error(logMsg)
+            print(logMsg)
+            return -1
+
         if (product.isProductPlantable()):
             for garden in self.garten:
                 if amount == -1 or amount > self.storage.getStockByProductID(product.getID()):
