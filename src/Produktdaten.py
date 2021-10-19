@@ -47,13 +47,9 @@ class ProductData():
             if int(id) == int(product.getID()): return product
             
     def getProductByName(self, name : str):
-        try:
-            for product in self.__products:
-                if (name.lower() == product.getName().lower()): return product
-        except:
-            pass #TODO: Exception-Fall definieren
-        else:
-            pass
+        for product in self.__products:
+            if (name.lower() == product.getName().lower()): return product
+        return None
         
     def getListOfAllProductIDs(self):
         
