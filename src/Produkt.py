@@ -14,19 +14,18 @@ class Product():
         self.__category = cat
         self.__sx = sx
         self.__sy = sy
-        self.__name = name
+        self.__name = name.decode('UTF-8')
         self.__level = lvl
         self.__crop = crop
         self.__isPlantable = plantable
         self.__timeUntilHarvest = time
         self.__priceNPC = None
-
         
     def getID(self):
         return self.__id
     
     def getName(self):
-        return self.__name.decode('UTF-8')
+        return self.__name
     
     def getSX(self):
         return self.__sx
@@ -46,7 +45,8 @@ class Product():
     def printAll(self):
         print('ID: ', str(self.__id).ljust(5), \
               'CAT: ', str(self.__category).ljust(8), ' ', \
-              'Name: ', str(self.__name).ljust(50), ' ', \
+              'Name: ', str(self.__name).ljust(40), ' ', \
+              'Plantable: ', str(self.__isPlantable).ljust(5), ' ', \
               'NPC: ', str(self.__priceNPC).ljust(10), ' ', \
               'SX: ', str(self.__sx).ljust(4), ' ', \
               'SY: ', str(self.__sy).ljust(4))
