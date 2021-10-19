@@ -227,6 +227,12 @@ class WurzelBot(object):
             print(logMsg)
             return -1
 
+        if not self.productData.getProductByName(productName).isProductPlantable():
+            logMsg = '"' + productName + '" kann nicht angepflanzt werden'
+            self.__logBot.error(logMsg)
+            print(logMsg)
+            return -1
+
         if (product.isProductPlantable()):
             for garden in self.garten:
                 if amount == -1 or amount > self.storage.getStockByProductID(product.getID()):
