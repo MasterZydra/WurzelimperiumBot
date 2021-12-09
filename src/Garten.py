@@ -142,10 +142,10 @@ class Garden():
                     emptyFields = list(tmpSet)
 
         except:
-            self._logGarden.error('Im Garten ' + str(self._id) + ' konnte nicht gepflant werden.')
+            self._logGarden.error('Im Garten ' + str(self._id) + ' konnte nicht gepflanzt werden.')
             return 0
         else:
-            msg = 'Im Garten ' + str(self._id) + ' wurden ' + str(planted) + ' Pflanzen gepflant.'
+            msg = 'Im Garten ' + str(self._id) + ' wurden ' + str(planted) + ' Pflanzen gepflanzt.'
             self._logGarden.info(msg)
             print(msg)
             return planted
