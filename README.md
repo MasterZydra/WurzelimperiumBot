@@ -9,7 +9,7 @@ Die Nutzung des Bots ist über verschiedene Arten möglich:
 - **Skript**:  
 Wie in [example.py](./example.py) kann die Aufgabe als Skript erstellt und manuell auf dem PC ausgeführt werden.
 - **Automatisiert**:  
-Ähnlich wie beim Skript kann eine komplexeres Skript erstellt werden, welches beispielsweise durch GitHub Actions zyklisch ausgeführt wird.
+Ähnlich wie beim Skript kann eine komplexeres Skript erstellt werden, welches beispielsweise durch GitHub Actions zyklisch ausgeführt wird. Siehe [automated_script.py](./automated_script.py)
 - **Interaktiv**:  
 Über das Programm [console.py](./console.py) kann über Eingaben wie zum Beispiel `water` der gesamte Garten bewässert werden.
 
@@ -25,5 +25,7 @@ Für die Verwendung ist jeweils das Hinterlegen von der Servernummer, dem Benutz
 **Voraussetzung:** Python 3
 1. Installation der Abhängigkeiten:  
 `pip install -r ./requirements.txt`
-2. Anmeldedaten im Skript hinterlegen
+2. Anmeldedaten im Skript hinterlegen (bei [example.py](./example.py) und [console.py](./console.py)).  
+   Beim automatisierten Skript [automated_script.py](./automated_script.py) werden die Anmeldedaten beim Aufruf übergeben:  
+   `python3 ./automated_script.py <server-nr> <username> <password>`
 3. Skript ausführen
