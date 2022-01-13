@@ -181,7 +181,6 @@ class WurzelBot(object):
             else:
                 pass
 
-        
     def getEmptyFieldsOfGardens(self):
         """
         Gibt alle leeren Felder aller normalen Gärten zurück.
@@ -195,7 +194,22 @@ class WurzelBot(object):
             self.__logBot.error('Konnte leere Felder von Garten ' + str(garden.getID()) + ' nicht ermitteln.')
         else:
             pass
-        
+
+    def getWeedFieldsOfGardens(self):
+        """
+        Gibt alle Unkrau-Felder aller normalen Gärten zurück.
+        """
+        weedFields = []
+        try:
+            for garden in self.garten:
+                weedFields.append(garden.getWeedFields())
+        except:
+            self.__logBot.error('Konnte Unkraut-Felder von Garten ' + str(garden.getID()) + ' nicht ermitteln.')
+        else:
+            pass
+
+        return weedFields
+
     def harvestAllGarden(self):
         #TODO: Wassergarten ergänzen
         try:
