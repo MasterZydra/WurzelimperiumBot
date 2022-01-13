@@ -93,7 +93,7 @@ class Garden():
         else:
             self._logGarden.info('Im Garten ' + str(self._id) + ' wurden ' + str(nPlants) + ' Pflanzen gegossen.')
             print('Im Garten ' + str(self._id) + ' wurden ' + str(nPlants) + ' Pflanzen gegossen.')
-            
+
     def getEmptyFields(self):
         """
         Gibt alle leeren Felder des Gartens zurück.
@@ -104,6 +104,17 @@ class Garden():
             self._logGarden.error('Konnte leere Felder von Garten ' + str(self._id) + ' nicht ermitteln.')
         else:
             return tmpEmptyFields
+
+    def getWeedFields(self):
+        """
+        Gibt alle Unkraut-Felder des Gartens zurück.
+        """
+        try:
+            tmpWeedFields = self._httpConn.getWeedFieldsOfGarden(self._id)
+        except:
+            self._logGarden.error('Konnte leere Felder von Garten ' + str(self._id) + ' nicht ermitteln.')
+        else:
+            return tmpWeedFields
 
     def harvest(self):
         """
