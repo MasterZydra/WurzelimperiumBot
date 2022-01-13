@@ -758,6 +758,27 @@ class HTTPConnection(object):
         else:
             return emptyFields
 
+    def getWeedFieldsOfGarden(self, gardenID):
+        """
+        Gibt alle leeren Felder eines Gartens zurück.
+        """
+        headers = {'Cookie': 'PHPSESSID=' + self.__Session.getSessionID() + '; ' + \
+                             'wunr=' + self.__userID,
+                   'Connection': 'Keep-Alive'}
+        adresse = 'http://s' + str(self.__Session.getServer()) + \
+                  '.wurzelimperium.de/ajax/ajax.php?do=changeGarden&garden=' + \
+                  str(gardenID) + '&token=' + self.__token
+
+        try:
+            response, content = self.__webclient.request(adresse, 'GET', headers = headers)
+            self.__checkIfHTTPStateIsOK(response)
+            jContent = self.__generateJSONContentAndCheckForOK(content)
+            weedFields = self.__findWeedFieldsFromJSONContent(jContent)
+        except:
+            raise
+        else:
+            return weedFields
+
     def harvestGarden(self, gardenID):
         """
         Erntet alle fertigen Pflanzen im Garten.
