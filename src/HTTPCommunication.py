@@ -228,6 +228,23 @@ class HTTPConnection(object):
 
         return emptyFields
 
+    def __findWeedFieldsFromJSONContent(self, jContent):
+        """
+        Sucht im JSON Content nach Felder die mit Unkraut befallen sind und gibt diese zurück.
+        """
+        weedFields = []
+        
+        # 41 Unkraut, 42 Baumstumpf, 43 Stein, 45 Maulwurf
+        for field in jContent['garden']:
+            if jContent['garden'][field][0] in [41, 42, 43, 45]:
+                weedFields.append(int(field))
+
+        #Sortierung über ein leeres Array ändert Objekttyp zu None
+        if len(weedFields) > 0:
+            weedFields.sort(reverse=False)
+
+        return weedFields
+
     def __generateYAMLContentAndCheckForSuccess(self, content : str):
         """
         Aufbereitung und Prüfung der vom Server empfangenen YAML Daten auf Erfolg.
