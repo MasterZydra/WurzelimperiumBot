@@ -70,7 +70,7 @@ class ProductData():
         dictProducts = dict(jProducts)
         keys = dictProducts.keys()
         keys = sorted(keys)
-        #Nicht genutzte Attribute: img, imgPhase, fileext, clear, edge, pieces, speedup_cooldown in Kategorie z
+        # Nicht genutzte Attribute: img, imgPhase, fileext, clear, edge, pieces, speedup_cooldown in Kategorie z
         for key in keys:
             # 999 ist nur ein Testeintrag und wird nicht benötigt.
             if key == '999':
@@ -88,3 +88,7 @@ class ProductData():
                                            time      = dictProducts[key]['time']))
                 
         self.__setAllPricesOfNPC()
+
+    def printAll(self):
+        for product in self.__products:
+            product.printAll()
