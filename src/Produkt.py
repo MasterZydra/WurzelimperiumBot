@@ -39,7 +39,7 @@ class Product():
     def getPriceNPC(self):
         return self.__priceNPC
     
-    def isProductPlantable(self):
+    def isPlantable(self):
         return self.__isPlantable
         
     def setPriceNPC(self, price):
