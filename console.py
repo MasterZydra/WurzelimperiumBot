@@ -90,7 +90,7 @@ def grow(argStr : str):
         wurzelBot.growPlantsInGardens(args[0], int(args[1]))
 
 def lowest():
-    print(wurzelBot.getLowestStockEntry())
+    print(wurzelBot.getLowestPlantStockEntry())
 
 def getStock(argStr : str):
     argStr = argStr.replace('stock', '', 1).strip()
