@@ -92,3 +92,10 @@ class ProductData():
     def printAll(self):
         for product in self.__products:
             product.printAll()
+
+    def printAllPlants(self):
+        for product in self.__products:
+            if not product.isPlant():
+                continue
+
+            product.printAll()
