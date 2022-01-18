@@ -310,13 +310,7 @@ class HTTPConnection(object):
             
             #Bei der Tabellenüberschrift ist der Text None
             if produktname != None and npc_preis != None:
-                
-                #Produktname aufbereiten
-                if type(produktname) == str:
-                    produktname = produktname.encode('utf-8')
-                    produktname = str(produktname)
-                
-                #NPC-Preis aufbereiten
+                # NPC-Preis aufbereiten
                 npc_preis = str(npc_preis)
                 npc_preis = npc_preis.replace(' wT', '')
                 npc_preis = npc_preis.replace('.', '')
