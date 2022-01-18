@@ -196,6 +196,14 @@ class WurzelBot(object):
             pass
         return emptyFields
 
+    def hasEmptyFields(self):
+        emptyFields = self.getEmptyFieldsOfGardens()
+        amount = 0
+        for garden in emptyFields:
+            amount += len(garden)
+
+        return amount > 0
+
     def getWeedFieldsOfGardens(self):
         """
         Gibt alle Unkrau-Felder aller normalen Gärten zurück.
