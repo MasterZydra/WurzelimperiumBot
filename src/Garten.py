@@ -37,7 +37,6 @@ class Garden():
         if (sx == 2 and sy == 2): return str(fieldID) + ',' + str(fieldID + 1) + ',' + str(fieldID + 17) + ',' + str(fieldID + 18)
         self._logGarden.debug('Error der plantSize --> sx: ' + str(sx) + ' sy: ' + str(sy))
 
-
     def _getAllFieldIDsFromFieldIDAndSizeAsIntList(self, fieldID, sx, sy):
         """
         Rechnet anhand der fieldID und Größe der Pflanze (sx, sy) alle IDs aus und gibt diese als Integer-Liste zurück.
@@ -54,20 +53,20 @@ class Garden():
         """
         Prüft anhand mehrerer Kriterien, ob ein Anpflanzen möglich ist.
         """
-        #Betrachtetes Feld darf nicht besetzt sein
+        # Betrachtetes Feld darf nicht besetzt sein
         if not (fieldID in emptyFields): return False
         
-        #Anpflanzen darf nicht außerhalb des Gartens erfolgen
-        #Dabei reicht die Betrachtung in x-Richtung, da hier ein
-        #"Zeilenumbruch" stattfindet. Die y-Richtung ist durch die
-        #Abfrage abgedeckt, ob alle benötigten Felder frei sind.
-        #Felder außerhalb (in y-Richtung) des Gartens sind nicht leer,
-        #da sie nicht existieren.
+        # Anpflanzen darf nicht außerhalb des Gartens erfolgen
+        # Dabei reicht die Betrachtung in x-Richtung, da hier ein
+        # "Zeilenumbruch" stattfindet. Die y-Richtung ist durch die
+        # Abfrage abgedeckt, ob alle benötigten Felder frei sind.
+        # Felder außerhalb (in y-Richtung) des Gartens sind nicht leer,
+        # da sie nicht existieren.
         if not ((self._nMaxFields - fieldID)%self._lenX >= sx - 1): return False
         fieldsToPlantSet = set(fieldsToPlant)
         emptyFieldsSet = set(emptyFields)
         
-        #Alle benötigten Felder der Pflanze müssen leer sein
+        # Alle benötigten Felder der Pflanze müssen leer sein
         if not (fieldsToPlantSet.issubset(emptyFieldsSet)): return False
         return True
 
