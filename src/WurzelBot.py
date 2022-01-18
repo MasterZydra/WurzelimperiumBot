@@ -292,6 +292,22 @@ class WurzelBot(object):
             orderedList += str(self.storage.getOrderedStockList()[productID]).rjust(5)
             orderedList += str('\n')
         return orderedList.strip()
+    
+    def getLowestPlantStockEntry(self):
+        lowestStock = -1
+        lowestProductId = -1
+        for productID in self.storage.getOrderedStockList():
+            if not self.productData.getProductByID(productID).isPlant():
+                continue
+
+            currentStock = self.storage.getStockByProductID(productID)
+            if lowestStock == -1 or currentStock < lowestStock:
+                lowestStock = currentStock
+                lowestProductId = productID
+                continue
+
+        if lowestProductId == -1: return 'Your stock is empty'
+        return self.productData.getProductByID(lowestProductId).getName()
 
     def printProductDetails(self):
         self.productData.printAll()
