@@ -292,3 +292,9 @@ class WurzelBot(object):
             orderedList += str(self.storage.getOrderedStockList()[productID]).rjust(5)
             orderedList += str('\n')
         return orderedList.strip()
+
+    def printProductDetails(self):
+        self.productData.printAll()
+    
+    def printPlantDetails(self):
+        self.productData.printAllPlants()
