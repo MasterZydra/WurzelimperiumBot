@@ -52,13 +52,16 @@ class Product():
         self.__priceNPC = price
         
     def printAll(self):
-        print('ID: ', str(self.__id).ljust(5), \
-              'CAT: ', str(self.__category).ljust(8), ' ', \
-              'Name: ', str(self.__name).ljust(40), ' ', \
-              'Plantable: ', str(self.__isPlantable).ljust(5), ' ', \
-              'NPC: ', str(self.__priceNPC).ljust(10), ' ', \
-              'SX: ', str(self.__sx).ljust(4), ' ', \
-              'SY: ', str(self.__sy).ljust(4))
+        # Show nothing instead of None
+        xstr = lambda s: s or ""
+
+        print('ID:', str(self.__id).rjust(3), ' ', \
+              'CAT:', str(self.__category).ljust(5), ' ', \
+              'Name:', str(self.__name).ljust(35), ' ', \
+              'Plantable:', str(self.__isPlantable).ljust(5), ' ', \
+              'NPC:', str(xstr(self.__priceNPC)).rjust(6), ' ', \
+              'SX:', str(xstr(self.__sx)), ' ', \
+              'SY:', str(xstr(self.__sy)))
 
 
 
