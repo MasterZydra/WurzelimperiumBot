@@ -257,22 +257,6 @@ class WurzelBot(object):
 
         return planted
 
-    def test(self):
-        #TODO: Für Testzwecke, kann später entfernt werden.
-        #return self.__HTTPConn.getUsrList(1, 15000)
-        """
-        tradeableProducts = self.marktplatz.getAllTradableProducts()
-        for id in tradeableProducts:
-            product = self.productData.getProductByID(id)
-            print product.getName()
-            gaps = self.marktplatz.findBigGapInProductOffers(product.getID(), product.getPriceNPC())
-            if len(gaps) > 0:
-                print gaps
-            print ''
-        """
-        #self.__HTTPConn.growPlantInAquaGarden(162, 9)
-        self.wassergarten.waterPlants()
-
     def printStock(self):
         isSmthPrinted = False
         for productID in self.storage.getKeys():

@@ -86,8 +86,3 @@ class ProductData():
                                                time      = dictProducts[key]['time']))
                 
         self.__setAllPricesOfNPC()
-    
-    
-    def test(self): #TODO: Kann entfernt werden am Ende
-        for product in self.__products:
-            product.printAll()
