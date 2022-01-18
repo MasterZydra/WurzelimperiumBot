@@ -41,7 +41,13 @@ class Product():
     
     def isPlantable(self):
         return self.__isPlantable
-        
+    
+    def isPlant(self):
+        return self.__category == "v"
+    
+    def isDecoration(self):
+        return self.__category == "d"
+
     def setPriceNPC(self, price):
         self.__priceNPC = price
         
