@@ -194,6 +194,7 @@ class WurzelBot(object):
             self.__logBot.error('Konnte leere Felder von Garten ' + str(garden.getID()) + ' nicht ermitteln.')
         else:
             pass
+        return emptyFields
 
     def getWeedFieldsOfGardens(self):
         """
