@@ -24,6 +24,9 @@ class Product():
     def getID(self):
         return self.__id
     
+    def getCategory(self):
+        return self.__category
+
     def getName(self):
         return self.__name
     
