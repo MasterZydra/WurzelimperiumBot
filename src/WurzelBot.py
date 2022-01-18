@@ -256,11 +256,10 @@ class WurzelBot(object):
             print(logMsg)
             return -1
 
-        if (product.isProductPlantable()):
-            for garden in self.garten:
-                if amount == -1 or amount > self.storage.getStockByProductID(product.getID()):
-                    amount = self.storage.getStockByProductID(product.getID())
-                planted += garden.growPlant(product.getID(), product.getSX(), product.getSY(), amount)
+        for garden in self.garten:
+            if amount == -1 or amount > self.storage.getStockByProductID(product.getID()):
+                amount = self.storage.getStockByProductID(product.getID())
+            planted += garden.growPlant(product.getID(), product.getSX(), product.getSY(), amount)
         
         self.storage.updateNumberInStock()
 
