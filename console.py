@@ -26,6 +26,7 @@ def main():
         elif inputLower.startswith('stock'): getStock(userInput)
         elif inputLower == 'user': userData()
         elif inputLower == 'water': water()
+        elif inputLower.startswith('details'): productDetails(userInput)
         else:
             print('Unknown command type \'help\' or \'?\' to see all available commands')
 
@@ -56,12 +57,15 @@ def closeConnection():
 def help():
     print('Available commands:')
     print('-------------------')
+    print('details      Show details to the products')
+    print('             Opt. argument: "all"')
     print('exit         Close connection and exit bot')
     print('grow         Grow a given plant')
     print('harvest      Harvest all gardens')
     print('help         Show all available commands')
     print('lowest       Show the plant with the lowest stock (unequal zero)')
     print('stock        Show all plants in stock')
+    print('             Opt. argument: "sort"')
     print('user         Show details to the current user')
     print('water        Water all plants')
 
@@ -114,6 +118,20 @@ def userData():
 def water():
     print('Water all plants in all gardens...')
     wurzelBot.waterPlantsInAllGardens()
+
+def productDetails(argStr : str):
+    argStr = argStr.replace('details', '', 1).strip()
+    args = argStr.split(' ')
+
+    if len(args) > 1 or (len(args) == 1 and args[0] != 'all' and args[0] != ''):
+        print('Cannot parse input.')
+        print('Expected format: details [all]')
+        return
+
+    if args[0] == '':
+        wurzelBot.printPlantDetails()
+    elif args[0] == 'all':
+        wurzelBot.printProductDetails()
 
 if __name__ == "__main__":
     main()
