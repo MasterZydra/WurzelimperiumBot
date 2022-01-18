@@ -64,6 +64,8 @@ class Product():
 
 """
 Kategorie   category ['z', '', 'd', 'v', 'w', 'u', 'wd', 'honey', None, 'h']
+d = Dekoration
+v = vegetables??
 
 #Nur in 344, 273, 274, 330, 333, 345, 324, 363, 282: 'speedup_cooldown', 'speedup_reduction'
 """
