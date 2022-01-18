@@ -250,7 +250,7 @@ class WurzelBot(object):
             print(logMsg)
             return -1
 
-        if not self.productData.getProductByName(productName).isProductPlantable():
+        if not product.isPlant() or not product.isPlantable():
             logMsg = '"' + productName + '" kann nicht angepflanzt werden'
             self.__logBot.error(logMsg)
             print(logMsg)
