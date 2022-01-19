@@ -90,11 +90,13 @@ class ProductData():
         self.__setAllPricesOfNPC()
 
     def printAll(self):
-        for product in self.__products:
+        sortedProducts = sorted(self.__products, key=lambda x:x.getName().lower())
+        for product in sortedProducts:
             product.printAll()
 
     def printAllPlants(self):
-        for product in self.__products:
+        sortedProducts = sorted(self.__products, key=lambda x:x.getName().lower())
+        for product in sortedProducts:
             if not product.isPlant():
                 continue
 
