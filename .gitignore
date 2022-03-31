@@ -12,3 +12,12 @@ bin/
 include/
 lib/
 pyvenv.cfg
+/.idea/modules.xml
+/.idea/markdown.xml
+/.idea/misc.xml
+/.idea/inspectionProfiles/profiles_settings.xml
+/.idea/inspectionProfiles/Project_Default.xml
+/.idea/vcs.xml
+/.idea/WurzelimperiumBot.iml
+/.idea/.gitignore
+/automated_script_1.py
