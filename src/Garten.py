@@ -18,14 +18,14 @@ class Garden():
 
     def _getAllFieldIDsFromFieldIDAndSizeAsString(self, fieldID, sx, sy):
         """
-        Rechnet anhand der fieldID und Größe der Pflanze (sx, sy) alle IDs aus und gibt diese als String zurück.
+        Calculates all IDs based on the fieldID and size of the plant (sx, sy) and returns them as a string.
         """
         
-        # Zurückgegebene Felderindizes (x) für Pflanzen der Größe 1-, 2- und 4-Felder.
-        # Wichtig beim Gießen; dort müssen alle Indizes angegeben werden.
-        # (Sowohl die mit x als auch die mit o gekennzeichneten).
+        # Field indices (x) returned for plants of size 1, 2, and 4 fields.
+        # Important when watering; all indices must be specified there.
+        # (Both those marked with x and those marked with o).
         # x: fieldID
-        # o: ergänzte Felder anhand der size
+        # o: added fields based on the size
         # +---+   +---+---+   +---+---+
         # | x |   | x | o |   | x | o |
         # +---+   +---+---+   +---+---+
@@ -40,7 +40,7 @@ class Garden():
 
     def _getAllFieldIDsFromFieldIDAndSizeAsIntList(self, fieldID, sx, sy):
         """
-        Rechnet anhand der fieldID und Größe der Pflanze (sx, sy) alle IDs aus und gibt diese als Integer-Liste zurück.
+        Calculates all IDs based on the fieldID and size of the plant (sx, sy) and returns them as an integer list.
         """
         sFields = self._getAllFieldIDsFromFieldIDAndSizeAsString(fieldID, sx, sy)
         listFields = sFields.split(',') #Stringarray
@@ -107,12 +107,12 @@ class Garden():
 
     def getWeedFields(self):
         """
-        Gibt alle Unkraut-Felder des Gartens zurück.
+        Returns all weed fields in the garden.
         """
         try:
             tmpWeedFields = self._httpConn.getWeedFieldsOfGarden(self._id)
         except:
-            self._logGarden.error('Konnte leere Felder von Garten ' + str(self._id) + ' nicht ermitteln.')
+            self._logGarden.error('Could not determine empty squares of garden ' + str(self._id) + '.')
         else:
             return tmpWeedFields
 
@@ -140,7 +140,7 @@ class Garden():
 
     def growPlant(self, plantID, sx, sy, amount):
         """
-        Pflanzt eine Pflanze beliebiger Größe an.
+        Grows a plant of any size.
         """
         
         planted = 0
@@ -157,7 +157,7 @@ class Garden():
                     self._httpConn.growPlant(field, plantID, self._id, fields)
                     planted += 1
 
-                    #Nach dem Anbau belegte Felder aus der Liste der leeren Felder loeschen
+                    # Delete occupied fields from the list of empty fields after cultivation
                     fieldsToPlantSet = set(fieldsToPlant)
                     emptyFieldsSet = set(emptyFields)
                     tmpSet = emptyFieldsSet - fieldsToPlantSet

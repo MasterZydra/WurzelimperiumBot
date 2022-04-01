@@ -13,6 +13,8 @@ from src.Garten import Garden, AquaGarden
 from src.Lager import Storage
 from src.Marktplatz import Marketplace
 from src.Produktdaten import ProductData
+from collections import Counter
+
 import logging
 
 
@@ -121,7 +123,7 @@ class WurzelBot(object):
         try:
             self.__initGardens()
         except:
-            self.__logBot.error('Anzahl der Gärten konnte nicht ermittelt werden.')
+            self.__logBot.error('Number of gardens could not be determined.')
  
         self.spieler.accountLogin = loginDaten
         self.spieler.setUserID(self.__HTTPConn.getUserID())
@@ -183,15 +185,15 @@ class WurzelBot(object):
 
     def getEmptyFieldsOfGardens(self):
         """
-        Gibt alle leeren Felder aller normalen Gärten zurück.
-        Kann dazu verwendet werden zu entscheiden, wie viele Pflanzen angebaut werden können.
+        Returns all empty fields of all normal gardens.
+        Can be used to decide how many crops to grow.
         """
         emptyFields = []
         try:
             for garden in self.garten:
                 emptyFields.append(garden.getEmptyFields())
         except:
-            self.__logBot.error('Konnte leere Felder von Garten ' + str(garden.getID()) + ' nicht ermitteln.')
+            self.__logBot.error('Could not determine empty squares of garden ' + str(garden.getID()) + '.')
         else:
             pass
         return emptyFields
@@ -245,7 +247,6 @@ class WurzelBot(object):
         else:
             pass
         dictGrowingPlants = {self.productData.getProductByID(k).getName() : v for k,v in growingPlants.items()}
-        self.productData.getProductByID(id).
         return dictGrowingPlants
 
     def growPlantsInGardens(self, productName, amount=-1):

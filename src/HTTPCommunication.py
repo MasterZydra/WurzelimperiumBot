@@ -177,7 +177,7 @@ class HTTPConnection(object):
             return iGartenAnz
         else:
             self.__logHTTPConn.debug(jContent['table'])
-            raise JSONError('Anzahl der Gärten nicht gefunden.')
+            raise JSONError('Number of gardens not found.')
 
 
     def __checkIfSessionIsDeleted(self, cookie):
@@ -394,7 +394,7 @@ class HTTPConnection(object):
 
     def getNumberOfGardens(self):
         """
-        Ermittelt die Anzahl der Gärten und gibt diese als int zurück.
+        Gets the number of gardens and returns it as an int.
         """
         headers = {'Cookie': 'PHPSESSID=' + self.__Session.getSessionID() + '; ' + \
                              'wunr=' + self.__userID,
@@ -739,7 +739,7 @@ class HTTPConnection(object):
 
     def getEmptyFieldsOfGarden(self, gardenID):
         """
-        Gibt alle leeren Felder eines Gartens zurück.
+        Returns all empty fields of a garden.
         """
         headers = {'Cookie': 'PHPSESSID=' + self.__Session.getSessionID() + '; ' + \
                              'wunr=' + self.__userID,
@@ -760,7 +760,7 @@ class HTTPConnection(object):
 
     def getWeedFieldsOfGarden(self, gardenID):
         """
-        Gibt alle leeren Felder eines Gartens zurück.
+        Returns all weed fields of a garden.
         """
         headers = {'Cookie': 'PHPSESSID=' + self.__Session.getSessionID() + '; ' + \
                              'wunr=' + self.__userID,
