@@ -168,18 +168,10 @@ class HTTPConnection(object):
         Sucht im übergebenen JSON Objekt nach der Anzahl der Gärten und gibt diese zurück.
         """
         result = False
-        for i in range(0, len(jContent['table'])):
-            sGartenAnz = str(jContent['table'][i])
-            if 'Gärten' in sGartenAnz:
-                sGartenAnz = sGartenAnz.replace('<tr>', '')
-                sGartenAnz = sGartenAnz.replace('<td>', '')
-                sGartenAnz = sGartenAnz.replace('</tr>', '')
-                sGartenAnz = sGartenAnz.replace('</td>', '')
-                sGartenAnz = sGartenAnz.replace('Gärten', '')
-                sGartenAnz = sGartenAnz.strip()
-                iGartenAnz = int(sGartenAnz)
-                result = True
-                break
+        lGartenAnz = re.findall(r"<td>(.+?)</td>", str(jContent['table'][16]).replace(r'&nbsp;', ''))
+        sGartenAnz = lGartenAnz[1]
+        iGartenAnz = int(sGartenAnz)
+        result = True
 
         if result:
             return iGartenAnz
@@ -317,11 +309,12 @@ class HTTPConnection(object):
             if produktname != None and npc_preis != None:
                 # NPC-Preis aufbereiten
                 npc_preis = str(npc_preis)
-                npc_preis = npc_preis.replace(' wT', '')
+                # npc_preis = npc_preis.replace(' wT', '')
+                npc_preis = npc_preis[0:len(npc_preis)-3]
                 npc_preis = npc_preis.replace('.', '')
                 npc_preis = npc_preis.replace(',', '.')
                 npc_preis = npc_preis.strip()
-                if '-' in npc_preis:
+                if len(npc_preis) == 0:
                     npc_preis = None
                 else:
                     npc_preis = float(npc_preis)
