@@ -7,7 +7,7 @@ Created on 21.03.2017
 from collections import namedtuple
 
 
-Login = namedtuple('Login', 'server user password')
+Login = namedtuple('Login', 'server user password language')
 
 class Spieler():
     

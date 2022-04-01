@@ -78,14 +78,14 @@ class WurzelBot(object):
         return listFields
 
 
-    def launchBot(self, server, user, pw):
+    def launchBot(self, server, user, pw, lang):
         """
         Diese Methode startet und initialisiert den Wurzelbot. Dazu wird ein Login mit den
         übergebenen Logindaten durchgeführt und alles nötige initialisiert.
         """
         self.__logBot.info('-------------------------------------------')
         self.__logBot.info('Starte Wurzelbot')
-        loginDaten = Login(server=server, user=user, password=pw)
+        loginDaten = Login(server=server, user=user, password=pw, language=lang)
 
         try:
             self.__HTTPConn.logIn(loginDaten)

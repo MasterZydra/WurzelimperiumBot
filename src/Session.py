@@ -27,6 +27,7 @@ class Session(object):
         """
         self.__logSession = logging.getLogger('bot.Session')
         self.__sessionID = None
+        self.__serverURL = None
         self.__server = None
         self.__startTime = None
         self.__endTime = None
@@ -53,13 +54,14 @@ class Session(object):
         return bReturn
 
 
-    def openSession(self, sessionID, server):
+    def openSession(self, sessionID, server, serverURL):
         """
         Anlegen einer neuen Session mit allen notwendigen Daten.
         """
         self.__sessionID = sessionID
         self.__server = server
-        
+        self.__serverURL = serverURL
+
         self.__startTime = time.time()
         self.__endTime = self.__startTime + (self.__lifetime - self.__lifetime_reserve)
         
@@ -96,9 +98,12 @@ class Session(object):
 
     def getServer(self):
         """
-        Gibt die Servernummer zurück.
+        Returns the server number.
         """
         return self.__server
 
-
-        
+    def getServerURL(self):
+        """
+        Returns the server URL.
+        """
+        return self.__serverURL
