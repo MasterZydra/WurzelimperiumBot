@@ -235,6 +235,18 @@ class WurzelBot(object):
             self.__logBot.info('Konnte alle Gärten ernten.')
             pass
 
+    def getGrowingPlantsInGardens(self):
+        growingPlants = Counter()
+        try:
+            for garden in self.garten:
+                growingPlants.update(garden.getGrowingPlants())
+        except:
+            self.__logBot.error('Could not determine growing plants of garden ' + str(garden.getID()) + '.')
+        else:
+            pass
+        dictGrowingPlants = {self.productData.getProductByID(k).getName() : v for k,v in growingPlants.items()}
+        self.productData.getProductByID(id).
+        return dictGrowingPlants
 
     def growPlantsInGardens(self, productName, amount=-1):
         """

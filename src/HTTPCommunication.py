@@ -242,6 +242,15 @@ class HTTPConnection(object):
 
         return weedFields
 
+    def __findGrowingPlantsFromJSONContent(self, jContent):
+        """
+        Returns list of growing plants from JSON content
+        """
+        growingPlants = []
+        for field in jContent['grow']:
+            growingPlants.append(field[1])
+        return growingPlants
+
     def __generateYAMLContentAndCheckForSuccess(self, content : str):
         """
         Aufbereitung und Prüfung der vom Server empfangenen YAML Daten auf Erfolg.
@@ -769,6 +778,27 @@ class HTTPConnection(object):
             raise
         else:
             return weedFields
+
+    def getGrowingPlantsOfGarden(self, gardenID):
+        """
+        Returns all fields with growing plants of a garden.
+        """
+        headers = {'Cookie': 'PHPSESSID=' + self.__Session.getSessionID() + '; ' + \
+                             'wunr=' + self.__userID,
+                   'Connection': 'Keep-Alive'}
+        adresse = 'http://s' + str(self.__Session.getServer()) + \
+                  str(self.__Session.getServerURL()) +'ajax/ajax.php?do=changeGarden&garden=' + \
+                  str(gardenID) + '&token=' + self.__token
+
+        try:
+            response, content = self.__webclient.request(adresse, 'GET', headers = headers)
+            self.__checkIfHTTPStateIsOK(response)
+            jContent = self.__generateJSONContentAndCheckForOK(content)
+            growingPlants = self.__findGrowingPlantsFromJSONContent(jContent)
+        except:
+            raise
+        else:
+            return growingPlants
 
     def harvestGarden(self, gardenID):
         """

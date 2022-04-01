@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from collections import Counter
 import logging
 
 class Garden():
@@ -114,6 +115,17 @@ class Garden():
             self._logGarden.error('Konnte leere Felder von Garten ' + str(self._id) + ' nicht ermitteln.')
         else:
             return tmpWeedFields
+
+    def getGrowingPlants(self):
+        """
+        Returns all growing plants in the garden.
+        """
+        try:
+            tmpGrowingPlants = Counter(self._httpConn.getGrowingPlantsOfGarden(self._id))
+        except:
+            self._logGarden.error('Could not determine growing plants of garden ' + str(self._id) + '.')
+        else:
+            return tmpGrowingPlants
 
     def harvest(self):
         """

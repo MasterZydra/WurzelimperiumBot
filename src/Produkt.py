@@ -38,6 +38,9 @@ class Product():
     
     def getPriceNPC(self):
         return self.__priceNPC
+
+    def getCrop(self):
+        return self.__Crop
     
     def isPlantable(self):
         return self.__isPlantable
