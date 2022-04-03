@@ -251,6 +251,19 @@ class HTTPConnection(object):
             growingPlants.append(field[1])
         return growingPlants
 
+    def __findWimpsDataFromJSONContent(self, jContent):
+        """
+        Returns list of growing plants from JSON content
+        """
+        wimpsData = {}
+        for wimp in jContent['wimps']:
+            productData = {}
+            wimpID = wimp['sheet']['id']
+            for product in wimp['sheet']['products']:
+                productData[product['name']] = int(product['amount'])
+            wimpsData[wimpID] = productData
+        return wimpsData
+
     def __generateYAMLContentAndCheckForSuccess(self, content : str):
         """
         Aufbereitung und Prüfung der vom Server empfangenen YAML Daten auf Erfolg.
@@ -936,6 +949,36 @@ class HTTPConnection(object):
             pass
         else:
             return jContent['produkte']
+
+    def getWimpsData(self, gardenID):
+        """
+        Get wimps data including wimp_id and list of products with amount        
+        """
+        headers = {'Cookie': 'PHPSESSID=' + self.__Session.getSessionID() + '; ' + \
+                             'wunr=' + self.__userID,
+                   'Connection': 'Keep-Alive'}
+        adresse = 'http://s' + str(self.__Session.getServer()) + \
+                  str(self.__Session.getServerURL()) + 'ajax/ajax.php?do=changeGarden&garden=' + \
+                  str(gardenID) + '&token=' + self.__token
+
+        adresse1 = 'http://s' + str(self.__Session.getServer()) + \
+                  str(self.__Session.getServerURL()) + 'ajax/verkaufajax.php?do=getAreaData&token=' + \
+                    self.__token
+
+        try:
+            response, content = self.__webclient.request(adresse, 'GET', headers=headers)
+            self.__checkIfHTTPStateIsOK(response)
+
+            response, content = self.__webclient.request(adresse1, 'GET', headers=headers)
+            self.__checkIfHTTPStateIsOK(response)
+
+            jContent = self.__generateJSONContentAndCheckForOK(content)
+            wimpsData = self.__findWimpsDataFromJSONContent(jContent)
+        except:
+            raise
+        else:
+            return wimpsData
+
 
 
     def getNPCPrices(self):

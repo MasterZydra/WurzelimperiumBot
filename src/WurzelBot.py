@@ -13,8 +13,9 @@ from src.Garten import Garden, AquaGarden
 from src.Lager import Storage
 from src.Marktplatz import Marketplace
 from src.Produktdaten import ProductData
-from collections import Counter
+from src.Wimps import Wimps
 
+from collections import Counter
 import logging
 
 
@@ -37,6 +38,7 @@ class WurzelBot(object):
         self.garten = []
         self.wassergarten = None
         self.marktplatz = Marketplace(self.__HTTPConn)
+        self.wimparea = Wimps(self.__HTTPConn)
 
 
     def __initGardens(self):
@@ -193,7 +195,7 @@ class WurzelBot(object):
             for garden in self.garten:
                 emptyFields.append(garden.getEmptyFields())
         except:
-            self.__logBot.error('Could not determine empty squares of garden ' + str(garden.getID()) + '.')
+            self.__logBot.error('Could not determine empty fields of garden ' + str(garden.getID()) + '.')
         else:
             pass
         return emptyFields
@@ -328,3 +330,17 @@ class WurzelBot(object):
     
     def printPlantDetails(self):
         self.productData.printAllPlants()
+
+    def getAllWimpsProducts(self):
+        allWimpsProducts = Counter()
+        wimpsData = []
+        for garden in self.garten:
+            tmpWimpData = self.wimparea.getWimpsData(garden)
+            for products in tmpWimpData.values():
+                allWimpsProducts.update(products)
+
+        return dict(allWimpsProducts)
+
+
+
+
