@@ -6,6 +6,10 @@ Created on 21.03.2017
 @author: MrFlamez
 '''
 
+# TODO: 1. Yearly series of quests.
+# TODO: 2. Main series of quests.
+
+
 from src.Spieler import Spieler, Login
 from src.HTTPCommunication import HTTPConnection
 from src.Messenger import Messenger
@@ -224,7 +228,7 @@ class WurzelBot(object):
         return weedFields
 
     def harvestAllGarden(self):
-        #TODO: Wassergarten ergänzen
+        #TODO: Add Watergarden
         try:
             for garden in self.garten:
                 garden.harvest()
