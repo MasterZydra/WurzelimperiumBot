@@ -260,7 +260,7 @@ class HTTPConnection(object):
             productData = {}
             wimpID = wimp['sheet']['id']
             for product in wimp['sheet']['products']:
-                productData[product['name']] = int(product['amount'])
+                productData[str(product[('pid')])] = int(product['amount'])
             wimpsData[wimpID] = productData
         return wimpsData
 

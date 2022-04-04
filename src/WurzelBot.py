@@ -252,8 +252,8 @@ class WurzelBot(object):
             self.__logBot.error('Could not determine growing plants of garden ' + str(garden.getID()) + '.')
         else:
             pass
-        dictGrowingPlants = {self.productData.getProductByID(k).getName() : v for k,v in growingPlants.items()}
-        return dictGrowingPlants
+
+        return dict(growingPlants)
 
     def growPlantsInGardens(self, productName, amount=-1):
         """
@@ -337,7 +337,6 @@ class WurzelBot(object):
 
     def getAllWimpsProducts(self):
         allWimpsProducts = Counter()
-        wimpsData = []
         for garden in self.garten:
             tmpWimpData = self.wimparea.getWimpsData(garden)
             for products in tmpWimpData.values():
