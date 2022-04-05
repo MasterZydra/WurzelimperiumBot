@@ -8,7 +8,6 @@ Created on 21.03.2017
 
 class Wimps:
 
-
     def __init__(self, httpConnection):
         self.__httpConn = httpConnection
         # self.__wimpData = {}
@@ -17,3 +16,6 @@ class Wimps:
         wimpsData = self.__httpConn.getWimpsData(garden._id)
         return wimpsData
 
+    def sellWimpProducts(self, wimp_id):
+        result = self.__httpConn.sellWimpProducts(wimp_id)
+        return result

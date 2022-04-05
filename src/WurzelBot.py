@@ -344,6 +344,26 @@ class WurzelBot(object):
 
         return dict(allWimpsProducts)
 
+    def sellWimpsProducts(self, minimal_balance):
+        stock_list = self.storage.getOrderedStockList()
+        wimps_data = []
+        for garden in self.garten:
+            for k, v in self.wimparea.getWimpsData(garden).items():
+                wimps_data.append({k: v})
+
+        for wimps in wimps_data:
+            for wimp, products in wimps.items():
+                to_sell = True
+                for id, amount in products.items():
+                    if stock_list.get(id, 0) - (amount + minimal_balance) <= 0:
+                        to_sell = False
+                        break
+                if to_sell:
+                    print("Selling products to wimp: " + wimp)
+                    new_products_counts = self.wimparea.sellWimpProducts(wimp)
+                    for id, amount in products.items():
+                        stock_list[id] -= amount
+
 
 
 

@@ -979,6 +979,27 @@ class HTTPConnection(object):
         else:
             return wimpsData
 
+    def sellWimpProducts(self, wimp_id):
+        """
+        Sell products to wimp with a given id
+        @param wimp_id: str
+        @return: dict of new balance of sold products
+        """
+        headers = {'Cookie': 'PHPSESSID=' + self.__Session.getSessionID() + '; ' +
+                             'wunr=' + self.__userID,
+                   'Connection': 'Keep-Alive'}
+
+        adresse = 'http://s' + str(self.__Session.getServer()) + \
+                   str(self.__Session.getServerURL()) + 'ajax/verkaufajax.php?do=accept&id=' + \
+                  wimp_id+'&token=' + self.__token
+        try:
+            response, content = self.__webclient.request(adresse, 'POST', headers=headers)
+            self.__checkIfHTTPStateIsOK(response)
+            jContent = self.__generateJSONContentAndCheckForOK(content)
+        except:
+            pass
+        else:
+            return jContent['newProductCounts']
 
 
     def getNPCPrices(self):
