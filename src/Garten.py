@@ -116,6 +116,17 @@ class Garden():
         else:
             return tmpWeedFields
 
+    def clearWeedField(self, field_id):
+        """
+        Clears the field of a given field_id in the garden.
+        """
+        try:
+            jContent = self._httpConn.clearWeedFieldOfGarden(self._id, field_id)
+        except:
+            self._logGarden.error('Could not clear weed field of garden ' + str(self._id) + '.')
+        else:
+            return int(jContent["success"])
+
     def getGrowingPlants(self):
         """
         Returns all growing plants in the garden.

@@ -54,6 +54,7 @@ class HTTPConnection(object):
         """
         userData = {}
         userData['bar'] = str(content['bar'])
+        userData['bar_unformat'] = float(content['bar_unformat'])
         userData['points'] = int(content['points'])
         userData['coins'] = int(content['coins'])
         userData['level'] = str(content['level'])
@@ -229,18 +230,20 @@ class HTTPConnection(object):
         """
         Sucht im JSON Content nach Felder die mit Unkraut befallen sind und gibt diese zurück.
         """
-        weedFields = []
+        weedFields = {}
         
         # 41 Unkraut, 42 Baumstumpf, 43 Stein, 45 Maulwurf
         for field in jContent['garden']:
             if jContent['garden'][field][0] in [41, 42, 43, 45]:
-                weedFields.append(int(field))
+                # weedFields.append({int(field):float(jContent['garden'][field][6])})
+                weedFields[int(field)] = float(jContent['garden'][field][6])
 
         #Sortierung über ein leeres Array ändert Objekttyp zu None
         if len(weedFields) > 0:
-            weedFields.sort(reverse=False)
+            # weedFields.sort(reverse=False)
+            newWeedFields = {key: value for key, value in sorted(weedFields.items(), key=lambda item: item[1])}
 
-        return weedFields
+        return newWeedFields
 
     def __findGrowingPlantsFromJSONContent(self, jContent):
         """
@@ -791,6 +794,25 @@ class HTTPConnection(object):
             raise
         else:
             return weedFields
+
+    def clearWeedFieldOfGarden(self, gardenID, fieldID):
+        """
+        Returns all weed fields of a garden.
+        """
+        headers = {'Cookie': 'PHPSESSID=' + self.__Session.getSessionID() + '; ' + \
+                             'wunr=' + self.__userID,
+                   'Connection': 'Keep-Alive'}
+        adresse = 'https://s' + str(self.__Session.getServer()) + \
+                  str(self.__Session.getServerURL()) + 'save/abriss.php?tile=' + str(fieldID)
+        try:
+            self.__changeGarden(gardenID)
+            response, content = self.__webclient.request(adresse, 'GET', headers=headers)
+            self.__checkIfHTTPStateIsOK(response)
+            jContent = json.loads(content)
+        except:
+            raise
+        else:
+            return jContent
 
     def getGrowingPlantsOfGarden(self, gardenID):
         """

@@ -52,7 +52,7 @@ class Spieler():
         return self.__userData['level']
     
     def getBar(self):
-        return self.__userData['bar']
+        return self.__userData['bar_unformat']
     
     def getPoints(self):
         return self.__userData['points']

@@ -227,6 +227,19 @@ class WurzelBot(object):
 
         return weedFields
 
+    def clearWeedFields(self, minimal_cash):
+        weedFields = self.getWeedFieldsOfGardens()
+        cleared_fields = 0
+        for garden in self.garten:
+            for garden_1 in weedFields:
+                for field_id, cost in garden_1.items():
+                    self.spieler.setUserDataFromServer(self.__HTTPConn)
+                    if self.spieler.getBar() - cost >= minimal_cash:
+                        success = garden.clearWeedField(field_id)
+                        cleared_fields += success
+
+        print("There were cleared " + str(cleared_fields) + " fields")
+
     def harvestAllGarden(self):
         #TODO: Add Watergarden
         try:
