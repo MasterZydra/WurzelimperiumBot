@@ -229,6 +229,8 @@ class WurzelBot(object):
 
     def clearWeedFields(self, minimal_cash):
         weedFields = self.getWeedFieldsOfGardens()
+        if weedFields == [None] or sum(len(g) for g in weedFields) == 0:
+            return
         cleared_fields = 0
         for garden in self.garten:
             for garden_1 in weedFields:

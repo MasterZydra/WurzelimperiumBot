@@ -11,8 +11,8 @@ import json, re, httplib2
 from http.cookies import SimpleCookie
 from src.Session import Session
 import yaml, time, logging, math, io
-import xml.etree.ElementTree as eTree
-from lxml import html
+# import xml.etree.ElementTree as eTree
+from lxml import html, etree
 
 #Defines
 HTTP_STATE_CONTINUE            = 100
@@ -23,6 +23,8 @@ HTTP_STATE_FOUND               = 302 #moved temporarily
 
 SERVER_URLS = {
                 'de': '.wurzelimperium.de/',
+                'en': '.molehillempire.com/',
+                'us': '.molehillempire.com/',
                 'ru': '.sadowajaimperija.ru/'
               }
 
@@ -267,6 +269,7 @@ class HTTPConnection(object):
             wimpsData[wimpID] = productData
         return wimpsData
 
+
     def __generateYAMLContentAndCheckForSuccess(self, content : str):
         """
         Aufbereitung und Prüfung der vom Server empfangenen YAML Daten auf Erfolg.
@@ -317,11 +320,11 @@ class HTTPConnection(object):
         """
         #ElementTree benötigt eine Datei zum Parsen.
         #Mit BytesIO wird eine Datei im Speicher angelegt, nicht auf der Festplatte.
-        html_file = io.BytesIO(html)
-        
-        html_tree = eTree.parse(html_file)
-        root = html_tree.getroot()
-        table = root.find('./body/div[@id="content"]/table')
+
+        my_parser = etree.HTMLParser(recover=True)
+        html_tree = etree.fromstring(str(html), parser=my_parser)
+
+        table = html_tree.find('./body/div[@id="content"]/table')
         
         dictResult = {}
         
@@ -964,7 +967,7 @@ class HTTPConnection(object):
               'all=1&sort=1&type=honey&token=' + self.__token
               
         try:
-            response, content = self.__webclient.request(adresse, 'POST', headers = headers)
+            response, content = self.__webclient.request(adresse, 'POST', headers=headers)
             self.__checkIfHTTPStateIsOK(response)
             jContent = self.__generateJSONContentAndCheckForOK(content)
         except:
@@ -1040,7 +1043,6 @@ class HTTPConnection(object):
         self.__checkIfHTTPStateIsOK(response)
 
         content = content.decode('UTF-8').replace('Gärten & Regale', 'Gärten und Regale')
-        content = bytearray(content, encoding='UTF-8')
 
         dictNPCPrices = self.__parseNPCPricesFromHtml(content)
         #except:
