@@ -1131,6 +1131,26 @@ class HTTPConnection(object):
 
         return listOffers
 
+    def getBigQuestData(self):
+        """
+        Returns Data from Yearly Series of Quests
+        """
+        headers = {'Cookie': 'PHPSESSID=' + self.__Session.getSessionID() + '; ' +
+                             'wunr=' + self.__userID,
+                   'Connection': 'Keep-Alive'}
+
+        adresse = 'http://s' + str(self.__Session.getServer()) + \
+                  str(self.__Session.getServerURL()) + 'ajax/ajax.php?do=bigquest_init&id=3' + \
+                  '&token=' + self.__token
+        try:
+            response, content = self.__webclient.request(adresse, 'GET', headers=headers)
+            self.__checkIfHTTPStateIsOK(response)
+            jContent = self.__generateJSONContentAndCheckForOK(content)
+        except:
+            pass
+        else:
+            return jContent['data']
+
 class HTTPStateError(Exception):
     def __init__(self, value):
         self.value = value

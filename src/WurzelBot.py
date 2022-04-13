@@ -18,6 +18,7 @@ from src.Lager import Storage
 from src.Marktplatz import Marketplace
 from src.Produktdaten import ProductData
 from src.Wimps import Wimps
+from src.Quests import Quest
 
 from collections import Counter
 import datetime
@@ -45,6 +46,7 @@ class WurzelBot(object):
         self.wassergarten = None
         self.marktplatz = Marketplace(self.__HTTPConn)
         self.wimparea = Wimps(self.__HTTPConn)
+        self.quest = Quest(self.__HTTPConn)
 
 
     def __initGardens(self):
@@ -381,6 +383,9 @@ class WurzelBot(object):
                     for id, amount in products.items():
                         stock_list[id] -= amount
 
+    def getQuestProducts(self, quest_name):
+
+        return self.quest.getQuestProducts(quest_name)
 
     def getNextRunTime(self):
         garden_time = []
