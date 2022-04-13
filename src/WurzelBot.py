@@ -20,6 +20,8 @@ from src.Produktdaten import ProductData
 from src.Wimps import Wimps
 
 from collections import Counter
+import datetime
+
 import logging
 
 
@@ -380,5 +382,12 @@ class WurzelBot(object):
                         stock_list[id] -= amount
 
 
+    def getNextRunTime(self):
+        garden_time = []
+        for garden in self.garten:
+            garden_time.append(garden.getNextWaterHarvest())
 
-
+        self.updateUserData()
+        human_time = datetime.datetime.fromtimestamp(min(garden_time))
+        print(f"Next time water/harvest: {human_time.strftime('%x %X')} ({min(garden_time)})")
+        return min(garden_time)

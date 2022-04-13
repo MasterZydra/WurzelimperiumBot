@@ -293,7 +293,7 @@ class HTTPConnection(object):
         if (yContent['status'] != 'ok'):
             raise YAMLError()
 
-    def __changeGarden(self, gardenID):
+    def _changeGarden(self, gardenID):
         """
         Wechselt den Garten.
         """
@@ -308,10 +308,11 @@ class HTTPConnection(object):
         try:
             response, content = self.__webclient.request(adresse, 'GET', headers = headers)
             self.__checkIfHTTPStateIsOK(response)
+            jContent = self.__generateJSONContentAndCheckForOK(content)
         except:
             raise
         else:
-            pass
+            return jContent
 
 
     def __parseNPCPricesFromHtml(self, html):
@@ -808,7 +809,7 @@ class HTTPConnection(object):
         adresse = 'https://s' + str(self.__Session.getServer()) + \
                   str(self.__Session.getServerURL()) + 'save/abriss.php?tile=' + str(fieldID)
         try:
-            self.__changeGarden(gardenID)
+            self._changeGarden(gardenID)
             response, content = self.__webclient.request(adresse, 'GET', headers=headers)
             self.__checkIfHTTPStateIsOK(response)
             jContent = json.loads(content)
@@ -850,7 +851,7 @@ class HTTPConnection(object):
                   str(self.__Session.getServerURL()) +'ajax/ajax.php?do=gardenHarvestAll&token=' + self.__token
 
         try:
-            self.__changeGarden(gardenID)
+            self._changeGarden(gardenID)
             response, content = self.__webclient.request(adresse, 'GET', headers = headers)
             jContent = json.loads(content)
             #print(content.decode('UTF-8'))

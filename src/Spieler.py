@@ -60,6 +60,9 @@ class Spieler():
     def getCoins(self):
         return self.__userData['coins']
 
+    def getTime(self):
+        return self.__userData['time']
+
     def setUserNameFromServer(self, http):
         """
         Liest den Spielernamen vom Server und speichert ihn in der Klasse.

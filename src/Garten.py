@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from collections import Counter
+from collections import Counter, namedtuple
+
 import logging
 
 class Garden():
@@ -132,11 +133,32 @@ class Garden():
         Returns all growing plants in the garden.
         """
         try:
-            tmpGrowingPlants = Counter(self._httpConn.getGrowingPlantsOfGarden(self._id))
+            growing_plants = Counter(self._httpConn.getGrowingPlantsOfGarden(self._id))
         except:
             self._logGarden.error('Could not determine growing plants of garden ' + str(self._id) + '.')
         else:
-            return tmpGrowingPlants
+            return growing_plants
+
+    def getNextWaterHarvest(self):
+        """
+            Returns all growing plants in the garden.
+        """
+        overall_time = []
+        Fields_data = namedtuple("Fields_data", "plant water harvest")
+        max_water_time = 86400
+        try:
+            garden = self._httpConn._changeGarden(self._id).get('garden')
+            for field in garden.values():
+                if field[0] in [41, 42, 43, 45]:
+                    continue
+                fields_time = Fields_data(field[10], field[4], field[3])
+                if fields_time.harvest - fields_time.water > max_water_time:
+                    overall_time.append(fields_time.water + max_water_time)
+                overall_time.append(fields_time.harvest)
+        except:
+            self._logGarden.error('Could not determine growing plants of garden ' + str(self._id) + '.')
+        else:
+            return min(overall_time)
 
     def harvest(self):
         """
