@@ -76,7 +76,7 @@ class Garden():
         """
         Gibt die Garten ID aus dem Spiel zurück.
         """
-        return self.__id
+        return self._id
 
     def waterPlants(self):
         """

@@ -10,7 +10,7 @@ class Wimps:
 
     def __init__(self, httpConnection):
         self.__httpConn = httpConnection
-        # self.__wimpData = {}
+
 
     def getWimpsData(self, garden):
         wimpsData = self.__httpConn.getWimpsData(garden._id)

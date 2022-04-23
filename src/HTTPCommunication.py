@@ -43,12 +43,10 @@ class HTTPConnection(object):
         self.__token = None
         self.__userID = None
 
-
     def __del__(self):
         self.__Session = None
         self.__token = None
         self.__userID = None
-
 
     def __getUserDataFromJSONContent(self, content):
         """
@@ -67,7 +65,6 @@ class HTTPConnection(object):
         userData['time'] = int(content['time'])
         return userData
 
-
     def __checkIfHTTPStateIsOK(self, response):
         """
         Prüft, ob der Status der HTTP Anfrage OK ist.
@@ -75,7 +72,6 @@ class HTTPConnection(object):
         if not (response['status'] == str(HTTP_STATE_OK)):
             self.__logHTTPConn.debug('HTTP State: ' + str(response['status']))
             raise HTTPStateError('HTTP Status ist nicht OK')
-
 
     def __checkIfHTTPStateIsFOUND(self, response):
         """
@@ -85,7 +81,6 @@ class HTTPConnection(object):
             self.__logHTTPConn.debug('HTTP State: ' + str(response['status']))
             raise HTTPStateError('HTTP Status ist nicht FOUND')
 
-
     def __generateJSONContentAndCheckForSuccess(self, content):
         """
         Aufbereitung und Prüfung der vom Server empfangenen JSON Daten.
@@ -94,7 +89,6 @@ class HTTPConnection(object):
         if (jContent['success'] == 1): return jContent
         else: raise JSONError()
 
-
     def __generateJSONContentAndCheckForOK(self, content : str):
         """
         Aufbereitung und Prüfung der vom Server empfangenen JSON Daten.
@@ -102,7 +96,6 @@ class HTTPConnection(object):
         jContent = json.loads(content)
         if (jContent['status'] == 'ok'): return jContent
         else: raise JSONError()
-
 
     def __isFieldWatered(self, jContent, fieldID):
         """
@@ -119,7 +112,6 @@ class HTTPConnection(object):
         if waterDateInSeconds == '0': return False
         elif (currentTimeInSeconds - waterDateInSeconds) > oneDayInSeconds: return False
         else: return True
-
 
     def __getTokenFromURL(self, url):
         """
@@ -140,7 +132,6 @@ class HTTPConnection(object):
             raise JSONError('Fehler bei der Ermittlung des tokens')
         else:
             self.__token = tmpToken
-
 
     def __getUserNameFromJSONContent(self, jContent):
         """
@@ -165,7 +156,6 @@ class HTTPConnection(object):
             self.__logHTTPConn.debug(jContent['table'])
             raise JSONError('Spielername nicht gefunden.')
 
-
     def __getNumberOfGardensFromJSONContent(self, jContent):
         """
         Sucht im übergebenen JSON Objekt nach der Anzahl der Gärten und gibt diese zurück.
@@ -182,7 +172,6 @@ class HTTPConnection(object):
             self.__logHTTPConn.debug(jContent['table'])
             raise JSONError('Number of gardens not found.')
 
-
     def __checkIfSessionIsDeleted(self, cookie):
         """
         Prüft, ob die Session gelöscht wurde.
@@ -190,7 +179,6 @@ class HTTPConnection(object):
         if not (cookie['PHPSESSID'].value == 'deleted'):
             self.__logHTTPConn.debug('SessionID: ' + cookie['PHPSESSID'].value)
             raise HTTPRequestError('Session wurde nicht gelöscht')
-
 
     def __findPlantsToBeWateredFromJSONContent(self, jContent):
         """
@@ -232,20 +220,20 @@ class HTTPConnection(object):
         """
         Sucht im JSON Content nach Felder die mit Unkraut befallen sind und gibt diese zurück.
         """
-        weedFields = {}
+        weed_fields = {}
         
         # 41 Unkraut, 42 Baumstumpf, 43 Stein, 45 Maulwurf
         for field in jContent['garden']:
             if jContent['garden'][field][0] in [41, 42, 43, 45]:
                 # weedFields.append({int(field):float(jContent['garden'][field][6])})
-                weedFields[int(field)] = float(jContent['garden'][field][6])
+                weed_fields[int(field)] = float(jContent['garden'][field][6])
 
         #Sortierung über ein leeres Array ändert Objekttyp zu None
-        if len(weedFields) > 0:
+        if len(weed_fields) > 1:
             # weedFields.sort(reverse=False)
-            newWeedFields = {key: value for key, value in sorted(weedFields.items(), key=lambda item: item[1])}
+            weed_fields = {key: value for key, value in sorted(weed_fields.items(), key=lambda item: item[1])}
 
-        return newWeedFields
+        return weed_fields
 
     def __findGrowingPlantsFromJSONContent(self, jContent):
         """
@@ -269,7 +257,6 @@ class HTTPConnection(object):
             wimpsData[wimpID] = productData
         return wimpsData
 
-
     def __generateYAMLContentAndCheckForSuccess(self, content : str):
         """
         Aufbereitung und Prüfung der vom Server empfangenen YAML Daten auf Erfolg.
@@ -280,7 +267,6 @@ class HTTPConnection(object):
         
         if (yContent['success'] != 1):
             raise YAMLError()
-
 
     def __generateYAMLContentAndCheckStatusForOK(self, content):
         """
@@ -313,7 +299,6 @@ class HTTPConnection(object):
             raise
         else:
             return jContent
-
 
     def __parseNPCPricesFromHtml(self, html):
         """
@@ -384,20 +369,19 @@ class HTTPConnection(object):
             self.__cookie = cookie
             self.__userID = cookie['wunr'].value
 
-
     def getUserID(self):
         """
         Gibt die wunr als userID zurück die beim Login über das Cookie erhalten wurde.
         """
         return self.__userID
 
-
     def logOut(self):
         """
         Logout des Spielers inkl. Löschen der Session.
         """
         #TODO: Was passiert beim Logout einer bereits ausgeloggten Session
-        headers = {'Cookie': 'PHPSESSID=' + self.__Session.getSessionID() + '; ' + 'wunr=' + self.__userID}
+        headers = {'Cookie': 'PHPSESSID=' + self.__Session.getSessionID() + '; ' +
+                             'wunr=' + self.__userID}
         
         adresse = 'http://s'+str(self.__Session.getServer()) + str(self.__Session.getServerURL()) +'main.php?page=logout'
         
@@ -410,7 +394,6 @@ class HTTPConnection(object):
             raise
         else:
             self.__del__()
-
 
     def getNumberOfGardens(self):
         """
@@ -432,7 +415,6 @@ class HTTPConnection(object):
         else:
             return iNumber
 
-
     def getUserName(self): 
         """
         Ermittelt den Usernamen auf Basis der userID und gibt diesen als str zurück.
@@ -453,7 +435,6 @@ class HTTPConnection(object):
         else:
             return userName
 
-
     def readUserDataFromServer(self):
         """
         Ruft eine Updatefunktion im Spiel auf und verarbeitet die empfangenen userdaten.
@@ -471,7 +452,6 @@ class HTTPConnection(object):
             raise
         else:
             return self.__getUserDataFromJSONContent(jContent)
-
 
     def getPlantsToWaterInGarden(self, gardenID):
         """
@@ -494,7 +474,6 @@ class HTTPConnection(object):
         else:
             return self.__findPlantsToBeWateredFromJSONContent(jContent)
 
-
     def waterPlantInGarden(self, iGarten, iField, sFieldsToWater):
         """
         Bewässert die Pflanze iField mit der Größe sSize im Garten iGarten.
@@ -514,7 +493,6 @@ class HTTPConnection(object):
             self.__generateYAMLContentAndCheckForSuccess(content.decode('UTF-8'))
         except:
             raise
-
 
     def getPlantsToWaterInAquaGarden(self):
         """
@@ -537,7 +515,6 @@ class HTTPConnection(object):
             raise
         else:
             return self.__findPlantsToBeWateredFromJSONContent(jContent)
-        
 
     def waterPlantInAquaGarden(self, iField, sFieldsToWater):
         """
@@ -564,7 +541,6 @@ class HTTPConnection(object):
             self.__generateYAMLContentAndCheckStatusForOK(content)
         except:
             raise
-
 
     def isHoneyFarmAvailable(self, iUserLevel):
         """
@@ -597,7 +573,6 @@ class HTTPConnection(object):
         else:
             return False
 
-            
     def isAquaGardenAvailable(self, iUserLevel):
         """
         Funktion ermittelt, ob ein Wassergarten verfügbar ist.
@@ -649,7 +624,6 @@ class HTTPConnection(object):
             if (result == None): return True
             else: return False
 
-
     def createNewMessageAndReturnResult(self):
         """
         Erstellt eine neue Nachricht und gibt deren ID zurück, die für das Senden benötigt wird.
@@ -669,7 +643,6 @@ class HTTPConnection(object):
             raise
         else:
             return content
-
 
     def sendMessageAndReturnResult(self, msg_id, msg_to, msg_subject, msg_body):
         """
@@ -695,8 +668,6 @@ class HTTPConnection(object):
             return content
         except:
             raise
-
-
 
     def getUsrList(self, iStart, iEnd):
         """
@@ -910,8 +881,7 @@ class HTTPConnection(object):
             raise
         else:
             pass
-    
-    
+
     def growPlantInAquaGarden(self, plant, field):
         """
         Baut eine Pflanze im Wassergarten an.
@@ -934,6 +904,7 @@ class HTTPConnection(object):
             raise
         else:
             pass    
+
     def getAllProductInformations(self):
         """
         Sammelt alle Produktinformationen und gibt diese zur Weiterverarbeitung zurück.
@@ -1027,7 +998,6 @@ class HTTPConnection(object):
         else:
             return jContent['newProductCounts']
 
-
     def getNPCPrices(self):
         """
         Ermittelt aus der Wurzelimperium-Hilfe die NPC Preise aller Produkte.
@@ -1050,7 +1020,6 @@ class HTTPConnection(object):
         #    pass #TODO Exception definieren
         #else:
         return dictNPCPrices
-        
 
     def getAllTradeableProductsFromOverview(self):
         """
@@ -1074,7 +1043,6 @@ class HTTPConnection(object):
                 tradeableProducts[i] = int(tradeableProducts[i])
                 
             return tradeableProducts
-
 
     def getOffersFromProduct(self, id):
         """

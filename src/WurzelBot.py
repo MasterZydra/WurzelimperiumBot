@@ -233,16 +233,17 @@ class WurzelBot(object):
 
     def clearWeedFields(self, minimal_cash):
         weedFields = self.getWeedFieldsOfGardens()
-        if weedFields == [None] or sum(len(g) for g in weedFields) == 0:
+        if sum(len(g) for g in weedFields) == 0:
             return
         cleared_fields = 0
         for garden in self.garten:
-            for garden_1 in weedFields:
-                for field_id, cost in garden_1.items():
-                    self.spieler.setUserDataFromServer(self.__HTTPConn)
-                    if self.spieler.getBar() - cost >= minimal_cash:
-                        success = garden.clearWeedField(field_id)
-                        cleared_fields += success
+            # for field in weedFields:
+            weeds = weedFields[garden.getID()-1]
+            for field_id, cost in weeds.items():
+                self.spieler.setUserDataFromServer(self.__HTTPConn)
+                if self.spieler.getBar() - cost >= minimal_cash:
+                    success = garden.clearWeedField(field_id)
+                    cleared_fields += success
 
         print("There were cleared " + str(cleared_fields) + " fields")
 
@@ -374,7 +375,8 @@ class WurzelBot(object):
             for wimp, products in wimps.items():
                 to_sell = True
                 for id, amount in products.items():
-                    if stock_list.get(id, 0) - (amount + minimal_balance) <= 0:
+                    k = self.productData.getProductByID(id).getSX()*self.productData.getProductByID(id).getSY()
+                    if stock_list.get(id, 0) - (amount + minimal_balance / k) <= 0:
                         to_sell = False
                         break
                 if to_sell:
