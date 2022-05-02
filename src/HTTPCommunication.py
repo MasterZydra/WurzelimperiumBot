@@ -252,9 +252,10 @@ class HTTPConnection(object):
         for wimp in jContent['wimps']:
             productData = {}
             wimpID = wimp['sheet']['id']
+            sum = wimp['sheet']['sum']
             for product in wimp['sheet']['products']:
                 productData[str(product[('pid')])] = int(product['amount'])
-            wimpsData[wimpID] = productData
+            wimpsData[wimpID] = [sum, productData]
         return wimpsData
 
     def __generateYAMLContentAndCheckForSuccess(self, content : str):
@@ -997,6 +998,28 @@ class HTTPConnection(object):
             pass
         else:
             return jContent['newProductCounts']
+
+    def declineWimp(self, wimp_id):
+        """
+        Decline wimp with a given id
+        @param wimp_id: str
+        @return: 'decline'
+        """
+        headers = {'Cookie': 'PHPSESSID=' + self.__Session.getSessionID() + '; ' +
+                             'wunr=' + self.__userID,
+                   'Connection': 'Keep-Alive'}
+
+        adresse = 'http://s' + str(self.__Session.getServer()) + \
+                  str(self.__Session.getServerURL()) + 'ajax/verkaufajax.php?do=decline&id=' + \
+                  wimp_id + '&token=' + self.__token
+        try:
+            response, content = self.__webclient.request(adresse, 'GET', headers=headers)
+            self.__checkIfHTTPStateIsOK(response)
+            jContent = self.__generateJSONContentAndCheckForOK(content)
+        except:
+            pass
+        else:
+            return jContent['action']
 
     def getNPCPrices(self):
         """

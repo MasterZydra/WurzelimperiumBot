@@ -19,3 +19,6 @@ class Wimps:
     def sellWimpProducts(self, wimp_id):
         result = self.__httpConn.sellWimpProducts(wimp_id)
         return result
+
+    def declineWimp(self, wimp_id):
+        result = self.__httpConn.declineWimp(wimp_id)

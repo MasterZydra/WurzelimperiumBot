@@ -364,7 +364,7 @@ class WurzelBot(object):
 
         return dict(allWimpsProducts)
 
-    def sellWimpsProducts(self, minimal_balance):
+    def sellWimpsProducts(self, minimal_balance, minimal_profit):
         stock_list = self.storage.getOrderedStockList()
         wimps_data = []
         for garden in self.garten:
@@ -373,17 +373,33 @@ class WurzelBot(object):
 
         for wimps in wimps_data:
             for wimp, products in wimps.items():
-                to_sell = True
-                for id, amount in products.items():
-                    k = self.productData.getProductByID(id).getSX()*self.productData.getProductByID(id).getSY()
-                    if stock_list.get(id, 0) - (amount + minimal_balance / k) <= 0:
-                        to_sell = False
-                        break
-                if to_sell:
-                    print("Selling products to wimp: " + wimp)
-                    new_products_counts = self.wimparea.sellWimpProducts(wimp)
-                    for id, amount in products.items():
-                        stock_list[id] -= amount
+                if not self.checkWimpsProfitable(products, minimal_profit):
+                    self.wimparea.declineWimp(wimp)
+                else:
+                    if self.checkWimpsRequiredAmount(minimal_balance, products[1], stock_list):
+                        print("Selling products to wimp: " + wimp)
+                        new_products_counts = self.wimparea.sellWimpProducts(wimp)
+                        for id, amount in products.items():
+                            stock_list[id] -= amount
+
+    def checkWimpsProfitable(self, products, minimal_profit):
+        npc_sum = 0
+        for id, amount in products[1].items():
+            npc_sum += self.productData.getProductByID(id).getPriceNPC() * amount
+        if products[0] / npc_sum * 100 >= minimal_profit:
+            to_sell = True
+        else:
+            to_sell = False
+        return to_sell
+
+    def checkWimpsRequiredAmount(self, minimal_balance, products, stock_list):
+        to_sell = True
+        for id, amount in products.items():
+            k = self.productData.getProductByID(id).getSX() * self.productData.getProductByID(id).getSY()
+            if stock_list.get(id, 0) - (amount + minimal_balance / k) <= 0:
+                to_sell = False
+                break
+        return to_sell
 
     def getQuestProducts(self, quest_name):
 
