@@ -233,8 +233,6 @@ class WurzelBot(object):
             self.__logBot.error('Konnte nicht alle Gärten ernten.')
         else:
             self.__logBot.info('Konnte alle Gärten ernten.')
-            pass
-
 
     def growPlantsInGardens(self, productName, amount=-1):
         """
@@ -314,3 +312,16 @@ class WurzelBot(object):
     
     def printPlantDetails(self):
         self.productData.printAllPlants()
+
+    def removeWeedInAllGardens(self):
+        """
+        Entfernt Unrkaut/Maulwürfe/Steine aus allen Gärten.
+        """
+        #TODO: Wassergarten ergänzen
+        try:
+            for garden in self.garten:
+                garden.removeWeed()
+        except:
+            self.__logBot.error('Konnte nicht alle Felder von Unrkaut befreien.')
+        else:
+            self.__logBot.info('Konnte alle Gärten von Unrkaut befreien.')

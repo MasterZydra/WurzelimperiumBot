@@ -754,7 +754,7 @@ class HTTPConnection(object):
 
     def getWeedFieldsOfGarden(self, gardenID):
         """
-        Gibt alle leeren Felder eines Gartens zurück.
+        Gibt alle Unkraut-Felder eines Gartens zurück.
         """
         headers = {'Cookie': 'PHPSESSID=' + self.__Session.getSessionID() + '; ' + \
                              'wunr=' + self.__userID,
@@ -1014,6 +1014,27 @@ class HTTPConnection(object):
                             iPage = iPage + 1
 
         return listOffers
+
+    def removeWeedOnFieldInGarden(self, gardenID, fieldID):
+        """
+        Befreit ein Feld im Garten von Unkraut.
+        """
+
+        self.__changeGarden(gardenID)
+
+        headers = {'Cookie': 'PHPSESSID=' + self.__Session.getSessionID() + '; ' + \
+                             'wunr=' + self.__userID,
+                    'Content-Length':'0'}
+    
+        adresse = f'http://s{str(self.__Session.getServer())}.wurzelimperium.de/save/abriss.php?tile={str(fieldID)}'
+        try:
+            response, content = self.__webclient.request(adresse, 'POST', headers = headers)
+            self.__checkIfHTTPStateIsOK(response)
+            jContent = self.__generateJSONContentAndCheckForSuccess(content)
+        except:
+            raise
+        else:
+            return jContent['success']
 
 class HTTPStateError(Exception):
     def __init__(self, value):

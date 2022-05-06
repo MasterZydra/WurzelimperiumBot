@@ -111,7 +111,7 @@ class Garden():
         try:
             tmpWeedFields = self._httpConn.getWeedFieldsOfGarden(self._id)
         except:
-            self._logGarden.error('Konnte leere Felder von Garten ' + str(self._id) + ' nicht ermitteln.')
+            self._logGarden.error('Konnte Unkraut-Felder von Garten ' + str(self._id) + ' nicht ermitteln.')
         else:
             return tmpWeedFields
 
@@ -152,13 +152,33 @@ class Garden():
                     emptyFields = list(tmpSet)
 
         except:
-            self._logGarden.error('Im Garten ' + str(self._id) + ' konnte nicht gepflanzt werden.')
+            self._logGarden.error(f'Im Garten {str(self._id)} konnte nicht gepflanzt werden.')
             return 0
         else:
-            msg = 'Im Garten ' + str(self._id) + ' wurden ' + str(planted) + ' Pflanzen gepflanzt.'
+            msg = f'Im Garten {str(self._id)} wurden {str(planted)} Pflanzen gepflanzt.'
             self._logGarden.info(msg)
             print(msg)
             return planted
+
+    def removeWeed(self):
+        """
+        Entfernt alles Unkraut, Steine und Maulwürfe, wenn ausreichend Geld vorhanden ist.
+        """
+        weedFields = self.getWeedFields()
+        freeFields = []
+        for fieldID in weedFields:
+            try:
+                result = self._httpConn.removeWeedOnFieldInGarden(self._id, fieldID)
+            except:
+                self._logGarden.error(f'Feld {fieldID} im Garten {self._id} konnte nicht von Unkraut befreit werden!')
+            else:
+                if result == 1:
+                    self._logGarden.info(f'Feld {fieldID} im Garten {self._id} wurde von Unkraut befreit!')
+                    freeFields.append(fieldID)
+                else:
+                    self._logGarden.error(f'Feld {fieldID} im Garten {self._id} konnte nicht von Unkraut befreit werden!')
+
+        self._logGarden.info(f'Im Garten {self._id} wurden {len(freeFields)} Felder von Unkraut befreit.')
 
 
 class AquaGarden(Garden):
