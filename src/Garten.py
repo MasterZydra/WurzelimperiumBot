@@ -35,7 +35,7 @@ class Garden():
         if (sx == 2 and sy == 1): return str(fieldID) + ',' + str(fieldID + 1)
         if (sx == 1 and sy == 2): return str(fieldID) + ',' + str(fieldID + 17)
         if (sx == 2 and sy == 2): return str(fieldID) + ',' + str(fieldID + 1) + ',' + str(fieldID + 17) + ',' + str(fieldID + 18)
-        self._logGarden.debug('Error der plantSize --> sx: ' + str(sx) + ' sy: ' + str(sy))
+        self._logGarden.debug(f'Error der plantSize --> sx: {sx} sy: {sy}')
 
     def _getAllFieldIDsFromFieldIDAndSizeAsIntList(self, fieldID, sx, sy):
         """
@@ -80,7 +80,7 @@ class Garden():
         """
         Ein Garten mit der gardenID wird komplett bewässert.
         """
-        self._logGarden.info('Gieße alle Pflanzen im Garten ' + str(self._id) + '.')
+        self._logGarden.info(f'Gieße alle Pflanzen im Garten {self._id}.')
         try:
             plants = self._httpConn.getPlantsToWaterInGarden(self._id)
             nPlants = len(plants['fieldID'])
@@ -88,10 +88,10 @@ class Garden():
                 sFields = self._getAllFieldIDsFromFieldIDAndSizeAsString(plants['fieldID'][i], plants['sx'][i], plants['sy'][i])
                 self._httpConn.waterPlantInGarden(self._id, plants['fieldID'][i], sFields)
         except:
-            self._logGarden.error('Garten ' + str(self._id) + ' konnte nicht bewässert werden.')
+            self._logGarden.error(f'Garten {self._id} konnte nicht bewässert werden.')
         else:
-            self._logGarden.info('Im Garten ' + str(self._id) + ' wurden ' + str(nPlants) + ' Pflanzen gegossen.')
-            print('Im Garten ' + str(self._id) + ' wurden ' + str(nPlants) + ' Pflanzen gegossen.')
+            self._logGarden.info(f'Im Garten {self._id} wurden {nPlants} Pflanzen gegossen.')
+            print(f'Im Garten {self._id} wurden {nPlants} Pflanzen gegossen.')
 
     def getEmptyFields(self):
         """
@@ -100,7 +100,7 @@ class Garden():
         try:
             tmpEmptyFields = self._httpConn.getEmptyFieldsOfGarden(self._id)
         except:
-            self._logGarden.error('Konnte leere Felder von Garten ' + str(self._id) + ' nicht ermitteln.')
+            self._logGarden.error(f'Konnte leere Felder von Garten {self._id} nicht ermitteln.')
         else:
             return tmpEmptyFields
 
@@ -111,7 +111,7 @@ class Garden():
         try:
             tmpWeedFields = self._httpConn.getWeedFieldsOfGarden(self._id)
         except:
-            self._logGarden.error('Konnte Unkraut-Felder von Garten ' + str(self._id) + ' nicht ermitteln.')
+            self._logGarden.error(f'Konnte Unkraut-Felder von Garten {self._id} nicht ermitteln.')
         else:
             return tmpWeedFields
 
@@ -152,10 +152,10 @@ class Garden():
                     emptyFields = list(tmpSet)
 
         except:
-            self._logGarden.error(f'Im Garten {str(self._id)} konnte nicht gepflanzt werden.')
+            self._logGarden.error(f'Im Garten {self._id} konnte nicht gepflanzt werden.')
             return 0
         else:
-            msg = f'Im Garten {str(self._id)} wurden {str(planted)} Pflanzen gepflanzt.'
+            msg = f'Im Garten {self._id} wurden {planted} Pflanzen gepflanzt.'
             self._logGarden.info(msg)
             print(msg)
             return planted
@@ -200,7 +200,7 @@ class AquaGarden(Garden):
         except:
             self._logGarden.error('Wassergarten konnte nicht bewässert werden.')
         else:
-            self._logGarden.info('Im Wassergarten wurden ' + str(nPlants) + ' Pflanzen gegossen.')
+            self._logGarden.info(f'Im Wassergarten wurden {nPlants} Pflanzen gegossen.')
         
     def harvest(self):
         """

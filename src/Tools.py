@@ -14,7 +14,7 @@ def readListFromTextfile(textfile):
     tmpList = []
     elementsToBeDeleted = []
     
-    #Inhalt der Datei als Liste einlesen
+    # Inhalt der Datei als Liste einlesen
     try:
         file = open(textfile, 'r')
     except IOError:
@@ -25,17 +25,17 @@ def readListFromTextfile(textfile):
         file.close()
 
         for i in range(len(tmpList)):
-            #Leerzeichen entfernen
+            # Leerzeichen entfernen
             tmpList[i] = str(tmpList[i]).strip()
 
             if (tmpList[i] == ''):
                 elementsToBeDeleted.append(i)
 
-        #Reihenfolge der zwischengespeicherten Indizes umkehren, um das Entfernen zu erleichtern.
-        #Sonst verschieben sich die Indizes 
+        # Reihenfolge der zwischengespeicherten Indizes umkehren, um das Entfernen zu erleichtern.
+        # Sonst verschieben sich die Indizes 
         elementsToBeDeleted.reverse()
         
-        #Leere Eintraege entfernen
+        # Leere Eintraege entfernen
         for i in range(len(elementsToBeDeleted)):
             del tmpList[elementsToBeDeleted[i]]
             

@@ -276,9 +276,8 @@ class HTTPConnection(object):
                              'wunr=' + self.__userID,
                    'Connection': 'Keep-Alive'}
 
-        adresse = 'http://s' + str(self.__Session.getServer()) + \
-                  '.wurzelimperium.de/ajax/ajax.php?do=changeGarden&garden=' + \
-                  str(gardenID) + '&token=' + self.__token
+        adresse = f'http://s{self.__Session.getServer()}.wurzelimperium.de/ajax/' + \
+                  f'ajax.php?do=changeGarden&garden={gardenID}&token={self.__token}'
 
         try:
             response, content = self.__webclient.request(adresse, 'GET', headers = headers)
@@ -353,9 +352,7 @@ class HTTPConnection(object):
             cookie = SimpleCookie(response['set-cookie'])
             cookie.load(str(response["set-cookie"]).replace("secure, ", "", -1))
             self.__Session.openSession(cookie['PHPSESSID'].value, str(loginDaten.server))
-            self.__cookie = cookie
             self.__userID = cookie['wunr'].value
-
 
     def getUserID(self):
         """
@@ -371,7 +368,7 @@ class HTTPConnection(object):
         #TODO: Was passiert beim Logout einer bereits ausgeloggten Session
         headers = {'Cookie': 'PHPSESSID=' + self.__Session.getSessionID() + '; ' + 'wunr=' + self.__userID}
         
-        adresse = 'http://s'+str(self.__Session.getServer()) + '.wurzelimperium.de/main.php?page=logout'
+        adresse = f'http://s{self.__Session.getServer()}.wurzelimperium.de/main.php?page=logout'
         
         try: #content ist beim Logout leer
             response, content = self.__webclient.request(adresse, 'GET', headers=headers)
@@ -388,11 +385,13 @@ class HTTPConnection(object):
         """
         Ermittelt die Anzahl der Gärten und gibt diese als int zurück.
         """
+
         headers = {'Cookie': 'PHPSESSID=' + self.__Session.getSessionID() + '; ' + \
                              'wunr=' + self.__userID,
                    'Connection': 'Keep-Alive'}
-        adresse = 'http://s' + str(self.__Session.getServer()) + '.wurzelimperium.de/ajax/ajax.php?do=statsGetStats&which=0&start=0&additional='+\
-                  self.__userID + '&token=' + self.__token
+
+        adresse = f'http://s{self.__Session.getServer()}.wurzelimperium.de/ajax/' + \
+                  f'ajax.php?do=statsGetStats&which=0&start=0&additional={self.__userID}&token={self.__token}'
         
         try:
             response, content = self.__webclient.request(adresse, 'GET', headers = headers)
@@ -414,8 +413,9 @@ class HTTPConnection(object):
                    'Connection': 'Keep-Alive',
                    'Referer':'http://s46.wurzelimperium.de/main.php?page=garden', 
                    'X-Requested-With':'X-Requested-With: XMLHttpRequest'}
-        adresse = 'http://s' + str(self.__Session.getServer()) + '.wurzelimperium.de/ajax/ajax.php?do=statsGetStats&which=0&start=0&additional='+\
-                  self.__userID + '&token=' + self.__token
+
+        adresse = f'http://s{self.__Session.getServer()}.wurzelimperium.de/' + \
+                  f'ajax/ajax.php?do=statsGetStats&which=0&start=0&additional={self.__userID}&token={self.__token}'
         
         try:
             response, content = self.__webclient.request(adresse, 'GET', headers = headers)
@@ -435,7 +435,8 @@ class HTTPConnection(object):
         headers = {'Cookie': 'PHPSESSID=' + self.__Session.getSessionID() + '; ' + \
                              'wunr=' + self.__userID,
                    'Connection': 'Keep-Alive'}
-        adresse = 'http://s' + str(self.__Session.getServer()) + '.wurzelimperium.de/ajax/menu-update.php'
+
+        adresse = f'http://s{self.__Session.getServer()}.wurzelimperium.de/ajax/menu-update.php'
         
         try:
             response, content = self.__webclient.request(adresse, 'GET', headers = headers)
@@ -455,9 +456,9 @@ class HTTPConnection(object):
         headers = {'Cookie': 'PHPSESSID=' + self.__Session.getSessionID() + '; ' + \
                              'wunr=' + self.__userID,
                    'Connection': 'Keep-Alive'}
-        adresse = 'http://s' + str(self.__Session.getServer()) + \
-                  '.wurzelimperium.de/ajax/ajax.php?do=changeGarden&garden=' + \
-                  str(gardenID) + '&token=' + str(self.__token)
+
+        adresse = f'http://s{self.__Session.getServer()}.wurzelimperium.de/' + \
+                  f'ajax/ajax.php?do=changeGarden&garden={gardenID}&token={self.__token}'
 
         try:
             response, content = self.__webclient.request(adresse, 'GET', headers = headers)
@@ -479,8 +480,9 @@ class HTTPConnection(object):
                              'wunr=' + self.__userID,\
                    'X-Requested-With': 'XMLHttpRequest',\
                    'Connection': 'Keep-Alive'}
-        adresse = 'http://s' + str(self.__Session.getServer()) + '.wurzelimperium.de/save/wasser.php?feld[]=' + \
-                  str(iField) + '&felder[]=' + sFieldsToWater + '&cid=' + self.__token + '&garden=' + str(iGarten)
+
+        adresse = f'http://s{self.__Session.getServer()}.wurzelimperium.de/save/wasser.php?feld[]=' + \
+                  f'{iField}&felder[]={sFieldsToWater}&cid={self.__token}&garden={iGarten}'
 
         try:
             response, content = self.__webclient.request(adresse, 'GET', headers = headers)
@@ -501,7 +503,9 @@ class HTTPConnection(object):
                              'wunr=' + self.__userID,\
                    'X-Requested-With': 'XMLHttpRequest',\
                    'Connection': 'Keep-Alive'}
-        adresse = 'http://s' + str(self.__Session.getServer()) + '.wurzelimperium.de/ajax/ajax.php?do=watergardenGetGarden&token=' + self.__token
+
+        adresse = f'http://s{self.__Session.getServer()}.wurzelimperium.de/' + \
+                  f'ajax/ajax.php?do=watergardenGetGarden&token={self.__token}'
         
         try:
             response, content = self.__webclient.request(adresse, 'GET', headers = headers)
@@ -522,16 +526,17 @@ class HTTPConnection(object):
         
         sFields = ''
         for i in listFieldsToWater:
-            sFields += '&water[]='+str(i)
+            sFields += f'&water[]={i}'
 
         headers = {'User-Agent': self.__userAgent,\
                    'Cookie': 'PHPSESSID=' + self.__Session.getSessionID() + '; ' + \
                              'wunr=' + self.__userID,\
                    'X-Requested-With': 'XMLHttpRequest',\
                    'Connection': 'Keep-Alive'}
-        adresse = 'http://s' + str(self.__Session.getServer()) + '.wurzelimperium.de/ajax/ajax.php?do=watergardenCache' + sFields + '&token='+self.__token
 
-        
+        adresse = f'http://s{self.__Session.getServer()}.wurzelimperium.de/' + \
+                  f'ajax/ajax.php?do=watergardenCache{sFields}&token={self.__token}'
+
         try:
             response, content = self.__webclient.request(adresse, 'GET', headers = headers)
             self.__checkIfHTTPStateIsOK(response)
@@ -550,8 +555,9 @@ class HTTPConnection(object):
         headers = {'Cookie': 'PHPSESSID=' + self.__Session.getSessionID() + '; ' + \
                              'wunr=' + self.__userID,
                    'Connection': 'Keep-Alive'}
-        adresse = 'http://s' + str(self.__Session.getServer()) + \
-                  '.wurzelimperium.de/ajax/gettrophies.php?category=giver'
+
+        adresse = f'http://s{self.__Session.getServer()}' + \
+                  f'.wurzelimperium.de/ajax/gettrophies.php?category=giver'
         
         if not (iUserLevel < 10):
             try:
@@ -582,8 +588,9 @@ class HTTPConnection(object):
         headers = {'Cookie': 'PHPSESSID=' + self.__Session.getSessionID() + '; ' + \
                              'wunr=' + self.__userID,
                    'Connection': 'Keep-Alive'}
-        adresse = 'http://s' + str(self.__Session.getServer()) + \
-                  '.wurzelimperium.de/ajax/achievements.php?token='+self.__token
+
+        adresse = f'http://s{self.__Session.getServer()}' + \
+                  f'.wurzelimperium.de/ajax/achievements.php?token={self.__token}'
 
         if not (iUserLevel < 19):
             try:
@@ -611,7 +618,7 @@ class HTTPConnection(object):
                    'Cookie': 'PHPSESSID=' + self.__Session.getSessionID() + '; ' + \
                              'wunr=' + self.__userID}
 
-        adresse = 'http://s' + str(self.__Session.getServer()) + '.wurzelimperium.de/nutzer/profil.php'
+        adresse = f'http://s{self.__Session.getServer()}.wurzelimperium.de/nutzer/profil.php'
 
         try:
             response, content = self.__webclient.request(adresse, 'GET', headers = headers)
@@ -634,7 +641,7 @@ class HTTPConnection(object):
                              'wunr=' + self.__userID,\
                    'Content-type': 'application/x-www-form-urlencoded'}
 
-        adress = 'http://s' + str(self.__Session.getServer()) + '.wurzelimperium.de/nachrichten/new.php'
+        adress = f'http://s{self.__Session.getServer()}.wurzelimperium.de/nachrichten/new.php'
         
         try:
             response, content = self.__webclient.request(adress, 'GET', headers = headers)
@@ -655,7 +662,7 @@ class HTTPConnection(object):
                              'wunr=' + self.__userID,\
                    'Content-type': 'application/x-www-form-urlencoded'}
 
-        adress = 'http://s' + str(self.__Session.getServer()) + '.wurzelimperium.de/nachrichten/new.php'
+        adress = f'http://s{self.__Session.getServer()}.wurzelimperium.de/nachrichten/new.php'
 
         #Nachricht absenden
         parameter = urlencode({'hpc': msg_id,
@@ -691,7 +698,8 @@ class HTTPConnection(object):
         print(iCalls)
         for i in range(iCalls):
             print(i)
-            adress = 'http://s' + str(self.__Session.getServer()) + '.wurzelimperium.de/ajax/ajax.php?do=statsGetStats&which=1&start='+str(iStartCorr)+'&showMe=0&additional=0&token=' + self.__token
+            adress = f'http://s{self.__Session.getServer()}.wurzelimperium.de/ajax/ajax.php?do' + \
+                     f'=statsGetStats&which=1&start={iStartCorr}&showMe=0&additional=0&token={self.__token}'
             try:
                 response, content = self.__webclient.request(adress, 'GET', headers = headers)
                 self.__checkIfHTTPStateIsOK(response)
@@ -719,8 +727,7 @@ class HTTPConnection(object):
                    'Cookie': 'PHPSESSID=' + self.__Session.getSessionID() + '; ' + \
                              'wunr=' + self.__userID}
 
-        adress = 'http://s' + str(self.__Session.getServer()) + '.wurzelimperium.de/ajax/updatelager.' + \
-                 'php?all=1'
+        adress = f'http://s{self.__Session.getServer()}.wurzelimperium.de/ajax/updatelager.php?all=1'
 
         try:
             response, content = self.__webclient.request(adress, 'GET', headers = headers)
@@ -738,9 +745,9 @@ class HTTPConnection(object):
         headers = {'Cookie': 'PHPSESSID=' + self.__Session.getSessionID() + '; ' + \
                              'wunr=' + self.__userID,
                    'Connection': 'Keep-Alive'}
-        adresse = 'http://s' + str(self.__Session.getServer()) + \
-                  '.wurzelimperium.de/ajax/ajax.php?do=changeGarden&garden=' + \
-                  str(gardenID) + '&token=' + self.__token
+
+        adresse = f'http://s{self.__Session.getServer()}.wurzelimperium.de/' + \
+                  f'ajax/ajax.php?do=changeGarden&garden={gardenID}&token={self.__token}'
 
         try:
             response, content = self.__webclient.request(adresse, 'GET', headers = headers)
@@ -759,9 +766,9 @@ class HTTPConnection(object):
         headers = {'Cookie': 'PHPSESSID=' + self.__Session.getSessionID() + '; ' + \
                              'wunr=' + self.__userID,
                    'Connection': 'Keep-Alive'}
-        adresse = 'http://s' + str(self.__Session.getServer()) + \
-                  '.wurzelimperium.de/ajax/ajax.php?do=changeGarden&garden=' + \
-                  str(gardenID) + '&token=' + self.__token
+
+        adresse = f'http://s{self.__Session.getServer()}.wurzelimperium.de/' + \
+                  f'ajax/ajax.php?do=changeGarden&garden={gardenID}&token={self.__token}'
 
         try:
             response, content = self.__webclient.request(adresse, 'GET', headers = headers)
@@ -781,8 +788,8 @@ class HTTPConnection(object):
                              'wunr=' + self.__userID,
                    'Connection': 'Keep-Alive'}
     
-        adresse = 'http://s' + str(self.__Session.getServer()) + \
-                  '.wurzelimperium.de/ajax/ajax.php?do=gardenHarvestAll&token=' + self.__token
+        adresse = f'http://s{self.__Session.getServer()}' + \
+                  f'.wurzelimperium.de/ajax/ajax.php?do=gardenHarvestAll&token={self.__token}'
 
         try:
             self.__changeGarden(gardenID)
@@ -811,8 +818,8 @@ class HTTPConnection(object):
                              'wunr=' + self.__userID,
                    'Connection': 'Keep-Alive'}
     
-        adresse = 'http://s' + str(self.__Session.getServer()) + \
-                  '.wurzelimperium.de/ajax/ajax.php?do=watergardenHarvestAll&token=' + self.__token
+        adresse = f'http://s{self.__Session.getServer()}' + \
+                  f'.wurzelimperium.de/ajax/ajax.php?do=watergardenHarvestAll&token={self.__token}'
 
         try:
             response, content = self.__webclient.request(adresse, 'GET', headers = headers)
@@ -830,12 +837,12 @@ class HTTPConnection(object):
                              'wunr=' + self.__userID,
                    'Connection': 'Keep-Alive'}
     
-        adresse = 'http://s' + str(self.__Session.getServer()) + \
-                  '.wurzelimperium.de/save/pflanz.php?pflanze[]=' + str(plant) + \
-                  '&feld[]=' + str(field) + \
-                  '&felder[]=' + fields + \
-                  '&cid=' + self.__token + \
-                  '&garden=' + str(gardenID)
+        adresse = f'http://s{self.__Session.getServer()}' + \
+                  f'.wurzelimperium.de/save/pflanz.php?pflanze[]={plant}' + \
+                  f'&feld[]={field}' + \
+                  f'&felder[]={fields}' + \
+                  f'&cid={self.__token}' + \
+                  f'&garden={gardenID}'
     
         try:
             response, content = self.__webclient.request(adresse, 'GET', headers = headers)
@@ -854,10 +861,9 @@ class HTTPConnection(object):
                              'wunr=' + self.__userID,
                    'Connection': 'Keep-Alive'}
     
-        adresse = 'http://s' + str(self.__Session.getServer()) + \
-                  '.wurzelimperium.de/ajax/ajax.php?do=watergardenCache&' + \
-                  'plant[' + str(field) + ']=' + str(plant) + \
-                  '&token=' + self.__token
+        adresse = f'http://s{self.__Session.getServer()}' + \
+                  f'.wurzelimperium.de/ajax/ajax.php?do=watergardenCache&' + \
+                  f'plant[{field}]={plant}&token={self.__token}'
     
         try:
             response, content = self.__webclient.request(adresse, 'GET', headers = headers)
@@ -876,7 +882,7 @@ class HTTPConnection(object):
         headers = {'Cookie': 'PHPSESSID=' + self.__Session.getSessionID() + '; ' + \
                              'wunr=' + self.__userID}
 
-        adresse = 'http://s' + str(self.__Session.getServer()) + '.wurzelimperium.de/main.php?page=garden'
+        adresse = f'http://s{self.__Session.getServer()}.wurzelimperium.de/main.php?page=garden'
 
         try:
             response, content = self.__webclient.request(adresse, 'GET', headers = headers)
@@ -898,8 +904,8 @@ class HTTPConnection(object):
                              'wunr=' + self.__userID,
                     'Content-Length':'0'}
     
-        adresse = 'http://s' + str(self.__Session.getServer()) + '.wurzelimperium.de/ajax/updatelager.php?' + \
-              'all=1&sort=1&type=honey&token=' + self.__token
+        adresse = f'http://s{self.__Session.getServer()}.wurzelimperium.de/ajax/updatelager.php?' + \
+                  f'all=1&sort=1&type=honey&token={self.__token}'
               
         try:
             response, content = self.__webclient.request(adresse, 'POST', headers = headers)
@@ -920,7 +926,7 @@ class HTTPConnection(object):
                              'wunr=' + self.__userID,
                     'Content-Length':'0'}
 
-        adresse = 'http://s' + str(self.__Session.getServer()) + '.wurzelimperium.de/hilfe.php?item=2'
+        adresse = f'http://s{self.__Session.getServer()}.wurzelimperium.de/hilfe.php?item=2'
 
         #try:
         response, content = self.__webclient.request(adresse, 'GET', headers = headers)
@@ -945,7 +951,7 @@ class HTTPConnection(object):
                              'wunr=' + self.__userID,
                     'Content-Length':'0'}
 
-        adresse = 'http://s' + str(self.__Session.getServer()) + '.wurzelimperium.de/stadt/markt.php?show=overview'
+        adresse = f'http://s{self.__Session.getServer()}.wurzelimperium.de/stadt/markt.php?show=overview'
         
         try:
             response, content = self.__webclient.request(adresse, 'GET', headers = headers)
@@ -975,7 +981,7 @@ class HTTPConnection(object):
         while (nextPage):
             
             nextPage = False
-            adresse = 'http://s' + str(self.__Session.getServer()) + '.wurzelimperium.de/stadt/markt.php?order=p&v='+ str(id) +'&filter=1&page='+str(iPage)
+            adresse = f'http://s{self.__Session.getServer()}.wurzelimperium.de/stadt/markt.php?order=p&v={id}&filter=1&page={iPage}'
             
             try:
                 response, content = self.__webclient.request(adresse, 'GET', headers = headers)
@@ -1026,7 +1032,7 @@ class HTTPConnection(object):
                              'wunr=' + self.__userID,
                     'Content-Length':'0'}
     
-        adresse = f'http://s{str(self.__Session.getServer())}.wurzelimperium.de/save/abriss.php?tile={str(fieldID)}'
+        adresse = f'http://s{self.__Session.getServer()}.wurzelimperium.de/save/abriss.php?tile={fieldID}'
         try:
             response, content = self.__webclient.request(adresse, 'POST', headers = headers)
             self.__checkIfHTTPStateIsOK(response)
