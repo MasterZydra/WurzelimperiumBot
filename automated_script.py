@@ -15,6 +15,11 @@ args = parser.parse_args()
 wurzelBot = main.initWurzelBot()
 wurzelBot.launchBot(args.server, args.user, args.password)
 
+
+# Remove weed
+print('Unkraut entfernen...')
+wurzelBot.removeWeedInAllGardens()
+
 # Havest
 wurzelBot.harvestAllGarden()
 

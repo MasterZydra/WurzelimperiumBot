@@ -26,6 +26,7 @@ def main():
         elif inputLower.startswith('stock'): getStock(userInput)
         elif inputLower == 'user': userData()
         elif inputLower == 'water': water()
+        elif inputLower == 'weed': removeWeed()
         elif inputLower.startswith('details'): productDetails(userInput)
         else:
             print('Unknown command type \'help\' or \'?\' to see all available commands')
@@ -68,6 +69,7 @@ def help():
     print('             Opt. argument: "sort"')
     print('user         Show details to the current user')
     print('water        Water all plants')
+    print('weed         Remove all weed')
 
 def harvest():
     print('Harvest all gardens...')
@@ -132,6 +134,10 @@ def productDetails(argStr : str):
         wurzelBot.printPlantDetails()
     elif args[0] == 'all':
         wurzelBot.printProductDetails()
+
+def removeWeed():
+    print('Remove weed from all gardens...')
+    wurzelBot.removeWeedInAllGardens()
 
 if __name__ == "__main__":
     main()
