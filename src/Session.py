@@ -64,7 +64,7 @@ class Session(object):
         self.__endTime = self.__startTime + (self.__lifetime - self.__lifetime_reserve)
         
         sID = str(self.__sessionID)
-        self.__logSession.info("Session (ID: " + sID + ") geöffnet")
+        self.__logSession.info(f'Session (ID: {sID}) geöffnet')
 
 
     def closeSession(self, wunr, server):
@@ -76,7 +76,7 @@ class Session(object):
         self.__server = None
         self.__startTime = None
         self.__endTime = None
-        self.__logSession.info("Session (ID: " + sID + ") geschlossen")
+        self.__logSession.info(f'Session (ID: {sID}) geschlossen')
 
     
     def getRemainingTime(self):

@@ -200,7 +200,7 @@ class Messenger():
         """
         Verschickt eine Nachricht und fügt diese der Liste der gesendeten Nachrichten hinzu.
         """
-        if not type(recipients) is ListType:
+        if not type(recipients) is list:
             raise MessengerError()
             return
 
@@ -215,11 +215,11 @@ class Messenger():
                 tmp_Msg = Message(sender, recipient, subject, body, messageDeliveryState)
                 self.__sent.append(tmp_Msg)
             except:
-                print('Exception ' + recipient)
+                print(f'Exception {recipient}')
                 raise
             else:
                 i += 1
-                print(str(i) + ' von ' + str(n))
+                print(f'{i} von {n}')
 
 
 class MessengerError(Exception):

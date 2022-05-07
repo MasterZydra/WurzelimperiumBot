@@ -62,7 +62,7 @@ class WurzelBot(object):
         if (sx == '2' and sy == '1'): return str(fieldID) + ',' + str(fieldID + 1)
         if (sx == '1' and sy == '2'): return str(fieldID) + ',' + str(fieldID + 17)
         if (sx == '2' and sy == '2'): return str(fieldID) + ',' + str(fieldID + 1) + ',' + str(fieldID + 17) + ',' + str(fieldID + 18)
-        self.__logBot.debug('Error der plantSize --> sx: ' + sx + ' sy: ' + sy)
+        self.__logBot.debug(f'Error der plantSize --> sx: {sx} sy: {sy}')
 
 
     def __getAllFieldIDsFromFieldIDAndSizeAsIntList(self, fieldID, sx, sy):
@@ -191,7 +191,7 @@ class WurzelBot(object):
             for garden in self.garten:
                 emptyFields.append(garden.getEmptyFields())
         except:
-            self.__logBot.error('Konnte leere Felder von Garten ' + str(garden.getID()) + ' nicht ermitteln.')
+            self.__logBot.error(f'Konnte leere Felder von Garten {garden.getID()} nicht ermitteln.')
         else:
             pass
         return emptyFields
@@ -213,7 +213,7 @@ class WurzelBot(object):
             for garden in self.garten:
                 weedFields.append(garden.getWeedFields())
         except:
-            self.__logBot.error('Konnte Unkraut-Felder von Garten ' + str(garden.getID()) + ' nicht ermitteln.')
+            self.__logBot.error(f'Konnte Unkraut-Felder von Garten {garden.getID()} nicht ermitteln.')
         else:
             pass
 
@@ -243,13 +243,13 @@ class WurzelBot(object):
         product = self.productData.getProductByName(productName)
 
         if product is None:
-            logMsg = 'Pflanze "' + productName + '" nicht gefunden'
+            logMsg = f'Pflanze "{productName}" nicht gefunden'
             self.__logBot.error(logMsg)
             print(logMsg)
             return -1
 
         if not product.isPlant() or not product.isPlantable():
-            logMsg = '"' + productName + '" kann nicht angepflanzt werden'
+            logMsg = f'"{productName}" kann nicht angepflanzt werden'
             self.__logBot.error(logMsg)
             print(logMsg)
             return -1
