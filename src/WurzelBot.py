@@ -254,10 +254,13 @@ class WurzelBot(object):
             print(logMsg)
             return -1
 
+        if amount == -1 or amount > self.storage.getStockByProductID(product.getID()):
+            amount = self.storage.getStockByProductID(product.getID())
+
+        remainingAmount = amount
         for garden in self.garten:
-            if amount == -1 or amount > self.storage.getStockByProductID(product.getID()):
-                amount = self.storage.getStockByProductID(product.getID())
-            planted += garden.growPlant(product.getID(), product.getSX(), product.getSY(), amount)
+            planted += garden.growPlant(product.getID(), product.getSX(), product.getSY(), remainingAmount)
+            remainingAmount = amount - planted
         
         self.storage.updateNumberInStock()
 
