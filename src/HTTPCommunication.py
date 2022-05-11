@@ -284,9 +284,7 @@ class HTTPConnection(object):
         """
         Wechselt den Garten.
         """
-        headers = {'Cookie': 'PHPSESSID=' + self.__Session.getSessionID() + '; ' + \
-                             'wunr=' + self.__userID,
-                   'Connection': 'Keep-Alive'}
+        headers = self.__getHeaders()
 
         adresse = 'http://s' + str(self.__Session.getServer()) + \
                   str(self.__Session.getServerURL()) +'ajax/ajax.php?do=changeGarden&garden=' + \
@@ -338,6 +336,12 @@ class HTTPConnection(object):
                 
         return dictResult
 
+    def __getHeaders(self):
+        headers = {'Cookie': 'PHPSESSID=' + self.__Session.getSessionID() + '; ' + \
+                             'wunr=' + self.__userID,
+                   'Connection': 'Keep-Alive'}
+        return headers
+
     def logIn(self, loginDaten):
         """
         Führt einen login durch und öffnet eine Session.
@@ -346,8 +350,8 @@ class HTTPConnection(object):
         parameter = urlencode({'do': 'login',
                             'server': 'server' + str(loginDaten.server),
                             'user': loginDaten.user,
-                            'pass': loginDaten.password}) 
-    
+                            'pass': loginDaten.password})
+
         headers = {'Content-type': 'application/x-www-form-urlencoded',
                    'Connection': 'keep-alive'}
 
@@ -383,9 +387,9 @@ class HTTPConnection(object):
         #TODO: Was passiert beim Logout einer bereits ausgeloggten Session
         headers = {'Cookie': 'PHPSESSID=' + self.__Session.getSessionID() + '; ' +
                              'wunr=' + self.__userID}
-        
+
         adresse = 'http://s'+str(self.__Session.getServer()) + str(self.__Session.getServerURL()) +'main.php?page=logout'
-        
+
         try: #content ist beim Logout leer
             response, content = self.__webclient.request(adresse, 'GET', headers=headers)
             self.__checkIfHTTPStateIsFOUND(response)
@@ -400,12 +404,10 @@ class HTTPConnection(object):
         """
         Gets the number of gardens and returns it as an int.
         """
-        headers = {'Cookie': 'PHPSESSID=' + self.__Session.getSessionID() + '; ' + \
-                             'wunr=' + self.__userID,
-                   'Connection': 'Keep-Alive'}
+        headers = self.__getHeaders()
         adresse = 'http://s' + str(self.__Session.getServer()) + str(self.__Session.getServerURL()) +'ajax/ajax.php?do=statsGetStats&which=0&start=0&additional='+\
                   self.__userID + '&token=' + self.__token
-        
+
         try:
             response, content = self.__webclient.request(adresse, 'GET', headers = headers)
             self.__checkIfHTTPStateIsOK(response)
@@ -420,9 +422,7 @@ class HTTPConnection(object):
         """
         Ermittelt den Usernamen auf Basis der userID und gibt diesen als str zurück.
         """
-        headers = {'Cookie': 'PHPSESSID=' + self.__Session.getSessionID() + '; ' + \
-                             'wunr=' + self.__userID,
-                   'Connection': 'Keep-Alive'}
+        headers = self.__getHeaders()
         adresse = 'http://s' + str(self.__Session.getServer()) + str(self.__Session.getServerURL()) +'ajax/ajax.php?do=statsGetStats&which=0&start=0&additional='+\
                   self.__userID + '&token=' + self.__token
         
@@ -440,9 +440,7 @@ class HTTPConnection(object):
         """
         Ruft eine Updatefunktion im Spiel auf und verarbeitet die empfangenen userdaten.
         """
-        headers = {'Cookie': 'PHPSESSID=' + self.__Session.getSessionID() + '; ' + \
-                             'wunr=' + self.__userID,
-                   'Connection': 'Keep-Alive'}
+        headers = self.__getHeaders()
         adresse = 'http://s' + str(self.__Session.getServer()) + str(self.__Session.getServerURL()) +'ajax/menu-update.php'
         
         try:
@@ -459,9 +457,7 @@ class HTTPConnection(object):
         Ermittelt alle bepflanzten Felder im Garten mit der Nummer gardenID,
         die auch gegossen werden können und gibt diese zurück.
         """
-        headers = {'Cookie': 'PHPSESSID=' + self.__Session.getSessionID() + '; ' + \
-                             'wunr=' + self.__userID,
-                   'Connection': 'Keep-Alive'}
+        headers = self.__getHeaders()
         adresse = 'http://s' + str(self.__Session.getServer()) + \
                   str(self.__Session.getServerURL()) +'ajax/ajax.php?do=changeGarden&garden=' + \
                   str(gardenID) + '&token=' + str(self.__token)
@@ -550,9 +546,7 @@ class HTTPConnection(object):
         Die Freischaltung wird anhand eines Geschenks im Spiel geprüft.
         """
 
-        headers = {'Cookie': 'PHPSESSID=' + self.__Session.getSessionID() + '; ' + \
-                             'wunr=' + self.__userID,
-                   'Connection': 'Keep-Alive'}
+        headers = self.__getHeaders()
         adresse = 'http://s' + str(self.__Session.getServer()) + \
                   str(self.__Session.getServerURL()) +'ajax/gettrophies.php?category=giver'
         
@@ -581,9 +575,7 @@ class HTTPConnection(object):
         Die Freischaltung wird anhand der Errungenschaften im Spiel geprüft.
         """
 
-        headers = {'Cookie': 'PHPSESSID=' + self.__Session.getSessionID() + '; ' + \
-                             'wunr=' + self.__userID,
-                   'Connection': 'Keep-Alive'}
+        headers = self.__getHeaders()
         adresse = 'http://s' + str(self.__Session.getServer()) + \
                   str(self.__Session.getServerURL()) +'ajax/achievements.php?token='+self.__token
 
@@ -733,9 +725,7 @@ class HTTPConnection(object):
         """
         Returns all empty fields of a garden.
         """
-        headers = {'Cookie': 'PHPSESSID=' + self.__Session.getSessionID() + '; ' + \
-                             'wunr=' + self.__userID,
-                   'Connection': 'Keep-Alive'}
+        headers = self.__getHeaders()
         adresse = 'http://s' + str(self.__Session.getServer()) + \
                   str(self.__Session.getServerURL()) +'ajax/ajax.php?do=changeGarden&garden=' + \
                   str(gardenID) + '&token=' + self.__token
@@ -754,9 +744,7 @@ class HTTPConnection(object):
         """
         Returns all weed fields of a garden.
         """
-        headers = {'Cookie': 'PHPSESSID=' + self.__Session.getSessionID() + '; ' + \
-                             'wunr=' + self.__userID,
-                   'Connection': 'Keep-Alive'}
+        headers = self.__getHeaders()
         adresse = 'http://s' + str(self.__Session.getServer()) + \
                   str(self.__Session.getServerURL()) +'ajax/ajax.php?do=changeGarden&garden=' + \
                   str(gardenID) + '&token=' + self.__token
@@ -775,9 +763,7 @@ class HTTPConnection(object):
         """
         Returns all weed fields of a garden.
         """
-        headers = {'Cookie': 'PHPSESSID=' + self.__Session.getSessionID() + '; ' + \
-                             'wunr=' + self.__userID,
-                   'Connection': 'Keep-Alive'}
+        headers = self.__getHeaders()
         adresse = 'https://s' + str(self.__Session.getServer()) + \
                   str(self.__Session.getServerURL()) + 'save/abriss.php?tile=' + str(fieldID)
         try:
@@ -794,9 +780,7 @@ class HTTPConnection(object):
         """
         Returns all fields with growing plants of a garden.
         """
-        headers = {'Cookie': 'PHPSESSID=' + self.__Session.getSessionID() + '; ' + \
-                             'wunr=' + self.__userID,
-                   'Connection': 'Keep-Alive'}
+        headers = self.__getHeaders()
         adresse = 'http://s' + str(self.__Session.getServer()) + \
                   str(self.__Session.getServerURL()) +'ajax/ajax.php?do=changeGarden&garden=' + \
                   str(gardenID) + '&token=' + self.__token
@@ -815,9 +799,7 @@ class HTTPConnection(object):
         """
         Erntet alle fertigen Pflanzen im Garten.
         """
-        headers = {'Cookie': 'PHPSESSID=' + self.__Session.getSessionID() + '; ' + \
-                             'wunr=' + self.__userID,
-                   'Connection': 'Keep-Alive'}
+        headers = self.__getHeaders()
     
         adresse = 'http://s' + str(self.__Session.getServer()) + \
                   str(self.__Session.getServerURL()) +'ajax/ajax.php?do=gardenHarvestAll&token=' + self.__token
@@ -845,9 +827,7 @@ class HTTPConnection(object):
         """
         Erntet alle fertigen Pflanzen im Garten.
         """
-        headers = {'Cookie': 'PHPSESSID=' + self.__Session.getSessionID() + '; ' + \
-                             'wunr=' + self.__userID,
-                   'Connection': 'Keep-Alive'}
+        headers = self.__getHeaders()
     
         adresse = 'http://s' + str(self.__Session.getServer()) + \
                   str(self.__Session.getServerURL()) +'ajax/ajax.php?do=watergardenHarvestAll&token=' + self.__token
@@ -864,9 +844,7 @@ class HTTPConnection(object):
         """
         Baut eine Pflanze auf einem Feld an.
         """
-        headers = {'Cookie': 'PHPSESSID=' + self.__Session.getSessionID() + '; ' + \
-                             'wunr=' + self.__userID,
-                   'Connection': 'Keep-Alive'}
+        headers = self.__getHeaders()
     
         adresse = 'http://s' + str(self.__Session.getServer()) + \
                   str(self.__Session.getServerURL()) +'save/pflanz.php?pflanze[]=' + str(plant) + \
@@ -887,9 +865,7 @@ class HTTPConnection(object):
         """
         Baut eine Pflanze im Wassergarten an.
         """
-        headers = {'Cookie': 'PHPSESSID=' + self.__Session.getSessionID() + '; ' + \
-                             'wunr=' + self.__userID,
-                   'Connection': 'Keep-Alive'}
+        headers = self.__getHeaders()
     
         adresse = 'http://s' + str(self.__Session.getServer()) + \
                   str(self.__Session.getServerURL()) +'ajax/ajax.php?do=watergardenCache&' + \
@@ -952,9 +928,7 @@ class HTTPConnection(object):
         """
         Get wimps data including wimp_id and list of products with amount        
         """
-        headers = {'Cookie': 'PHPSESSID=' + self.__Session.getSessionID() + '; ' + \
-                             'wunr=' + self.__userID,
-                   'Connection': 'Keep-Alive'}
+        headers = self.__getHeaders()
         adresse = 'http://s' + str(self.__Session.getServer()) + \
                   str(self.__Session.getServerURL()) + 'ajax/ajax.php?do=changeGarden&garden=' + \
                   str(gardenID) + '&token=' + self.__token
@@ -983,9 +957,7 @@ class HTTPConnection(object):
         @param wimp_id: str
         @return: dict of new balance of sold products
         """
-        headers = {'Cookie': 'PHPSESSID=' + self.__Session.getSessionID() + '; ' +
-                             'wunr=' + self.__userID,
-                   'Connection': 'Keep-Alive'}
+        headers = self.__getHeaders()
 
         adresse = 'http://s' + str(self.__Session.getServer()) + \
                    str(self.__Session.getServerURL()) + 'ajax/verkaufajax.php?do=accept&id=' + \
@@ -1005,9 +977,7 @@ class HTTPConnection(object):
         @param wimp_id: str
         @return: 'decline'
         """
-        headers = {'Cookie': 'PHPSESSID=' + self.__Session.getSessionID() + '; ' +
-                             'wunr=' + self.__userID,
-                   'Connection': 'Keep-Alive'}
+        headers = self.__getHeaders()
 
         adresse = 'http://s' + str(self.__Session.getServer()) + \
                   str(self.__Session.getServerURL()) + 'ajax/verkaufajax.php?do=decline&id=' + \
@@ -1126,9 +1096,7 @@ class HTTPConnection(object):
         """
         Returns Data from Yearly Series of Quests
         """
-        headers = {'Cookie': 'PHPSESSID=' + self.__Session.getSessionID() + '; ' +
-                             'wunr=' + self.__userID,
-                   'Connection': 'Keep-Alive'}
+        headers = self.__getHeaders()
 
         adresse = 'http://s' + str(self.__Session.getServer()) + \
                   str(self.__Session.getServerURL()) + 'ajax/ajax.php?do=bigquest_init&id=3' + \
