@@ -401,9 +401,8 @@ class WurzelBot(object):
                 break
         return to_sell
 
-    def getQuestProducts(self, quest_name):
-
-        return self.quest.getQuestProducts(quest_name)
+    def getQuestProducts(self, quest_name, quest_number=0):
+        return self.quest.getQuestProducts(quest_name, quest_number)
 
     def getNextRunTime(self):
         garden_time = []

@@ -160,6 +160,10 @@ class HTTPConnection(object):
             parsed_string_list = re.findall(r"<td>(.+?)</td>", str(jContent['table'][16]).replace(r'&nbsp;', ''))
             result = int(parsed_string_list[1])
             success = True
+        elif info == 'CompletedQuests':
+            parsed_string_list = re.findall(r"<td>(.+?)</td>", str(jContent['table'][5]).replace(r'&nbsp;', ''))
+            result = int(parsed_string_list[1])
+            success = True
 
         if success:
             return result
@@ -412,6 +416,11 @@ class HTTPConnection(object):
             self.__del__()
         
     def getInfoFromStats(self, info):
+        """
+        Returns different parameters from user's stats'
+        @param info: available values: 'Username', 'Gardens', 'CompletedQuests'
+        @return: parameter value
+        """
         headers = self.__getHeaders()
         adresse = 'http://s' + str(self.__Session.getServer()) + str(
             self.__Session.getServerURL()) + 'ajax/ajax.php?do=statsGetStats&which=0&start=0&additional=' + \
