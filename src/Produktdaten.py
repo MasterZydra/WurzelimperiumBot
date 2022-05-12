@@ -48,9 +48,10 @@ class ProductData():
             
     def getProductByName(self, name : str):
         for product in self.__products:
-            if (name.lower() == product.getName().lower()): return product
+            if (name.lower() == product.getName().lower()):
+                return product
         return None
-        
+
     def getListOfAllProductIDs(self):
         
         productIDList = []

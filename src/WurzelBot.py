@@ -360,7 +360,7 @@ class WurzelBot(object):
         for garden in self.garten:
             tmpWimpData = self.wimparea.getWimpsData(garden)
             for products in tmpWimpData.values():
-                allWimpsProducts.update(products)
+                allWimpsProducts.update(products[1])
 
         return dict(allWimpsProducts)
 
@@ -411,5 +411,5 @@ class WurzelBot(object):
 
         self.updateUserData()
         human_time = datetime.datetime.fromtimestamp(min(garden_time))
-        print(f"Next time water/harvest: {human_time.strftime('%x %X')} ({min(garden_time)})")
+        print(f"Next time water/harvest: {human_time.strftime('%d/%m/%y %H:%M:%S')} ({min(garden_time)})")
         return min(garden_time)
