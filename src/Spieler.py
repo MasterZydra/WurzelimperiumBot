@@ -68,7 +68,7 @@ class Spieler():
         Liest den Spielernamen vom Server und speichert ihn in der Klasse.
         """
         try:
-            tmpUserName = http.getUserName()
+            tmpUserName = http.getInfoFromStats("Username")
         except:
             raise
         else:

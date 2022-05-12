@@ -54,7 +54,7 @@ class WurzelBot(object):
         Ermittelt die Anzahl der Gärten und initialisiert alle.
         """
         try:
-            tmpNumberOfGardens = self.__HTTPConn.getNumberOfGardens()
+            tmpNumberOfGardens = self.__HTTPConn.getInfoFromStats("Gardens")
             self.spieler.numberOfGardens = tmpNumberOfGardens
             for i in range(1, tmpNumberOfGardens + 1):
                 self.garten.append(Garden(self.__HTTPConn, i))
