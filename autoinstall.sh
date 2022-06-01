@@ -18,8 +18,16 @@
 #        |_____|_| |_|___/\__\__,_|_|_|\___|_|    |_| \___/|_|    |______|_|_| |_|\__,_/_/\_\       
                                                                                                    
 
-# Meister Proper :D
-printf "\033c"
+printf "\033c" # Meister Proper :D
+
+printf "Checking sudo access... "
+CAN_I_RUN_SUDO=$(sudo -n uptime 2>&1 | grep "load" | wc -l)
+if [ ${CAN_I_RUN_SUDO} -gt 1 ]; then
+    printf "FAIL\nYou have no sudo access, which is required for installing WurzelimperiumBot!\nINSTALLATION FAILED!\n"
+    exit
+else
+    printf "OK\n"
+fi
 
 # vars
 rootdir=$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")
