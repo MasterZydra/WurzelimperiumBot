@@ -6,6 +6,13 @@ A forked from [MrFlamez/Wurzelimperium-Bot](https://github.com/MrFlamez/Wurzelim
 # Wurzelimperium-Bot
 Ein Bot für das Browserspiel Wurzelimperium von Upjers. Mit ihm wird es den kostenlosen Spielern ermöglicht die Vorzüge eines Premiumaccounts zu nutzen.
 
+**Inhaltsverzeichnis**
+- [Verwendung](#verwendung)
+- [Features](#features)
+- [Installation](#installation)
+- [Installationsskript für Linux](#installationsskript-für-linux)
+
+## Verwendung
 Die Nutzung des Bots ist über verschiedene Arten möglich:
 - **Skript**:  
 Wie in [example.py](./example.py) kann die Aufgabe als Skript erstellt und manuell auf dem PC ausgeführt werden.
@@ -16,13 +23,13 @@ Wie in [example.py](./example.py) kann die Aufgabe als Skript erstellt und manue
 
 Für die Verwendung ist jeweils das Hinterlegen von der Servernummer, dem Benutzernamen und des Passworts in den Dateien notwendig.
 
-**Features:**
+## Features
 - Login ohne zusätzliche Verwendung eines Browsers
 - Vollautomatische Bewässerung aller Gärten inkl. Wassergarten
 - Automatisiertes Anpflanzen
 - Abfrage aller aktuellen Marktpreise (Keine Abhängigkeit von Preislistenpflegern und deren Aktualisierungsintervall!)
 
-# Installation
+## Installation
 **Voraussetzung:** Python 3
 1. Installation der Abhängigkeiten:  
 `pip install -r ./requirements.txt`
@@ -31,6 +38,6 @@ Für die Verwendung ist jeweils das Hinterlegen von der Servernummer, dem Benutz
    `python3 ./automated_script.py <server-nr> <username> <password>`
 3. Skript ausführen
 
-# Installationsskript für Linux
+## Installationsskript für Linux
 Das Installationsskript für Linux befindet sich im Branch [`unix`](https://github.com/MasterZydra/WurzelimperiumBot/tree/unix).  
 Vielen Dank an [xRuffKez](https://github.com/xRuffKez) für die Entwicklung.
