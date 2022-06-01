@@ -30,3 +30,7 @@ Für die Verwendung ist jeweils das Hinterlegen von der Servernummer, dem Benutz
    Beim automatisierten Skript [automated_script.py](./automated_script.py) werden die Anmeldedaten beim Aufruf übergeben:  
    `python3 ./automated_script.py <server-nr> <username> <password>`
 3. Skript ausführen
+
+# Installationsskript für Linux
+Das Installationsskript für Linux befindet sich im Branch [`unix`](https://github.com/MasterZydra/WurzelimperiumBot/tree/unix).  
+Vielen Dank an [xRuffKez](https://github.com/xRuffKez) für die Entwicklung.
