@@ -48,7 +48,7 @@ elif [ -f /etc/lsb-release ]; then
     . /etc/lsb-release
     OS=$DISTRIB_ID
     VER=$DISTRIB_RELEASE
-    printf "$DISTRIB_ID $DISTRIB_RELEASE is supported."
+    printf "$DISTRIB_ID $DISTRIB_RELEASE is supported.\n"
 elif [ -f /etc/debian_version ]; then
     printf "Your OS is outdated and NOT supported!\nINSTALLATION FAILED!\n"
     exit
@@ -71,5 +71,23 @@ if [ "$(id -u)" = "0" ]; then
 fi
 
 # Check requirements
+printf "Checking requirements...\n"
+version=$(python3 -V 2>&1 | grep -Po '(?<=Python )(.+)')
+if [[ -z "$version" ]]; then
+    printf "Python3 not found. Installing....\n"
+    sudo apt update
+    sudo apt -y install software-properties-common
+    #PPA for Python3.X
+    sudo add-apt-repository -y ppa:deadsnakes/ppa
+    sudo apt install -y python3.9
+    if [[ -z "$version" ]]; then
+        printf "An Error occured when installing Python3! Please manually install it and run the installer again!\nINSTALLATION FAILED!\n" 
+        exit
+    else
+        printf "Python3 installed successfully.\n"
+    fi
+else
+    printf "Python3 found.\n" 
+fi
 
 # Check for update if present else install
