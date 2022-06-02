@@ -128,14 +128,22 @@ cat <<EOT >> "${rootdir}"/worker.sh
 #!/bin/bash
 # Script written by xRuffKez for WurzelimperiumBot by MrFlamez & MasterZydra
 
+##
+# Hier die die Zeit ind Sekunden eintragen, wann der Bot automatisch arbeiten soll!
+# Unter 60 secs nicht empfohlen (Gefahr gebannt zu werden!)
+# timer=60
+timer=15
+##
+
+
 while true
 do 
 
     conf='${confdir}/acc.conf'
     while read -r line; do
         [[ "\$line" =~ ^#.*$ ]] && continue
-        python3 ${datadir}/automated_script.py "\${line}"
+        python3 ${datadir}/automated_script.py \${line}
     done < "\$conf"
-    sleep 60
+    sleep "\$timer"
 done
 EOT
