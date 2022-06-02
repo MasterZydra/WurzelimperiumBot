@@ -1,3 +1,9 @@
+
+# BITTE BEACHTEN!
+DIESER BRANCH IST NUR ZUM ENTWICKELN UND TESTEN DES SKRIPTS
+BITTE NUTZE DAS INSTALLATIONSSKRIPT IM MASTER
+
+
 # WurzelimperiumBot Installskript für Linux
 Ein Script, das einen Bot für das Browserspiel Wurzelimperium von Upjers auf Unix Systemen installiert.
 
