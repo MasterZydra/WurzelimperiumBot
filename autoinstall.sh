@@ -173,4 +173,6 @@ sudo mv "${rootdir}"/wimpbot.service /lib/systemd/system/wimpbot.service
 sudo systemctl daemon-reload 
 sudo systemctl enable wimpbot
 sudo systemctl start wimpbot
+printf "\033c" # Meister Proper :D
 sudo systemctl status wimpbot
+printf "\n\n\nInstallation finished!\n\nPLease configure acc.conf in the conf directory!\n\n"
