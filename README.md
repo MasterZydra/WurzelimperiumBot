@@ -6,7 +6,7 @@ Installiert automatisch den WurzelimperiumBot und führt diesen jede Minute aus.
 
 # Unterstützte Distributionen
 
-Alle systemd systeme mit apt Paketmanager:
+Alle Systemd Distros mit APT Paketmanager:
 
 Ubuntu LTS 20.04/22.04 (getestet, point-releases sollten auch funktionieren)
 Debian 10/11 (ungetestet)
