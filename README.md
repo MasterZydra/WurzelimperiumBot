@@ -1,6 +1,7 @@
 
 # BITTE BEACHTEN!
-DIESER BRANCH IST NUR ZUM ENTWICKELN UND TESTEN DES SKRIPTS
+DIESER BRANCH IST NUR ZUM ENTWICKELN UND TESTEN DES SKRIPTS!
+
 BITTE NUTZE DAS INSTALLATIONSSKRIPT IM MASTER
 
 
@@ -14,8 +15,8 @@ Installiert automatisch den WurzelimperiumBot und führt diesen jede Minute aus.
 
 Alle Systemd Distros mit APT Paketmanager:
 
-Ubuntu LTS 20.04/22.04 (getestet, point-releases sollten auch funktionieren)
-Debian 10/11 (ungetestet)
+- Ubuntu LTS 20.04/22.04 (getestet, point-releases sollten auch funktionieren)
+- Debian 10/11 (ungetestet)
 
 
 # Installation
