@@ -31,7 +31,8 @@ fi
 
 # vars
 rootdir=$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")
-selfname=$(basename "$(readlink -f "${BASH_SOURCE[0]}")")
+grp="$(id -g)"
+usr="$(whoami)"
 sessionname=$(printf "${selfname}" | cut -f1 -d".")
 wbdir="${rootdir}/wurzelbot"
 logdir="${rootdir}/log"
@@ -153,16 +154,21 @@ sudo systemctl stop wimpbot
 sudo systemctl disable wimpbot
 sudo rm /lib/systemd/system/wimpbot.service && sudo touch /lib/systemd/system/wimpbot.service
 
-sudo cat <<EOT >> /lib/systemd/system/wimpbot.service
+cat <<EOT >> "${rootdir}"/wimpbot.service
 [Unit]
 Description=WurzelimperiumBot
 
 [Service]
-ExecStart="${rootdir}"/worker.sh
+Type=simple
+User=${usr}
+Group=${grp}
+WorkingDirectory=${rootdir}
+ExecStart=${rootdir}/worker.sh
 
 [Install]
 WantedBy=multi-user.target
 EOT
+sudo mv "${rootdir}"/wimpbot.service /lib/systemd/system/wimpbot.service
 
 sudo systemctl daemon-reload 
 sudo systemctl enable wimpbot
