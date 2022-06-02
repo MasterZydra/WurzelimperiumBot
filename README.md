@@ -19,8 +19,8 @@ Alle Systemd Distros mit APT Paketmanager:
 
 - Downloade das Skript:
 
-'''wget https://raw.githubusercontent.com/MasterZydra/WurzelimperiumBot/unix/autoinstall.sh'''
+```wget https://raw.githubusercontent.com/MasterZydra/WurzelimperiumBot/unix/autoinstall.sh```
 
 - Das Skript ausführbar machen mit dem Benutzer auf dem der Bot später laufen soll:
 
-'''chmod +x autoinstall.sh'''
+```chmod +x autoinstall.sh```
