@@ -1,8 +1,4 @@
 
-# BITTE BEACHTEN!
-DIESER BRANCH IST NUR ZUM ENTWICKELN UND TESTEN DES SKRIPTS!
-
-BITTE NUTZE DAS INSTALLATIONSSKRIPT IM [`master`](https://github.com/MasterZydra/WurzelimperiumBot/tree/master)
 
 
 # WurzelimperiumBot Installskript für Linux
