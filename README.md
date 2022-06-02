@@ -24,3 +24,21 @@ Alle Systemd Distros mit APT Paketmanager:
 - Das Skript ausführbar machen mit dem Benutzer auf dem der Bot später laufen soll:
 
 ```chmod +x autoinstall.sh```
+
+- Führe das Skript nun mit sudo aus (bitte NICHT mit root!!!).
+
+```sudo ./autoinstall.sh```
+
+- Nun editiere die acc.conf in ./wurzelbot/conf/acc.conf
+
+```nano ./wurzelbot/conf/acc.conf```
+
+Und füge deine Accountdaten ein.
+
+```
+# SERVERNR USERNAME PASSWORT
+# KEINE RAUTE (#) davor setzen!!! Beispiel: 12 Hildegart camping2016
+2 Julius pantoffel13
+43 CarlosDerGärtner supderschwerespasswort2022
+
+```
