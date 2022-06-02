@@ -128,20 +128,14 @@ cat <<EOT >> "${rootdir}"/worker.sh
 #!/bin/bash
 # Script written by xRuffKez for WurzelimperiumBot by MrFlamez & MasterZydra
 
-#vars
-rootdir=$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")
-wbdir="${rootdir}/wurzelbot"
-datadir="${wbdir}/data"
-confdir="${wbdir}/conf"
-
 while true
 do 
 
-    conf='"${confdir}"/acc.conf'
+    conf='${confdir}/acc.conf'
     while read -r line; do
-        [[ "$line" =~ ^#.*$ ]] && continue
-        python3 "${datadir}"/automated_script.py "${line}"
-    done < "$conf"
+        [[ "\$line" =~ ^#.*$ ]] && continue
+        python3 ${datadir}/automated_script.py "\${line}"
+    done < "\$conf"
     sleep 60
 done
 EOT
