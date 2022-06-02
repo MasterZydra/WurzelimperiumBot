@@ -44,6 +44,9 @@ Und füge deine Accountdaten ein.
 
 - Du kannst auch das Intervall ändern wann der Bot seine Aufgaben ausführen soll. Editiere dazu die worker.sh
 
+Beachte bitte dabei den service neu zu starten!
+```sudo systemctl restart wimpbot```
+
 # Update
 
 Um den WurzelimperiumBot zu updaten, führe einfach die autoinstall.sh aus.
