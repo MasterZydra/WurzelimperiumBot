@@ -105,11 +105,14 @@ sudo apt install -y git
 # Clone from master
 printf "Cleaning temp files.\n"
 rm -rf "${tmpdir}"
+rm -rf "${datadir}"
 printf "Checking directories and creating them if needed.\n"
 [ ! -d "${wbdir}" ] && mkdir "${wbdir}"
 [ ! -d "${datadir}" ] && mkdir "${datadir}"
 [ ! -d "${tmpdir}" ] && mkdir "${tmpdir}"
 [ ! -d "${confdir}" ] && mkdir "${confdir}"
+[ ! -f "${confdir}"/acc.conf ] && touch "${confdir}"/acc.conf && echo "# SERVERNR USERNAME PASSWORT" >> "${confdir}"/acc.conf && echo "# KEINE RAUTE (#) davor setzen!!! Beispiel: 12 Hildegart camping2016" >> "${confdir}"/acc.conf 
+
 printf "Retrieving files for WurzelimperiumBot.\n"
 git clone https://github.com/"${gituser}"/"${gitrepo}".git --depth 1 --branch="${gitbranch}" "${tmpdir}"
 mv "${tmpdir}"/* "${datadir}" && rm -rf "${tmpdir}"
