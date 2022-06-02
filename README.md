@@ -40,5 +40,6 @@ Und füge deine Accountdaten ein.
 # KEINE RAUTE (#) davor setzen!!! Beispiel: 12 Hildegart camping2016
 2 Julius pantoffel13
 43 CarlosDerGärtner supderschwerespasswort2022
-
 ```
+
+- Du kannst auch das Intervall ändern wann der Bot seine Aufgaben ausführen soll. Editiere dazu die worker.sh
