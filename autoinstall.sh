@@ -132,7 +132,7 @@ cat <<EOT >> "${rootdir}"/worker.sh
 # Hier die die Zeit ind Sekunden eintragen, wann der Bot automatisch arbeiten soll!
 # Unter 60 secs nicht empfohlen (Gefahr gebannt zu werden!)
 # timer=60
-timer=15
+timer=60
 ##
 
 
@@ -147,3 +147,24 @@ do
     sleep "\$timer"
 done
 EOT
+
+# Creating systemd service
+sudo systemctl stop wimpbot
+sudo systemctl disable wimpbot
+sudo rm /lib/systemd/system/wimpbot.service && sudo touch /lib/systemd/system/wimpbot.service
+
+sudo cat <<EOT >> /lib/systemd/system/wimpbot.service
+[Unit]
+Description=WurzelimperiumBot
+
+[Service]
+ExecStart="${rootdir}"/worker.sh
+
+[Install]
+WantedBy=multi-user.target
+EOT
+
+sudo systemctl daemon-reload 
+sudo systemctl enable wimpbot
+sudo systemctl start wimpbot
+sudo systemctl status wimpbot
