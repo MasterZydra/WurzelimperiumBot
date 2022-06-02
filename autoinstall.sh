@@ -1,4 +1,6 @@
 #!/bin/bash
+# shellcheck disable=SC1091
+#
 # Script written by xRuffKez for WurzelimperiumBot by MrFlamez & MasterZydra
 # PS: Tot den Maulwürfen!
 
@@ -21,8 +23,8 @@
 printf "\033c" # Meister Proper :D
 
 printf "Checking sudo access... "
-CAN_I_RUN_SUDO=$(sudo -n uptime 2>&1 | grep "load" | wc -l)
-if [ ${CAN_I_RUN_SUDO} -gt 1 ]; then
+CAN_I_RUN_SUDO=$(sudo -n uptime 2>&1 | grep -c "load")
+if [ "${CAN_I_RUN_SUDO}" -gt 1 ]; then
     printf "FAIL\nYou have no sudo access, which is required for installing WurzelimperiumBot!\nINSTALLATION FAILED!\n"
     exit
 else
@@ -33,10 +35,7 @@ fi
 rootdir=$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")
 grp="$(id -g)"
 usr="$(whoami)"
-sessionname=$(printf "${selfname}" | cut -f1 -d".")
 wbdir="${rootdir}/wurzelbot"
-logdir="${rootdir}/log"
-wblogdir="${logdir}/logs"
 confdir="${wbdir}/conf"
 tmpdir="${wbdir}/tmp"
 datadir="${wbdir}/data"
@@ -49,18 +48,12 @@ printf "Checking distribution...\n"
 
 if [ -f /etc/os-release ]; then
     . /etc/os-release
-    OS=$NAME
-    VER=$VERSION_ID
-    printf "$NAME $VERSION_ID is supported.\n"
+    printf "%s is supported.\n" "$NAME $VERSION_ID"
 elif type lsb_release >/dev/null 2>&1; then
-    OS=$(lsb_release -si)
-    VER=$(lsb_release -sr)
-    printf "$(lsb_release -si) $(lsb_release -sr) is supported.\n"
+    printf "%s is supported.\n" "$(lsb_release -si) $(lsb_release -sr)"
 elif [ -f /etc/lsb-release ]; then
     . /etc/lsb-release
-    OS=$DISTRIB_ID
-    VER=$DISTRIB_RELEASE
-    printf "$DISTRIB_ID $DISTRIB_RELEASE is supported.\n"
+    printf "%s is supported.\n" "$DISTRIB_ID $DISTRIB_RELEASE"
 elif [ -f /etc/debian_version ]; then
     printf "Your OS is outdated and NOT supported!\nINSTALLATION FAILED!\n"
     exit

@@ -25,9 +25,13 @@ Alle Systemd Distros mit APT Paketmanager:
 
 ```chmod +x autoinstall.sh```
 
-- Führe das Skript nun mit sudo aus (bitte NICHT mit root!!!).
+- Vorab sich mit sudo authentifizieren:
 
-```sudo ./autoinstall.sh```
+```sudo -v```
+
+- Führe das Skript nun aus (bitte NICHT mit root oder sudo!!!).
+
+```./autoinstall.sh```
 
 - Nun editiere die acc.conf in ./wurzelbot/conf/acc.conf
 
