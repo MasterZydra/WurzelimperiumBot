@@ -36,9 +36,12 @@ sessionname=$(printf "${selfname}" | cut -f1 -d".")
 wbdir="${rootdir}/wurzelbot"
 logdir="${rootdir}/log"
 wblogdir="${logdir}/logs"
-pydir="${wbdir}/functions"
+confdir="${wbdir}/conf"
 tmpdir="${wbdir}/tmp"
 datadir="${wbdir}/data"
+gituser="MasterZydra"
+gitrepo="WurzelimperiumBot"
+gitbranch="master"
 
 # Check distribution
 printf "Checking distribution...\n"
@@ -97,5 +100,17 @@ if [[ -z "$version" ]]; then
 else
     printf "Python3 found.\n" 
 fi
+sudo apt install -y git
 
-# Check for update if present else install
+# Clone from master
+printf "Cleaning temp files.\n"
+rm -rf "${tmpdir}"
+printf "Checking directories and creating them if needed.\n"
+[ ! -d "${wbdir}" ] && mkdir "${wbdir}"
+[ ! -d "${datadir}" ] && mkdir "${datadir}"
+[ ! -d "${tmpdir}" ] && mkdir "${tmpdir}"
+[ ! -d "${confdir}" ] && mkdir "${confdir}"
+printf "Retrieving files for WurzelimperiumBot.\n"
+git clone https://github.com/"${gituser}"/"${gitrepo}".git --depth 1 --branch="${gitbranch}" "${tmpdir}"
+mv "${tmpdir}"/* "${datadir}" && rm -rf "${tmpdir}"
+
