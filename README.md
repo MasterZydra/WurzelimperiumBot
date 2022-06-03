@@ -19,11 +19,11 @@ Alle Systemd Distros mit APT Paketmanager:
 
 - Downloade das Skript:
 
-```wget https://raw.githubusercontent.com/MasterZydra/WurzelimperiumBot/unix/autoinstall.sh```
+```wget https://raw.githubusercontent.com/MasterZydra/WurzelimperiumBot/unix/wimpbot_systemd_install.sh```
 
 - Das Skript ausführbar machen mit dem Benutzer auf dem der Bot später laufen soll:
 
-```chmod +x autoinstall.sh```
+```chmod +x wimpbot_systemd_install.sh```
 
 - Vorab sich mit sudo authentifizieren:
 
@@ -31,7 +31,7 @@ Alle Systemd Distros mit APT Paketmanager:
 
 - Führe das Skript nun aus (bitte NICHT mit root oder sudo!!!).
 
-```./autoinstall.sh```
+```./wimpbot_systemd_install.sh```
 
 - Nun editiere die acc.conf in ./wurzelbot/conf/acc.conf
 
@@ -53,4 +53,4 @@ Beachte bitte dabei den service neu zu starten!
 
 # Update
 
-Um den WurzelimperiumBot zu updaten, führe einfach die autoinstall.sh aus.
+Um den WurzelimperiumBot zu updaten, führe einfach die wimpbot_systemd_install.sh aus.
