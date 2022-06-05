@@ -9,10 +9,17 @@ Beispieldatei zur Verwendung des Bots.
 Alle Stellen die angepasst werden müssen sind mit TODO gekennzeichnet.
 """
 
+# Logging? Set to True to enable or False to disable logging.
+log = True
+
 #TODO: Login Daten eintragen
 user = ''
 pw = ''
 server = 46
+
+# Init logger
+if log == True:
+    main.logger()
 
 #Login und Initialisierung des Bots
 wurzelBot = main.initWurzelBot()

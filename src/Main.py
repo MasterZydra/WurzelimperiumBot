@@ -9,7 +9,9 @@ from src.WurzelBot import WurzelBot
 import logging
 
 def initWurzelBot():
-    logging.basicConfig(filename='wurzelbot.log', level=logging.DEBUG, format='%(asctime)s - %(message)s')
     return WurzelBot()
+
+def logger():
+    logging.basicConfig(filename='wurzelbot.log', level=logging.DEBUG, format='%(asctime)s - %(message)s')
 
 #TODO: Konstruktor prüfen, evtl um Accountdaten erweitern

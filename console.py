@@ -4,14 +4,18 @@ import src.Main as wbot
 # Login data
 user = ''
 pw = ''
-server = 46
+server = 17
 
 # Global vars
 wurzelBot = object
 
+# enable logging? change to True else change it to False
+log = False
+
 def main():
     logo()
     init()
+    logging()
     
     while True:
         print('')
@@ -70,6 +74,7 @@ def help():
     print('user         Show details to the current user')
     print('water        Water all plants')
     print('weed         Remove all weed')
+
 
 def harvest():
     print('Harvest all gardens...')
@@ -138,6 +143,10 @@ def productDetails(argStr : str):
 def removeWeed():
     print('Remove weed from all gardens...')
     wurzelBot.removeWeedInAllGardens()
+
+def logging():
+    if log == True:
+        wbot.logger()
 
 if __name__ == "__main__":
     main()
