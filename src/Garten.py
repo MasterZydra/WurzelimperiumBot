@@ -158,6 +158,10 @@ class Garden():
             msg = f'Im Garten {self._id} wurden {planted} Pflanzen gepflanzt.'
             self._logGarden.info(msg)
             print(msg)
+
+            if emptyFields: 
+                msg = f'Im Garten {self._id} sind noch leere Felder vorhanden.'
+
             return planted
 
     def removeWeed(self):

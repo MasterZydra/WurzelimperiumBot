@@ -15,6 +15,40 @@ from src.Marktplatz import Marketplace
 from src.Produktdaten import ProductData
 import logging
 
+# This Array stores all 1x1 Plants.
+replantArr = [  "Karotte",      \
+            "Salat",        \
+            "Gurke",        \
+            "Radieschen",   \
+            "Erdbeere",     \
+            "Tomate",       \
+            "Zwiebel",      \
+            "Spinat",       \
+            "Ringelblume",  \
+            "Blumenkohl",   \
+            "Kartoffel",    \
+            "Knoblauch",    \
+            "Brokkoli",     \
+            "Paprika",      \
+            "Sonnenblume",  \
+            "Aubergine",    \
+            "Zucchini",     \
+            "Heidelbeere",  \
+            "Himbeere",     \
+            "Johannisbeere",\
+            "Brombeere",    \
+            "Rose",         \
+            "Kürbis",       \
+            "Basilikum",    \
+            "Lilie",        \
+            "Orchidee",     \
+            "Kornblume",    \
+            "Krokus",       \
+            "Tulpe",        \
+            "Rotkohl",      \
+            "Gerbera",      \
+            "Bohnen"]
+
 
 class WurzelBot(object):
     """
@@ -309,6 +343,24 @@ class WurzelBot(object):
 
         if lowestProductId == -1: return 'Your stock is empty'
         return self.productData.getProductByID(lowestProductId).getName()
+
+    def getLowestSinglePlantStockEntry(self):
+        lowestSingleStock = -1
+        lowestSingleProductId = -1
+        for productID in self.storage.getOrderedStockList():
+            if not self.productData.getProductByID(productID).isPlant() or \
+                not self.productData.getProductByID(productID).isPlantable() or \
+                not self.productData.getProductByID(productID).getName() in replantArr:
+                continue
+
+            currentStock = self.storage.getStockByProductID(productID)
+            if lowestSingleStock == -1 or currentStock < lowestSingleStock:
+                lowestSingleStock = currentStock
+                lowestSingleProductId = productID
+                continue
+
+        if lowestSingleProductId == -1: return 'Your stock is empty'
+        return self.productData.getProductByID(lowestSingleProductId).getName()       
 
     def printProductDetails(self):
         self.productData.printAll()
