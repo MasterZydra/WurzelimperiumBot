@@ -5,7 +5,7 @@ Created on 21.03.2017
 
 @author: MrFlamez
 '''
-from src.WurzelBot import WurzelBot
+
 import logging
 import os
 import time
@@ -15,9 +15,6 @@ logtime = time.strftime("%d-%m-%y-%H.%M.%S")
 
 if not os.path.exists('logs'):
     os.makedirs('logs')
-
-def initWurzelBot():
-    return WurzelBot()
 
 def logger():
     logging.basicConfig(filename='logs/wurzelbot '+logtime+'.log', level=logging.DEBUG, format='%(asctime)s - %(message)s')

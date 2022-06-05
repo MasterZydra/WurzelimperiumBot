@@ -1,5 +1,6 @@
 from logging import log
-import src.Main as wbot
+import src.Logger as logger
+from src.WurzelBot import WurzelBot
 
 # Login data
 user = ''
@@ -51,7 +52,7 @@ def init():
         exit()
     
     global wurzelBot
-    wurzelBot = wbot.initWurzelBot()
+    wurzelBot = WurzelBot()
     wurzelBot.launchBot(server, user, pw)
 
 def closeConnection():
@@ -146,7 +147,7 @@ def removeWeed():
 
 def logging():
     if log == True:
-        wbot.logger()
+        logger.logger()
 
 if __name__ == "__main__":
     main()

@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import src.Main as main
+import src.Logger as logger
+from src.WurzelBot import WurzelBot
 
 
 """
@@ -19,10 +20,10 @@ server = 46
 
 # Init logger
 if log == True:
-    main.logger()
+    logger.logger()
 
 #Login und Initialisierung des Bots
-wurzelBot = main.initWurzelBot()
+wurzelBot = WurzelBot()
 wurzelBot.launchBot(server, user, pw)
 
 #TODO: Aktionen definieren

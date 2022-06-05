@@ -2,7 +2,8 @@
 # -*- coding: utf-8 -*-
 
 import argparse
-import src.Main as main
+import src.Logger as logger
+from src.WurzelBot import WurzelBot
 import time
 
 
@@ -14,10 +15,10 @@ parser.add_argument("-l", '--log', help="If -l or --log Argument is passed, logg
 args = parser.parse_args()
 
 if args.log:
-    main.logger()
+    logger.logger()
 
 # Init connection
-wurzelBot = main.initWurzelBot()
+wurzelBot = WurzelBot()
 wurzelBot.launchBot(args.server, args.user, args.password)
 
 
