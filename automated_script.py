@@ -39,7 +39,7 @@ while wurzelBot.hasEmptyFields() and planted != 0 and plantedSingle != 0:
     print(lowest + ' anpflanzen...')
     print(lowestSingle + ' anpflanzen...')
     planted = wurzelBot.growPlantsInGardens(lowest)
-    planted = wurzelBot.growPlantsInGardens(lowestSingle)
+    plantedSingle = wurzelBot.growPlantsInGardens(lowestSingle)
 
 # Water plants
 time.sleep(3)
