@@ -70,7 +70,7 @@ fi
 
 # Check requirements
 printf "Checking requirements...\n"
-sudo apt update && sudo apt -y upgrade && sudo apt install -y python3 && sudo apt install -y pip && sudo apt install -y git
+sudo apt update && sudo apt -y upgrade && sudo apt install -y python3 pip git
 
 # Clone from master
 printf "Cleaning temp files.\n"
