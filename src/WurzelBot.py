@@ -15,41 +15,6 @@ from src.Marktplatz import Marketplace
 from src.Produktdaten import ProductData
 import logging
 
-# This Array stores all 1x1 Plants.
-replantArr = [  "Karotte",      \
-            "Salat",        \
-            "Gurke",        \
-            "Radieschen",   \
-            "Erdbeere",     \
-            "Tomate",       \
-            "Zwiebel",      \
-            "Spinat",       \
-            "Ringelblume",  \
-            "Blumenkohl",   \
-            "Kartoffel",    \
-            "Knoblauch",    \
-            "Brokkoli",     \
-            "Paprika",      \
-            "Sonnenblume",  \
-            "Aubergine",    \
-            "Zucchini",     \
-            "Heidelbeere",  \
-            "Himbeere",     \
-            "Johannisbeere",\
-            "Brombeere",    \
-            "Rose",         \
-            "Kürbis",       \
-            "Basilikum",    \
-            "Lilie",        \
-            "Orchidee",     \
-            "Kornblume",    \
-            "Krokus",       \
-            "Tulpe",        \
-            "Rotkohl",      \
-            "Gerbera",      \
-            "Bohnen"]
-
-
 class WurzelBot(object):
     """
     Die Klasse WurzelBot übernimmt jegliche Koordination aller anstehenden Aufgaben.
@@ -350,7 +315,7 @@ class WurzelBot(object):
         for productID in self.storage.getOrderedStockList():
             if not self.productData.getProductByID(productID).isPlant() or \
                 not self.productData.getProductByID(productID).isPlantable() or \
-                not self.productData.getProductByID(productID).getName() in replantArr:
+                not self.productData.getProductByID(productID).getName() in self.productData.getListOfSingleFieldPlants():
                 continue
 
             currentStock = self.storage.getStockByProductID(productID)
