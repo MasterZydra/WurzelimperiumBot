@@ -40,6 +40,7 @@ while wurzelBot.hasEmptyFields() and planted != 0 and plantedSingle != 0:
     # If no more "lowest plants" can be grown, try to grow single field plants
     if planted == 0:
         lowestSingle = wurzelBot.getLowestSinglePlantStockEntry()
+        if lowestSingle == 'Your stock is empty': break
         print(lowestSingle + ' anpflanzen...')
         plantedSingle = wurzelBot.growPlantsInGardens(lowestSingle)
 
