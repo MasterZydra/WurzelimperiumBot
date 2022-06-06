@@ -18,18 +18,9 @@
 #          | | | '_ \/ __| __/ _` | | |/ _ \ '__| |  _/ _ \| '__| | |    | | '_ \| | | \ \/ /       
 #         _| |_| | | \__ \ || (_| | | |  __/ |    | || (_) | |    | |____| | | | | |_| |>  <        
 #        |_____|_| |_|___/\__\__,_|_|_|\___|_|    |_| \___/|_|    |______|_|_| |_|\__,_/_/\_\       
-                                                                                                   
-
-printf "\033c" # Meister Proper :D
-
-printf "Checking sudo access... "
-CAN_I_RUN_SUDO=$(sudo -n uptime 2>&1 | grep -c "load")
-if [ "${CAN_I_RUN_SUDO}" -gt 1 ]; then
-    printf "FAIL\nYou have no sudo access, which is required for installing WurzelimperiumBot!\nINSTALLATION FAILED!\n"
-    exit
-else
-    printf "OK\n"
-fi
+#
+#   SYSTEMD & APT EDITION                                                                                                  
+#
 
 # vars
 rootdir=$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")
@@ -43,6 +34,23 @@ gituser="MasterZydra"
 gitrepo="WurzelimperiumBot"
 gitbranch="master"
 
+printf "\033c" # Meister Proper :D
+
+# Check root and deny if present
+if [ "$(id -u)" = "0" ]; then
+   printf "DO NOT RUN THIS SCRIPT AS ROOT!\nINSTALLATION FAILED!\n"
+   exit
+fi
+
+printf "Checking sudo access... "
+su=$(sudo -n uptime 2>&1 | grep -c "load")
+if [ "${su}" -gt 1 ]; then
+    printf "FAIL\nYou have no sudo access, which is required for installing WurzelimperiumBot!\nINSTALLATION FAILED!\n"
+    exit
+else
+    printf "OK\n"
+fi
+
 # Check distribution
 printf "Checking distribution...\n"
 
@@ -54,52 +62,19 @@ elif type lsb_release >/dev/null 2>&1; then
 elif [ -f /etc/lsb-release ]; then
     . /etc/lsb-release
     printf "%s is supported.\n" "$DISTRIB_ID $DISTRIB_RELEASE"
-elif [ -f /etc/debian_version ]; then
-    printf "Your OS is outdated and NOT supported!\nINSTALLATION FAILED!\n"
-    exit
-elif [ -f /etc/SuSe-release ]; then
-    printf "Your OS is outdated and NOT supported!\nINSTALLATION FAILED!\n"
-    exit
-elif [ -f /etc/redhat-release ]; then
-    printf "Your OS is outdated and NOT supported!\nINSTALLATION FAILED!\n"
-    exit
 else
-    printf "Your OS is NOT supported (yet)!\nINSTALLATION FAILED!\n"
+    printf "Your OS is NOT supported!\nINSTALLATION FAILED!\n"
     exit
 fi
 
-
-# Check root and deny if present
-if [ "$(id -u)" = "0" ]; then
-   printf "DO NOT RUN THIS SCRIPT AS ROOT!\nINSTALLATION FAILED!\n"
-   exit
-fi
 
 # Check requirements
 printf "Checking requirements...\n"
-version=$(python3 -V 2>&1 | grep -Po '(?<=Python )(.+)')
-if [[ -z "$version" ]]; then
-    printf "Python3 not found. Installing....\n"
-    sudo apt update
-    sudo apt -y install software-properties-common
-    #PPA for Python3.X
-    sudo add-apt-repository -y ppa:deadsnakes/ppa
-    sudo apt install -y python3.9
-    if [[ -z "$version" ]]; then
-        printf "An Error occured when installing Python3! Please manually install it and run the installer again!\nINSTALLATION FAILED!\n" 
-        exit
-    else
-        printf "Python3 installed successfully.\n"
-    fi
-else
-    printf "Python3 found.\n" 
-fi
-sudo apt install -y git
+sudo apt update && sudo apt -y upgrade && sudo apt install -y python3 && sudo apt install -y pip && sudo apt install -y git
 
 # Clone from master
 printf "Cleaning temp files.\n"
-rm -rf "${tmpdir}"
-rm -rf "${datadir}"
+rm -rf "${tmpdir}" && rm -rf "${datadir}"
 printf "Checking directories and creating them if needed.\n"
 [ ! -d "${wbdir}" ] && mkdir "${wbdir}"
 [ ! -d "${datadir}" ] && mkdir "${datadir}"
@@ -112,8 +87,7 @@ git clone https://github.com/"${gituser}"/"${gitrepo}".git --depth 1 --branch="$
 mv "${tmpdir}"/* "${datadir}" && rm -rf "${tmpdir}"
 
 # Install py requirements with pip
-pip install --upgrade pip
-pip install -r "${datadir}"/requirements.txt
+pip install --upgrade pip && pip install -r "${datadir}"/requirements.txt
 
 # Creating worker
 [ ! -f "${rootdir}"/worker.sh ] && touch "${rootdir}"/worker.sh && chmod +x "${rootdir}"/worker.sh
@@ -123,7 +97,7 @@ cat <<EOT >> "${rootdir}"/worker.sh
 # Script written by xRuffKez for WurzelimperiumBot by MrFlamez & MasterZydra
 
 ##
-# Hier die die Zeit ind Sekunden eintragen, wann der Bot automatisch arbeiten soll!
+# Hier die die Zeit in Sekunden eintragen, wann der Bot automatisch arbeiten soll!
 # Unter 60 secs nicht empfohlen (Gefahr gebannt zu werden!)
 # timer=60
 timer=60
@@ -143,9 +117,7 @@ done
 EOT
 
 # Creating systemd service
-sudo systemctl stop wimpbot
-sudo systemctl disable wimpbot
-sudo rm /lib/systemd/system/wimpbot.service && sudo touch /lib/systemd/system/wimpbot.service
+sudo systemctl stop wimpbot && sudo systemctl disable wimpbot && sudo rm /lib/systemd/system/wimpbot.service && sudo touch /lib/systemd/system/wimpbot.service
 
 cat <<EOT >> "${rootdir}"/wimpbot.service
 [Unit]
@@ -161,11 +133,7 @@ ExecStart=${rootdir}/worker.sh
 [Install]
 WantedBy=multi-user.target
 EOT
-sudo mv "${rootdir}"/wimpbot.service /lib/systemd/system/wimpbot.service
-
-sudo systemctl daemon-reload 
-sudo systemctl enable wimpbot
-sudo systemctl start wimpbot
+sudo mv "${rootdir}"/wimpbot.service /lib/systemd/system/wimpbot.service && sudo systemctl daemon-reload  && sudo systemctl enable wimpbot && sudo systemctl start wimpbot
 printf "\033c" # Meister Proper :D
 sudo systemctl status wimpbot
-printf "\n\n\nInstallation finished!\n\nPLease configure acc.conf in the conf directory!\n\n"
+printf "\n\n\nInstallation finished!\n\nPlease configure acc.conf in the conf directory!\n\n"
