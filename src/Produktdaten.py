@@ -61,6 +61,17 @@ class ProductData():
             
         return productIDList
 
+    def getListOfSingleFieldPlants(self):
+        singleFieldPlants = []
+        for product in self.__products:
+            if product.getSX() != 1 or product.getSY() != 1 \
+            or not product.isPlant() or not product.isPlantable():
+                continue
+        
+            singleFieldPlants.append(product.getName())
+
+        return singleFieldPlants
+
     def initAllProducts(self):
         """
         Initialisiert alle Produkte.
