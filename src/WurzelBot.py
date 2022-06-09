@@ -10,6 +10,8 @@ from src.Spieler import Spieler, Login
 from src.HTTPCommunication import HTTPConnection
 from src.Messenger import Messenger
 from src.Garten import Garden, AquaGarden
+from src.Honig import Honig
+from src.Bonsai import Bonsai
 from src.Lager import Storage
 from src.Marktplatz import Marketplace
 from src.Produktdaten import ProductData
@@ -34,6 +36,10 @@ class WurzelBot(object):
         self.storage = Storage(self.__HTTPConn)
         self.garten = []
         self.wassergarten = None
+        self.bienenfarm = None
+        self.bonsaifarm = None
+        self.bonsai = Bonsai(self.__HTTPConn)
+        self.honig = Honig(self.__HTTPConn)
         self.marktplatz = Marketplace(self.__HTTPConn)
 
 
@@ -49,6 +55,12 @@ class WurzelBot(object):
             
             if self.spieler.isAquaGardenAvailable() is True:
                 self.wassergarten = AquaGarden(self.__HTTPConn)
+
+            if self.honig.isHoneyFarmAvailable() is True:
+                self.bienenfarm = Honig(self.__HTTPConn)
+
+            if self.bonsai.isBonsaiFarmAvailable() is True:
+                self.bonsaifarm = Bonsai(self.__HTTPConn)
 
         except:
             raise
@@ -87,11 +99,18 @@ class WurzelBot(object):
         self.__logBot.info('Starte Wurzelbot')
         loginDaten = Login(server=server, user=user, password=pw)
 
-        try:
-            self.__HTTPConn.logIn(loginDaten)
-        except:
-            self.__logBot.error('Problem beim Starten des Wurzelbots.')
-            return
+        if user == "portuserexample":
+            try:
+                self.__HTTPConn.logIn2(loginDaten)
+            except:
+                self.__logBot.error('Problem beim Starten des Wurzelbots.')
+                return
+        else:
+            try:
+                self.__HTTPConn.logIn(loginDaten)
+            except:
+                self.__logBot.error('Problem beim Starten des Wurzelbots.')
+                return
 
         try:
             self.spieler.setUserNameFromServer(self.__HTTPConn)
@@ -110,6 +129,20 @@ class WurzelBot(object):
             self.__logBot.error('Verfügbarkeit der Imkerei konnte nicht ermittelt werden.')
         else:
             self.spieler.setHoneyFarmAvailability(tmpHoneyFarmAvailability)
+
+        try:
+            tmpbonsaiAvailability = self.__HTTPConn.isBonsaiAvailable(self.spieler.getLevelNr())
+        except:
+            self.__logBot.error('Verfügbarkeit der Baumschule konnte nicht ermittelt werden.')
+        else:
+            self.bonsai.setBonsaiAvailability(tmpbonsaiAvailability)
+
+        try:
+            tmpbirdPostAvailability = self.__HTTPConn.isBirdPostAvailable(self.spieler.getLevelNr())
+        except:
+            self.__logBot.error('Verfügbarkeit der BirdPost konnte nicht ermittelt werden.')
+        else:
+            self.spieler.setBirdPostAvailability(tmpbirdPostAvailability)
 
         try:
             tmpAquaGardenAvailability = self.__HTTPConn.isAquaGardenAvailable(self.spieler.getLevelNr())
@@ -224,9 +257,9 @@ class WurzelBot(object):
         try:
             for garden in self.garten:
                 garden.harvest()
-                
+
             if self.spieler.isAquaGardenAvailable():
-                pass#self.waterPlantsInAquaGarden()
+                self.wassergarten.harvest()
 
             self.storage.updateNumberInStock()
         except:
@@ -265,6 +298,17 @@ class WurzelBot(object):
         self.storage.updateNumberInStock()
 
         return planted
+
+    def growPlantsInAquaGardens(self, productName):
+        """
+        Pflanzt so viele Pflanzen von einer Sorte wie möglich über alle Gärten hinweg an.
+        """
+        #print productName
+        if self.spieler.isAquaGardenAvailable():
+            product = self.productData.getProductByName(productName)
+            #print product.printAll()
+            if (product.isProductPlantable()):
+                self.wassergarten.growPlant(product.getID(), product.getSX(), product.getSY())
 
     def printStock(self):
         isSmthPrinted = False
@@ -328,3 +372,54 @@ class WurzelBot(object):
             self.__logBot.error('Konnte nicht alle Felder von Unrkaut befreien.')
         else:
             self.__logBot.info('Konnte alle Gärten von Unrkaut befreien.')
+
+    def doQuestBienen(self):
+        #TODO Honig in Obst umwandeln(mit Tablee und jeweils anpflanzen)
+        if self.honig.isHoneyFarmAvailable():
+            hives = self.honig.getHivesAvailable()
+            type = self.honig.getHiveType()
+            quest = self.honig.getQuestHoney()
+            #print self.growPlantsInGardens(8)
+            if quest not in type:
+                for hive in hives:
+                    self.__HTTPConn.changeHivesTypeQuest(quest, hive)
+        else:
+            self.__logBot.error('Konnte nicht alle Bienenstöcke ändern.')
+
+    def doSendBienen(self):
+        if self.honig.isHoneyFarmAvailable():
+            hives = self.__HTTPConn.getHoneyFarmInfos()[2]
+            for hive in hives:
+                self.__HTTPConn.sendBienen(hive)
+                self.bienenfarm.harvest()
+        else:
+            self.__logBot.error('Konnte nicht alle Bienen ernten.')
+
+    def doCityQuest(self):
+        try:
+            self.__HTTPConn.doCityQuest()
+        except:
+            pass
+
+    def getLoginBonus(self):
+        try:
+            self.__HTTPConn.doLoginBonus()
+        except:
+            self.__logBot.error('LoginBonus konnte nicht aktualisiert werden')
+
+    def doOsterEvent(self):
+        self.__HTTPConn.osterevent()
+
+    def doCutBonsai(self):
+        trees = self.bonsai.getBonsaiAvailable()
+        for tree in trees:
+            self.__HTTPConn.doCutBonsai(tree)
+
+    def doSendbirds(self):
+        try:
+            if self.spieler.isBirdPostAvailable():
+                self.__HTTPConn.doBirdPost()
+        except:
+            self.__logBot.error('Konnte nicht alle BirdsPost ernten.')
+        else:
+            pass

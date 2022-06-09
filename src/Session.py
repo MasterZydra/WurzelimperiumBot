@@ -30,6 +30,7 @@ class Session(object):
         self.__server = None
         self.__startTime = None
         self.__endTime = None
+        self.__secure = ''
  
 
     def isSessionTimeElapsed(self):
@@ -59,6 +60,7 @@ class Session(object):
         """
         self.__sessionID = sessionID
         self.__server = server
+        self.__secure = secure
         
         self.__startTime = time.time()
         self.__endTime = self.__startTime + (self.__lifetime - self.__lifetime_reserve)
@@ -100,5 +102,10 @@ class Session(object):
         """
         return self.__server
 
+    def getSecure(self):
+        """
+        Gibt die Https zurück.
+        """
+        return self.__secure
 
         

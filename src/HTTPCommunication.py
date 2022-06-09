@@ -35,12 +35,16 @@ class HTTPConnection(object):
         self.__Session = Session()
         self.__token = None
         self.__userID = None
+        self.__unr = None
+        self.__portunr = None
 
 
     def __del__(self):
         self.__Session = None
         self.__token = None
         self.__userID = None
+        self.__unr = None
+        self.__portunr = None
 
 
     def __getUserDataFromJSONContent(self, content):
@@ -129,9 +133,69 @@ class HTTPConnection(object):
             
         if (iErr == 1):
             self.__logHTTPConn.debug(tmpToken)
-            raise JSONError('Fehler bei der Ermittlung des tokens')
+            raise JSONError(f'Fehler bei der Ermittlung des tokens')
         else:
             self.__token = tmpToken
+    
+    def __getTokenFromURLPORT(self, url):
+        """
+        Ermittelt aus einer übergebenen URL den security token.
+        """
+        # token extrahieren
+        split = re.search(r'.*portal/port_logw.php.*token=([a-f0-9]{32})', url)
+        iErr = 0
+        if split:
+            tmpToken = split.group(1)
+            if (tmpToken == ''):
+                iErr = 1
+        else:
+            iErr = 1
+
+        if (iErr == 1):
+            self.__logHTTPConn.debug(tmpToken)
+            raise JSONError(f'Fehler bei der Ermittlung des tokens')
+        else:
+            self.__token = tmpToken
+
+    def __getunrFromURLPORT(self, url):
+        """
+        Ermittelt aus einer übergebenen URL den security token.
+        """
+        # token extrahieren
+        split = re.search(r'.*portal/port_logw.php.*unr=([a-f0-9]{6}).*port', url)
+        iErr = 0
+        if split:
+            tmpunr = split.group(1)
+            if (tmpunr == ''):
+                iErr = 1
+        else:
+            iErr = 1
+
+        if (iErr == 1):
+            self.__logHTTPConn.debug(tmpunr)
+            raise JSONError(f'Fehler bei der Ermittlung des tokens')
+        else:
+            self.__unr = tmpunr
+
+    def __getportunrFromURLPORT(self, url):
+        """
+        Ermittelt aus einer übergebenen URL den security token.
+        """
+        # token extrahieren
+        split = re.search(r'.*portal/port_logw.php.*portunr=([a-f0-9]{7})', url)
+        iErr = 0
+        if split:
+            tmpportunr = split.group(1)
+            if (tmpportunr == ''):
+                iErr = 1
+        else:
+            iErr = 1
+
+        if (iErr == 1):
+            self.__logHTTPConn.debug(tmpportunr)
+            raise JSONError(f'Fehler bei der Ermittlung des tokens')
+        else:
+            self.__portunr = tmpportunr
 
 
     def __getUserNameFromJSONContent(self, jContent):
@@ -244,6 +308,20 @@ class HTTPConnection(object):
             weedFields.sort(reverse=False)
 
         return weedFields
+    
+    def __findEmptyAquaFieldsFromJSONContent(self, jContent):
+
+        emptyAquaFields = []
+
+        for field in jContent['garden']:
+            if jContent['garden'][field][0] == 0:
+                emptyAquaFields.append(int(field))
+
+        # Sortierung über ein leeres Array ändert Objekttyp zu None
+        if len(emptyAquaFields) > 0:
+            emptyAquaFields.sort(reverse=False)
+
+        return emptyAquaFields
 
     def __generateYAMLContentAndCheckForSuccess(self, content : str):
         """
@@ -276,7 +354,7 @@ class HTTPConnection(object):
                              'wunr=' + self.__userID,
                    'Connection': 'Keep-Alive'}
 
-        adresse = f'http://s{self.__Session.getServer()}.wurzelimperium.de/ajax/' + \
+        adresse = f'http{self.__Session.getSecure()}://s{self.__Session.getServer()}.wurzelimperium.de/ajax/' + \
                   f'ajax.php?do=changeGarden&garden={gardenID}&token={self.__token}'
 
         try:
@@ -353,6 +431,45 @@ class HTTPConnection(object):
             cookie.load(str(response["set-cookie"]).replace("secure, ", "", -1))
             self.__Session.openSession(cookie['PHPSESSID'].value, str(loginDaten.server))
             self.__userID = cookie['wunr'].value
+            
+    def logIn2(self, loginDaten):
+        """
+        Führt einen login durch und öffnet eine Session.
+        """
+        parameter = urlencode({'portserver': 'server' + str(loginDaten.server),
+                               'portname': loginDaten.user,
+                               'portpass': loginDaten.password,
+                               'portsubmit': 'Einloggen'})
+
+        headers = {'Content-type': 'application/x-www-form-urlencoded',
+                   'Connection': 'keep-alive'}
+
+        try:
+            response, content = self.__webclient.request('https://www.wurzelimperium.de/portal/game2port_login.php', \
+                                                         'POST', \
+                                                         parameter, \
+                                                         headers)
+            self.__getTokenFromURLPORT(response['location'])
+            self.__getunrFromURLPORT(response['location'])
+            self.__getportunrFromURLPORT(response['location'])
+        except:
+            raise
+
+        headers = {'Content-type': 'application/x-www-form-urlencoded',
+                   'Connection': 'keep-alive',
+                   'Cookie': self.__unr}
+
+        try:
+            loginadresse = 'https://s1.wurzelimperium.de/logw.php?port=1&unr=' + self.__unr + '&portunr=' + self.__portunr + '&hash=' + self.__token + '&sno=1'
+            response, content = self.__webclient.request(loginadresse, 'GET', headers=headers)
+            self.__checkIfHTTPStateIsFOUND(response)
+        except:
+            raise
+        else:
+            cookie = SimpleCookie(response['set-cookie'])
+            self.__Session.openSession(cookie['PHPSESSID'].value, str(loginDaten.server), "s")
+            self.__cookie = cookie
+            self.__userID = self.__unr
 
     def getUserID(self):
         """
@@ -368,7 +485,7 @@ class HTTPConnection(object):
         #TODO: Was passiert beim Logout einer bereits ausgeloggten Session
         headers = {'Cookie': 'PHPSESSID=' + self.__Session.getSessionID() + '; ' + 'wunr=' + self.__userID}
         
-        adresse = f'http://s{self.__Session.getServer()}.wurzelimperium.de/main.php?page=logout'
+        adresse = f'http{self.__Session.getSecure()}://s{self.__Session.getServer()}.wurzelimperium.de/main.php?page=logout'
         
         try: #content ist beim Logout leer
             response, content = self.__webclient.request(adresse, 'GET', headers=headers)
@@ -390,7 +507,7 @@ class HTTPConnection(object):
                              'wunr=' + self.__userID,
                    'Connection': 'Keep-Alive'}
 
-        adresse = f'http://s{self.__Session.getServer()}.wurzelimperium.de/ajax/' + \
+        adresse = f'http{self.__Session.getSecure()}://s{self.__Session.getServer()}.wurzelimperium.de/ajax/' + \
                   f'ajax.php?do=statsGetStats&which=0&start=0&additional={self.__userID}&token={self.__token}'
         
         try:
@@ -414,7 +531,7 @@ class HTTPConnection(object):
                    'Referer':'http://s46.wurzelimperium.de/main.php?page=garden', 
                    'X-Requested-With':'X-Requested-With: XMLHttpRequest'}
 
-        adresse = f'http://s{self.__Session.getServer()}.wurzelimperium.de/' + \
+        adresse = f'http{self.__Session.getSecure()}://s{self.__Session.getServer()}.wurzelimperium.de/' + \
                   f'ajax/ajax.php?do=statsGetStats&which=0&start=0&additional={self.__userID}&token={self.__token}'
         
         try:
@@ -436,7 +553,7 @@ class HTTPConnection(object):
                              'wunr=' + self.__userID,
                    'Connection': 'Keep-Alive'}
 
-        adresse = f'http://s{self.__Session.getServer()}.wurzelimperium.de/ajax/menu-update.php'
+        adresse = f'http{self.__Session.getSecure()}://s{self.__Session.getServer()}.wurzelimperium.de/ajax/menu-update.php'
         
         try:
             response, content = self.__webclient.request(adresse, 'GET', headers = headers)
@@ -457,7 +574,7 @@ class HTTPConnection(object):
                              'wunr=' + self.__userID,
                    'Connection': 'Keep-Alive'}
 
-        adresse = f'http://s{self.__Session.getServer()}.wurzelimperium.de/' + \
+        adresse = f'http{self.__Session.getSecure()}://s{self.__Session.getServer()}.wurzelimperium.de/' + \
                   f'ajax/ajax.php?do=changeGarden&garden={gardenID}&token={self.__token}'
 
         try:
@@ -481,7 +598,7 @@ class HTTPConnection(object):
                    'X-Requested-With': 'XMLHttpRequest',\
                    'Connection': 'Keep-Alive'}
 
-        adresse = f'http://s{self.__Session.getServer()}.wurzelimperium.de/save/wasser.php?feld[]=' + \
+        adresse = f'http{self.__Session.getSecure()}://s{self.__Session.getServer()}.wurzelimperium.de/save/wasser.php?feld[]=' + \
                   f'{iField}&felder[]={sFieldsToWater}&cid={self.__token}&garden={iGarten}'
 
         try:
@@ -504,7 +621,7 @@ class HTTPConnection(object):
                    'X-Requested-With': 'XMLHttpRequest',\
                    'Connection': 'Keep-Alive'}
 
-        adresse = f'http://s{self.__Session.getServer()}.wurzelimperium.de/' + \
+        adresse = f'http{self.__Session.getSecure()}://s{self.__Session.getServer()}.wurzelimperium.de/' + \
                   f'ajax/ajax.php?do=watergardenGetGarden&token={self.__token}'
         
         try:
@@ -534,7 +651,7 @@ class HTTPConnection(object):
                    'X-Requested-With': 'XMLHttpRequest',\
                    'Connection': 'Keep-Alive'}
 
-        adresse = f'http://s{self.__Session.getServer()}.wurzelimperium.de/' + \
+        adresse = f'http{self.__Session.getSecure()}://s{self.__Session.getServer()}.wurzelimperium.de/' + \
                   f'ajax/ajax.php?do=watergardenCache{sFields}&token={self.__token}'
 
         try:
@@ -556,7 +673,7 @@ class HTTPConnection(object):
                              'wunr=' + self.__userID,
                    'Connection': 'Keep-Alive'}
 
-        adresse = f'http://s{self.__Session.getServer()}' + \
+        adresse = f'http{self.__Session.getSecure()}://s{self.__Session.getServer()}' + \
                   f'.wurzelimperium.de/ajax/gettrophies.php?category=giver'
         
         if not (iUserLevel < 10):
@@ -576,7 +693,42 @@ class HTTPConnection(object):
                     return False
         else:
             return False
+        
+    def isBonsaiAvailable(self, iUserLevel):
+        headers = {'Cookie': 'PHPSESSID=' + self.__Session.getSessionID() + '; ' + \
+                             'wunr=' + self.__userID,
+                   'Connection': 'Keep-Alive'}
+        adresse = f'http{self.__Session.getSecure()}://s' + str(self.__Session.getServer()) + \
+                  '.wurzelimperium.de/ajax/ajax.php?do=bonsai_init' + '&token=' + self.__token
 
+        if not (iUserLevel < 10):
+            try:
+                response, content = self.__webclient.request(adresse, 'GET', headers=headers)
+                self.__checkIfHTTPStateIsOK(response)
+                jContent = self.__generateJSONContentAndCheckForOK(content)
+                return True
+            except:
+                raise
+        else:
+            return False
+
+    def isBirdPostAvailable(self, iUserLevel):
+        headers = {'Cookie': 'PHPSESSID=' + self.__Session.getSessionID() + '; ' + \
+                             'wunr=' + self.__userID,
+                   'Connection': 'Keep-Alive'}
+        adresse = f'http{self.__Session.getSecure()}://s' + str(self.__Session.getServer()) + \
+                  '.wurzelimperium.de/ajax/ajax.php?do=birds_init' + '&token=' + self.__token
+
+        if not (iUserLevel < 10):
+            try:
+                response, content = self.__webclient.request(adresse, 'GET', headers=headers)
+                self.__checkIfHTTPStateIsOK(response)
+                jContent = self.__generateJSONContentAndCheckForOK(content)
+                return True
+            except:
+                raise
+        else:
+            return False
             
     def isAquaGardenAvailable(self, iUserLevel):
         """
@@ -589,7 +741,7 @@ class HTTPConnection(object):
                              'wunr=' + self.__userID,
                    'Connection': 'Keep-Alive'}
 
-        adresse = f'http://s{self.__Session.getServer()}' + \
+        adresse = f'http{self.__Session.getSecure()}://s{self.__Session.getServer()}' + \
                   f'.wurzelimperium.de/ajax/achievements.php?token={self.__token}'
 
         if not (iUserLevel < 19):
@@ -618,7 +770,7 @@ class HTTPConnection(object):
                    'Cookie': 'PHPSESSID=' + self.__Session.getSessionID() + '; ' + \
                              'wunr=' + self.__userID}
 
-        adresse = f'http://s{self.__Session.getServer()}.wurzelimperium.de/nutzer/profil.php'
+        adresse = f'http{self.__Session.getSecure()}://s{self.__Session.getServer()}.wurzelimperium.de/nutzer/profil.php'
 
         try:
             response, content = self.__webclient.request(adresse, 'GET', headers = headers)
@@ -746,7 +898,7 @@ class HTTPConnection(object):
                              'wunr=' + self.__userID,
                    'Connection': 'Keep-Alive'}
 
-        adresse = f'http://s{self.__Session.getServer()}.wurzelimperium.de/' + \
+        adresse = f'http{self.__Session.getSecure()}://s{self.__Session.getServer()}.wurzelimperium.de/' + \
                   f'ajax/ajax.php?do=changeGarden&garden={gardenID}&token={self.__token}'
 
         try:
@@ -767,7 +919,7 @@ class HTTPConnection(object):
                              'wunr=' + self.__userID,
                    'Connection': 'Keep-Alive'}
 
-        adresse = f'http://s{self.__Session.getServer()}.wurzelimperium.de/' + \
+        adresse = f'http{self.__Session.getSecure()}://s{self.__Session.getServer()}.wurzelimperium.de/' + \
                   f'ajax/ajax.php?do=changeGarden&garden={gardenID}&token={self.__token}'
 
         try:
@@ -779,6 +931,24 @@ class HTTPConnection(object):
             raise
         else:
             return weedFields
+        
+    def getEmptyFieldsAqua(self):
+        headers = {'Cookie': 'PHPSESSID=' + self.__Session.getSessionID() + '; ' + \
+                             'wunr=' + self.__userID,
+                   'Connection': 'Keep-Alive'}
+
+        adresse = f'http{self.__Session.getSecure()}://s' + str(self.__Session.getServer()) + \
+                  '.wurzelimperium.de/ajax/ajax.php?do=watergardenGetGarden' + '&token=' + self.__token
+
+        try:
+            response, content = self.__webclient.request(adresse, 'GET', headers=headers)
+            self.__checkIfHTTPStateIsOK(response)
+            jContent = self.__generateJSONContentAndCheckForOK(content)
+            emptyAquaFields = self.__findEmptyAquaFieldsFromJSONContent(jContent)
+        except:
+            raise
+        else:
+            return emptyAquaFields
 
     def harvestGarden(self, gardenID):
         """
@@ -788,7 +958,7 @@ class HTTPConnection(object):
                              'wunr=' + self.__userID,
                    'Connection': 'Keep-Alive'}
     
-        adresse = f'http://s{self.__Session.getServer()}' + \
+        adresse = f'http{self.__Session.getSecure()}://s{self.__Session.getServer()}' + \
                   f'.wurzelimperium.de/ajax/ajax.php?do=gardenHarvestAll&token={self.__token}'
 
         try:
@@ -818,7 +988,7 @@ class HTTPConnection(object):
                              'wunr=' + self.__userID,
                    'Connection': 'Keep-Alive'}
     
-        adresse = f'http://s{self.__Session.getServer()}' + \
+        adresse = f'http{self.__Session.getSecure()}://s{self.__Session.getServer()}' + \
                   f'.wurzelimperium.de/ajax/ajax.php?do=watergardenHarvestAll&token={self.__token}'
 
         try:
@@ -837,7 +1007,7 @@ class HTTPConnection(object):
                              'wunr=' + self.__userID,
                    'Connection': 'Keep-Alive'}
     
-        adresse = f'http://s{self.__Session.getServer()}' + \
+        adresse = f'http{self.__Session.getSecure()}://s{self.__Session.getServer()}' + \
                   f'.wurzelimperium.de/save/pflanz.php?pflanze[]={plant}' + \
                   f'&feld[]={field}' + \
                   f'&felder[]={fields}' + \
@@ -851,29 +1021,28 @@ class HTTPConnection(object):
             raise
         else:
             pass
-    
-    
-    def growPlantInAquaGarden(self, plant, field):
+
+    def growAquaPlant(self, field, plant):
         """
         Baut eine Pflanze im Wassergarten an.
         """
         headers = {'Cookie': 'PHPSESSID=' + self.__Session.getSessionID() + '; ' + \
                              'wunr=' + self.__userID,
                    'Connection': 'Keep-Alive'}
-    
-        adresse = f'http://s{self.__Session.getServer()}' + \
-                  f'.wurzelimperium.de/ajax/ajax.php?do=watergardenCache&' + \
-                  f'plant[{field}]={plant}&token={self.__token}'
-    
+
+        adresse = f'http{self.__Session.getSecure()}://s' + str(self.__Session.getServer()) + \
+                  '.wurzelimperium.de/ajax/ajax.php?do=watergardenCache&' + \
+                  'plant[' + str(field) + ']=' + str(plant) + \
+                  '&token=' + self.__token
+
         try:
-            response, content = self.__webclient.request(adresse, 'GET', headers = headers)
-            print(response)
-            print(content)
+            response, content = self.__webclient.request(adresse, 'GET', headers=headers)
         except:
             print('except')
             raise
         else:
-            pass    
+            pass
+        
     def getAllProductInformations(self):
         """
         Sammelt alle Produktinformationen und gibt diese zur Weiterverarbeitung zurück.
@@ -882,7 +1051,7 @@ class HTTPConnection(object):
         headers = {'Cookie': 'PHPSESSID=' + self.__Session.getSessionID() + '; ' + \
                              'wunr=' + self.__userID}
 
-        adresse = f'http://s{self.__Session.getServer()}.wurzelimperium.de/main.php?page=garden'
+        adresse = f'http{self.__Session.getSecure()}://s{self.__Session.getServer()}.wurzelimperium.de/main.php?page=garden'
 
         try:
             response, content = self.__webclient.request(adresse, 'GET', headers = headers)
@@ -904,7 +1073,7 @@ class HTTPConnection(object):
                              'wunr=' + self.__userID,
                     'Content-Length':'0'}
     
-        adresse = f'http://s{self.__Session.getServer()}.wurzelimperium.de/ajax/updatelager.php?' + \
+        adresse = f'http{self.__Session.getSecure()}://s{self.__Session.getServer()}.wurzelimperium.de/ajax/updatelager.php?' + \
                   f'all=1&sort=1&type=honey&token={self.__token}'
               
         try:
@@ -926,7 +1095,7 @@ class HTTPConnection(object):
                              'wunr=' + self.__userID,
                     'Content-Length':'0'}
 
-        adresse = f'http://s{self.__Session.getServer()}.wurzelimperium.de/hilfe.php?item=2'
+        adresse = f'http{self.__Session.getSecure()}://s{self.__Session.getServer()}.wurzelimperium.de/hilfe.php?item=2'
 
         #try:
         response, content = self.__webclient.request(adresse, 'GET', headers = headers)
@@ -951,7 +1120,7 @@ class HTTPConnection(object):
                              'wunr=' + self.__userID,
                     'Content-Length':'0'}
 
-        adresse = f'http://s{self.__Session.getServer()}.wurzelimperium.de/stadt/markt.php?show=overview'
+        adresse = f'http{self.__Session.getSecure()}://s{self.__Session.getServer()}.wurzelimperium.de/stadt/markt.php?show=overview'
         
         try:
             response, content = self.__webclient.request(adresse, 'GET', headers = headers)
@@ -981,7 +1150,7 @@ class HTTPConnection(object):
         while (nextPage):
             
             nextPage = False
-            adresse = f'http://s{self.__Session.getServer()}.wurzelimperium.de/stadt/markt.php?order=p&v={id}&filter=1&page={iPage}'
+            adresse = f'http{self.__Session.getSecure()}://s{self.__Session.getServer()}.wurzelimperium.de/stadt/markt.php?order=p&v={id}&filter=1&page={iPage}'
             
             try:
                 response, content = self.__webclient.request(adresse, 'GET', headers = headers)
@@ -1032,7 +1201,7 @@ class HTTPConnection(object):
                              'wunr=' + self.__userID,
                     'Content-Length':'0'}
     
-        adresse = f'http://s{self.__Session.getServer()}.wurzelimperium.de/save/abriss.php?tile={fieldID}'
+        adresse = f'http{self.__Session.getSecure()}://s{self.__Session.getServer()}.wurzelimperium.de/save/abriss.php?tile={fieldID}'
         try:
             response, content = self.__webclient.request(adresse, 'POST', headers = headers)
             self.__checkIfHTTPStateIsOK(response)
@@ -1041,6 +1210,337 @@ class HTTPConnection(object):
             raise
         else:
             return jContent['success']
+        
+    def __getavailablehives(self, jContent):
+        """
+        Sucht im JSON Content nach verfügbaren Bienenstöcken und gibt diese zurück.
+        """
+        availablehives = []
+
+        for hive in jContent['data']['data']['hives']:
+            if "blocked" not in jContent['data']['data']['hives'][hive]:
+                availablehives.append(int(hive))
+
+        # Sortierung über ein leeres Array ändert Objekttyp zu None
+        if len(availablehives) > 0:
+            availablehives.sort(reverse=False)
+
+        return availablehives
+
+    def __gethivetype(self, jContent):
+        """
+        Sucht im JSON Content nach dme Typ der Bienenstöcke und gibt diese zurück.
+        """
+        hivetype = []
+
+        for hive in jContent['data']['data']['hives']:
+            if "blocked" not in jContent['data']['data']['hives'][hive]:
+                hivetype.append(int(hive))
+
+        # Sortierung über ein leeres Array ändert Objekttyp zu None
+        if len(hivetype) > 0:
+            hivetype.sort(reverse=False)
+
+        return hivetype
+
+    def __gethoneyquest(self, jContent):
+        """
+        Sucht im JSON Content nach verfügbaren Bienenquesten und gibt diese zurück.
+        """
+        honeyquest = {}
+        i = 1
+        for course in jContent['questData']['products']:
+            new = {i: {'pid': course['pid'], 'type': course['name']}}
+            honeyquest.update(new)
+            i = i + 1
+        return honeyquest
+
+    def __getavailablebonsaislots(self, jContent):
+        """
+        Sucht im JSON Content nach verfügbaren bonsai und gibt diese zurück.
+        """
+        availabletreeslots = []
+
+        for tree in jContent['data']['data']['slots']:
+            if "block" not in jContent['data']['data']['slots'][tree]:
+                availabletreeslots.append(int(tree))
+
+        # Sortierung über ein leeres Array ändert Objekttyp zu None
+        if len(availabletreeslots) > 0:
+            availabletreeslots.sort(reverse=False)
+
+        return availabletreeslots
+
+    def __getbonsaiquest(self, jContent):
+        """
+        Sucht im JSON Content nach verfügbaren bonsaiquesten und gibt diese zurück.
+        """
+        bonsaiquest = {}
+        i = 1
+        for course in jContent['questData']['products']:
+            new = {i: {'pid': course['pid'], 'type': course['name']}}
+            bonsaiquest.update(new)
+            i = i + 1
+        return bonsaiquest
+    
+    def __getCityQuest(self):
+        """
+        Ermittelt aktuelle Quest und gibt diese zurück.
+        """
+        headers = {'Cookie': 'PHPSESSID=' + self.__Session.getSessionID() + '; ' + \
+                             'wunr=' + self.__userID,
+                   'Content-Length': '0'}
+
+        adresse = f'http{self.__Session.getSecure()}://s' + str(
+            self.__Session.getServer()) + '.wurzelimperium.de/ajax/ajax.php?' + \
+                  'do=CityQuest&action=getQuest&token=' + self.__token
+
+        try:
+            response, content = self.__webclient.request(adresse, 'GET', headers=headers)
+        except:
+            raise
+        else:
+            pass
+
+    def doCityQuest(self):
+        """
+        Probiert die aktuelle Quest zu lösen.
+        """
+        headers = {'Cookie': 'PHPSESSID=' + self.__Session.getSessionID() + '; ' + \
+                             'wunr=' + self.__userID,
+                   'Content-Length': '0'}
+
+        adresse = f'http{self.__Session.getSecure()}://s' + str(
+            self.__Session.getServer()) + '.wurzelimperium.de/ajax/ajax.php?' + \
+                  'do=CityQuest&action=send&token=' + self.__token
+
+        try:
+            response, content = self.__webclient.request(adresse, 'GET', headers=headers)
+        except:
+            raise
+        else:
+            pass
+
+    def __getTreeQuest(self):
+        """
+        Ermittelt aktuelle Quest und gibt diese zurück.
+        """
+        headers = {'Cookie': 'PHPSESSID=' + self.__Session.getSessionID() + '; ' + \
+                             'wunr=' + self.__userID,
+                   'Content-Length': '0'}
+
+        adresse = f'http{self.__Session.getSecure()}://s' + str(
+            self.__Session.getServer()) + '.wurzelimperium.de/treequestquery.php?' + \
+                  'op=listavailablequests'
+
+        try:
+            response, content = self.__webclient.request(adresse, 'GET', headers=headers)
+            self.__checkIfHTTPStateIsOK(response)
+            jContent = json.loads(content)
+        except:
+            raise
+
+    def doTreeQuest(self):
+        return
+
+    def doLoginBonus(self):
+        headers = {'Cookie': 'PHPSESSID=' + self.__Session.getSessionID() + '; ' + \
+                             'wunr=' + self.__userID,
+                   'Content-Length': '0'}
+
+        try:
+            for day in range(1, 8):
+                response, content = self.__webclient.request('http' + str(self.__Session.getSecure()) + '://s' + str(
+                    self.__Session.getServer()) + '.wurzelimperium.de/ajax/ajax.php?do=dailyloginbonus_getreward' + '&day=' + str(
+                    day) + '&token=' + self.__token, 'GET', headers=headers)
+                if response['status'] == 200:
+                    self.__checkIfHTTPStateIsOK(response)
+                    jContent = json.loads(content)
+                    break
+        except:
+            raise
+        
+    def getHoneyFarmInfos(self):
+        """
+        Funktion ermittelt, alle wichtigen Infos des Bienengarten und gibt diese aus.
+        """
+
+        headers = {'Cookie': 'PHPSESSID=' + self.__Session.getSessionID() + '; ' + \
+                             'wunr=' + self.__userID,
+                   'Connection': 'Keep-Alive'}
+        adresse = f'http{self.__Session.getSecure()}://s' + str(self.__Session.getServer()) + \
+                  '.wurzelimperium.de/ajax/ajax.php?do=bees_init' + '&token=' + self.__token
+
+        try:
+            response, content = self.__webclient.request(adresse, 'GET', headers=headers)
+            self.__checkIfHTTPStateIsOK(response)
+            jContent = self.__generateJSONContentAndCheckForOK(content)
+            honeyquestnr = jContent['questnr']
+            honeyquest = self.__gethoneyquest(jContent)
+            hives = self.__getavailablehives(jContent)
+            hivetype = self.__gethivetype(jContent)
+            return honeyquestnr, honeyquest, hives, hivetype
+        except:
+            raise
+
+    def doQuestBienen(self):
+        """
+        Sucht im JSON Content nach verfügbaren Bienenquesten und gibt diese zurück.
+        """
+
+    def harvestBienen(self):
+        """
+        Erntet den vollen Honigtopf.
+        """
+        headers = {'Cookie': 'PHPSESSID=' + self.__Session.getSessionID() + '; ' + \
+                             'wunr=' + self.__userID,
+                   'Connection': 'Keep-Alive'}
+
+        adresse = f'http{self.__Session.getSecure()}://s' + str(self.__Session.getServer()) + \
+                  '.wurzelimperium.de/ajax/ajax.php?do=bees_fill&token=' + self.__token
+
+        try:
+            response, content = self.__webclient.request(adresse, 'GET', headers=headers)
+            self.__checkIfHTTPStateIsOK(response)
+        except:
+            raise
+        else:
+            pass
+
+    def changeHivesTypeQuest(self, hive, Questanforderung):
+        """
+        Ändert den Typ vom Bienenstock auf die Questanforderung.
+        """
+        headers = {'Cookie': 'PHPSESSID=' + self.__Session.getSessionID() + '; ' + \
+                             'wunr=' + self.__userID,
+                   'Connection': 'Keep-Alive'}
+
+        adresse = f'http{self.__Session.getSecure()}://s' + str(self.__Session.getServer()) + \
+                  '.wurzelimperium.de/ajax/ajax.php?do=bees_changehiveproduct&id=' + str(hive) + '&pid=' + str(Questanforderung) + '&token=' + self.__token
+
+        try:
+            response, content = self.__webclient.request(adresse, 'GET', headers=headers)
+            self.__checkIfHTTPStateIsOK(response)
+        except:
+            pass
+
+    #Bonsai
+    def getBonsaiFarmInfos(self):
+        """
+        Funktion ermittelt, alle wichtigen Infos des Bonsaigarten und gibt diese aus.
+        """
+
+        headers = {'Cookie': 'PHPSESSID=' + self.__Session.getSessionID() + '; ' + \
+                             'wunr=' + self.__userID,
+                   'Connection': 'Keep-Alive'}
+        adresse = f'http{self.__Session.getSecure()}://s' + str(self.__Session.getServer()) + \
+                  '.wurzelimperium.de/ajax/ajax.php?do=bonsai_init' + '&token=' + self.__token
+
+        try:
+            response, content = self.__webclient.request(adresse, 'GET', headers=headers)
+            self.__checkIfHTTPStateIsOK(response)
+            jContent = self.__generateJSONContentAndCheckForOK(content)
+            bonsaiquestnr = jContent['questnr']
+            bonsaiquest = self.__getbonsaiquest(jContent)
+            bonsaislots = self.__getavailablebonsaislots(jContent)
+            return bonsaiquestnr, bonsaiquest, bonsaislots
+        except:
+            raise
+
+    def doCutBonsai(self, tree):
+        """
+        Schneidet den Ast vom Bonsai..
+        """
+        headers = {'Cookie': 'PHPSESSID=' + self.__Session.getSessionID() + '; ' + \
+                             'wunr=' + self.__userID,
+                   'Connection': 'Keep-Alive'}
+
+        adresse = f'http{self.__Session.getSecure()}://s' + str(self.__Session.getServer()) + \
+                  '.wurzelimperium.de/ajax/ajax.php?do=bonsai_branch_click&slot=' + str(
+            tree) + '&scissor=274252&cache=%5B2%5D&token=' + self.__token
+
+        try:
+            response, content = self.__webclient.request(adresse, 'GET', headers=headers)
+            self.__checkIfHTTPStateIsOK(response)
+        except:
+            pass
+
+    def sendBienen(self, hive):
+        """
+        sendet die Bienen für 2 Stunden.
+        """
+        headers = {'Cookie': 'PHPSESSID=' + self.__Session.getSessionID() + '; ' + \
+                             'wunr=' + self.__userID,
+                   'Connection': 'Keep-Alive'}
+
+        adresse = f'http{self.__Session.getSecure()}://s' + str(self.__Session.getServer()) + \
+                  '.wurzelimperium.de/ajax/ajax.php?do=bees_startflight&id=' + str(hive) + '&tour=1&token=' + self.__token
+
+        try:
+            response, content = self.__webclient.request(adresse, 'GET', headers=headers)
+            self.__checkIfHTTPStateIsOK(response)
+        except:
+            pass
+
+    #VogelPost
+
+    def doBirdPost(self):
+        """
+        Schickt die Vögel auf die Reise.
+        """
+        headers = {'Cookie': 'PHPSESSID=' + self.__Session.getSessionID() + '; ' + \
+                             'wunr=' + self.__userID,
+                   'Content-Length': '0'}
+
+        try:
+            for slot in range(1, 9):
+                response, content = self.__webclient.request('http' + str(self.__Session.getSecure()) + '://s' + str(
+                    self.__Session.getServer()) + '.wurzelimperium.de/ajax/ajax.php?do=birds_finish_job' + '&slot=' + str(
+                    slot) + '&token=' + self.__token, 'GET', headers=headers)
+                response, content = self.__webclient.request('http' + str(self.__Session.getSecure()) + '://s' + str(
+                    self.__Session.getServer()) + '.wurzelimperium.de/ajax/ajax.php?do=birds_feed_bird' + '&slot=' + str(
+                    slot) + '&token=' + self.__token, 'GET', headers=headers)
+                if slot > 4:
+                    jobslot = slot + 1
+                    house = slot + 1
+                elif slot < 5:
+                    jobslot = slot
+                    house = slot
+                response, content = self.__webclient.request('http' + str(self.__Session.getSecure()) + '://s' + str(
+                    self.__Session.getServer()) + '.wurzelimperium.de/ajax/ajax.php?do=birds_start_job' + '&jobslot=' + str(
+                    jobslot) + '&house=' + str(house) + '&token=' + self.__token, 'GET', headers=headers)
+        except:
+            raise
+
+    def osterevent(self):
+        headers = {'Cookie': 'PHPSESSID=' + self.__Session.getSessionID() + '; ' + \
+                             'wunr=' + self.__userID,
+                   'Content-Length': '0'}
+
+        try:
+            response, content = self.__webclient.request('http' + str(self.__Session.getSecure()) + '://s' + str(
+                self.__Session.getServer()) + '.wurzelimperium.de/ajax/ajax.php?do=diggame_init' + '&token=' + self.__token,
+                                                         'GET', headers=headers)
+            # print "ostereventresponse: " + str(response)
+            # print "ostereventcontent: " + str(content)
+            self.__checkIfHTTPStateIsOK(response)
+            jContent = json.loads(content)
+            zone = 1
+            for free in range(5):
+                self.__webclient.request('http' + str(self.__Session.getSecure()) + '://s' + str(
+                    self.__Session.getServer()) + '.wurzelimperium.de/ajax/ajax.php?do=diggame_map_hit' + '&zone=' + str(
+                    zone) + '&token=' + self.__token, 'GET', headers=headers)
+            response1 = self.__webclient.request('http' + str(self.__Session.getSecure()) + '://s' + str(
+                self.__Session.getServer()) + '.wurzelimperium.de/ajax/ajax.php?do=diggame_map_finish&option=1' + '&token=' + self.__token,
+                                                 'GET', headers=headers)
+            # print response1
+            for day in range(1, 11, 1):
+                self.__webclient.request('http' + str(self.__Session.getSecure()) + '://s' + str(
+                    self.__Session.getServer()) + '.wurzelimperium.de/ajax/ajax.php?do=calendar_open' + '&field=' + str(
+                    day) + '&token=' + self.__token, 'GET', headers=headers)
+        except:
+            raise
+        return
 
 class HTTPStateError(Exception):
     def __init__(self, value):
