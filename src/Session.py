@@ -54,7 +54,7 @@ class Session(object):
         return bReturn
 
 
-    def openSession(self, sessionID, server, secure):
+    def openSession(self, sessionID, server):
         """
         Anlegen einer neuen Session mit allen notwendigen Daten.
         """
@@ -69,7 +69,7 @@ class Session(object):
         self.__logSession.info(f'Session (ID: {sID}) geöffnet')
 
 
-    def closeSession(self, wunr, server, secure):
+    def closeSession(self, wunr, server):
         """
         Zurücksetzen aller Informationen. Gleichbedeutend mit einem Schließen der Session.
         """
@@ -78,7 +78,6 @@ class Session(object):
         self.__server = None
         self.__startTime = None
         self.__endTime = None
-        self.__secure = None
         self.__logSession.info(f'Session (ID: {sID}) geschlossen')
 
     
