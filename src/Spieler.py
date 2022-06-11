@@ -33,6 +33,18 @@ class Spieler():
     def isHoneyFarmAvailable(self):
         return self.__honeyFarmAvailability
 
+    def setBonsaiAvailability(self, bAvl):
+        self.__bonsaiAvailability = bAvl
+
+    def isBonsaiAvailable(self):
+        return self.__bonsaiAvailability
+
+    def setBirdPostAvailability(self, bAvl):
+        self.__birdPostAvailability = bAvl
+
+    def isBirdPostAvailable(self):
+        return self.__birdPostAvailability
+
     def setAquaGardenAvailability(self, bAvl):
         self.__aquaGardenAvailability = bAvl
 

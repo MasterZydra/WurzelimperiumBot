@@ -184,12 +184,23 @@ class Garden():
 
         self._logGarden.info(f'Im Garten {self._id} wurden {len(freeFields)} Felder von Unkraut befreit.')
 
-
 class AquaGarden(Garden):
-    
-    def __init__(self, httpConnection):
+
+    def __init__(self, httpConnection, ):
         Garden.__init__(self, httpConnection, 101)
 
+    def getEmptyAquaFields(self):
+        """
+        Gibt alle leeren Felder des Gartens zurück.
+        """
+        try:
+            # tmpEmptyAquaFields = [9, 10, 11]
+            tmpEmptyAquaFields = self._httpConn.getEmptyFieldsAqua()
+            # print str(tmpEmptyAquaFields)
+        except:
+            self._logGarden.error(f'Konnte leere Felder von AquaGarten nicht ermitteln.')
+        else:
+            return tmpEmptyAquaFields
 
     def waterPlants(self):
         """
@@ -199,13 +210,14 @@ class AquaGarden(Garden):
             plants = self._httpConn.getPlantsToWaterInAquaGarden()
             nPlants = len(plants['fieldID'])
             for i in range(0, nPlants):
-                sFields = self._getAllFieldIDsFromFieldIDAndSizeAsString(plants['fieldID'][i], plants['sx'][i], plants['sy'][i])
+                sFields = self._getAllFieldIDsFromFieldIDAndSizeAsString(plants['fieldID'][i], plants['sx'][i],
+                                                                         plants['sy'][i])
                 self._httpConn.waterPlantInAquaGarden(plants['fieldID'][i], sFields)
         except:
-            self._logGarden.error('Wassergarten konnte nicht bewässert werden.')
+            self._logGarden.error(f'Wassergarten konnte nicht bewässert werden.')
         else:
             self._logGarden.info(f'Im Wassergarten wurden {nPlants} Pflanzen gegossen.')
-        
+
     def harvest(self):
         """
         Erntet alles im Wassergarten.
@@ -216,3 +228,27 @@ class AquaGarden(Garden):
             raise
         else:
             pass
+
+    def growPlant(self, plantID, sx, sy):
+        """
+        Pflanzt eine Pflanze beliebiger Größe an.
+        """
+        # TODO: Soll nur so viele anpflanzen wie gewünscht (neuer Übergabeparameter)
+        # TODO: Soll nur so viele anfpflanzen wie verfügbar (Muss im Wurzelbot geprüft werden)
+
+        emptyFields = self.getEmptyAquaFields()
+        # print "Grow:" + str(emptyFields)
+
+        for field in range(1, self._nMaxFields + 1):
+
+            fieldsToPlant = self._getAllFieldIDsFromFieldIDAndSizeAsIntList(field, sx, sy)
+
+            if self._isPlantGrowableOnField(field, emptyFields, fieldsToPlant, sx):
+                # fields = self._getAllFieldIDsFromFieldIDAndSizeAsString(field, sx, sy)
+                self._httpConn.growAquaPlant(field, plantID)
+
+                # Nach dem Anbau belegte Felder aus der Liste der leeren Felder loeschen
+                fieldsToPlantSet = set(fieldsToPlant)
+                emptyFieldsSet = set(emptyFields)
+                tmpSet = emptyFieldsSet - fieldsToPlantSet
+                emptyFields = list(tmpSet)
