@@ -182,7 +182,7 @@ class Garden():
 
 class AquaGarden(Garden):
 
-    def __init__(self, httpConnection, ):
+    def __init__(self, httpConnection ):
         Garden.__init__(self, httpConnection, 101)
 
     def getEmptyAquaFields(self):
@@ -194,7 +194,7 @@ class AquaGarden(Garden):
             tmpEmptyAquaFields = self._httpConn.getEmptyFieldsAqua()
             # print str(tmpEmptyAquaFields)
         except:
-            self._logGarden.error(f'Konnte leere Felder von AquaGarten nicht ermitteln.')
+            self._logGarden.error('Konnte leere Felder von AquaGarten nicht ermitteln.')
         else:
             return tmpEmptyAquaFields
 
@@ -210,7 +210,7 @@ class AquaGarden(Garden):
                                                                          plants['sy'][i])
                 self._httpConn.waterPlantInAquaGarden(plants['fieldID'][i], sFields)
         except:
-            self._logGarden.error(f'Wassergarten konnte nicht bewässert werden.')
+            self._logGarden.error('Wassergarten konnte nicht bewässert werden.')
         else:
             self._logGarden.info(f'Im Wassergarten wurden {nPlants} Pflanzen gegossen.')
 

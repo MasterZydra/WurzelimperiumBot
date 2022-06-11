@@ -432,7 +432,7 @@ class HTTPConnection(object):
             self.__Session.openSession(cookie['PHPSESSID'].value, str(loginDaten.server))
             self.__userID = cookie['wunr'].value
             
-    def logIn2(self, loginDaten):
+    def logInPortal(self, loginDaten):
         """
         Führt einen login durch und öffnet eine Session.
         """
@@ -847,9 +847,7 @@ class HTTPConnection(object):
         
         headers = {'Cookie': 'PHPSESSID=' + self.__Session.getSessionID() + '; ' + \
                              'wunr=' + self.__userID}
-        print(iCalls)
         for i in range(iCalls):
-            print(i)
             adress = f'http://s{self.__Session.getServer()}.wurzelimperium.de/ajax/ajax.php?do' + \
                      f'=statsGetStats&which=1&start={iStartCorr}&showMe=0&additional=0&token={self.__token}'
             try:
@@ -1030,10 +1028,10 @@ class HTTPConnection(object):
                              'wunr=' + self.__userID,
                    'Connection': 'Keep-Alive'}
 
-        adresse = f'http{self.__Session.getSecure()}://s' + str(self.__Session.getServer()) + \
+        adresse = f'http{self.__Session.getSecure()}://s{self.__Session.getServer()}' + \
                   '.wurzelimperium.de/ajax/ajax.php?do=watergardenCache&' + \
-                  'plant[' + str(field) + ']=' + str(plant) + \
-                  '&token=' + self.__token
+                  f'plant[{field}]={plant}' + \
+                  f'&token={self.__token}'
 
         try:
             response, content = self.__webclient.request(adresse, 'GET', headers=headers)
@@ -1210,78 +1208,8 @@ class HTTPConnection(object):
             raise
         else:
             return jContent['success']
-        
-    def __getavailablehives(self, jContent):
-        """
-        Sucht im JSON Content nach verfügbaren Bienenstöcken und gibt diese zurück.
-        """
-        availablehives = []
 
-        for hive in jContent['data']['data']['hives']:
-            if "blocked" not in jContent['data']['data']['hives'][hive]:
-                availablehives.append(int(hive))
-
-        # Sortierung über ein leeres Array ändert Objekttyp zu None
-        if len(availablehives) > 0:
-            availablehives.sort(reverse=False)
-
-        return availablehives
-
-    def __gethivetype(self, jContent):
-        """
-        Sucht im JSON Content nach dme Typ der Bienenstöcke und gibt diese zurück.
-        """
-        hivetype = []
-
-        for hive in jContent['data']['data']['hives']:
-            if "blocked" not in jContent['data']['data']['hives'][hive]:
-                hivetype.append(int(hive))
-
-        # Sortierung über ein leeres Array ändert Objekttyp zu None
-        if len(hivetype) > 0:
-            hivetype.sort(reverse=False)
-
-        return hivetype
-
-    def __gethoneyquest(self, jContent):
-        """
-        Sucht im JSON Content nach verfügbaren Bienenquesten und gibt diese zurück.
-        """
-        honeyquest = {}
-        i = 1
-        for course in jContent['questData']['products']:
-            new = {i: {'pid': course['pid'], 'type': course['name']}}
-            honeyquest.update(new)
-            i = i + 1
-        return honeyquest
-
-    def __getavailablebonsaislots(self, jContent):
-        """
-        Sucht im JSON Content nach verfügbaren bonsai und gibt diese zurück.
-        """
-        availabletreeslots = []
-
-        for tree in jContent['data']['data']['slots']:
-            if "block" not in jContent['data']['data']['slots'][tree]:
-                availabletreeslots.append(int(tree))
-
-        # Sortierung über ein leeres Array ändert Objekttyp zu None
-        if len(availabletreeslots) > 0:
-            availabletreeslots.sort(reverse=False)
-
-        return availabletreeslots
-
-    def __getbonsaiquest(self, jContent):
-        """
-        Sucht im JSON Content nach verfügbaren bonsaiquesten und gibt diese zurück.
-        """
-        bonsaiquest = {}
-        i = 1
-        for course in jContent['questData']['products']:
-            new = {i: {'pid': course['pid'], 'type': course['name']}}
-            bonsaiquest.update(new)
-            i = i + 1
-        return bonsaiquest
+    #City
     
     def __getCityQuest(self):
         """
@@ -1359,6 +1287,8 @@ class HTTPConnection(object):
                     break
         except:
             raise
+
+    #Bienen
         
     def getHoneyFarmInfos(self):
         """
@@ -1382,6 +1312,50 @@ class HTTPConnection(object):
             return honeyquestnr, honeyquest, hives, hivetype
         except:
             raise
+
+    def __getavailablehives(self, jContent):
+        """
+        Sucht im JSON Content nach verfügbaren Bienenstöcken und gibt diese zurück.
+        """
+        availablehives = []
+
+        for hive in jContent['data']['data']['hives']:
+            if "blocked" not in jContent['data']['data']['hives'][hive]:
+                availablehives.append(int(hive))
+
+        # Sortierung über ein leeres Array ändert Objekttyp zu None
+        if len(availablehives) > 0:
+            availablehives.sort(reverse=False)
+
+        return availablehives
+
+    def __gethivetype(self, jContent):
+        """
+        Sucht im JSON Content nach dme Typ der Bienenstöcke und gibt diese zurück.
+        """
+        hivetype = []
+
+        for hive in jContent['data']['data']['hives']:
+            if "blocked" not in jContent['data']['data']['hives'][hive]:
+                hivetype.append(int(hive))
+
+        # Sortierung über ein leeres Array ändert Objekttyp zu None
+        if len(hivetype) > 0:
+            hivetype.sort(reverse=False)
+
+        return hivetype
+
+    def __gethoneyquest(self, jContent):
+        """
+        Sucht im JSON Content nach verfügbaren Bienenquesten und gibt diese zurück.
+        """
+        honeyquest = {}
+        i = 1
+        for course in jContent['questData']['products']:
+            new = {i: {'pid': course['pid'], 'type': course['name']}}
+            honeyquest.update(new)
+            i = i + 1
+        return honeyquest
 
     def doQuestBienen(self):
         """
@@ -1409,7 +1383,7 @@ class HTTPConnection(object):
 
     def changeHivesTypeQuest(self, hive, Questanforderung):
         """
-        Ändert den Typ vom Bienenstock auf die Questanforderung.
+        #TODO Ändert den Typ vom Bienenstock auf die Questanforderung.
         """
         headers = {'Cookie': 'PHPSESSID=' + self.__Session.getSessionID() + '; ' + \
                              'wunr=' + self.__userID,
@@ -1424,7 +1398,25 @@ class HTTPConnection(object):
         except:
             pass
 
+    def sendBienen(self, hive):
+        """
+        sendet die Bienen für 2 Stunden.
+        """
+        headers = {'Cookie': 'PHPSESSID=' + self.__Session.getSessionID() + '; ' + \
+                             'wunr=' + self.__userID,
+                   'Connection': 'Keep-Alive'}
+
+        adresse = f'http{self.__Session.getSecure()}://s' + str(self.__Session.getServer()) + \
+                  '.wurzelimperium.de/ajax/ajax.php?do=bees_startflight&id=' + str(hive) + '&tour=1&token=' + self.__token
+
+        try:
+            response, content = self.__webclient.request(adresse, 'GET', headers=headers)
+            self.__checkIfHTTPStateIsOK(response)
+        except:
+            pass
+
     #Bonsai
+
     def getBonsaiFarmInfos(self):
         """
         Funktion ermittelt, alle wichtigen Infos des Bonsaigarten und gibt diese aus.
@@ -1465,28 +1457,39 @@ class HTTPConnection(object):
         except:
             pass
 
-    def sendBienen(self, hive):
+    def __getavailablebonsaislots(self, jContent):
         """
-        sendet die Bienen für 2 Stunden.
+        Sucht im JSON Content nach verfügbaren bonsai und gibt diese zurück.
         """
-        headers = {'Cookie': 'PHPSESSID=' + self.__Session.getSessionID() + '; ' + \
-                             'wunr=' + self.__userID,
-                   'Connection': 'Keep-Alive'}
+        availabletreeslots = []
 
-        adresse = f'http{self.__Session.getSecure()}://s' + str(self.__Session.getServer()) + \
-                  '.wurzelimperium.de/ajax/ajax.php?do=bees_startflight&id=' + str(hive) + '&tour=1&token=' + self.__token
+        for tree in jContent['data']['data']['slots']:
+            if "block" not in jContent['data']['data']['slots'][tree]:
+                availabletreeslots.append(int(tree))
 
-        try:
-            response, content = self.__webclient.request(adresse, 'GET', headers=headers)
-            self.__checkIfHTTPStateIsOK(response)
-        except:
-            pass
+        # Sortierung über ein leeres Array ändert Objekttyp zu None
+        if len(availabletreeslots) > 0:
+            availabletreeslots.sort(reverse=False)
+
+        return availabletreeslots
+
+    def __getbonsaiquest(self, jContent):
+        """
+        Sucht im JSON Content nach verfügbaren bonsaiquesten und gibt diese zurück.
+        """
+        bonsaiquest = {}
+        i = 1
+        for course in jContent['questData']['products']:
+            new = {i: {'pid': course['pid'], 'type': course['name']}}
+            bonsaiquest.update(new)
+            i = i + 1
+        return bonsaiquest
 
     #VogelPost
 
     def doBirdPost(self):
         """
-        Schickt die Vögel auf die Reise.
+        #TODO Schickt die Vögel auf die Reise.
         """
         headers = {'Cookie': 'PHPSESSID=' + self.__Session.getSessionID() + '; ' + \
                              'wunr=' + self.__userID,
@@ -1511,36 +1514,6 @@ class HTTPConnection(object):
                     jobslot) + '&house=' + str(house) + '&token=' + self.__token, 'GET', headers=headers)
         except:
             raise
-
-    def osterevent(self):
-        headers = {'Cookie': 'PHPSESSID=' + self.__Session.getSessionID() + '; ' + \
-                             'wunr=' + self.__userID,
-                   'Content-Length': '0'}
-
-        try:
-            response, content = self.__webclient.request('http' + str(self.__Session.getSecure()) + '://s' + str(
-                self.__Session.getServer()) + '.wurzelimperium.de/ajax/ajax.php?do=diggame_init' + '&token=' + self.__token,
-                                                         'GET', headers=headers)
-            # print "ostereventresponse: " + str(response)
-            # print "ostereventcontent: " + str(content)
-            self.__checkIfHTTPStateIsOK(response)
-            jContent = json.loads(content)
-            zone = 1
-            for free in range(5):
-                self.__webclient.request('http' + str(self.__Session.getSecure()) + '://s' + str(
-                    self.__Session.getServer()) + '.wurzelimperium.de/ajax/ajax.php?do=diggame_map_hit' + '&zone=' + str(
-                    zone) + '&token=' + self.__token, 'GET', headers=headers)
-            response1 = self.__webclient.request('http' + str(self.__Session.getSecure()) + '://s' + str(
-                self.__Session.getServer()) + '.wurzelimperium.de/ajax/ajax.php?do=diggame_map_finish&option=1' + '&token=' + self.__token,
-                                                 'GET', headers=headers)
-            # print response1
-            for day in range(1, 11, 1):
-                self.__webclient.request('http' + str(self.__Session.getSecure()) + '://s' + str(
-                    self.__Session.getServer()) + '.wurzelimperium.de/ajax/ajax.php?do=calendar_open' + '&field=' + str(
-                    day) + '&token=' + self.__token, 'GET', headers=headers)
-        except:
-            raise
-        return
 
 class HTTPStateError(Exception):
     def __init__(self, value):

@@ -90,7 +90,7 @@ class WurzelBot(object):
         return listFields
 
 
-    def launchBot(self, server, user, pw):
+    def launchBot(self, server, user, pw, portalacc):
         """
         Diese Methode startet und initialisiert den Wurzelbot. Dazu wird ein Login mit den
         übergebenen Logindaten durchgeführt und alles nötige initialisiert.
@@ -99,9 +99,9 @@ class WurzelBot(object):
         self.__logBot.info('Starte Wurzelbot')
         loginDaten = Login(server=server, user=user, password=pw)
 
-        if user == "portuserexample":
+        if portalacc == True:
             try:
-                self.__HTTPConn.logIn2(loginDaten)
+                self.__HTTPConn.logInPortal(loginDaten)
             except:
                 self.__logBot.error('Problem beim Starten des Wurzelbots.')
                 return
@@ -194,10 +194,9 @@ class WurzelBot(object):
         """
         for garden in self.garten:
             garden.waterPlants()
-        
+
         if self.spieler.isAquaGardenAvailable():
-            pass
-            #self.waterPlantsInAquaGarden()
+            self.wassergarten.waterPlants()
 
 
     def writeMessagesIfMailIsConfirmed(self, recipients, subject, body):
@@ -362,16 +361,16 @@ class WurzelBot(object):
 
     def removeWeedInAllGardens(self):
         """
-        Entfernt Unrkaut/Maulwürfe/Steine aus allen Gärten.
+        Entfernt Unkraut/Maulwürfe/Steine aus allen Gärten.
         """
         #TODO: Wassergarten ergänzen
         try:
             for garden in self.garten:
                 garden.removeWeed()
         except:
-            self.__logBot.error('Konnte nicht alle Felder von Unrkaut befreien.')
+            self.__logBot.error('Konnte nicht alle Felder von Unkraut befreien.')
         else:
-            self.__logBot.info('Konnte alle Gärten von Unrkaut befreien.')
+            self.__logBot.info('Konnte alle Gärten von Unkraut befreien.')
 
     def doQuestBienen(self):
         #TODO Honig in Obst umwandeln(mit Tablee und jeweils anpflanzen)
@@ -379,7 +378,6 @@ class WurzelBot(object):
             hives = self.honig.getHivesAvailable()
             type = self.honig.getHiveType()
             quest = self.honig.getQuestHoney()
-            #print self.growPlantsInGardens(8)
             if quest not in type:
                 for hive in hives:
                     self.__HTTPConn.changeHivesTypeQuest(quest, hive)
@@ -407,9 +405,6 @@ class WurzelBot(object):
         except:
             self.__logBot.error('LoginBonus konnte nicht aktualisiert werden')
 
-    def doOsterEvent(self):
-        self.__HTTPConn.osterevent()
-
     def doCutBonsai(self):
         trees = self.bonsai.getBonsaiAvailable()
         for tree in trees:
@@ -420,6 +415,6 @@ class WurzelBot(object):
             if self.spieler.isBirdPostAvailable():
                 self.__HTTPConn.doBirdPost()
         except:
-            self.__logBot.error('Konnte nicht alle BirdsPost ernten.')
+            self.__logBot.error('Konnte nicht alle BirdsPost einsammeln.')
         else:
             pass
