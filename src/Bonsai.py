@@ -8,7 +8,7 @@ class Bonsai():
     Diese Daten-Klasse enthält alle wichtigen Informationen über den Bonsaigarten.
     """
     # Honig
-    __hbonsaiFarmAvailability = None
+    __bonsaiFarmAvailability = None
     __bonsaiavailable = None
     __bonsaiquestnr = None
     __bonsaiquest = None
