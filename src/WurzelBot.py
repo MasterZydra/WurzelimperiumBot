@@ -83,7 +83,7 @@ class WurzelBot(object):
         übergebenen Logindaten durchgeführt und alles nötige initialisiert.
         """
         self.__logBot.info('-------------------------------------------')
-        self.__logBot.info('Starte Wurzelbot')
+        self.__logBot.info(f'Starte Wurzelbot für User {user} auf Server Nr. {server}')
         loginDaten = Login(server=server, user=user, password=pw)
 
         try:
@@ -140,6 +140,7 @@ class WurzelBot(object):
             self.__logBot.error('Wurzelbot konnte nicht korrekt beendet werden.')
         else:
             self.__logBot.info('Logout erfolgreich.')
+            self.__logBot.info('-------------------------------------------')
 
 
     def updateUserData(self):
