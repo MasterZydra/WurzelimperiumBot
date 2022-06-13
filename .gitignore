@@ -12,12 +12,9 @@ bin/
 include/
 lib/
 pyvenv.cfg
-/.idea/modules.xml
-/.idea/markdown.xml
-/.idea/misc.xml
-/.idea/inspectionProfiles/profiles_settings.xml
-/.idea/inspectionProfiles/Project_Default.xml
-/.idea/vcs.xml
-/.idea/WurzelimperiumBot.iml
-/.idea/.gitignore
+/.idea/*
+# Some local files
 /automated_script_1.py
+/automated_script_ru.py
+/automated_script.py
+/test.py
