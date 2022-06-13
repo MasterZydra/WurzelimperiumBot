@@ -46,7 +46,7 @@ class WurzelBot(object):
         self.wassergarten = None
         self.marktplatz = Marketplace(self.__HTTPConn)
         self.wimparea = Wimps(self.__HTTPConn)
-        self.quest = Quest(self.__HTTPConn)
+        self.quest = Quest(self.__HTTPConn, self.spieler)
 
 
     def __initGardens(self):

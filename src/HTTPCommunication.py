@@ -167,6 +167,26 @@ class HTTPConnection(object):
             parsed_string_list = re.findall(r"<td>(.+?)</td>", str(jContent['table'][5]).replace(r'&nbsp;', ''))
             result = int(parsed_string_list[1])
             success = True
+        elif info == 'CactusQuest':
+            parsed_string_list = re.findall(r"<td>(.+?)</td>", str(jContent['table'][7]).replace(r'&nbsp;', ''))
+            result = int(parsed_string_list[1])
+            success = True
+        elif info == 'EchinoQuest':
+            parsed_string_list = re.findall(r"<td>(.+?)</td>", str(jContent['table'][8]).replace(r'&nbsp;', ''))
+            result = int(parsed_string_list[1])
+            success = True
+        elif info == 'BigheadQuest':
+            parsed_string_list = re.findall(r"<td>(.+?)</td>", str(jContent['table'][9]).replace(r'&nbsp;', ''))
+            result = int(parsed_string_list[1])
+            success = True
+        elif info == 'OpuntiaQuest':
+            parsed_string_list = re.findall(r"<td>(.+?)</td>", str(jContent['table'][10]).replace(r'&nbsp;', ''))
+            result = int(parsed_string_list[1])
+            success = True
+        elif info == 'SaguaroQuest':
+            parsed_string_list = re.findall(r"<td>(.+?)</td>", str(jContent['table'][11]).replace(r'&nbsp;', ''))
+            result = int(parsed_string_list[1])
+            success = True
 
         if success:
             return result
