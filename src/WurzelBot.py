@@ -369,9 +369,9 @@ class WurzelBot(object):
             for garden in self.garten:
                 garden.removeWeed()
         except:
-            self.__logBot.error('Konnte nicht alle Felder von Unrkaut befreien.')
+            self.__logBot.error('Konnte nicht alle Felder von Unkraut befreien.')
         else:
-            self.__logBot.info('Konnte alle Gärten von Unrkaut befreien.')
+            self.__logBot.info('Konnte alle Gärten von Unkraut befreien.')
 
     #Bienen
 

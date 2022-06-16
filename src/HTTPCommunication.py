@@ -460,7 +460,9 @@ class HTTPConnection(object):
                    'Cookie': self.__unr}
 
         try:
-            loginadresse = 'https://s1.wurzelimperium.de/logw.php?port=1&unr=' + self.__unr + '&portunr=' + self.__portunr + '&hash=' + self.__token + '&sno=1'
+            loginadresse = f'http{self.__Session.getSecure()}://s{self.__Session.getServer()}.wurzelimperium.de/logw.php?port=1&unr=' + \
+                           f'{self.__unr}&portunr={self.__portunr}&hash={self.__token}&sno=1'
+
             response, content = self.__webclient.request(loginadresse, 'GET', headers=headers)
             self.__checkIfHTTPStateIsFOUND(response)
         except:
@@ -1387,6 +1389,7 @@ class HTTPConnection(object):
         """
         Sucht im JSON Content nach verfügbaren Bienenquesten und gibt diese zurück.
         """
+        pass
 
     def harvestBienen(self):
         """
