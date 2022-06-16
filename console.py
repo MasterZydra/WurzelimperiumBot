@@ -5,6 +5,7 @@ import src.Main as wbot
 user = ''
 pw = ''
 server = 46
+portalacc = False
 
 # Global vars
 wurzelBot = object

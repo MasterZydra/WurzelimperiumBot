@@ -9,11 +9,12 @@ parser = argparse.ArgumentParser()
 parser.add_argument('server', type=int, help='server number')
 parser.add_argument('user', type=str, help='username for login')
 parser.add_argument('password', type=str, help='password for login', default=False)
+parser.add_argument('portalacc', type=str, help='Use PortalLogin', default=False)
 args = parser.parse_args()
 
 # Init connection
 wurzelBot = main.initWurzelBot()
-wurzelBot.launchBot(args.server, args.user, args.password)
+wurzelBot.launchBot(args.server, args.user, args.password, args.portalacc)
 
 
 # Remove weed

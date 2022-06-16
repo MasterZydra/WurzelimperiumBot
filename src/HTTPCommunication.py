@@ -432,7 +432,7 @@ class HTTPConnection(object):
             self.__Session.openSession(cookie['PHPSESSID'].value, str(loginDaten.server))
             self.__userID = cookie['wunr'].value
             
-    def logIn2(self, loginDaten):
+    def logInPortal(self, loginDaten):
         """
         Führt einen login durch und öffnet eine Session.
         """

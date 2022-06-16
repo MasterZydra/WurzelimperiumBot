@@ -90,7 +90,7 @@ class WurzelBot(object):
         return listFields
 
 
-    def launchBot(self, server, user, pw):
+    def launchBot(self, server, user, pw, portalacc):
         """
         Diese Methode startet und initialisiert den Wurzelbot. Dazu wird ein Login mit den
         übergebenen Logindaten durchgeführt und alles nötige initialisiert.
@@ -99,9 +99,9 @@ class WurzelBot(object):
         self.__logBot.info('Starte Wurzelbot')
         loginDaten = Login(server=server, user=user, password=pw)
 
-        if user == "portuserexample":
+        if portalacc == True:
             try:
-                self.__HTTPConn.logIn2(loginDaten)
+                self.__HTTPConn.logInPortal(loginDaten)
             except:
                 self.__logBot.error('Problem beim Starten des Wurzelbots.')
                 return
@@ -373,13 +373,14 @@ class WurzelBot(object):
         else:
             self.__logBot.info('Konnte alle Gärten von Unrkaut befreien.')
 
+    #Bienen
+
     def doQuestBienen(self):
         #TODO Honig in Obst umwandeln(mit Tablee und jeweils anpflanzen)
         if self.honig.isHoneyFarmAvailable():
             hives = self.honig.getHivesAvailable()
             type = self.honig.getHiveType()
             quest = self.honig.getQuestHoney()
-            #print self.growPlantsInGardens(8)
             if quest not in type:
                 for hive in hives:
                     self.__HTTPConn.changeHivesTypeQuest(quest, hive)
@@ -395,6 +396,26 @@ class WurzelBot(object):
         else:
             self.__logBot.error('Konnte nicht alle Bienen ernten.')
 
+    #Bonsai
+
+    def doCutBonsai(self):
+        trees = self.bonsai.getBonsaiAvailable()
+        for tree in trees:
+            self.__HTTPConn.doCutBonsai(tree)
+
+    #Vogelpost
+
+    def doSendbirds(self):
+        try:
+            if self.spieler.isBirdPostAvailable():
+                self.__HTTPConn.doBirdPost()
+        except:
+            self.__logBot.error('Konnte nicht alle BirdsPost ernten.')
+        else:
+            pass
+
+    #Extra
+
     def doCityQuest(self):
         try:
             self.__HTTPConn.doCityQuest()
@@ -406,20 +427,3 @@ class WurzelBot(object):
             self.__HTTPConn.doLoginBonus()
         except:
             self.__logBot.error('LoginBonus konnte nicht aktualisiert werden')
-
-    def doOsterEvent(self):
-        self.__HTTPConn.osterevent()
-
-    def doCutBonsai(self):
-        trees = self.bonsai.getBonsaiAvailable()
-        for tree in trees:
-            self.__HTTPConn.doCutBonsai(tree)
-
-    def doSendbirds(self):
-        try:
-            if self.spieler.isBirdPostAvailable():
-                self.__HTTPConn.doBirdPost()
-        except:
-            self.__logBot.error('Konnte nicht alle BirdsPost ernten.')
-        else:
-            pass
