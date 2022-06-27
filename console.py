@@ -108,7 +108,7 @@ def lowest(argStr : str):
         return
 
     if args[0] == '':
-    print(wurzelBot.getLowestPlantStockEntry())
+        print(wurzelBot.getLowestPlantStockEntry())
     elif args[0] == 'single':
         print(wurzelBot.getLowestSinglePlantStockEntry())
 
