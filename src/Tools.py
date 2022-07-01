@@ -1,4 +1,17 @@
 # -*- coding: utf-8 -*-
+from prettytable import PrettyTable
+from textwrap import wrap
+VAL_WRAP_WIDTH = 60
+
+
+def pretty_dictionary(dic):
+    tab = PrettyTable(['key', 'value'])
+    for key, val in dic.items():
+        wrapped_value_lines = wrap(str(val) or '', VAL_WRAP_WIDTH) or ['']
+        tab.add_row([key, wrapped_value_lines[0]])
+        for subseq in wrapped_value_lines[1:]:
+            tab.add_row(['', subseq])
+    return tab
 
 
 def readListFromTextfile(textfile):
@@ -14,7 +27,7 @@ def readListFromTextfile(textfile):
     tmpList = []
     elementsToBeDeleted = []
     
-    #Inhalt der Datei als Liste einlesen
+    # Inhalt der Datei als Liste einlesen
     try:
         file = open(textfile, 'r')
     except IOError:
@@ -28,14 +41,14 @@ def readListFromTextfile(textfile):
             #Leerzeichen entfernen
             tmpList[i] = str(tmpList[i]).strip()
 
-            if (tmpList[i] == ''):
+            if tmpList[i] == '':
                 elementsToBeDeleted.append(i)
 
-        #Reihenfolge der zwischengespeicherten Indizes umkehren, um das Entfernen zu erleichtern.
-        #Sonst verschieben sich die Indizes 
+        # Reihenfolge der zwischengespeicherten Indizes umkehren, um das Entfernen zu erleichtern.
+        # Sonst verschieben sich die Indizes
         elementsToBeDeleted.reverse()
         
-        #Leere Eintraege entfernen
+        # Leere Eintraege entfernen
         for i in range(len(elementsToBeDeleted)):
             del tmpList[elementsToBeDeleted[i]]
             
