@@ -51,6 +51,9 @@ class Spieler():
     def getLevelName(self):
         return html.unescape(self.__userData['level'])
     
+    def getBarFormated(self):
+        return self.__userData['bar']
+
     def getBar(self):
         return self.__userData['bar_unformat']
     
