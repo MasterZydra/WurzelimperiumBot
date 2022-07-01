@@ -20,7 +20,6 @@ if args.log:
 
 # Init connection
 wurzelBot = WurzelBot()
-
 wurzelBot.launchBot(args.server, args.user, args.password, args.lang)
 
 
