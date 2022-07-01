@@ -7,7 +7,7 @@ Created on 21.03.2017
 from collections import namedtuple
 
 
-Login = namedtuple('Login', 'server user password')
+Login = namedtuple('Login', 'server user password language')
 
 class Spieler():
     
@@ -52,7 +52,7 @@ class Spieler():
         return self.__userData['level']
     
     def getBar(self):
-        return self.__userData['bar']
+        return self.__userData['bar_unformat']
     
     def getPoints(self):
         return self.__userData['points']
@@ -60,12 +60,15 @@ class Spieler():
     def getCoins(self):
         return self.__userData['coins']
 
+    def getTime(self):
+        return self.__userData['time']
+
     def setUserNameFromServer(self, http):
         """
         Liest den Spielernamen vom Server und speichert ihn in der Klasse.
         """
         try:
-            tmpUserName = http.getUserName()
+            tmpUserName = http.getInfoFromStats("Username")
         except:
             raise
         else:
@@ -96,4 +99,3 @@ class Spieler():
         else:
             self.__eMailAdressConfirmed = tmpEMailConf
             
-
