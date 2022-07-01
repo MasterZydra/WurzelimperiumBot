@@ -6,6 +6,8 @@ from src.WurzelBot import WurzelBot
 user = ''
 pw = ''
 server = 17
+# lang = de/en/ru
+lang = 'de'
 
 # Global vars
 wurzelBot = object
