@@ -6,6 +6,8 @@ from src.WurzelBot import WurzelBot
 user = ''
 pw = ''
 server = 17
+# lang = de/en/ru
+lang = 'de'
 
 # Global vars
 wurzelBot = object
@@ -53,7 +55,7 @@ def init():
     
     global wurzelBot
     wurzelBot = WurzelBot()
-    wurzelBot.launchBot(server, user, pw)
+    wurzelBot.launchBot(server, user, pw, lang)
 
 def closeConnection():
     print('Close connection...\n')
