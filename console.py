@@ -35,6 +35,7 @@ def main():
         elif inputLower == 'water': water()
         elif inputLower == 'weed': removeWeed()
         elif inputLower.startswith('details'): productDetails(userInput)
+        elif inputLower == 'bonus': getDailyLoginBonus()
         else:
             print('Unknown command type \'help\' or \'?\' to see all available commands')
 
@@ -65,6 +66,7 @@ def closeConnection():
 def help():
     print('Available commands:')
     print('-------------------')
+    print('bonus        Get the daily login bonus')
     print('details      Show details to the products')
     print('             Opt. argument: "all"')
     print('exit         Close connection and exit bot')
@@ -158,6 +160,10 @@ def productDetails(argStr : str):
 def removeWeed():
     print('Remove weed from all gardens...')
     wurzelBot.removeWeedInAllGardens()
+
+def getDailyLoginBonus():
+    print('Get the daily login bonus...')
+    wurzelBot.getDailyLoginBonus()
 
 def logging():
     if log == True:
