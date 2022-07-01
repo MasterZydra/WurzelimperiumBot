@@ -55,7 +55,7 @@ def init():
     
     global wurzelBot
     wurzelBot = WurzelBot()
-    wurzelBot.launchBot(server, user, pw)
+    wurzelBot.launchBot(server, user, pw, lang)
 
 def closeConnection():
     print('Close connection...\n')
