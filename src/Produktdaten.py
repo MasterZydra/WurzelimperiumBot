@@ -48,10 +48,9 @@ class ProductData():
             
     def getProductByName(self, name : str):
         for product in self.__products:
-            if (name.lower() == product.getName().lower()):
-                return product
+            if (name.lower() == product.getName().lower()): return product
         return None
-
+        
     def getListOfAllProductIDs(self):
         
         productIDList = []
@@ -61,6 +60,17 @@ class ProductData():
             productIDList.append(id)
             
         return productIDList
+
+    def getListOfSingleFieldPlants(self):
+        singleFieldPlants = []
+        for product in self.__products:
+            if product.getSX() != 1 or product.getSY() != 1 \
+            or not product.isPlant() or not product.isPlantable():
+                continue
+        
+            singleFieldPlants.append(product.getName())
+
+        return singleFieldPlants
 
     def initAllProducts(self):
         """
