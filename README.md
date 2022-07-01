@@ -35,8 +35,9 @@ Für die Verwendung ist jeweils das Hinterlegen von der Servernummer, dem Benutz
 1. Installation der Abhängigkeiten:  
 `pip install -r ./requirements.txt`
 2. Anmeldedaten im Skript hinterlegen (bei [example.py](./example.py) und [console.py](./console.py)).  
-   Beim automatisierten Skript [automated_script.py](./automated_script.py) werden die Anmeldedaten beim Aufruf übergeben:  
-   `python3 ./automated_script.py <server-nr> <username> <password>`
+   Beim automatisierten Skript [automated_script.py](./automated_script.py) werden die Anmeldedaten beim Aufruf übergeben:
+   Wichtig hierbei: Als Sprache muss de, en, ru angegeben werden! 
+   `python3 ./automated_script.py <server-nr> <username> <password> <lang>`
 3. Skript ausführen
 
 ## Installationsskript für Linux
