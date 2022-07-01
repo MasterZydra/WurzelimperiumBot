@@ -19,6 +19,7 @@ from src.Marktplatz import Marketplace
 from src.Produktdaten import ProductData
 from src.Wimps import Wimps
 from src.Quests import Quest
+from src.Bonus import Bonus
 
 from collections import Counter
 import datetime
@@ -47,6 +48,7 @@ class WurzelBot(object):
         self.marktplatz = Marketplace(self.__HTTPConn)
         self.wimparea = Wimps(self.__HTTPConn)
         self.quest = Quest(self.__HTTPConn, self.spieler)
+        self.bonus = Bonus(self.__HTTPConn, self.spieler)
 
 
     def __initGardens(self):

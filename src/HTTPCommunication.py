@@ -444,10 +444,11 @@ class HTTPConnection(object):
         else:
             return result
 
-    def readUserDataFromServer(self):
+    def readUserDataFromServer(self, data_type="UserData"):
         """
         Ruft eine Updatefunktion im Spiel auf und verarbeitet die empfangenen userdaten.
         """
+        # TODO: move __getUserDataFromJSONContent to Spieler class and optimize call of the method
         headers = self.__getHeaders()
         adresse = 'http://s' + str(self.__Session.getServer()) + str(
             self.__Session.getServerURL()) + 'ajax/menu-update.php'
@@ -459,7 +460,10 @@ class HTTPConnection(object):
         except:
             raise
         else:
-            return self.__getUserDataFromJSONContent(jContent)
+            if data_type == "UserData":
+                return self.__getUserDataFromJSONContent(jContent)
+            else:
+                return jContent
 
     def getPlantsToWaterInGarden(self, gardenID):
         """
@@ -1136,6 +1140,24 @@ class HTTPConnection(object):
             pass
         else:
             return jContent['data']
+
+    def getDailyLoginBonus(self, day):
+        """
+        @param day: string (day of daily bonus)
+        """
+        headers = self.__getHeaders()
+
+        adresse = 'http://s' + str(self.__Session.getServer()) + \
+                  str(self.__Session.getServerURL()) + 'ajax/ajax.php?do=dailyloginbonus_getreward&day=' + \
+                  str(day) + '&token=' + self.__token
+        try:
+            response, content = self.__webclient.request(adresse, 'GET', headers=headers)
+            self.__checkIfHTTPStateIsOK(response)
+            jContent = self.__generateJSONContentAndCheckForOK(content)
+        except:
+            pass
+        else:
+            return jContent
 
 
 class HTTPStateError(Exception):
