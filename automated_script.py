@@ -50,5 +50,9 @@ time.sleep(3)
 print('Alle Pflanzen gießen...')
 wurzelBot.waterPlantsInAllGardens()
 
+# Get login bonus
+print('Täglichen Login Bonus abholen...')
+wurzelBot.getDailyLoginBonus()
+
 # Close connection
 wurzelBot.exitBot()
