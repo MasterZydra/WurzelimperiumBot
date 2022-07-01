@@ -17,8 +17,6 @@ log = True
 user = ''
 pw = ''
 server = 46
-# lang = de/en/ru
-lang = 'de'
 
 # Init logger
 if log == True:
@@ -26,7 +24,7 @@ if log == True:
 
 #Login und Initialisierung des Bots
 wurzelBot = WurzelBot()
-wurzelBot.launchBot(server, user, pw, lang)
+wurzelBot.launchBot(server, user, pw)
 
 #TODO: Aktionen definieren
 #Beispiel: Alles ernten, in allen Gärten Kürbis anbauen und alles gießen
