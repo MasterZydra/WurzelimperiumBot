@@ -351,7 +351,8 @@ class WurzelBot(object):
         for productID in self.storage.getOrderedStockList():
             if not self.productData.getProductByID(productID).isPlant() or \
                 not self.productData.getProductByID(productID).isPlantable() or \
-                self.productData.getSX() != 1 or self.productData.getSY() != 0:
+                self.productData.getProductByID(productID).getSX() != 1 or \
+                self.productData.getProductByID(productID).getSY() != 1:
                 continue
 
             currentStock = self.storage.getStockByProductID(productID)
