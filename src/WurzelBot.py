@@ -441,3 +441,6 @@ class WurzelBot(object):
             self.__logBot.error('Konnte nicht alle Felder von Unrkaut befreien.')
         else:
             self.__logBot.info('Konnte alle Gärten von Unrkaut befreien.')
+
+    def getDailyLoginBonus(self):
+        self.bonus.getDailyLoginBonus()
