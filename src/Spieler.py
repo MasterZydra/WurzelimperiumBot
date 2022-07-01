@@ -5,7 +5,7 @@ Created on 21.03.2017
 @author: MrFlamez
 '''
 from collections import namedtuple
-
+import html
 
 Login = namedtuple('Login', 'server user password language')
 
@@ -49,7 +49,7 @@ class Spieler():
         return self.__userData['levelnr']
     
     def getLevelName(self):
-        return self.__userData['level']
+        return html.unescape(self.__userData['level'])
     
     def getBar(self):
         return self.__userData['bar_unformat']
