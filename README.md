@@ -29,14 +29,18 @@ Für die Verwendung ist jeweils das Hinterlegen von der Servernummer, dem Benutz
 - Vollautomatische Bewässerung aller Gärten inkl. Wassergarten
 - Automatisiertes Anpflanzen
 - Abfrage aller aktuellen Marktpreise (Keine Abhängigkeit von Preislistenpflegern und deren Aktualisierungsintervall!)
+- Automatisches claimen der täglichen Login Bonis
+- Automatisiertes Questing
+- Bedienung der Wimps in den Gärten für das Generieren der Wurzeltaler durch den Bot
+- Unterstützung von mehreren Regionen (Deutschland, USA, Russland, etc.)
 
 ## Installation
 **Voraussetzung:** Python 3
 1. Installation der Abhängigkeiten:  
 `pip install -r ./requirements.txt`
 2. Anmeldedaten im Skript hinterlegen (bei [example.py](./example.py) und [console.py](./console.py)).  
-   Beim automatisierten Skript [automated_script.py](./automated_script.py) werden die Anmeldedaten beim Aufruf übergeben:
-   Wichtig hierbei: Als Sprache muss de, en, ru angegeben werden! 
+   Beim automatisierten Skript [automated_script.py](./automated_script.py) werden die Anmeldedaten beim Aufruf übergeben:\
+   Wichtig hierbei: Als Sprache kann de, en, ru angegeben werden, wobei de (für wurzelimperium.de) standardmäßig als Argument gegeben ist und optional ist.\
    `python3 ./automated_script.py <server-nr> <username> <password> <lang>`
 3. Skript ausführen
 
