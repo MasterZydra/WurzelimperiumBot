@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import src.Main as main
+import src.Logger as logger
+from src.WurzelBot import WurzelBot
 
 
 """
@@ -9,13 +10,20 @@ Beispieldatei zur Verwendung des Bots.
 Alle Stellen die angepasst werden müssen sind mit TODO gekennzeichnet.
 """
 
+# Logging? Set to True to enable or False to disable logging.
+log = True
+
 #TODO: Login Daten eintragen
 user = ''
 pw = ''
 server = 46
 
+# Init logger
+if log == True:
+    logger.logger()
+
 #Login und Initialisierung des Bots
-wurzelBot = main.initWurzelBot()
+wurzelBot = WurzelBot()
 wurzelBot.launchBot(server, user, pw)
 
 #TODO: Aktionen definieren

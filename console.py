@@ -1,17 +1,22 @@
 from logging import log
-import src.Main as wbot
+import src.Logger as logger
+from src.WurzelBot import WurzelBot
 
 # Login data
 user = ''
 pw = ''
-server = 46
+server = 17
 
 # Global vars
 wurzelBot = object
 
+# enable logging? change to True else change it to False
+log = False
+
 def main():
     logo()
     init()
+    logging()
     
     while True:
         print('')
@@ -22,10 +27,11 @@ def main():
         elif inputLower == 'harvest': harvest()
         elif inputLower == '?' or inputLower == 'help': help()
         elif inputLower.startswith('grow'): grow(userInput)
-        elif inputLower == 'lowest': lowest()
+        elif inputLower.startswith('lowest'): lowest(userInput)
         elif inputLower.startswith('stock'): getStock(userInput)
         elif inputLower == 'user': userData()
         elif inputLower == 'water': water()
+        elif inputLower == 'weed': removeWeed()
         elif inputLower.startswith('details'): productDetails(userInput)
         else:
             print('Unknown command type \'help\' or \'?\' to see all available commands')
@@ -46,7 +52,7 @@ def init():
         exit()
     
     global wurzelBot
-    wurzelBot = wbot.initWurzelBot()
+    wurzelBot = WurzelBot()
     wurzelBot.launchBot(server, user, pw)
 
 def closeConnection():
@@ -64,10 +70,13 @@ def help():
     print('harvest      Harvest all gardens')
     print('help         Show all available commands')
     print('lowest       Show the plant with the lowest stock (unequal zero)')
+    print('             Opt. argument: "single"')
     print('stock        Show all plants in stock')
     print('             Opt. argument: "sort"')
     print('user         Show details to the current user')
     print('water        Water all plants')
+    print('weed         Remove all weed')
+
 
 def harvest():
     print('Harvest all gardens...')
@@ -89,8 +98,19 @@ def grow(argStr : str):
         print('Grow ' + args[1] + ' ' + args[0] + '...')
         wurzelBot.growPlantsInGardens(args[0], int(args[1]))
 
-def lowest():
-    print(wurzelBot.getLowestPlantStockEntry())
+def lowest(argStr : str):
+    argStr = argStr.replace('lowest', '', 1).strip()
+    args = argStr.split(' ')
+    
+    if len(args) > 1 or (len(args) == 1 and args[0] != 'single' and args[0] != ''):
+        print('Cannot parse input.')
+        print('Expected format: lowest [single]')
+        return
+
+    if args[0] == '':
+        print(wurzelBot.getLowestPlantStockEntry())
+    elif args[0] == 'single':
+        print(wurzelBot.getLowestSinglePlantStockEntry())
 
 def getStock(argStr : str):
     argStr = argStr.replace('stock', '', 1).strip()
@@ -132,6 +152,14 @@ def productDetails(argStr : str):
         wurzelBot.printPlantDetails()
     elif args[0] == 'all':
         wurzelBot.printProductDetails()
+
+def removeWeed():
+    print('Remove weed from all gardens...')
+    wurzelBot.removeWeedInAllGardens()
+
+def logging():
+    if log == True:
+        logger.logger()
 
 if __name__ == "__main__":
     main()

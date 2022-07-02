@@ -6,10 +6,6 @@ Created on 21.03.2017
 @author: MrFlamez
 '''
 
-# TODO: 1. Yearly series of quests.
-# TODO: 2. Main series of quests.
-
-
 from src.Spieler import Spieler, Login
 from src.HTTPCommunication import HTTPConnection
 from src.Messenger import Messenger
@@ -76,7 +72,7 @@ class WurzelBot(object):
         if (sx == '2' and sy == '1'): return str(fieldID) + ',' + str(fieldID + 1)
         if (sx == '1' and sy == '2'): return str(fieldID) + ',' + str(fieldID + 17)
         if (sx == '2' and sy == '2'): return str(fieldID) + ',' + str(fieldID + 1) + ',' + str(fieldID + 17) + ',' + str(fieldID + 18)
-        self.__logBot.debug('Error der plantSize --> sx: ' + sx + ' sy: ' + sy)
+        self.__logBot.debug(f'Error der plantSize --> sx: {sx} sy: {sy}')
 
 
     def __getAllFieldIDsFromFieldIDAndSizeAsIntList(self, fieldID, sx, sy):
@@ -98,7 +94,7 @@ class WurzelBot(object):
         übergebenen Logindaten durchgeführt und alles nötige initialisiert.
         """
         self.__logBot.info('-------------------------------------------')
-        self.__logBot.info('Starte Wurzelbot')
+        self.__logBot.info(f'Starte Wurzelbot für User {user} auf Server Nr. {server}')
         loginDaten = Login(server=server, user=user, password=pw, language=lang)
 
         try:
@@ -155,6 +151,7 @@ class WurzelBot(object):
             self.__logBot.error('Wurzelbot konnte nicht korrekt beendet werden.')
         else:
             self.__logBot.info('Logout erfolgreich.')
+            self.__logBot.info('-------------------------------------------')
 
 
     def updateUserData(self):
@@ -205,7 +202,7 @@ class WurzelBot(object):
             for garden in self.garten:
                 emptyFields.append(garden.getEmptyFields())
         except:
-            self.__logBot.error('Could not determine empty fields of garden ' + str(garden.getID()) + '.')
+            self.__logBot.error(f'Could not determine empty fields of garden {garden.getID()}.')
         else:
             pass
         return emptyFields
@@ -227,7 +224,7 @@ class WurzelBot(object):
             for garden in self.garten:
                 weedFields.append(garden.getWeedFields())
         except:
-            self.__logBot.error('Konnte Unkraut-Felder von Garten ' + str(garden.getID()) + ' nicht ermitteln.')
+            self.__logBot.error(f'Konnte Unkraut-Felder von Garten {garden.getID()} nicht ermitteln.')
         else:
             pass
 
@@ -250,7 +247,7 @@ class WurzelBot(object):
         print("There were cleared " + str(cleared_fields) + " fields")
 
     def harvestAllGarden(self):
-        #TODO: Add Watergarden
+        # TODO: Add Watergarden
         try:
             for garden in self.garten:
                 garden.harvest()
@@ -263,7 +260,6 @@ class WurzelBot(object):
             self.__logBot.error('Konnte nicht alle Gärten ernten.')
         else:
             self.__logBot.info('Konnte alle Gärten ernten.')
-            pass
 
     def getGrowingPlantsInGardens(self):
         growingPlants = Counter()
@@ -286,22 +282,24 @@ class WurzelBot(object):
         product = self.productData.getProductByName(productName)
 
         if product is None:
-            logMsg = 'Pflanze "' + productName + '" nicht gefunden'
+            logMsg = f'Pflanze "{productName}" nicht gefunden'
             self.__logBot.error(logMsg)
             print(logMsg)
             return -1
 
         if not product.isPlant() or not product.isPlantable():
-            logMsg = '"' + productName + '" kann nicht angepflanzt werden'
+            logMsg = f'"{productName}" kann nicht angepflanzt werden'
             self.__logBot.error(logMsg)
             print(logMsg)
             return -1
 
+        if amount == -1 or amount > self.storage.getStockByProductID(product.getID()):
+            amount = self.storage.getStockByProductID(product.getID())
+
+        remainingAmount = amount
         for garden in self.garten:
-            stock_amount = self.storage.getStockByProductID(product.getID())
-            if amount == -1 or amount > stock_amount:
-                amount = stock_amount
-            planted += garden.growPlant(product.getID(), product.getSX(), product.getSY(), amount-planted)
+            planted += garden.growPlant(product.getID(), product.getSX(), product.getSY(), remainingAmount)
+            remainingAmount = amount - planted
         
         self.storage.updateNumberInStock()
 
@@ -350,6 +348,24 @@ class WurzelBot(object):
 
         if lowestProductId == -1: return 'Your stock is empty'
         return self.productData.getProductByID(lowestProductId).getName()
+
+    def getLowestSinglePlantStockEntry(self):
+        lowestSingleStock = -1
+        lowestSingleProductId = -1
+        for productID in self.storage.getOrderedStockList():
+            if not self.productData.getProductByID(productID).isPlant() or \
+                not self.productData.getProductByID(productID).isPlantable() or \
+                not self.productData.getProductByID(productID).getName() in self.productData.getListOfSingleFieldPlants():
+                continue
+
+            currentStock = self.storage.getStockByProductID(productID)
+            if lowestSingleStock == -1 or currentStock < lowestSingleStock:
+                lowestSingleStock = currentStock
+                lowestSingleProductId = productID
+                continue
+
+        if lowestSingleProductId == -1: return 'Your stock is empty'
+        return self.productData.getProductByID(lowestSingleProductId).getName()
 
     def printProductDetails(self):
         self.productData.printAll()
@@ -415,3 +431,17 @@ class WurzelBot(object):
         human_time = datetime.datetime.fromtimestamp(min(garden_time))
         print(f"Next time water/harvest: {human_time.strftime('%d/%m/%y %H:%M:%S')} ({min(garden_time)})")
         return min(garden_time)
+
+
+    def removeWeedInAllGardens(self):
+        """
+        Entfernt Unrkaut/Maulwürfe/Steine aus allen Gärten.
+        """
+        #TODO: Wassergarten ergänzen
+        try:
+            for garden in self.garten:
+                garden.removeWeed()
+        except:
+            self.__logBot.error('Konnte nicht alle Felder von Unrkaut befreien.')
+        else:
+            self.__logBot.info('Konnte alle Gärten von Unrkaut befreien.')

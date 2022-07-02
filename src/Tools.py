@@ -38,10 +38,10 @@ def readListFromTextfile(textfile):
         file.close()
 
         for i in range(len(tmpList)):
-            #Leerzeichen entfernen
+            # Leerzeichen entfernen
             tmpList[i] = str(tmpList[i]).strip()
 
-            if tmpList[i] == '':
+            if (tmpList[i] == ''):
                 elementsToBeDeleted.append(i)
 
         # Reihenfolge der zwischengespeicherten Indizes umkehren, um das Entfernen zu erleichtern.

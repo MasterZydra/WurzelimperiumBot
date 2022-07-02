@@ -1,33 +1,25 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""
+'''
 Created on 21.03.2017
 
 @author: MrFlamez
-"""
+'''
 
-import httplib2
-import json
-import re
-from http.cookies import SimpleCookie
 from urllib.parse import urlencode
-
-import io
-import logging
-import math
-import time
-import yaml
-# import xml.etree.ElementTree as eTree
+import json, re, httplib2
+from http.cookies import SimpleCookie
+from src.Session import Session
+import yaml, time, logging, math, io
+import xml.etree.ElementTree as eTree
 from lxml import html, etree
 
-from src.Session import Session
-
-# Defines
-HTTP_STATE_CONTINUE = 100
+#Defines
+HTTP_STATE_CONTINUE            = 100
 HTTP_STATE_SWITCHING_PROTOCOLS = 101
-HTTP_STATE_PROCESSING = 102
-HTTP_STATE_OK = 200
-HTTP_STATE_FOUND = 302  # moved temporarily
+HTTP_STATE_PROCESSING          = 102
+HTTP_STATE_OK                  = 200
+HTTP_STATE_FOUND               = 302 #moved temporarily
 
 SERVER_URLS = {
     'de': '.wurzelimperium.de/',
@@ -118,16 +110,15 @@ class HTTPConnection(object):
         also 24 Stunden + 30 Sekunden (Sicherheit) zurück, wurde das Feld zwar bereits gegossen,
         kann jedoch wieder gegossen werden.
         """
-        one_day_in_seconds = (24 * 60 * 60) + 30
-        current_time_in_seconds = time.time()
-        water_date_in_seconds = int(jContent['water'][fieldID - 1][1])
+        oneDayInSeconds = (24*60*60) + 30
+        currentTimeInSeconds = time.time()
+        waterDateInSeconds = int(jContent['water'][fieldID-1][1])
 
-        if water_date_in_seconds == '0':
-            return False
-        elif (current_time_in_seconds - water_date_in_seconds) > one_day_in_seconds:
+        if waterDateInSeconds == '0' or (currentTimeInSeconds - waterDateInSeconds) > oneDayInSeconds:
             return False
         else:
             return True
+
 
     def __getTokenFromURL(self, url):
         """
@@ -153,6 +144,7 @@ class HTTPConnection(object):
         """
         Looks up certain info in the given JSON object and returns it.
         """
+        # ToDo: Dumb Style. Needs refactoring
         success = False
         result = None
         if info == 'Username':
@@ -242,20 +234,19 @@ class HTTPConnection(object):
         """
         Sucht im JSON Content nach Felder die mit Unkraut befallen sind und gibt diese zurück.
         """
-        weed_fields = {}
-
+        weedFields = []
+        
         # 41 Unkraut, 42 Baumstumpf, 43 Stein, 45 Maulwurf
         for field in jContent['garden']:
             if jContent['garden'][field][0] in [41, 42, 43, 45]:
-                # weedFields.append({int(field):float(jContent['garden'][field][6])})
-                weed_fields[int(field)] = float(jContent['garden'][field][6])
+                weedFields[int(field)] = float(jContent['garden'][field][6])
 
         # Sortierung über ein leeres Array ändert Objekttyp zu None
-        if len(weed_fields) > 1:
+        if len(weedFields) > 1:
             # weedFields.sort(reverse=False)
-            weed_fields = {key: value for key, value in sorted(weed_fields.items(), key=lambda item: item[1])}
+            weedFields = {key: value for key, value in sorted(weed_fields.items(), key=lambda item: item[1])}
 
-        return weed_fields
+        return weedFields
 
     def __findGrowingPlantsFromJSONContent(self, jContent):
         """
@@ -308,6 +299,7 @@ class HTTPConnection(object):
         """
         headers = self.__getHeaders()
 
+        # ToDo: f-string
         adresse = 'http://s' + str(self.__Session.getServer()) + \
                   str(self.__Session.getServerURL()) + 'ajax/ajax.php?do=changeGarden&garden=' + \
                   str(gardenID) + '&token=' + self.__token
@@ -344,7 +336,6 @@ class HTTPConnection(object):
             if produktname is not None and npc_preis is not None:
                 # NPC-Preis aufbereiten
                 npc_preis = str(npc_preis)
-                # npc_preis = npc_preis.replace(' wT', '')
                 npc_preis = npc_preis[0:len(npc_preis) - 3]
                 npc_preis = npc_preis.replace('.', '')
                 npc_preis = npc_preis.replace(',', '.')
@@ -378,6 +369,7 @@ class HTTPConnection(object):
                    'Connection': 'keep-alive'}
 
         try:
+            # ToDo: f-string
             response, content = self.__webclient.request('https://www' + serverURL + 'dispatch.php',
                                                          'POST',
                                                          parameter,
@@ -409,7 +401,7 @@ class HTTPConnection(object):
         # TODO: Was passiert beim Logout einer bereits ausgeloggten Session
         headers = {'Cookie': 'PHPSESSID=' + self.__Session.getSessionID() + '; ' +
                              'wunr=' + self.__userID}
-
+        # ToDo: f-string
         adresse = 'http://s' + str(self.__Session.getServer()) + str(
             self.__Session.getServerURL()) + 'main.php?page=logout'
 
@@ -430,6 +422,7 @@ class HTTPConnection(object):
         @return: parameter value
         """
         headers = self.__getHeaders()
+        # ToDo: f-string
         adresse = 'http://s' + str(self.__Session.getServer()) + str(
             self.__Session.getServerURL()) + 'ajax/ajax.php?do=statsGetStats&which=0&start=0&additional=' + \
             self.__userID + '&token=' + self.__token
@@ -450,6 +443,7 @@ class HTTPConnection(object):
         """
         # TODO: move __getUserDataFromJSONContent to Spieler class and optimize call of the method
         headers = self.__getHeaders()
+        # ToDo: f-string
         adresse = 'http://s' + str(self.__Session.getServer()) + str(
             self.__Session.getServerURL()) + 'ajax/menu-update.php'
 
@@ -471,6 +465,7 @@ class HTTPConnection(object):
         die auch gegossen werden können und gibt diese zurück.
         """
         headers = self.__getHeaders()
+        # ToDo: f-string
         adresse = 'http://s' + str(self.__Session.getServer()) + \
                   str(self.__Session.getServerURL()) + 'ajax/ajax.php?do=changeGarden&garden=' + \
                   str(gardenID) + '&token=' + str(self.__token)
@@ -489,11 +484,13 @@ class HTTPConnection(object):
         Bewässert die Pflanze iField mit der Größe sSize im Garten iGarten.
         """
 
+        # ToDo: headers
         headers = {'User-Agent': self.__userAgent,
                    'Cookie': 'PHPSESSID=' + self.__Session.getSessionID() + '; ' +
                              'wunr=' + self.__userID,
                    'X-Requested-With': 'XMLHttpRequest',
                    'Connection': 'Keep-Alive'}
+        # ToDo: f-string
         adresse = 'http://s' + str(self.__Session.getServer()) + str(
             self.__Session.getServerURL()) + 'save/wasser.php?feld[]=' + \
             str(iField) + '&felder[]=' + sFieldsToWater + '&cid=' + self.__token + '&garden=' + str(iGarten)
@@ -511,11 +508,13 @@ class HTTPConnection(object):
         die auch gegossen werden können und gibt diese zurück.
         """
 
+        # ToDo: headers
         headers = {'User-Agent': self.__userAgent,
                    'Cookie': 'PHPSESSID=' + self.__Session.getSessionID() + '; ' +
                              'wunr=' + self.__userID,
                    'X-Requested-With': 'XMLHttpRequest',
                    'Connection': 'Keep-Alive'}
+        # ToDo: f-string
         adresse = 'http://s' + str(self.__Session.getServer()) + str(
             self.__Session.getServerURL()) + 'ajax/ajax.php?do=watergardenGetGarden&token=' + self.__token
 
@@ -537,13 +536,15 @@ class HTTPConnection(object):
 
         sFields = ''
         for i in listFieldsToWater:
-            sFields += '&water[]=' + str(i)
+            sFields += f'&water[]={i}'
 
+        # ToDo: headers
         headers = {'User-Agent': self.__userAgent,
                    'Cookie': 'PHPSESSID=' + self.__Session.getSessionID() + '; ' +
                              'wunr=' + self.__userID,
                    'X-Requested-With': 'XMLHttpRequest',
                    'Connection': 'Keep-Alive'}
+        # ToDo f-string
         adresse = 'http://s' + str(self.__Session.getServer()) + str(
             self.__Session.getServerURL()) + 'ajax/ajax.php?do=watergardenCache' + sFields + '&token=' + self.__token
 
@@ -562,6 +563,7 @@ class HTTPConnection(object):
         """
 
         headers = self.__getHeaders()
+        # ToDo: f-string
         adresse = 'http://s' + str(self.__Session.getServer()) + \
                   str(self.__Session.getServerURL()) + 'ajax/gettrophies.php?category=giver'
 
@@ -583,7 +585,6 @@ class HTTPConnection(object):
         else:
             return False
 
-    # TODO: Was passiert wenn ein Garten hinzukommt (parallele Sitzungen im Browser und Bot)? Globale Aktualisierungsfunktion?
 
     def isAquaGardenAvailable(self, iUserLevel):
         """
@@ -593,6 +594,7 @@ class HTTPConnection(object):
         """
 
         headers = self.__getHeaders()
+        # ToDo: f-string
         adresse = 'http://s' + str(self.__Session.getServer()) + \
                   str(self.__Session.getServerURL()) + 'ajax/achievements.php?token=' + self.__token
 
@@ -616,15 +618,16 @@ class HTTPConnection(object):
         """
         Prüft, ob die E-Mail Adresse im Profil bestätigt ist.
         """
+        # ToDo: headers
         headers = {'User-Agent': self.__userAgent,
                    'Cookie': 'PHPSESSID=' + self.__Session.getSessionID() + '; ' +
                              'wunr=' + self.__userID}
-
+        # ToDo: f-string
         adresse = 'http://s' + str(self.__Session.getServer()) + str(
             self.__Session.getServerURL()) + 'nutzer/profil.php'
 
         try:
-            response, content = self.__webclient.request(adresse, 'GET', headers=headers)
+            response, content = self.__webclient.request(adresse, 'GET', headers = headers)
             self.__checkIfHTTPStateIsOK(response)
         except:
             raise
@@ -640,11 +643,13 @@ class HTTPConnection(object):
         Erstellt eine neue Nachricht und gibt deren ID zurück, die für das Senden benötigt wird.
         """
 
+        # ToDo: headers
         headers = {'User-Agent': self.__userAgent,
                    'Cookie': 'PHPSESSID=' + self.__Session.getSessionID() + '; ' +
                              'wunr=' + self.__userID,
                    'Content-type': 'application/x-www-form-urlencoded'}
 
+        # ToDo: f-string
         adress = 'http://s' + str(self.__Session.getServer()) + str(
             self.__Session.getServerURL()) + 'nachrichten/new.php'
 
@@ -661,11 +666,13 @@ class HTTPConnection(object):
         Verschickt eine Nachricht mit den übergebenen Parametern.
         """
 
+        # ToDo: headers
         headers = {'User-Agent': self.__userAgent,
                    'Cookie': 'PHPSESSID=' + self.__Session.getSessionID() + '; ' +
                              'wunr=' + self.__userID,
                    'Content-type': 'application/x-www-form-urlencoded'}
 
+        # ToDo: f-string
         adress = 'http://s' + str(self.__Session.getServer()) + str(
             self.__Session.getServerURL()) + 'nachrichten/new.php'
 
@@ -702,6 +709,7 @@ class HTTPConnection(object):
         print(iCalls)
         for i in range(iCalls):
             print(i)
+            # ToDo: f-string
             adress = 'http://s' + str(self.__Session.getServer()) + str(
                 self.__Session.getServerURL()) + 'ajax/ajax.php?do=statsGetStats&which=1&start=' + str(
                 iStartCorr) + '&showMe=0&additional=0&token=' + self.__token
@@ -730,10 +738,12 @@ class HTTPConnection(object):
 
     def readStorageFromServer(self):
 
+        # ToDo: headers
         headers = {'User-Agent': self.__userAgent,
                    'Cookie': 'PHPSESSID=' + self.__Session.getSessionID() + '; ' +
                              'wunr=' + self.__userID}
 
+        # ToDo: f-string
         adress = 'http://s' + str(self.__Session.getServer()) + str(
             self.__Session.getServerURL()) + 'ajax/updatelager.' + \
             'php?all=1'
@@ -752,6 +762,7 @@ class HTTPConnection(object):
         Returns all empty fields of a garden.
         """
         headers = self.__getHeaders()
+        # ToDo: f-string
         adresse = 'http://s' + str(self.__Session.getServer()) + \
                   str(self.__Session.getServerURL()) + 'ajax/ajax.php?do=changeGarden&garden=' + \
                   str(gardenID) + '&token=' + self.__token
@@ -771,6 +782,7 @@ class HTTPConnection(object):
         Returns all weed fields of a garden.
         """
         headers = self.__getHeaders()
+        # ToDo: f-string
         adresse = 'http://s' + str(self.__Session.getServer()) + \
                   str(self.__Session.getServerURL()) + 'ajax/ajax.php?do=changeGarden&garden=' + \
                   str(gardenID) + '&token=' + self.__token
@@ -827,6 +839,7 @@ class HTTPConnection(object):
         """
         headers = self.__getHeaders()
 
+        # ToDo: f-string
         adresse = 'http://s' + str(self.__Session.getServer()) + \
                   str(self.__Session.getServerURL()) + 'ajax/ajax.php?do=gardenHarvestAll&token=' + self.__token
 
@@ -834,7 +847,6 @@ class HTTPConnection(object):
             self._changeGarden(gardenID)
             response, content = self.__webclient.request(adresse, 'GET', headers=headers)
             jContent = json.loads(content)
-            # print(content.decode('UTF-8'))
 
             if jContent['status'] == 'error':
                 print(jContent['message'])
@@ -855,6 +867,7 @@ class HTTPConnection(object):
         """
         headers = self.__getHeaders()
 
+        # ToDo: f-string
         adresse = 'http://s' + str(self.__Session.getServer()) + \
                   str(self.__Session.getServerURL()) + 'ajax/ajax.php?do=watergardenHarvestAll&token=' + self.__token
 
@@ -872,6 +885,7 @@ class HTTPConnection(object):
         """
         headers = self.__getHeaders()
 
+        # ToDo: f-string
         adresse = 'http://s' + str(self.__Session.getServer()) + \
                   str(self.__Session.getServerURL()) + 'save/pflanz.php?pflanze[]=' + str(plant) + \
                   '&feld[]=' + str(field) + \
@@ -893,6 +907,7 @@ class HTTPConnection(object):
         """
         headers = self.__getHeaders()
 
+        # ToDo: f-string
         adresse = 'http://s' + str(self.__Session.getServer()) + \
                   str(self.__Session.getServerURL()) + 'ajax/ajax.php?do=watergardenCache&' + \
                   'plant[' + str(field) + ']=' + str(plant) + \
@@ -913,9 +928,11 @@ class HTTPConnection(object):
         Sammelt alle Produktinformationen und gibt diese zur Weiterverarbeitung zurück.
         """
 
+        # ToDo: headers
         headers = {'Cookie': 'PHPSESSID=' + self.__Session.getSessionID() + '; ' +
                              'wunr=' + self.__userID}
 
+        # ToDo: f-string
         adresse = 'http://s' + str(self.__Session.getServer()) + str(
             self.__Session.getServerURL()) + 'main.php?page=garden'
 
@@ -935,10 +952,12 @@ class HTTPConnection(object):
         """
         Ermittelt den Lagerbestand und gibt diesen zurück.
         """
+        # ToDo: headers
         headers = {'Cookie': 'PHPSESSID=' + self.__Session.getSessionID() + '; ' +
                              'wunr=' + self.__userID,
                    'Content-Length': '0'}
 
+        # ToDo: f-string
         adresse = 'http://s' + str(self.__Session.getServer()) + str(
             self.__Session.getServerURL()) + 'ajax/updatelager.php?' + \
             'all=1&sort=1&type=honey&token=' + self.__token
@@ -957,10 +976,12 @@ class HTTPConnection(object):
         Get wimps data including wimp_id and list of products with amount
         """
         headers = self.__getHeaders()
+        # ToDo: f-string and optimize
         adresse = 'http://s' + str(self.__Session.getServer()) + \
                   str(self.__Session.getServerURL()) + 'ajax/ajax.php?do=changeGarden&garden=' + \
                   str(gardenID) + '&token=' + self.__token
 
+        # ToDo: f-string
         adresse1 = 'http://s' + str(self.__Session.getServer()) + \
                    str(self.__Session.getServerURL()) + 'ajax/verkaufajax.php?do=getAreaData&token=' + \
                    self.__token
@@ -987,6 +1008,7 @@ class HTTPConnection(object):
         """
         headers = self.__getHeaders()
 
+        # ToDo: f-string
         adresse = 'http://s' + str(self.__Session.getServer()) + \
                   str(self.__Session.getServerURL()) + 'ajax/verkaufajax.php?do=accept&id=' + \
                   wimp_id + '&token=' + self.__token
@@ -1024,10 +1046,11 @@ class HTTPConnection(object):
         Ermittelt aus der Wurzelimperium-Hilfe die NPC Preise aller Produkte.
         """
 
+        # ToDo headers
         headers = {'Cookie': 'PHPSESSID=' + self.__Session.getSessionID() + '; ' +
                              'wunr=' + self.__userID,
                    'Content-Length': '0'}
-
+        # ToDo: f-string
         adresse = 'http://s' + str(self.__Session.getServer()) + str(self.__Session.getServerURL()) + 'hilfe.php?item=2'
 
         # try:
@@ -1047,10 +1070,12 @@ class HTTPConnection(object):
         Gibt eine Liste zurück, welche Produkte handelbar sind.
         """
 
+        # ToDo: headers
         headers = {'Cookie': 'PHPSESSID=' + self.__Session.getSessionID() + '; ' +
                              'wunr=' + self.__userID,
                    'Content-Length': '0'}
 
+        # ToDo: f-string
         adresse = 'http://s' + str(self.__Session.getServer()) + str(
             self.__Session.getServerURL()) + 'stadt/markt.php?show=overview'
 
@@ -1071,6 +1096,7 @@ class HTTPConnection(object):
         Gibt eine Liste mit allen Angeboten eines Produkts zurück.
         """
 
+        # ToDo: headers
         headers = {'Cookie': 'PHPSESSID=' + self.__Session.getSessionID() + '; ' +
                              'wunr=' + self.__userID,
                    'Content-Length': '0'}
@@ -1081,6 +1107,7 @@ class HTTPConnection(object):
         while nextPage:
 
             nextPage = False
+            # ToDo: f-string
             adresse = 'http://s' + str(self.__Session.getServer()) + str(
                 self.__Session.getServerURL()) + 'stadt/markt.php?order=p&v=' + str(prod_id) + '&filter=1&page=' + str(
                 iPage)
@@ -1129,6 +1156,7 @@ class HTTPConnection(object):
         """
         headers = self.__getHeaders()
 
+        # ToDo: f-string
         adresse = 'http://s' + str(self.__Session.getServer()) + \
                   str(self.__Session.getServerURL()) + 'ajax/ajax.php?do=bigquest_init&id=3' + \
                   '&token=' + self.__token
@@ -1147,6 +1175,7 @@ class HTTPConnection(object):
         """
         headers = self.__getHeaders()
 
+        # ToDo: f-string
         adresse = 'http://s' + str(self.__Session.getServer()) + \
                   str(self.__Session.getServerURL()) + 'ajax/ajax.php?do=dailyloginbonus_getreward&day=' + \
                   str(day) + '&token=' + self.__token
@@ -1159,6 +1188,29 @@ class HTTPConnection(object):
         else:
             return jContent
 
+
+    def removeWeedOnFieldInGarden(self, gardenID, fieldID):
+        """
+        Befreit ein Feld im Garten von Unkraut.
+        """
+
+        self.__changeGarden(gardenID)
+
+        # ToDo: headers
+        headers = {'Cookie': 'PHPSESSID=' + self.__Session.getSessionID() + '; ' + \
+                             'wunr=' + self.__userID,
+                    'Content-Length':'0'}
+
+        # ToDo: make multiservers
+        adresse = f'http://s{self.__Session.getServer()}.wurzelimperium.de/save/abriss.php?tile={fieldID}'
+        try:
+            response, content = self.__webclient.request(adresse, 'POST', headers = headers)
+            self.__checkIfHTTPStateIsOK(response)
+            jContent = self.__generateJSONContentAndCheckForSuccess(content)
+        except:
+            raise
+        else:
+            return jContent['success']
 
 class HTTPStateError(Exception):
     def __init__(self, value):
