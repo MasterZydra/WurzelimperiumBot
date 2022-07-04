@@ -98,7 +98,7 @@ class WurzelBot(object):
         try:
             self.spieler.setUserNameFromServer(self.__HTTPConn)
         except:
-            self.__logBot.error('Username konnte nicht ermittelt werden.')
+            self.__logBot.error(i18n.t('wimpb.username_not_determined'))
 
 
         try:
