@@ -298,12 +298,9 @@ class HTTPConnection(object):
         Wechselt den Garten.
         """
         headers = self.__getHeaders()
-
-        # ToDo: f-string
-        adresse = 'http://s' + str(self.__Session.getServer()) + \
-                  str(self.__Session.getServerURL()) + 'ajax/ajax.php?do=changeGarden&garden=' + \
-                  str(gardenID) + '&token=' + self.__token
-
+        server = self.__getServer()
+        adresse = f'{server}ajax/ajax.php?do=changeGarden&garden={str(gardenID)}&' \
+                  f'token={self.__token}'
         try:
             response, content = self.__webclient.request(adresse, 'GET', headers=headers)
             self.__checkIfHTTPStateIsOK(response)
@@ -350,10 +347,13 @@ class HTTPConnection(object):
         return dictResult
 
     def __getHeaders(self):
-        headers = {'Cookie': 'PHPSESSID=' + self.__Session.getSessionID() + '; ' +
-                             'wunr=' + self.__userID,
+        headers = {'Cookie': f'PHPSESSID={self.__Session.getSessionID()}; ' +
+                             f'wunr={self.__userID}',
                    'Connection': 'Keep-Alive'}
         return headers
+
+    def __getServer(self):
+        return f'http://s{self.__Session.getServer()}{self.__Session.getServerURL()}'
 
     def logIn(self, loginDaten):
         """
@@ -361,7 +361,7 @@ class HTTPConnection(object):
         """
         serverURL = SERVER_URLS[loginDaten.language]
         parameter = urlencode({'do': 'login',
-                               'server': 'server' + str(loginDaten.server),
+                               'server': f'server{str(loginDaten.server)}',
                                'user': loginDaten.user,
                                'pass': loginDaten.password})
 
@@ -369,8 +369,7 @@ class HTTPConnection(object):
                    'Connection': 'keep-alive'}
 
         try:
-            # ToDo: f-string
-            response, content = self.__webclient.request('https://www' + serverURL + 'dispatch.php',
+            response, content = self.__webclient.request(f'https://www{serverURL}dispatch.php',
                                                          'POST',
                                                          parameter,
                                                          headers)
@@ -399,11 +398,11 @@ class HTTPConnection(object):
         Logout des Spielers inkl. Löschen der Session.
         """
         # TODO: Was passiert beim Logout einer bereits ausgeloggten Session
-        headers = {'Cookie': 'PHPSESSID=' + self.__Session.getSessionID() + '; ' +
-                             'wunr=' + self.__userID}
-        # ToDo: f-string
-        adresse = 'http://s' + str(self.__Session.getServer()) + str(
-            self.__Session.getServerURL()) + 'main.php?page=logout'
+        # headers = {'Cookie': 'PHPSESSID=' + self.__Session.getSessionID() + '; ' +
+        #                      'wunr=' + self.__userID}
+        headers = self.__getHeaders()
+        server = self.__getServer()
+        adresse = f'{server}main.php?page=logout'
 
         try:  # content ist beim Logout leer
             response, content = self.__webclient.request(adresse, 'GET', headers=headers)
@@ -422,10 +421,9 @@ class HTTPConnection(object):
         @return: parameter value
         """
         headers = self.__getHeaders()
-        # ToDo: f-string
-        adresse = 'http://s' + str(self.__Session.getServer()) + str(
-            self.__Session.getServerURL()) + 'ajax/ajax.php?do=statsGetStats&which=0&start=0&additional=' + \
-            self.__userID + '&token=' + self.__token
+        server = self.__getServer()
+        adresse = f'{server}ajax/ajax.php?do=statsGetStats&which=0&start=0' \
+                  f'&additional={self.__userID}&token={self.__token}'
 
         try:
             response, content = self.__webclient.request(adresse, 'GET', headers=headers)
@@ -443,9 +441,8 @@ class HTTPConnection(object):
         """
         # TODO: move __getUserDataFromJSONContent to Spieler class and optimize call of the method
         headers = self.__getHeaders()
-        # ToDo: f-string
-        adresse = 'http://s' + str(self.__Session.getServer()) + str(
-            self.__Session.getServerURL()) + 'ajax/menu-update.php'
+        server = self.__getServer()
+        adresse = f'{server}ajax/menu-update.php'
 
         try:
             response, content = self.__webclient.request(adresse, 'GET', headers=headers)
@@ -465,10 +462,9 @@ class HTTPConnection(object):
         die auch gegossen werden können und gibt diese zurück.
         """
         headers = self.__getHeaders()
-        # ToDo: f-string
-        adresse = 'http://s' + str(self.__Session.getServer()) + \
-                  str(self.__Session.getServerURL()) + 'ajax/ajax.php?do=changeGarden&garden=' + \
-                  str(gardenID) + '&token=' + str(self.__token)
+        server = self.__getServer()
+        adresse = f'{server}ajax/ajax.php?do=changeGarden&garden={str(gardenID)}' \
+                  f'&token={str(self.__token)}'
 
         try:
             response, content = self.__webclient.request(adresse, 'GET', headers=headers)
@@ -483,17 +479,10 @@ class HTTPConnection(object):
         """
         Bewässert die Pflanze iField mit der Größe sSize im Garten iGarten.
         """
-
-        # ToDo: headers
-        headers = {'User-Agent': self.__userAgent,
-                   'Cookie': 'PHPSESSID=' + self.__Session.getSessionID() + '; ' +
-                             'wunr=' + self.__userID,
-                   'X-Requested-With': 'XMLHttpRequest',
-                   'Connection': 'Keep-Alive'}
-        # ToDo: f-string
-        adresse = 'http://s' + str(self.__Session.getServer()) + str(
-            self.__Session.getServerURL()) + 'save/wasser.php?feld[]=' + \
-            str(iField) + '&felder[]=' + sFieldsToWater + '&cid=' + self.__token + '&garden=' + str(iGarten)
+        headers = self.__getHeaders()
+        server = self.__getServer()
+        adresse = f'{server}save/wasser.php?feld[]={str(iField)}&felder[]={sFieldsToWater}' \
+                  f'&cid={self.__token}&garden={str(iGarten)}'
 
         try:
             response, content = self.__webclient.request(adresse, 'GET', headers=headers)
@@ -508,15 +497,9 @@ class HTTPConnection(object):
         die auch gegossen werden können und gibt diese zurück.
         """
 
-        # ToDo: headers
-        headers = {'User-Agent': self.__userAgent,
-                   'Cookie': 'PHPSESSID=' + self.__Session.getSessionID() + '; ' +
-                             'wunr=' + self.__userID,
-                   'X-Requested-With': 'XMLHttpRequest',
-                   'Connection': 'Keep-Alive'}
-        # ToDo: f-string
-        adresse = 'http://s' + str(self.__Session.getServer()) + str(
-            self.__Session.getServerURL()) + 'ajax/ajax.php?do=watergardenGetGarden&token=' + self.__token
+        headers = self.__getHeaders()
+        server = self.__getServer()
+        adresse = f'{server}ajax/ajax.php?do=watergardenGetGarden&token={self.__token}'
 
         try:
             response, content = self.__webclient.request(adresse, 'GET', headers=headers)
@@ -538,15 +521,9 @@ class HTTPConnection(object):
         for i in listFieldsToWater:
             sFields += f'&water[]={i}'
 
-        # ToDo: headers
-        headers = {'User-Agent': self.__userAgent,
-                   'Cookie': 'PHPSESSID=' + self.__Session.getSessionID() + '; ' +
-                             'wunr=' + self.__userID,
-                   'X-Requested-With': 'XMLHttpRequest',
-                   'Connection': 'Keep-Alive'}
-        # ToDo f-string
-        adresse = 'http://s' + str(self.__Session.getServer()) + str(
-            self.__Session.getServerURL()) + 'ajax/ajax.php?do=watergardenCache' + sFields + '&token=' + self.__token
+        headers = self.__getHeaders()
+        server = self.__getServer()
+        adresse = f'{server}ajax/ajax.php?do=watergardenCache{sFields}&token={self.__token}'
 
         try:
             response, content = self.__webclient.request(adresse, 'GET', headers=headers)
@@ -563,9 +540,8 @@ class HTTPConnection(object):
         """
 
         headers = self.__getHeaders()
-        # ToDo: f-string
-        adresse = 'http://s' + str(self.__Session.getServer()) + \
-                  str(self.__Session.getServerURL()) + 'ajax/gettrophies.php?category=giver'
+        server = self.__getServer()
+        adresse = f'{server}ajax/gettrophies.php?category=giver'
 
         if not (iUserLevel < 10):
             try:
@@ -594,9 +570,8 @@ class HTTPConnection(object):
         """
 
         headers = self.__getHeaders()
-        # ToDo: f-string
-        adresse = 'http://s' + str(self.__Session.getServer()) + \
-                  str(self.__Session.getServerURL()) + 'ajax/achievements.php?token=' + self.__token
+        server = self.__getServer()
+        adresse = f'{server}ajax/achievements.php?token={self.__token}'
 
         if not (iUserLevel < 19):
             try:
@@ -618,13 +593,9 @@ class HTTPConnection(object):
         """
         Prüft, ob die E-Mail Adresse im Profil bestätigt ist.
         """
-        # ToDo: headers
-        headers = {'User-Agent': self.__userAgent,
-                   'Cookie': 'PHPSESSID=' + self.__Session.getSessionID() + '; ' +
-                             'wunr=' + self.__userID}
-        # ToDo: f-string
-        adresse = 'http://s' + str(self.__Session.getServer()) + str(
-            self.__Session.getServerURL()) + 'nutzer/profil.php'
+        headers = self.__getHeaders()
+        server = self.__getServer()
+        adresse = f'{server}nutzer/profil.php'
 
         try:
             response, content = self.__webclient.request(adresse, 'GET', headers = headers)
@@ -642,16 +613,9 @@ class HTTPConnection(object):
         """
         Erstellt eine neue Nachricht und gibt deren ID zurück, die für das Senden benötigt wird.
         """
-
-        # ToDo: headers
-        headers = {'User-Agent': self.__userAgent,
-                   'Cookie': 'PHPSESSID=' + self.__Session.getSessionID() + '; ' +
-                             'wunr=' + self.__userID,
-                   'Content-type': 'application/x-www-form-urlencoded'}
-
-        # ToDo: f-string
-        adress = 'http://s' + str(self.__Session.getServer()) + str(
-            self.__Session.getServerURL()) + 'nachrichten/new.php'
+        headers = self.__getHeaders()
+        server = self.__getServer()
+        adress = f'{server}nachrichten/new.php'
 
         try:
             response, content = self.__webclient.request(adress, 'GET', headers=headers)
@@ -665,16 +629,9 @@ class HTTPConnection(object):
         """
         Verschickt eine Nachricht mit den übergebenen Parametern.
         """
-
-        # ToDo: headers
-        headers = {'User-Agent': self.__userAgent,
-                   'Cookie': 'PHPSESSID=' + self.__Session.getSessionID() + '; ' +
-                             'wunr=' + self.__userID,
-                   'Content-type': 'application/x-www-form-urlencoded'}
-
-        # ToDo: f-string
-        adress = 'http://s' + str(self.__Session.getServer()) + str(
-            self.__Session.getServerURL()) + 'nachrichten/new.php'
+        headers = self.__getHeaders
+        server = self.__getServer()
+        adress = f'{server}nachrichten/new.php'
 
         # Nachricht absenden
         parameter = urlencode({'hpc': msg_id,
@@ -704,15 +661,14 @@ class HTTPConnection(object):
         iStartCorr = iStart - 1
         iCalls = int(math.ceil(float(iEnd - iStart) / 100))
 
-        headers = {'Cookie': 'PHPSESSID=' + self.__Session.getSessionID() + '; ' +
-                             'wunr=' + self.__userID}
+        headers = self.__getHeaders()
+        server = self.__getServer()
         print(iCalls)
         for i in range(iCalls):
             print(i)
-            # ToDo: f-string
-            adress = 'http://s' + str(self.__Session.getServer()) + str(
-                self.__Session.getServerURL()) + 'ajax/ajax.php?do=statsGetStats&which=1&start=' + str(
-                iStartCorr) + '&showMe=0&additional=0&token=' + self.__token
+            adress = f'{server}ajax/ajax.php?do=statsGetStats&which=1&' \
+                     f'start={str(iStartCorr)}&showMe=0&additional=0' \
+                     f'&token={self.__token}'
             try:
                 response, content = self.__webclient.request(adress, 'GET', headers=headers)
                 self.__checkIfHTTPStateIsOK(response)
@@ -737,16 +693,9 @@ class HTTPConnection(object):
         return userList
 
     def readStorageFromServer(self):
-
-        # ToDo: headers
-        headers = {'User-Agent': self.__userAgent,
-                   'Cookie': 'PHPSESSID=' + self.__Session.getSessionID() + '; ' +
-                             'wunr=' + self.__userID}
-
-        # ToDo: f-string
-        adress = 'http://s' + str(self.__Session.getServer()) + str(
-            self.__Session.getServerURL()) + 'ajax/updatelager.' + \
-            'php?all=1'
+        headers = self.__getHeaders
+        server = self.__getServer()
+        adress = f'{server}ajax/updatelager.php?all=1'
 
         try:
             response, content = self.__webclient.request(adress, 'GET', headers=headers)
@@ -762,10 +711,9 @@ class HTTPConnection(object):
         Returns all empty fields of a garden.
         """
         headers = self.__getHeaders()
-        # ToDo: f-string
-        adresse = 'http://s' + str(self.__Session.getServer()) + \
-                  str(self.__Session.getServerURL()) + 'ajax/ajax.php?do=changeGarden&garden=' + \
-                  str(gardenID) + '&token=' + self.__token
+        server = self.__getServer()
+        adresse = f'{server}ajax/ajax.php?do=changeGarden&garden={str(gardenID)}' \
+                  f'&token={self.__token}'
 
         try:
             response, content = self.__webclient.request(adresse, 'GET', headers=headers)
@@ -782,10 +730,9 @@ class HTTPConnection(object):
         Returns all weed fields of a garden.
         """
         headers = self.__getHeaders()
-        # ToDo: f-string
-        adresse = 'http://s' + str(self.__Session.getServer()) + \
-                  str(self.__Session.getServerURL()) + 'ajax/ajax.php?do=changeGarden&garden=' + \
-                  str(gardenID) + '&token=' + self.__token
+        server = self.__getServer()
+        adresse = f'{server}ajax/ajax.php?do=changeGarden&garden={str(gardenID)}' \
+                  f'&token={self.__token}'
 
         try:
             response, content = self.__webclient.request(adresse, 'GET', headers=headers)
@@ -802,8 +749,8 @@ class HTTPConnection(object):
         Returns all weed fields of a garden.
         """
         headers = self.__getHeaders()
-        adresse = 'https://s' + str(self.__Session.getServer()) + \
-                  str(self.__Session.getServerURL()) + 'save/abriss.php?tile=' + str(fieldID)
+        server = self.__getServer()
+        adresse = f'{server}save/abriss.php?tile={str(fieldID)}'
         try:
             self._changeGarden(gardenID)
             response, content = self.__webclient.request(adresse, 'GET', headers=headers)
@@ -819,9 +766,9 @@ class HTTPConnection(object):
         Returns all fields with growing plants of a garden.
         """
         headers = self.__getHeaders()
-        adresse = 'http://s' + str(self.__Session.getServer()) + \
-                  str(self.__Session.getServerURL()) + 'ajax/ajax.php?do=changeGarden&garden=' + \
-                  str(gardenID) + '&token=' + self.__token
+        server = self.__getServer()
+        adresse = f'{server}ajax/ajax.php?do=changeGarden&garden={str(gardenID)}' \
+                  f'&token={self.__token}'
 
         try:
             response, content = self.__webclient.request(adresse, 'GET', headers=headers)
@@ -838,10 +785,8 @@ class HTTPConnection(object):
         Erntet alle fertigen Pflanzen im Garten.
         """
         headers = self.__getHeaders()
-
-        # ToDo: f-string
-        adresse = 'http://s' + str(self.__Session.getServer()) + \
-                  str(self.__Session.getServerURL()) + 'ajax/ajax.php?do=gardenHarvestAll&token=' + self.__token
+        server = self.__getServer()
+        adresse = f'{server}ajax/ajax.php?do=gardenHarvestAll&token={self.__token}'
 
         try:
             self._changeGarden(gardenID)
@@ -866,10 +811,8 @@ class HTTPConnection(object):
         Erntet alle fertigen Pflanzen im Garten.
         """
         headers = self.__getHeaders()
-
-        # ToDo: f-string
-        adresse = 'http://s' + str(self.__Session.getServer()) + \
-                  str(self.__Session.getServerURL()) + 'ajax/ajax.php?do=watergardenHarvestAll&token=' + self.__token
+        server = self.__getServer()
+        adresse = f'{server}ajax/ajax.php?do=watergardenHarvestAll&token={self.__token}'
 
         try:
             response, content = self.__webclient.request(adresse, 'GET', headers=headers)
@@ -884,15 +827,9 @@ class HTTPConnection(object):
         Baut eine Pflanze auf einem Feld an.
         """
         headers = self.__getHeaders()
-
-        # ToDo: f-string
-        adresse = 'http://s' + str(self.__Session.getServer()) + \
-                  str(self.__Session.getServerURL()) + 'save/pflanz.php?pflanze[]=' + str(plant) + \
-                  '&feld[]=' + str(field) + \
-                  '&felder[]=' + fields + \
-                  '&cid=' + self.__token + \
-                  '&garden=' + str(gardenID)
-
+        server = self.__getServer()
+        adresse = f'{server}save/pflanz.php?pflanze[]={str(plant)}&feld[]={str(field)}' \
+                  f'&felder[]={fields}&cid={self.__token}&garden={str(gardenID)}'
         try:
             response, content = self.__webclient.request(adresse, 'GET', headers=headers)
         except:
@@ -906,13 +843,9 @@ class HTTPConnection(object):
         Baut eine Pflanze im Wassergarten an.
         """
         headers = self.__getHeaders()
-
-        # ToDo: f-string
-        adresse = 'http://s' + str(self.__Session.getServer()) + \
-                  str(self.__Session.getServerURL()) + 'ajax/ajax.php?do=watergardenCache&' + \
-                  'plant[' + str(field) + ']=' + str(plant) + \
-                  '&token=' + self.__token
-
+        server = self.__getServer()
+        adresse = f'{server}ajax/ajax.php?do=watergardenCache&' \
+                  f'plant[{str(field)}]={str(plant)}&token={self.__token}'
         try:
             response, content = self.__webclient.request(adresse, 'GET', headers=headers)
             print(response)
@@ -927,15 +860,9 @@ class HTTPConnection(object):
         """
         Sammelt alle Produktinformationen und gibt diese zur Weiterverarbeitung zurück.
         """
-
-        # ToDo: headers
-        headers = {'Cookie': 'PHPSESSID=' + self.__Session.getSessionID() + '; ' +
-                             'wunr=' + self.__userID}
-
-        # ToDo: f-string
-        adresse = 'http://s' + str(self.__Session.getServer()) + str(
-            self.__Session.getServerURL()) + 'main.php?page=garden'
-
+        headers = self.__getHeaders()
+        server = self.__getServer()
+        adresse = f'{server}main.php?page=garden'
         try:
             response, content = self.__webclient.request(adresse, 'GET', headers=headers)
             content = content.decode('UTF-8')
@@ -952,16 +879,10 @@ class HTTPConnection(object):
         """
         Ermittelt den Lagerbestand und gibt diesen zurück.
         """
-        # ToDo: headers
-        headers = {'Cookie': 'PHPSESSID=' + self.__Session.getSessionID() + '; ' +
-                             'wunr=' + self.__userID,
-                   'Content-Length': '0'}
-
-        # ToDo: f-string
-        adresse = 'http://s' + str(self.__Session.getServer()) + str(
-            self.__Session.getServerURL()) + 'ajax/updatelager.php?' + \
-            'all=1&sort=1&type=honey&token=' + self.__token
-
+        headers = self.__getHeaders()
+        server = self.__getServer()
+        adresse = f'{server}ajax/updatelager.php?all=1&sort=1&type=honey&' \
+                  f'token={self.__token}'
         try:
             response, content = self.__webclient.request(adresse, 'POST', headers=headers)
             self.__checkIfHTTPStateIsOK(response)
@@ -976,21 +897,12 @@ class HTTPConnection(object):
         Get wimps data including wimp_id and list of products with amount
         """
         headers = self.__getHeaders()
-        # ToDo: f-string and optimize
-        adresse = 'http://s' + str(self.__Session.getServer()) + \
-                  str(self.__Session.getServerURL()) + 'ajax/ajax.php?do=changeGarden&garden=' + \
-                  str(gardenID) + '&token=' + self.__token
-
-        # ToDo: f-string
-        adresse1 = 'http://s' + str(self.__Session.getServer()) + \
-                   str(self.__Session.getServerURL()) + 'ajax/verkaufajax.php?do=getAreaData&token=' + \
-                   self.__token
-
+        server = self.__getServer()
+        adresse = f'{server}ajax/verkaufajax.php?do=getAreaData&token={self.__token}'
         try:
-            response, content = self.__webclient.request(adresse, 'GET', headers=headers)
-            self.__checkIfHTTPStateIsOK(response)
+            self._changeGarden(gardenID)
 
-            response, content = self.__webclient.request(adresse1, 'GET', headers=headers)
+            response, content = self.__webclient.request(adresse, 'GET', headers=headers)
             self.__checkIfHTTPStateIsOK(response)
 
             jContent = self.__generateJSONContentAndCheckForOK(content)
@@ -1007,11 +919,9 @@ class HTTPConnection(object):
         @return: dict of new balance of sold products
         """
         headers = self.__getHeaders()
-
-        # ToDo: f-string
-        adresse = 'http://s' + str(self.__Session.getServer()) + \
-                  str(self.__Session.getServerURL()) + 'ajax/verkaufajax.php?do=accept&id=' + \
-                  wimp_id + '&token=' + self.__token
+        server = self.__getServer()
+        adresse = f'{server}ajax/verkaufajax.php?do=accept&id={wimp_id}' \
+                  f'&token={self.__token}'
         try:
             response, content = self.__webclient.request(adresse, 'POST', headers=headers)
             self.__checkIfHTTPStateIsOK(response)
@@ -1028,10 +938,9 @@ class HTTPConnection(object):
         @return: 'decline'
         """
         headers = self.__getHeaders()
-
-        adresse = 'http://s' + str(self.__Session.getServer()) + \
-                  str(self.__Session.getServerURL()) + 'ajax/verkaufajax.php?do=decline&id=' + \
-                  wimp_id + '&token=' + self.__token
+        server = self.__getServer()
+        adresse = f'{server}ajax/verkaufajax.php?do=decline&id={wimp_id}' \
+                  f'&token={self.__token}'
         try:
             response, content = self.__webclient.request(adresse, 'GET', headers=headers)
             self.__checkIfHTTPStateIsOK(response)
@@ -1045,40 +954,24 @@ class HTTPConnection(object):
         """
         Ermittelt aus der Wurzelimperium-Hilfe die NPC Preise aller Produkte.
         """
+        headers = self.__getHeaders()
+        server = self.__getServer()
+        adresse = f'{server}hilfe.php?item=2'
 
-        # ToDo headers
-        headers = {'Cookie': 'PHPSESSID=' + self.__Session.getSessionID() + '; ' +
-                             'wunr=' + self.__userID,
-                   'Content-Length': '0'}
-        # ToDo: f-string
-        adresse = 'http://s' + str(self.__Session.getServer()) + str(self.__Session.getServerURL()) + 'hilfe.php?item=2'
-
-        # try:
         response, content = self.__webclient.request(adresse, 'GET', headers=headers)
         self.__checkIfHTTPStateIsOK(response)
-
         content = content.decode('UTF-8').replace('Gärten & Regale', 'Gärten und Regale')
-
         dictNPCPrices = self.__parseNPCPricesFromHtml(content)
-        # except:
-        #    pass #TODO Exception definieren
-        # else:
+
         return dictNPCPrices
 
     def getAllTradeableProductsFromOverview(self):
         """
         Gibt eine Liste zurück, welche Produkte handelbar sind.
         """
-
-        # ToDo: headers
-        headers = {'Cookie': 'PHPSESSID=' + self.__Session.getSessionID() + '; ' +
-                             'wunr=' + self.__userID,
-                   'Content-Length': '0'}
-
-        # ToDo: f-string
-        adresse = 'http://s' + str(self.__Session.getServer()) + str(
-            self.__Session.getServerURL()) + 'stadt/markt.php?show=overview'
-
+        headers = self.__getHeaders()
+        server = self.__getServer()
+        adresse = f'{server}stadt/markt.php?show=overview'
         try:
             response, content = self.__webclient.request(adresse, 'GET', headers=headers)
             self.__checkIfHTTPStateIsOK(response)
@@ -1095,23 +988,15 @@ class HTTPConnection(object):
         """
         Gibt eine Liste mit allen Angeboten eines Produkts zurück.
         """
-
-        # ToDo: headers
-        headers = {'Cookie': 'PHPSESSID=' + self.__Session.getSessionID() + '; ' +
-                             'wunr=' + self.__userID,
-                   'Content-Length': '0'}
-
+        headers = self.__getHeaders()
+        server = self.__getServer()
         nextPage = True
         iPage = 1
         listOffers = []
         while nextPage:
-
             nextPage = False
-            # ToDo: f-string
-            adresse = 'http://s' + str(self.__Session.getServer()) + str(
-                self.__Session.getServerURL()) + 'stadt/markt.php?order=p&v=' + str(prod_id) + '&filter=1&page=' + str(
-                iPage)
-
+            adresse = f'{server}stadt/markt.php?order=p&v={str(prod_id)}&' \
+                      f'filter=1&page={str(iPage)}'
             try:
                 response, content = self.__webclient.request(adresse, 'GET', headers=headers)
                 self.__checkIfHTTPStateIsOK(response)
@@ -1155,11 +1040,8 @@ class HTTPConnection(object):
         Returns Data from Yearly Series of Quests
         """
         headers = self.__getHeaders()
-
-        # ToDo: f-string
-        adresse = 'http://s' + str(self.__Session.getServer()) + \
-                  str(self.__Session.getServerURL()) + 'ajax/ajax.php?do=bigquest_init&id=3' + \
-                  '&token=' + self.__token
+        server = self.__getServer()
+        adresse = f'{server}ajax/ajax.php?do=bigquest_init&id=3&token={self.__token}'
         try:
             response, content = self.__webclient.request(adresse, 'GET', headers=headers)
             self.__checkIfHTTPStateIsOK(response)
@@ -1174,11 +1056,9 @@ class HTTPConnection(object):
         @param day: string (day of daily bonus)
         """
         headers = self.__getHeaders()
-
-        # ToDo: f-string
-        adresse = 'http://s' + str(self.__Session.getServer()) + \
-                  str(self.__Session.getServerURL()) + 'ajax/ajax.php?do=dailyloginbonus_getreward&day=' + \
-                  str(day) + '&token=' + self.__token
+        server = self.__getServer()
+        adresse = f'{server}ajax/ajax.php?do=dailyloginbonus_getreward&' \
+                  f'day={str(day)}&token={self.__token}'
         try:
             response, content = self.__webclient.request(adresse, 'GET', headers=headers)
             self.__checkIfHTTPStateIsOK(response)
@@ -1195,14 +1075,9 @@ class HTTPConnection(object):
         """
 
         self.__changeGarden(gardenID)
-
-        # ToDo: headers
-        headers = {'Cookie': 'PHPSESSID=' + self.__Session.getSessionID() + '; ' + \
-                             'wunr=' + self.__userID,
-                    'Content-Length':'0'}
-
-        # ToDo: make multiservers
-        adresse = f'http://s{self.__Session.getServer()}.wurzelimperium.de/save/abriss.php?tile={fieldID}'
+        headers = self.__getHeaders()
+        server = self.__getServer()
+        adresse = f'{server}save/abriss.php?tile={fieldID}'
         try:
             response, content = self.__webclient.request(adresse, 'POST', headers = headers)
             self.__checkIfHTTPStateIsOK(response)
