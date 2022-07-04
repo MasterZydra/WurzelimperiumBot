@@ -1,15 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import argparse
 import src.Logger as logger
 from src.WurzelBot import WurzelBot
-import time
-import i18n
-
-i18n.load_path.append('lang')
-i18n.set('locale', 'de')
-i18n.set('fallback', 'en')
+import time, i18n, argparse
 
 
 parser = argparse.ArgumentParser()
@@ -17,7 +11,12 @@ parser.add_argument('server', type=int, help='server number')
 parser.add_argument('user', type=str, help='username for login')
 parser.add_argument('password', type=str, help='password for login', default=False)
 parser.add_argument("-l", '--log', help="If -l or --log Argument is passed, logging will be enabled.", action='store_true', default=False, required=False, dest="log")
+parser.add_argument('lang', type=str, nargs='?', default=None, const='en')
 args = parser.parse_args()
+
+i18n.load_path.append('lang')
+i18n.set('locale', args.lang)
+i18n.set('fallback', 'en')
 
 if args.log:
     logger.logger()
