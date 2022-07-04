@@ -5,6 +5,9 @@ Created on 21.03.2017
 @author: MrFlamez
 '''
 from collections import namedtuple
+import i18n
+
+i18n.load_path.append('lang')
 
 
 Login = namedtuple('Login', 'server user password')

@@ -6,7 +6,9 @@ Created on 21.01.2017
 @author: MrFlamez
 '''
 
-import time, logging
+import time, logging, i18n
+
+i18n.load_path.append('lang')
 
 
 class Session(object):

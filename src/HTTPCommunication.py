@@ -13,6 +13,9 @@ from src.Session import Session
 import yaml, time, logging, math, io
 import xml.etree.ElementTree as eTree
 from lxml import html
+import i18n
+
+i18n.load_path.append('lang')
 
 #Defines
 HTTP_STATE_CONTINUE            = 100
