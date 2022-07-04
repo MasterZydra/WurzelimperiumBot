@@ -21,6 +21,9 @@ from collections import Counter
 import datetime
 
 import logging
+import i18n
+
+i18n.load_path.append('lang')
 
 
 class WurzelBot(object):

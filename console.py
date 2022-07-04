@@ -1,6 +1,9 @@
 from logging import log
 import src.Logger as logger
 from src.WurzelBot import WurzelBot
+import i18n
+
+i18n.load_path.append('lang')
 
 # Login data
 user = ''

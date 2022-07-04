@@ -5,6 +5,9 @@ import argparse
 import src.Logger as logger
 from src.WurzelBot import WurzelBot
 import time
+import i18n
+
+i18n.load_path.append('lang')
 
 
 parser = argparse.ArgumentParser()
