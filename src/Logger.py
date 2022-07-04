@@ -17,6 +17,5 @@ if not os.path.exists('logs'):
     os.makedirs('logs')
 
 def logger():
-    logging.basicConfig(filename='logs/wurzelbot '+logtime+'.log', level=logging.DEBUG, format='%(asctime)s - %(message)s')
-
+    logging.basicConfig(handlers=[logging.FileHandler(f'logs/wurzelbot {logtime}.log', 'a', 'utf-8')], level=logging.DEBUG, format='%(asctime)s - %(message)s')
 #TODO: Konstruktor prüfen, evtl um Accountdaten erweitern
