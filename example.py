@@ -3,12 +3,17 @@
 
 import src.Logger as logger
 from src.WurzelBot import WurzelBot
+import i18n
 
 
 """
 Beispieldatei zur Verwendung des Bots.
 Alle Stellen die angepasst werden müssen sind mit TODO gekennzeichnet.
 """
+
+i18n.load_path.append('lang')
+i18n.set('locale', 'de')
+i18n.set('fallback', 'en')
 
 # Logging? Set to True to enable or False to disable logging.
 log = True

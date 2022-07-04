@@ -3,18 +3,21 @@ import src.Logger as logger
 from src.WurzelBot import WurzelBot
 import i18n
 
-i18n.load_path.append('lang')
-
 # Login data
 user = ''
 pw = ''
 server = 17
+lang = 'de' # de, en
 
 # Global vars
 wurzelBot = object
 
 # enable logging? change to True else change it to False
 log = False
+
+i18n.load_path.append('lang')
+i18n.set('locale', lang)
+i18n.set('fallback', 'en')
 
 def main():
     logo()
