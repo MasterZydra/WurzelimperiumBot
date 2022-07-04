@@ -51,10 +51,11 @@ def logo():
     print('')
 
 def init():
-    print('Initialize WurzelBot...')
+    print(i18n.t('wimpb.initialize_bot'))
     
     if user == '' or pw == '':
-        print('User and password not configured!\n')
+        print(i18n.t('wimpb.login_credentials_not_configured'))
+        print('')
         exit()
     
     global wurzelBot
@@ -62,7 +63,8 @@ def init():
     wurzelBot.launchBot(server, user, pw)
 
 def closeConnection():
-    print('Close connection...\n')
+    print(i18n.t('wimpb.close_connection'))
+    print('')
     wurzelBot.exitBot()
     exit()
 
@@ -160,7 +162,7 @@ def productDetails(argStr : str):
         wurzelBot.printProductDetails()
 
 def removeWeed():
-    print('Remove weed from all gardens...')
+    print(i18n.t('wimpb.remove_weed_from_all_gardens'))
     wurzelBot.removeWeedInAllGardens()
 
 def logging():
