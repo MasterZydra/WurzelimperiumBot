@@ -27,7 +27,7 @@ wurzelBot.launchBot(args.server, args.user, args.password)
 
 
 # Remove weed
-print('Unkraut entfernen...')
+print(i18n.t('wimpb.remove_weed_from_all_gardens'))
 wurzelBot.removeWeedInAllGardens()
 
 # Havest
@@ -39,18 +39,18 @@ plantedSingle = -1
 while wurzelBot.hasEmptyFields() and planted != 0 and plantedSingle != 0:
     lowest = wurzelBot.getLowestPlantStockEntry()
     if lowest == 'Your stock is empty': break
-    print(lowest + ' anpflanzen...')
+    print(lowest + (i18n.t('wimpb.planting')))
     planted = wurzelBot.growPlantsInGardens(lowest)
     # If no more "lowest plants" can be grown, try to grow single field plants
     if planted == 0:
         lowestSingle = wurzelBot.getLowestSinglePlantStockEntry()
         if lowestSingle == 'Your stock is empty': break
-        print(lowestSingle + ' anpflanzen...')
+        print(lowestSingle + (i18n.t('wimpb.planting')))
         plantedSingle = wurzelBot.growPlantsInGardens(lowestSingle)
 
 # Water plants
 time.sleep(3)
-print('Alle Pflanzen gießen...')
+print(i18n.t('wimpb.watering_all_plants'))
 wurzelBot.waterPlantsInAllGardens()
 
 # Close connection

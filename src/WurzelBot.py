@@ -13,8 +13,7 @@ from src.Garten import Garden, AquaGarden
 from src.Lager import Storage
 from src.Marktplatz import Marketplace
 from src.Produktdaten import ProductData
-import logging
-import i18n
+import logging, i18n
 
 i18n.load_path.append('lang')
 
