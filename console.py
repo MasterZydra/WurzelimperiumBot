@@ -141,7 +141,7 @@ def userData():
     print('User:'.ljust(colWidth) + wurzelBot.spieler.getUserName())
     print('Anzahl der Gärten:'.ljust(colWidth) + str(wurzelBot.spieler.numberOfGardens))
     print('Level:'.ljust(colWidth) + str(wurzelBot.spieler.getLevelNr()) + ' (' + wurzelBot.spieler.getLevelName() + ')')
-    print('Bar:'.ljust(colWidth) + wurzelBot.spieler.getBar())
+    print('Bar:'.ljust(colWidth) + wurzelBot.spieler.getBarFormated())
     print('Points:'.ljust(colWidth) + f'{wurzelBot.spieler.getPoints():,}'.replace(',', '.'))
     print('Coins:'.ljust(colWidth) + str(wurzelBot.spieler.getCoins()))
     
@@ -170,7 +170,7 @@ def removeWeed():
 def getDailyLoginBonus():
     print('Claiming daily login bonus...')
     wurzelBot.getDailyLoginBonus()
-    
+
 def logging():
     if log:
         logger.logger()
