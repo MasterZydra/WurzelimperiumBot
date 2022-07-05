@@ -7,13 +7,11 @@ Created on 21.03.2017
 '''
 
 from urllib.parse import urlencode
-import json, re, httplib2
+import json, re, httplib2, yaml, time, logging, math, io, i18n
 from http.cookies import SimpleCookie
 from src.Session import Session
-import yaml, time, logging, math, io
 import xml.etree.ElementTree as eTree
 from lxml import html
-import i18n
 
 i18n.load_path.append('lang')
 
