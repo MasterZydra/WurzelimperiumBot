@@ -1,7 +1,7 @@
 en:
   close_connection: "Close connection..."
   grow_plant_X: "Grow %{plant}..."
-  initialize_bot: "Initialize WurzelBot..."
+  initialize_bot: "Initializing WurzelBot..."
   login_credentials_not_configured: "Username or password not configured!"
   remove_weed_from_all_gardens: "Remove weed from all gardens..."
   username_not_determined: "Username could not be found."
