@@ -52,6 +52,9 @@ while wurzelBot.hasEmptyFields() and planted != 0 and plantedSingle != 0:
 time.sleep(3)
 print(i18n.t('wimpb.watering_all_plants'))
 wurzelBot.waterPlantsInAllGardens()
+# Claim Daily
+print(i18n.t('wimpb.claim_bonus'))
+wurzelBot.getDailyLoginBonus()
 
 # Close connection
 wurzelBot.exitBot()

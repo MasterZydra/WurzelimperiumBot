@@ -19,3 +19,4 @@ en:
   harvest_not_successful: "Could not harvest gardens."
   w_harvest_successful: "All weeds could be removed from gardens."
   w_harvest_not_successful: "Could not free up weeds from garden."
+  claim_bonus: "Claiming daily login bonus..."

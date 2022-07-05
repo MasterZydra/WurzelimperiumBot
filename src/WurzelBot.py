@@ -426,3 +426,6 @@ class WurzelBot(object):
             self.__logBot.error(i18n.t('w_harvest_not_successful'))
         else:
             self.__logBot.info(i18n.t('w_harvest_successful'))
+
+    def getDailyLoginBonus(self):
+        self.bonus.getDailyLoginBonus()
