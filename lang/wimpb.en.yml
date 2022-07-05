@@ -1,21 +1,21 @@
 en:
-  close_connection: Close connection...
-  initialize_bot: Initialize WurzelBot...
-  login_credentials_not_configured: Username or password not configured!
-  remove_weed_from_all_gardens: Remove weed from all gardens...
-  username_not_determined: Username could not be found.
-  planting: is beeing planted...
-  watering_all_plants: Watering all plants...
-  error_starting_wbot: An error occured while starting Wurzelbot.
-  error_refresh_userdata: An error occured while refreshing user database.
-  error_no_beehives: Could not determinate availability of any bee hives.
-  error_no_water_garden: Could not determinate availability of any water gardens.
-  error_number_of_gardens: Ammount of gardens could not be resolved.
-  exit_wbot: Shutting down Wurzelbot.
-  exit_wbot_abnormal: Wurzelbot could not be shutdown normally.
-  logout_success: Logout was successful.
-  no_message: Could not send message.
-  harvest_successful: All gardens successfully harvested.
-  harvest_not_successful: Could not harvest gardens.
-  w_harvest_successful: All weeds could be removed from gardens.
-  w_harvest_not_successful: Could not free up weeds from garden.
+  close_connection: "Close connection..."
+  grow_plant_X: "Grow %{plant}..."
+  initialize_bot: "Initialize WurzelBot..."
+  login_credentials_not_configured: "Username or password not configured!"
+  remove_weed_from_all_gardens: "Remove weed from all gardens..."
+  username_not_determined: "Username could not be found."
+  watering_all_plants: "Watering all plants..."
+  error_starting_wbot: "An error occured while starting Wurzelbot."
+  error_refresh_userdata: "An error occured while refreshing user database."
+  error_no_beehives: "Could not determinate availability of any bee hives."
+  error_no_water_garden: "Could not determinate availability of any water gardens."
+  error_number_of_gardens: "Ammount of gardens could not be resolved."
+  exit_wbot: "Shutting down Wurzelbot."
+  exit_wbot_abnormal: "Wurzelbot could not be shutdown normally."
+  logout_success: "Logout was successful."
+  no_message: "Could not send message."
+  harvest_successful: "All gardens successfully harvested."
+  harvest_not_successful: "Could not harvest gardens."
+  w_harvest_successful: "All weeds could be removed from gardens."
+  w_harvest_not_successful: "Could not free up weeds from garden."
