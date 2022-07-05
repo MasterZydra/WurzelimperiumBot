@@ -22,7 +22,7 @@ log = True
 user = ''
 pw = ''
 server = 46
-lang = 'de'
+lang = 'de' # Define Region of Game and Language of bot (en/de/ru etc)
 
 # Init logger
 if log:
@@ -38,6 +38,7 @@ wurzelBot.harvestAllGarden()
 wurzelBot.growPlantsInGardens('Salat', 2) # Nur 2 Pflanzen
 wurzelBot.growPlantsInGardens('Kürbis') # So viele Pflanzen wie möglich
 wurzelBot.waterPlantsInAllGardens()
+wurzelBot.getDailyLoginBonus()
 
 #Deinitialisierung des Bots
 wurzelBot.exitBot()
