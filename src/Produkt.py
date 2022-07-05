@@ -7,6 +7,8 @@ Created on 23.01.2019
 @author: MrFlamez
 '''
 
+import datetime
+
 class Product():
     
     def __init__(self, id, cat, sx, sy, name, lvl, crop, plantable, time):
@@ -26,6 +28,9 @@ class Product():
     
     def getCategory(self):
         return self.__category
+
+    def getCrop(self):
+        return self.__crop
 
     def getName(self):
         return self.__name
@@ -60,6 +65,7 @@ class Product():
               'Name:', str(self.__name).ljust(35), ' ', \
               'Plantable:', str(self.__isPlantable).ljust(5), ' ', \
               'NPC:', str(xstr(self.__priceNPC)).rjust(6), ' ', \
+              'Time:', str(str(datetime.timedelta(seconds=self.__timeUntilHarvest))).rjust(8), ' ', \
               'SX:', str(xstr(self.__sx)), ' ', \
               'SY:', str(xstr(self.__sy)))
 

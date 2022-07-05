@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 
+from prettytable import PrettyTable
+from textwrap import wrap
+VAL_WRAP_WIDTH = 60
 
 def readListFromTextfile(textfile):
     """
@@ -40,3 +43,12 @@ def readListFromTextfile(textfile):
             del tmpList[elementsToBeDeleted[i]]
             
         return tmpList
+
+def pretty_dictionary(dic):
+    tab = PrettyTable(['key', 'value'])
+    for key, val in dic.items():
+        wrapped_value_lines = wrap(str(val) or '', VAL_WRAP_WIDTH) or ['']
+        tab.add_row([key, wrapped_value_lines[0]])
+        for subseq in wrapped_value_lines[1:]:
+            tab.add_row(['', subseq])
+    return tab

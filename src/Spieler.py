@@ -10,7 +10,7 @@ import i18n
 i18n.load_path.append('lang')
 
 
-Login = namedtuple('Login', 'server user password')
+Login = namedtuple('Login', 'server user password language')
 
 class Spieler():
     
@@ -55,10 +55,13 @@ class Spieler():
         return self.__userData['level']
     
     def getBar(self):
-        return self.__userData['bar']
+        return self.__userData['bar_unformat']
     
     def getPoints(self):
         return self.__userData['points']
+
+    def getTime(self):
+        return self.__userData['time']
 
     def getCoins(self):
         return self.__userData['coins']
@@ -68,7 +71,7 @@ class Spieler():
         Liest den Spielernamen vom Server und speichert ihn in der Klasse.
         """
         try:
-            tmpUserName = http.getUserName()
+            tmpUserName = http.getInfoFromStats("Username")
         except:
             raise
         else:

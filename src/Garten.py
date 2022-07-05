@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import logging
-import i18n
+from collections import Counter, namedtuple
+import logging, i18n
 
 i18n.load_path.append('lang')
 
@@ -23,11 +23,11 @@ class Garden():
         Rechnet anhand der fieldID und Größe der Pflanze (sx, sy) alle IDs aus und gibt diese als String zurück.
         """
         
-        # Zurückgegebene Felderindizes (x) für Pflanzen der Größe 1-, 2- und 4-Felder.
-        # Wichtig beim Gießen; dort müssen alle Indizes angegeben werden.
-        # (Sowohl die mit x als auch die mit o gekennzeichneten).
+        # Field indices (x) returned for plants of size 1, 2, and 4 fields.
+        # Important when watering; all indices must be specified there.
+        # (Both those marked with x and those marked with o).
         # x: fieldID
-        # o: ergänzte Felder anhand der size
+        # o: added fields based on the size
         # +---+   +---+---+   +---+---+
         # | x |   | x | o |   | x | o |
         # +---+   +---+---+   +---+---+
@@ -42,7 +42,7 @@ class Garden():
 
     def _getAllFieldIDsFromFieldIDAndSizeAsIntList(self, fieldID, sx, sy):
         """
-        Rechnet anhand der fieldID und Größe der Pflanze (sx, sy) alle IDs aus und gibt diese als Integer-Liste zurück.
+        Calculates all IDs based on the fieldID and size of the plant (sx, sy) and returns them as an integer list.
         """
         sFields = self._getAllFieldIDsFromFieldIDAndSizeAsString(fieldID, sx, sy)
         listFields = sFields.split(',') #Stringarray
@@ -75,9 +75,9 @@ class Garden():
 
     def getID(self):
         """
-        Gibt die Garten ID aus dem Spiel zurück.
+        Returns the ID of garden.
         """
-        return self.__id
+        return self._id
 
     def waterPlants(self):
         """
@@ -98,7 +98,7 @@ class Garden():
 
     def getEmptyFields(self):
         """
-        Gibt alle leeren Felder des Gartens zurück.
+        Returns all empty fields in the garden.
         """
         try:
             tmpEmptyFields = self._httpConn.getEmptyFieldsOfGarden(self._id)
@@ -109,7 +109,7 @@ class Garden():
 
     def getWeedFields(self):
         """
-        Gibt alle Unkraut-Felder des Gartens zurück.
+        Returns all weed fields in the garden.
         """
         try:
             tmpWeedFields = self._httpConn.getWeedFieldsOfGarden(self._id)
@@ -118,9 +118,41 @@ class Garden():
         else:
             return tmpWeedFields
 
+    def getGrowingPlants(self):
+        """
+        Returns all growing plants in the garden.
+        """
+        try:
+            growing_plants = Counter(self._httpConn.getGrowingPlantsOfGarden(self._id))
+        except:
+            self._logGarden.error('Could not determine growing plants of garden ' + str(self._id) + '.')
+        else:
+            return growing_plants
+
+    def getNextWaterHarvest(self):
+        """
+            Returns all growing plants in the garden.
+        """
+        overall_time = []
+        Fields_data = namedtuple("Fields_data", "plant water harvest")
+        max_water_time = 86400
+        try:
+            garden = self._httpConn._changeGarden(self._id).get('garden')
+            for field in garden.values():
+                if field[0] in [41, 42, 43, 45]:
+                    continue
+                fields_time = Fields_data(field[10], field[4], field[3])
+                if fields_time.harvest - fields_time.water > max_water_time:
+                    overall_time.append(fields_time.water + max_water_time)
+                overall_time.append(fields_time.harvest)
+        except:
+            self._logGarden.error('Could not determine growing plants of garden ' + str(self._id) + '.')
+        else:
+            return min(overall_time)
+
     def harvest(self):
         """
-        Erntet alles im Garten.
+        Harvest everything
         """
         try:
             self._httpConn.harvestGarden(self._id)
@@ -131,7 +163,7 @@ class Garden():
 
     def growPlant(self, plantID, sx, sy, amount):
         """
-        Pflanzt eine Pflanze beliebiger Größe an.
+        Grows a plant of any size.
         """
         
         planted = 0

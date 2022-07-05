@@ -11,7 +11,7 @@ parser.add_argument('server', type=int, help='server number')
 parser.add_argument('user', type=str, help='username for login')
 parser.add_argument('password', type=str, help='password for login', default=False)
 parser.add_argument("-l", '--log', help="If -l or --log Argument is passed, logging will be enabled.", action='store_true', default=False, required=False, dest="log")
-parser.add_argument('lang', type=str, nargs='?', default=None, const='en')
+parser.add_argument('lang', help="Set Language and Region for the Game and Bot", type=str, nargs='?', default=None, const='en')
 args = parser.parse_args()
 
 i18n.load_path.append('lang')
@@ -23,7 +23,7 @@ if args.log:
 
 # Init connection
 wurzelBot = WurzelBot()
-wurzelBot.launchBot(args.server, args.user, args.password)
+wurzelBot.launchBot(args.server, args.user, args.password, args.lang)
 
 
 # Remove weed

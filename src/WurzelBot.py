@@ -13,7 +13,11 @@ from src.Garten import Garden, AquaGarden
 from src.Lager import Storage
 from src.Marktplatz import Marketplace
 from src.Produktdaten import ProductData
-import logging, i18n
+from collections import Counter
+from src.Wimps import Wimps
+from src.Quests import Quest
+from src.Bonus import Bonus
+import logging, i18n, datetime
 
 i18n.load_path.append('lang')
 
@@ -36,6 +40,9 @@ class WurzelBot(object):
         self.garten = []
         self.wassergarten = None
         self.marktplatz = Marketplace(self.__HTTPConn)
+        self.wimparea = Wimps(self.__HTTPConn)
+        self.quest = Quest(self.__HTTPConn, self.spieler)
+        self.bonus = Bonus(self.__HTTPConn, self.spieler)
 
 
     def __initGardens(self):
@@ -43,7 +50,7 @@ class WurzelBot(object):
         Ermittelt die Anzahl der Gärten und initialisiert alle.
         """
         try:
-            tmpNumberOfGardens = self.__HTTPConn.getNumberOfGardens()
+            tmpNumberOfGardens = self.__HTTPConn.getInfoFromStats("Gardens")
             self.spieler.numberOfGardens = tmpNumberOfGardens
             for i in range(1, tmpNumberOfGardens + 1):
                 self.garten.append(Garden(self.__HTTPConn, i))
@@ -79,14 +86,14 @@ class WurzelBot(object):
         return listFields
 
 
-    def launchBot(self, server, user, pw):
+    def launchBot(self, server, user, pw, lang):
         """
         Diese Methode startet und initialisiert den Wurzelbot. Dazu wird ein Login mit den
         übergebenen Logindaten durchgeführt und alles nötige initialisiert.
         """
         self.__logBot.info('-------------------------------------------')
         self.__logBot.info(f'Starting Wurzelbot for User {user} on Server No. {server}')
-        loginDaten = Login(server=server, user=user, password=pw)
+        loginDaten = Login(server=server, user=user, password=pw, language=lang)
 
         try:
             self.__HTTPConn.logIn(loginDaten)
@@ -197,6 +204,77 @@ class WurzelBot(object):
         else:
             pass
         return emptyFields
+
+    def getGrowingPlantsInGardens(self):
+        growingPlants = Counter()
+        try:
+            for garden in self.garten:
+                growingPlants.update(garden.getGrowingPlants())
+        except:
+            self.__logBot.error('Could not determine growing plants of garden ' + str(garden.getID()) + '.')
+        else:
+            pass
+
+        return dict(growingPlants)
+
+    def getAllWimpsProducts(self):
+        allWimpsProducts = Counter()
+        for garden in self.garten:
+            tmpWimpData = self.wimparea.getWimpsData(garden)
+            for products in tmpWimpData.values():
+                allWimpsProducts.update(products[1])
+
+        return dict(allWimpsProducts)
+
+    def sellWimpsProducts(self, minimal_balance, minimal_profit):
+        stock_list = self.storage.getOrderedStockList()
+        wimps_data = []
+        for garden in self.garten:
+            for k, v in self.wimparea.getWimpsData(garden).items():
+                wimps_data.append({k: v})
+
+        for wimps in wimps_data:
+            for wimp, products in wimps.items():
+                if not self.checkWimpsProfitable(products, minimal_profit):
+                    self.wimparea.declineWimp(wimp)
+                else:
+                    if self.checkWimpsRequiredAmount(minimal_balance, products[1], stock_list):
+                        print("Selling products to wimp: " + wimp)
+                        new_products_counts = self.wimparea.sellWimpProducts(wimp)
+                        for id, amount in products[1].items():
+                            stock_list[id] -= amount
+
+    def checkWimpsProfitable(self, products, minimal_profit):
+        npc_sum = 0
+        for id, amount in products[1].items():
+            npc_sum += self.productData.getProductByID(id).getPriceNPC() * amount
+        if products[0] / npc_sum * 100 >= minimal_profit:
+            to_sell = True
+        else:
+            to_sell = False
+        return to_sell
+
+    def checkWimpsRequiredAmount(self, minimal_balance, products, stock_list):
+        to_sell = True
+        for id, amount in products.items():
+            k = self.productData.getProductByID(id).getSX() * self.productData.getProductByID(id).getSY()
+            if stock_list.get(id, 0) - (amount + minimal_balance / k) <= 0:
+                to_sell = False
+                break
+        return to_sell
+
+    def getQuestProducts(self, quest_name, quest_number=0):
+        return self.quest.getQuestProducts(quest_name, quest_number)
+
+    def getNextRunTime(self):
+        garden_time = []
+        for garden in self.garten:
+            garden_time.append(garden.getNextWaterHarvest())
+
+        self.updateUserData()
+        human_time = datetime.datetime.fromtimestamp(min(garden_time))
+        print(f"Next time water/harvest: {human_time.strftime('%d/%m/%y %H:%M:%S')} ({min(garden_time)})")
+        return min(garden_time)
 
     def hasEmptyFields(self):
         emptyFields = self.getEmptyFieldsOfGardens()
