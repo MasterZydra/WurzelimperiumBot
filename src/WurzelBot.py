@@ -310,9 +310,9 @@ class WurzelBot(object):
 
             self.storage.updateNumberInStock()
         except:
-            self.__logBot.error(i18n.t('harvest_not_successful'))
+            self.__logBot.error(i18n.t('wimpb.harvest_not_successful'))
         else:
-            self.__logBot.info(i18n.t('harvest_successful'))
+            self.__logBot.info(i18n.t('wimpb.harvest_successful'))
 
     def growPlantsInGardens(self, productName, amount=-1):
         """
@@ -423,9 +423,9 @@ class WurzelBot(object):
             for garden in self.garten:
                 garden.removeWeed()
         except:
-            self.__logBot.error(i18n.t('w_harvest_not_successful'))
+            self.__logBot.error(i18n.t('wimpb.w_harvest_not_successful'))
         else:
-            self.__logBot.info(i18n.t('w_harvest_successful'))
+            self.__logBot.info(i18n.t('wimpb.w_harvest_successful'))
 
     def getDailyLoginBonus(self):
         self.bonus.getDailyLoginBonus()
