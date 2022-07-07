@@ -129,7 +129,7 @@ class WurzelBot(object):
         try:
             self.__initGardens()
         except:
-            self.__logBot.error(i18n.t('error_number_of_gardens'))
+            self.__logBot.error(i18n.t('wimpb.error_number_of_gardens'))
  
         self.spieler.accountLogin = loginDaten
         self.spieler.setUserID(self.__HTTPConn.getUserID())
@@ -142,13 +142,13 @@ class WurzelBot(object):
         """
         Diese Methode beendet den Wurzelbot geordnet und setzt alles zurück.
         """
-        self.__logBot.info(i18n.t('exit_wbot'))
+        self.__logBot.info(i18n.t('wimpb.exit_wbot'))
         try:
             self.__HTTPConn.logOut()
         except:
-            self.__logBot.error(i18n.t('exit_wbot_abnormal'))
+            self.__logBot.error(i18n.t('wimpb.exit_wbot_abnormal'))
         else:
-            self.__logBot.info(i18n.t('logout_success'))
+            self.__logBot.info(i18n.t('wimpb.logout_success'))
             self.__logBot.info('-------------------------------------------')
 
 
@@ -186,7 +186,7 @@ class WurzelBot(object):
             try:
                 self.messenger.writeMessage(self.spieler.getUserName(), recipients, subject, body)
             except:
-                self.__logBot.error(i18n.t('no_message'))
+                self.__logBot.error(i18n.t('wimpb.no_message'))
             else:
                 pass
 
