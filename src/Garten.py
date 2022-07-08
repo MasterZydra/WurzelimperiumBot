@@ -116,7 +116,7 @@ class Garden():
         try:
             tmpWeedFields = self._httpConn.getWeedFieldsOfGarden(self._id)
         except:
-            self._logGarden.error(f'Could not get empty squares of garden ' + {self._id} + '.')
+            self._logGarden.error(f'Could not get empty squares of garden {self._id}.')
         else:
             return tmpWeedFields
 
