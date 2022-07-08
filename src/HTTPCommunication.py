@@ -1092,30 +1092,12 @@ class HTTPConnection(object):
         else:
             return jContent
 
-    def __changeGarden(self, gardenID):
-        """
-        Wechselt den Garten.
-        """
-
-        headers = self.__getHeaders()
-        server = self.__getServer()
-        adresse = f'{server}ajax/ajax.php?do=changeGarden&garden={gardenID}&token={self.__token}'
-
-        try:
-            response, content = self.__webclient.request(adresse, 'GET', headers = headers)
-            print(response)
-            self.__checkIfHTTPStateIsOK(response)
-        except:
-            raise
-        else:
-            pass
-
     def removeWeedOnFieldInGarden(self, gardenID, fieldID):
         """
         Befreit ein Feld im Garten von Unkraut.
         """
 
-        self.__changeGarden(gardenID)
+        self._changeGarden(gardenID)
 
         headers = self.__getHeaders()
         server = self.__getServer()
