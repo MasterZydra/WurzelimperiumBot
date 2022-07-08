@@ -44,6 +44,8 @@ class HTTPConnection(object):
         self.__token = None
         self.__userID = None
         self.__cookie = None
+        self.__unr = None
+        self.__portunr = None
         
 
 
@@ -51,6 +53,8 @@ class HTTPConnection(object):
         self.__Session = None
         self.__token = None
         self.__userID = None
+        self.__unr = None
+        self.__portunr = None
 
 
     def __getUserDataFromJSONContent(self, content):
@@ -127,7 +131,6 @@ class HTTPConnection(object):
         else:
             return True
 
-
     def __getTokenFromURL(self, url):
         """
         Ermittelt aus einer übergebenen URL den security token.
@@ -147,6 +150,63 @@ class HTTPConnection(object):
             raise JSONError('Fehler bei der Ermittlung des tokens')
         else:
             self.__token = tmpToken
+
+    def __getTokenFromURLPORT(self, url):
+        """
+        Ermittelt aus einer übergebenen URL den security token.
+        """
+        split = re.search(r'.*portal/port_logw.php.*token=([a-f0-9]{32})', url)
+        iErr = 0
+        if split:
+            tmpToken = split.group(1)
+            if (tmpToken == ''):
+                iErr = 1
+        else:
+            iErr = 1
+
+        if (iErr == 1):
+            self.__logHTTPConn.debug(tmpToken)
+            raise JSONError(f'Fehler bei der Ermittlung des tokens')
+        else:
+            self.__token = tmpToken
+
+    def __getunrFromURLPORT(self, url):
+        """
+        Ermittelt aus einer übergebenen URL den security token.
+        """
+        split = re.search(r'.*portal/port_logw.php.*unr=([a-f0-9]{6}).*port', url)
+        iErr = 0
+        if split:
+            tmpunr = split.group(1)
+            if (tmpunr == ''):
+                iErr = 1
+        else:
+            iErr = 1
+
+        if (iErr == 1):
+            self.__logHTTPConn.debug(tmpunr)
+            raise JSONError(f'Fehler bei der Ermittlung des tokens')
+        else:
+            self.__unr = tmpunr
+
+    def __getportunrFromURLPORT(self, url):
+        """
+        Ermittelt aus einer übergebenen URL den security token.
+        """
+        split = re.search(r'.*portal/port_logw.php.*portunr=([a-f0-9]{7})', url)
+        iErr = 0
+        if split:
+            tmpportunr = split.group(1)
+            if (tmpportunr == ''):
+                iErr = 1
+        else:
+            iErr = 1
+
+        if (iErr == 1):
+            self.__logHTTPConn.debug(tmpportunr)
+            raise JSONError(f'Fehler bei der Ermittlung des tokens')
+        else:
+            self.__portunr = tmpportunr
 
     def __getInfoFromJSONContent(self, jContent, info):
         """
@@ -397,6 +457,47 @@ class HTTPConnection(object):
             self.__Session.openSession(cookie['PHPSESSID'].value, str(loginDaten.server), serverURL)
             self.__cookie = cookie
             self.__userID = cookie['wunr'].value
+            
+    def logInPortal(self, loginDaten):
+        """
+        Führt einen login durch und öffnet eine Session.
+        """
+        parameter = urlencode({'portserver': 'server' + str(loginDaten.server),
+                               'portname': loginDaten.user,
+                               'portpass': loginDaten.password,
+                               'portsubmit': 'Einloggen'})
+
+        headers = {'Content-type': 'application/x-www-form-urlencoded',
+                   'Connection': 'keep-alive'}
+
+        try:
+            response, content = self.__webclient.request('https://www.wurzelimperium.de/portal/game2port_login.php', \
+                                                         'POST', \
+                                                         parameter, \
+                                                         headers)
+            self.__getTokenFromURLPORT(response['location'])
+            self.__getunrFromURLPORT(response['location'])
+            self.__getportunrFromURLPORT(response['location'])
+        except:
+            raise
+
+        headers = {'Content-type': 'application/x-www-form-urlencoded',
+                   'Connection': 'keep-alive',
+                   'Cookie': self.__unr}
+
+        try:
+            loginadresse = f'https://s{self.__Session.getServer()}.wurzelimperium.de/logw.php?port=1&unr=' + \
+                           f'{self.__unr}&portunr={self.__portunr}&hash={self.__token}&sno=1'
+
+            response, content = self.__webclient.request(loginadresse, 'GET', headers=headers)
+            self.__checkIfHTTPStateIsFOUND(response)
+        except:
+            raise
+        else:
+            cookie = SimpleCookie(response['set-cookie'])
+            self.__Session.openSession(cookie['PHPSESSID'].value, str(loginDaten.server), "s")
+            self.__cookie = cookie
+            self.__userID = self.__unr
 
     def getUserID(self):
         """

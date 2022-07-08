@@ -86,7 +86,7 @@ class WurzelBot(object):
         return listFields
 
 
-    def launchBot(self, server, user, pw, lang):
+    def launchBot(self, server, user, pw, lang, portalacc):
         """
         Diese Methode startet und initialisiert den Wurzelbot. Dazu wird ein Login mit den
         übergebenen Logindaten durchgeführt und alles nötige initialisiert.
@@ -95,11 +95,18 @@ class WurzelBot(object):
         self.__logBot.info(f'Starting Wurzelbot for User {user} on Server No. {server}')
         loginDaten = Login(server=server, user=user, password=pw, language=lang)
 
-        try:
-            self.__HTTPConn.logIn(loginDaten)
-        except:
-            self.__logBot.error(i18n.t('wimpb.error_starting_wbot'))
-            return
+        if portalacc == True:
+            try:
+                self.__HTTPConn.logInPortal(loginDaten)
+            except:
+                self.__logBot.error(i18n.t('wimpb.error_starting_wbot'))
+                return
+        else:
+            try:
+                self.__HTTPConn.logIn(loginDaten)
+            except:
+                self.__logBot.error(i18n.t('wimpb.error_starting_wbot'))
+                return
 
         try:
             self.spieler.setUserNameFromServer(self.__HTTPConn)

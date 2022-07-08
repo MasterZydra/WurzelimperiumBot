@@ -8,7 +8,7 @@ user = ''
 pw = ''
 server = 17
 lang = 'de' # de, en
-
+portalacc = False
 # Global vars
 wurzelBot = object
 
@@ -54,14 +54,14 @@ def logo():
 def init():
     print(i18n.t('wimpb.initialize_bot'))
     
-    if user == '' or pw == '':
+    if user == '' or pw == '' or portalacc == '':
         print(i18n.t('wimpb.login_credentials_not_configured'))
         print('')
         exit()
     
     global wurzelBot
     wurzelBot = WurzelBot()
-    wurzelBot.launchBot(server, user, pw)
+    wurzelBot.launchBot(server, user, pw, portalacc)
 
 def closeConnection():
     print(i18n.t('wimpb.close_connection'))
