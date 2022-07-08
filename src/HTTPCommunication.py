@@ -243,7 +243,7 @@ class HTTPConnection(object):
         """
         Sucht im JSON Content nach Felder die mit Unkraut befallen sind und gibt diese zurück.
         """
-        weedFields = []
+        weedFields = {}
         
         # 41 Unkraut, 42 Baumstumpf, 43 Stein, 45 Maulwurf
         for field in jContent['garden']:
@@ -251,7 +251,7 @@ class HTTPConnection(object):
                 weedFields[int(field)] = float(jContent['garden'][field][6])
 
         #Sortierung über ein leeres Array ändert Objekttyp zu None
-        if len(weedFields) > 1:
+        if len(weedFields) > 0:
             weedFields = {key: value for key, value in sorted(weedFields.items(), key=lambda item: item[1])}
 
         return weedFields
