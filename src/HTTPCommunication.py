@@ -1110,6 +1110,24 @@ class HTTPConnection(object):
             raise
         else:
             return jContent['success']
+    
+    #TODO: Bienenquest, change flower and hive-honey to automate the beequest
+    def sendBienen(self, hive):
+        """
+        sendet die Bienen für 2 Stunden.
+        """
+        headers = {'Cookie': 'PHPSESSID=' + self.__Session.getSessionID() + '; ' + \
+                             'wunr=' + self.__userID,
+                   'Connection': 'Keep-Alive'}
+
+        adresse = f'http{self.__Session.getSecure()}://s' + str(self.__Session.getServer()) + \
+                  '.wurzelimperium.de/ajax/ajax.php?do=bees_startflight&id=' + str(hive) + '&tour=1&token=' + self.__token
+        #TODO: Check if bee is sended, sometimes 1 hives got skipped
+        try:
+            response, content = self.__webclient.request(adresse, 'GET', headers=headers)
+            self.__checkIfHTTPStateIsOK(response)
+        except:
+            pass
 
 class HTTPStateError(Exception):
     def __init__(self, value):
