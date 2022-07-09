@@ -303,7 +303,7 @@ class HTTPConnection(object):
         """
         Sucht im JSON Content nach Felder die mit Unkraut befallen sind und gibt diese zurück.
         """
-        weedFields = []
+        weedFields = {}
         
         # 41 Unkraut, 42 Baumstumpf, 43 Stein, 45 Maulwurf
         for field in jContent['garden']:
@@ -311,7 +311,7 @@ class HTTPConnection(object):
                 weedFields[int(field)] = float(jContent['garden'][field][6])
 
         #Sortierung über ein leeres Array ändert Objekttyp zu None
-        if len(weedFields) > 1:
+        if len(weedFields) > 0:
             weedFields = {key: value for key, value in sorted(weedFields.items(), key=lambda item: item[1])}
 
         return weedFields
@@ -1198,7 +1198,7 @@ class HTTPConnection(object):
         Befreit ein Feld im Garten von Unkraut.
         """
 
-        self.__changeGarden(gardenID)
+        self._changeGarden(gardenID)
 
         headers = self.__getHeaders()
         server = self.__getServer()
@@ -1211,6 +1211,24 @@ class HTTPConnection(object):
             raise
         else:
             return jContent['success']
+    
+    #TODO: Bienenquest, change flower and hive-honey to automate the beequest
+    def sendBienen(self, hive):
+        """
+        sendet die Bienen für 2 Stunden.
+        """
+        headers = {'Cookie': 'PHPSESSID=' + self.__Session.getSessionID() + '; ' + \
+                             'wunr=' + self.__userID,
+                   'Connection': 'Keep-Alive'}
+
+        adresse = f'http{self.__Session.getSecure()}://s' + str(self.__Session.getServer()) + \
+                  '.wurzelimperium.de/ajax/ajax.php?do=bees_startflight&id=' + str(hive) + '&tour=1&token=' + self.__token
+        #TODO: Check if bee is sended, sometimes 1 hives got skipped
+        try:
+            response, content = self.__webclient.request(adresse, 'GET', headers=headers)
+            self.__checkIfHTTPStateIsOK(response)
+        except:
+            pass
 
 class HTTPStateError(Exception):
     def __init__(self, value):

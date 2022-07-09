@@ -4,9 +4,7 @@
 @author: xRuffKez
 '''
 
-import logging
-import os
-import time
+import logging, os, time
 
 #vars
 logtime = time.strftime("%d-%m-%y-%H.%M.%S")

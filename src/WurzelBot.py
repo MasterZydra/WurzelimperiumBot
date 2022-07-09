@@ -10,6 +10,7 @@ from src.Spieler import Spieler, Login
 from src.HTTPCommunication import HTTPConnection
 from src.Messenger import Messenger
 from src.Garten import Garden, AquaGarden
+from src.Bienen import Honig
 from src.Lager import Storage
 from src.Marktplatz import Marketplace
 from src.Produktdaten import ProductData
@@ -39,6 +40,7 @@ class WurzelBot(object):
         self.storage = Storage(self.__HTTPConn)
         self.garten = []
         self.wassergarten = None
+        self.bienenfarm = None
         self.marktplatz = Marketplace(self.__HTTPConn)
         self.wimparea = Wimps(self.__HTTPConn)
         self.quest = Quest(self.__HTTPConn, self.spieler)
@@ -57,6 +59,9 @@ class WurzelBot(object):
             
             if self.spieler.isAquaGardenAvailable() is True:
                 self.wassergarten = AquaGarden(self.__HTTPConn)
+
+            if self.honig.isHoneyFarmAvailable() is True:
+                self.bienenfarm = Honig(self.__HTTPConn)
 
         except:
             raise
@@ -436,3 +441,13 @@ class WurzelBot(object):
 
     def getDailyLoginBonus(self):
         self.bonus.getDailyLoginBonus()
+
+    # Bienen
+    def doSendBienen(self):
+        if self.honig.isHoneyFarmAvailable():
+            hives = self.__HTTPConn.getHoneyFarmInfos()[2]
+            for hive in hives:
+                self.__HTTPConn.sendeBienen(hive)
+                self.bienenfarm.harvest()
+        else:
+            self.__logBot.error('Konnte nicht alle Bienen ernten.')
