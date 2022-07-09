@@ -11,10 +11,6 @@ Beispieldatei zur Verwendung des Bots.
 Alle Stellen die angepasst werden müssen sind mit TODO gekennzeichnet.
 """
 
-i18n.load_path.append('lang')
-i18n.set('locale', 'de')
-i18n.set('fallback', 'en')
-
 # Logging? Set to True to enable or False to disable logging.
 log = True
 
@@ -23,6 +19,10 @@ user = ''
 pw = ''
 server = 46
 lang = 'de' # Define Region of Game and Language of bot (en/de/ru etc)
+
+i18n.load_path.append('lang')
+i18n.set('locale', lang)
+i18n.set('fallback', 'en')
 
 # Init logger
 if log:

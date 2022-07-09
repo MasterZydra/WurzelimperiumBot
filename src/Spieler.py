@@ -9,7 +9,6 @@ import i18n, html
 
 i18n.load_path.append('lang')
 
-
 Login = namedtuple('Login', 'server user password language')
 
 class Spieler():

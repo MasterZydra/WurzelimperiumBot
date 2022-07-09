@@ -30,7 +30,7 @@ wurzelBot.launchBot(args.server, args.user, args.password, args.lang)
 print(i18n.t('wimpb.remove_weed_from_all_gardens'))
 wurzelBot.removeWeedInAllGardens()
 
-# Havest
+# Harvest
 wurzelBot.harvestAllGarden()
 
 # Plant plants
