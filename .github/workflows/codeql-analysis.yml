@@ -67,3 +67,12 @@ jobs:
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v1
+ 
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+  
+      - name: Run Flake8
+        uses: cclauss/Find-Python-syntax-errors-action@master
