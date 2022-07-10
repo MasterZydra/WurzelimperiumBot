@@ -38,7 +38,7 @@ Es gibt auch eine portable Windows Commandline Version ohne Vorraussetzungen. [W
 - Automatisches claimen des täglichen Login Bonus
 
 ## Installation
-**Voraussetzung:** Python 3
+**Voraussetzung:** [Python 3](https://www.python.org/download/releases/3.0/)
 1. Installation der Abhängigkeiten:  
 `pip install -r ./requirements.txt`
 2. Anmeldedaten im Skript hinterlegen (bei [example.py](./example.py) und [console.py](./console.py)).  

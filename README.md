@@ -37,7 +37,7 @@ There is also a standalone executable file for windows. [Win32-CLI-Standalone](h
 - Automatically claiming of daily login bonus.
 
 ## Installation
-**Requirements:** Python 3
+**Requirements:** [Python 3](https://www.python.org/download/releases/3.0/)
 1. Installation of requirements:  
 `pip install -r ./requirements.txt`
 2. Provide login data in scripts ([example.py](./example.py) and/or [console.py](./console.py)).  
