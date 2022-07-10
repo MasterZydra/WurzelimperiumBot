@@ -38,9 +38,8 @@ By using [example.py](./example.py) and [console.py](./console.py) you have to e
 1. Installation of requirements:  
 `pip install -r ./requirements.txt`
 2. Provide login data in scripts ([example.py](./example.py) and/or [console.py](./console.py)).  
-   With fully automated script [automated_script.py](./automated_script.py) you need to pass your login credentials by adding them to the script as flag:
-   `python3 ./automated_script.py <server-nr> <username> <password> <lang>`
-   
+   With fully automated script [automated_script.py](./automated_script.py) you need to pass your login credentials by adding them to the script as flag: </br>
+   `python3 ./automated_script.py <server-nr> <username> <password> <lang>` </br>
    Example: python3 ./automated_script.py 12 FooBar password1337 en
 3. Run the script.
 
