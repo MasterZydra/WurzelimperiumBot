@@ -12,3 +12,9 @@ bin/
 include/
 lib/
 pyvenv.cfg
+
+# Pyinstaller environment
+build/
+log/
+dist/
+*.spec
