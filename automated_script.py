@@ -56,6 +56,8 @@ wurzelBot.waterPlantsInAllGardens()
 # Claim Daily
 print(i18n.t('wimpb.claim_bonus'))
 wurzelBot.getDailyLoginBonus()
+# Process Wimp Customers in Gardens
+wurzelBot.sellWimpsProducts(100, 100)
 
 # Close connection
 wurzelBot.exitBot()

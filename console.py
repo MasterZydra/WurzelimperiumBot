@@ -39,6 +39,7 @@ def main():
         elif inputLower == 'water': water()
         elif inputLower == 'weed': removeWeed()
         elif inputLower == 'bonus': getDailyLoginBonus()
+        elif inputLower == 'wimp': processWimp()
         elif inputLower.startswith('details'): productDetails(userInput)
         else:
             print('Unknown command type \'help\' or \'?\' to see all available commands')
@@ -86,6 +87,7 @@ def help():
     print('user         Show details to the current user')
     print('water        Water all plants')
     print('weed         Remove all weed')
+    print('wimp         Process Wimp Customers in Gardens')
 
 
 def harvest():
@@ -170,6 +172,10 @@ def removeWeed():
 def getDailyLoginBonus():
     print('Claiming daily login bonus...')
     wurzelBot.getDailyLoginBonus()
+    
+def processWimp():
+    # Process Wimp Customers in Gardens
+    wurzelBot.sellWimpsProducts(100, 100)
 
 def logging():
     if log:
