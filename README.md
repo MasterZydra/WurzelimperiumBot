@@ -28,7 +28,7 @@ By using [example.py](./example.py) and [console.py](./console.py) you have to e
 
 ## Features
 - Headless login without need of a browser.
-- Completly automated watering of gardens.
+- Completely automated watering of gardens.
 - Automated planting and harvesting.
 - Automated processing of Wimps in gardens.
 - Automatically claiming of daily login bonus.
