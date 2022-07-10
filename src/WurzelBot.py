@@ -60,7 +60,7 @@ class WurzelBot(object):
             if self.spieler.isAquaGardenAvailable() is True:
                 self.wassergarten = AquaGarden(self.__HTTPConn)
 
-            if self.honig.isHoneyFarmAvailable() is True:
+            if self.spieler.isHoneyFarmAvailable() is True:
                 self.bienenfarm = Honig(self.__HTTPConn)
 
         except:
@@ -444,7 +444,7 @@ class WurzelBot(object):
 
     # Bienen
     def doSendBienen(self):
-        if self.honig.isHoneyFarmAvailable():
+        if self.spieler.isHoneyFarmAvailable():
             hives = self.__HTTPConn.getHoneyFarmInfos()[2]
             for hive in hives:
                 self.__HTTPConn.sendeBienen(hive)
