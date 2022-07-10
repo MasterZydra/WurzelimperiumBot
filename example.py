@@ -40,7 +40,7 @@ wurzelBot.growPlantsInGardens('Salat', 2) # Nur 2 Pflanzen
 wurzelBot.growPlantsInGardens('Kürbis') # So viele Pflanzen wie möglich
 wurzelBot.waterPlantsInAllGardens()
 wurzelBot.getDailyLoginBonus()
-wurzelBot.sellWimpsProducts(100, 100) # Process Wimp Customers in Gardens
+wurzelBot.sellWimpsProducts(0, 0) # Process Wimp Customers in Gardens
 
 #Deinitialisierung des Bots
 wurzelBot.exitBot()

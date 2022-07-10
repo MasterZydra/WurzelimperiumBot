@@ -58,7 +58,7 @@ print(i18n.t('wimpb.claim_bonus'))
 wurzelBot.getDailyLoginBonus()
 # Process Wimp Customers in Gardens
 print(i18n.t('wimpb.process_wimps'))
-wurzelBot.sellWimpsProducts(100, 100)
+wurzelBot.sellWimpsProducts(0,0)
 
 # Close connection
 wurzelBot.exitBot()
