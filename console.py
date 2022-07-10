@@ -175,6 +175,7 @@ def getDailyLoginBonus():
     
 def processWimp():
     # Process Wimp Customers in Gardens
+    print(i18n.t('wimpb.process_wimps'))
     wurzelBot.sellWimpsProducts(100, 100)
 
 def logging():
