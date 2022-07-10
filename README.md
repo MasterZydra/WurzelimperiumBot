@@ -43,6 +43,6 @@ By using [example.py](./example.py) and [console.py](./console.py) you have to e
    Example: python3 ./automated_script.py 12 FooBar password1337 en
 3. Run the script.
 
-## Installation script für Linux
+## Installation script for Linux
 The installation script for linux is located in branch [`unix`](https://github.com/MasterZydra/WurzelimperiumBot/tree/unix).  
 Thanks to [xRuffKez](https://github.com/xRuffKez) for developing the script.
