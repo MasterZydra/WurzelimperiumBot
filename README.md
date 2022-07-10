@@ -26,6 +26,9 @@ With program [console.py](./console.py) you can run actions by using an input `w
 
 By using [example.py](./example.py) and [console.py](./console.py) you have to edit and provide your login data and game region (language) in the files which you are running.
 
+- **Standalone**:
+There is also a standalone executable file for windows. [Win32-CLI-Standalone](https://github.com/MasterZydra/WurzelimperiumBot/releases/)
+
 ## Features
 - Headless login without need of a browser.
 - Completely automated watering of gardens.

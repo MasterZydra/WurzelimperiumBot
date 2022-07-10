@@ -26,6 +26,9 @@ Wie in [example.py](./example.py) kann die Aufgabe als Skript erstellt und manue
 
 Für die Verwendung ist jeweils das Hinterlegen von der Servernummer, dem Benutzernamen und des Passworts in den Dateien notwendig.
 
+- **Standalone**:
+Es gibt auch eine portable Windows Commandline Version ohne Vorraussetzungen. [Win32-CLI-Standalone](https://github.com/MasterZydra/WurzelimperiumBot/releases/)
+
 ## Features
 - Login ohne zusätzliche Verwendung eines Browsers
 - Vollautomatische Bewässerung aller Gärten inkl. Wassergarten
