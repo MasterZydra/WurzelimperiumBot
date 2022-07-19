@@ -1230,6 +1230,26 @@ class HTTPConnection(object):
         except:
             pass
 
+    def getNote(self):
+        """
+        get the users note
+        """
+
+        headers = self.__getHeaders()
+        server = self.__getServer()
+        adresse = f'{server}notiz.php'
+        try:
+            response, content = self.__webclient.request(adresse, 'POST', headers = headers)
+            self.__checkIfHTTPStateIsOK(response)
+            content = content.decode('UTF-8')
+            my_parser = etree.HTMLParser(recover=True)
+            html_tree = etree.fromstring(content, parser=my_parser)
+
+            note = html_tree.find('./body/form/div/textarea[@id="notiztext"]')
+            return note.text.strip()
+        except:
+            raise
+
 class HTTPStateError(Exception):
     def __init__(self, value):
         self.value = value
