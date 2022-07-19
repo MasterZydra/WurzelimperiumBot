@@ -62,7 +62,7 @@ def init():
     
     global wurzelBot
     wurzelBot = WurzelBot()
-    wurzelBot.launchBot(server, user, pw, portalacc)
+    wurzelBot.launchBot(server, user, pw, lang, portalacc)
 
 def closeConnection():
     print(i18n.t('wimpb.close_connection'))
