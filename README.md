@@ -33,7 +33,7 @@ There is also a standalone executable file for windows. [Win32-CLI-Standalone](h
 - Headless login without need of a browser.
 - Completely automated watering of gardens.
 - Automated planting and harvesting.
-- Automated processing of Wimps in gardens.
+- Automated processing of Wimps in gardens. You can set the minimum stock in the account notes. e. g. `minStock: 100`
 - Automatically claiming of daily login bonus.
 
 ## Installation

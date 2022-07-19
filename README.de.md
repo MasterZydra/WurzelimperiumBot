@@ -34,7 +34,7 @@ Es gibt auch eine portable Windows Commandline Version ohne Vorraussetzungen. [W
 - Vollautomatische Bewässerung aller Gärten inkl. Wassergarten
 - Automatisiertes Anpflanzen
 - Abfrage aller aktuellen Marktpreise (Keine Abhängigkeit von Preislistenpflegern und deren Aktualisierungsintervall!)
-- Automatische Abfertigung der Wimps in den Gärten.
+- Automatische Abfertigung der Wimps in den Gärten. Der minimale Bestand kann in den Account-Notizen eingestellt werden. z. B. `minStock: 100`
 - Automatisches claimen des täglichen Login Bonus
 
 ## Installation
