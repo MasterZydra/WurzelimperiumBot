@@ -18,6 +18,7 @@ from collections import Counter
 from src.Wimps import Wimps
 from src.Quests import Quest
 from src.Bonus import Bonus
+from src.Note import Note
 import logging, i18n, datetime
 
 i18n.load_path.append('lang')
@@ -45,6 +46,7 @@ class WurzelBot(object):
         self.wimparea = Wimps(self.__HTTPConn)
         self.quest = Quest(self.__HTTPConn, self.spieler)
         self.bonus = Bonus(self.__HTTPConn, self.spieler)
+        self.note = Note(self.__HTTPConn)
 
 
     def __initGardens(self):
@@ -270,7 +272,8 @@ class WurzelBot(object):
         to_sell = True
         for id, amount in products.items():
             k = self.productData.getProductByID(id).getSX() * self.productData.getProductByID(id).getSY()
-            if stock_list.get(id, 0) - (amount + minimal_balance / k) <= 0:
+            minStock = self.note.getMinStock()
+            if stock_list.get(id, 0) - (amount + minStock + minimal_balance / k) <= 0:
                 to_sell = False
                 break
         return to_sell
