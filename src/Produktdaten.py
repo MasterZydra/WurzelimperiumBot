@@ -45,6 +45,7 @@ class ProductData():
     def getProductByID(self, id):
         for product in self.__products:
             if int(id) == int(product.getID()): return product
+        return None
             
     def getProductByName(self, name : str):
         for product in self.__products:
