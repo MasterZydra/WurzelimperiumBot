@@ -1,6 +1,5 @@
 import time
 
-
 class Bonus:
     def __init__(self, httpConnection, spieler):
         self.__httpConn = httpConnection

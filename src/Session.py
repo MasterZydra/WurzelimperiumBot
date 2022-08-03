@@ -63,7 +63,7 @@ class Session(object):
         self.__sessionID = sessionID
         self.__server = server
         self.__serverURL = serverURL
-
+        
         self.__startTime = time.time()
         self.__endTime = self.__startTime + (self.__lifetime - self.__lifetime_reserve)
         
@@ -100,7 +100,7 @@ class Session(object):
 
     def getServer(self):
         """
-        Returns the server number.
+        Gibt die Servernummer zurück.
         """
         return self.__server
 
@@ -108,4 +108,6 @@ class Session(object):
         """
         Returns the server URL.
         """
-        return self.__serverURL
+        return self.__serverURL 
+
+        

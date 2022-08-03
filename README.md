@@ -4,41 +4,48 @@
 
 A forked from [MrFlamez/Wurzelimperium-Bot](https://github.com/MrFlamez/Wurzelimperium-Bot)
 
+*Read this in other languages: [English](README.md), [German](README.de.md), [Russian](README.ru.md).*
+
 # Wurzelimperium-Bot
-Ein Bot für das Browserspiel Wurzelimperium von Upjers. Mit ihm wird es den kostenlosen Spielern ermöglicht die Vorzüge eines Premiumaccounts zu nutzen.
+A Bot for the browsergame Wurzelimperium from Upjers. Enjoy free premium features in the game thanks to this bot!
 
 **Inhaltsverzeichnis**
-- [Verwendung](#verwendung)
+- [Usage](#usage)
 - [Features](#features)
 - [Installation](#installation)
-- [Installationsskript für Linux](#installationsskript-für-linux)
+- [Installation script für Linux](#installation-script-für-linux)
 
-## Verwendung
-Die Nutzung des Bots ist über verschiedene Arten möglich:
-- **Skript**:  
-Wie in [example.py](./example.py) kann die Aufgabe als Skript erstellt und manuell auf dem PC ausgeführt werden.
-- **Automatisiert**:  
-Ähnlich wie beim Skript kann eine komplexeres Skript erstellt werden, welches beispielsweise durch GitHub Actions zyklisch ausgeführt wird. Siehe [automated_script.py](./automated_script.py)
-- **Interaktiv**:  
-Über das Programm [console.py](./console.py) kann über Eingaben wie zum Beispiel `water` der gesamte Garten bewässert werden.
+## Usage
+Usage of this bot is possible in various situations:
+- **Script**:  
+Like in [example.py](./example.py) tasks can be created as script or automatically run on your pc.
+- **Automated**:  
+Like using a script you can solve much more complex tasks, which can be run by GitHub actions for example.. Learn more [automated_script.py](./automated_script.py)
+- **Interactive**:  
+With program [console.py](./console.py) you can run actions by using an input `water` to water your whole garden.
 
-Für die Verwendung ist jeweils das Hinterlegen von der Servernummer, dem Benutzernamen und des Passworts in den Dateien notwendig.
+By using [example.py](./example.py) and [console.py](./console.py) you have to edit and provide your login data and game region (language) in the files which you are running.
+
+- **Standalone**:
+There is also a standalone executable file for windows. [Win32-CLI-Standalone](https://github.com/MasterZydra/WurzelimperiumBot/releases/)
 
 ## Features
-- Login ohne zusätzliche Verwendung eines Browsers
-- Vollautomatische Bewässerung aller Gärten inkl. Wassergarten
-- Automatisiertes Anpflanzen
-- Abfrage aller aktuellen Marktpreise (Keine Abhängigkeit von Preislistenpflegern und deren Aktualisierungsintervall!)
+- Headless login without need of a browser.
+- Completely automated watering of gardens.
+- Automated planting and harvesting.
+- Automated processing of Wimps in gardens. You can set the minimum stock in the account notes. e. g. `minStock: 100` or `minStock(Apple): 200`
+- Automatically claiming of daily login bonus.
 
 ## Installation
-**Voraussetzung:** Python 3
-1. Installation der Abhängigkeiten:  
+**Requirements:** [Python 3](https://www.python.org/download/releases/3.0/)
+1. Installation of requirements:  
 `pip install -r ./requirements.txt`
-2. Anmeldedaten im Skript hinterlegen (bei [example.py](./example.py) und [console.py](./console.py)).  
-   Beim automatisierten Skript [automated_script.py](./automated_script.py) werden die Anmeldedaten beim Aufruf übergeben:
-   `python3 ./automated_script.py <server-nr> <username> <password>`
-3. Skript ausführen
+2. Provide login data in scripts ([example.py](./example.py) and/or [console.py](./console.py)).  
+   With fully automated script [automated_script.py](./automated_script.py) you need to pass your login credentials by adding them to the script as flag: </br>
+   `python3 ./automated_script.py <server-nr> <username> <password> <lang>` </br>
+   Example: python3 ./automated_script.py 12 FooBar password1337 en
+3. Run the script.
 
-## Installationsskript für Linux
-Das Installationsskript für Linux befindet sich im Branch [`unix`](https://github.com/MasterZydra/WurzelimperiumBot/tree/unix).  
-Vielen Dank an [xRuffKez](https://github.com/xRuffKez) für die Entwicklung.
+## Installation script for Linux
+The installation script for linux is located in branch [`unix`](https://github.com/MasterZydra/WurzelimperiumBot/tree/unix).  
+Thanks to [xRuffKez](https://github.com/xRuffKez) for developing the script.

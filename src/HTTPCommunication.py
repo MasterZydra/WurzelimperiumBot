@@ -7,13 +7,11 @@ Created on 21.03.2017
 '''
 
 from urllib.parse import urlencode
-import json, re, httplib2
+import json, re, httplib2, yaml, time, logging, math, io, i18n
 from http.cookies import SimpleCookie
 from src.Session import Session
-import yaml, time, logging, math, io
 import xml.etree.ElementTree as eTree
 from lxml import html, etree
-import i18n
 
 i18n.load_path.append('lang')
 
@@ -47,11 +45,17 @@ class HTTPConnection(object):
         self.__Session = Session()
         self.__token = None
         self.__userID = None
+        self.__cookie = None
+        self.__unr = None
+        self.__portunr = None
+
 
     def __del__(self):
         self.__Session = None
         self.__token = None
         self.__userID = None
+        self.__unr = None
+        self.__portunr = None
 
     def __getUserDataFromJSONContent(self, content):
         """
@@ -122,7 +126,6 @@ class HTTPConnection(object):
         else:
             return True
 
-
     def __getTokenFromURL(self, url):
         """
         Ermittelt aus einer übergebenen URL den security token.
@@ -142,6 +145,63 @@ class HTTPConnection(object):
             raise JSONError('Fehler bei der Ermittlung des tokens')
         else:
             self.__token = tmpToken
+
+    def __getTokenFromURLPORT(self, url):
+        """
+        Ermittelt aus einer übergebenen URL den security token.
+        """
+        split = re.search(r'.*portal/port_logw.php.*token=([a-f0-9]{32})', url)
+        iErr = 0
+        if split:
+            tmpToken = split.group(1)
+            if tmpToken == '':
+                iErr = 1
+        else:
+            iErr = 1
+
+        if iErr == 1:
+            self.__logHTTPConn.debug(tmpToken)
+            raise JSONError(f'Fehler bei der Ermittlung des tokens')
+        else:
+            self.__token = tmpToken
+
+    def __getunrFromURLPORT(self, url):
+        """
+        Ermittelt aus einer übergebenen URL den security token.
+        """
+        split = re.search(r'.*portal/port_logw.php.*unr=([a-f0-9]{6}).*port', url)
+        iErr = 0
+        if split:
+            tmpunr = split.group(1)
+            if (tmpunr == ''):
+                iErr = 1
+        else:
+            iErr = 1
+
+        if (iErr == 1):
+            self.__logHTTPConn.debug(tmpunr)
+            raise JSONError(f'Fehler bei der Ermittlung des tokens')
+        else:
+            self.__unr = tmpunr
+
+    def __getportunrFromURLPORT(self, url):
+        """
+        Ermittelt aus einer übergebenen URL den security token.
+        """
+        split = re.search(r'.*portal/port_logw.php.*portunr=([a-f0-9]{7})', url)
+        iErr = 0
+        if split:
+            tmpportunr = split.group(1)
+            if (tmpportunr == ''):
+                iErr = 1
+        else:
+            iErr = 1
+
+        if (iErr == 1):
+            self.__logHTTPConn.debug(tmpportunr)
+            raise JSONError(f'Fehler bei der Ermittlung des tokens')
+        else:
+            self.__portunr = tmpportunr
 
     def __getInfoFromJSONContent(self, jContent, info):
         """
@@ -323,7 +383,6 @@ class HTTPConnection(object):
         html_tree = etree.fromstring(str(html_data), parser=my_parser)
 
         table = html_tree.find('./body/div[@id="content"]/table')
-
         dictResult = {}
 
         for row in table.iter('tr'):
@@ -366,7 +425,6 @@ class HTTPConnection(object):
                                'server': f'server{str(loginDaten.server)}',
                                'user': loginDaten.user,
                                'pass': loginDaten.password})
-
         headers = {'Content-type': 'application/x-www-form-urlencoded',
                    'Connection': 'keep-alive'}
 
@@ -389,6 +447,47 @@ class HTTPConnection(object):
             self.__cookie = cookie
             self.__userID = cookie['wunr'].value
 
+    def logInPortal(self, loginDaten):
+        """
+        Führt einen login durch und öffnet eine Session.
+        """
+        parameter = urlencode({'portserver': 'server' + str(loginDaten.server),
+                               'portname': loginDaten.user,
+                               'portpass': loginDaten.password,
+                               'portsubmit': 'Einloggen'})
+
+        headers = {'Content-type': 'application/x-www-form-urlencoded',
+                   'Connection': 'keep-alive'}
+
+        try:
+            response, content = self.__webclient.request('https://www.wurzelimperium.de/portal/game2port_login.php', \
+                                                         'POST', \
+                                                         parameter, \
+                                                         headers)
+            self.__getTokenFromURLPORT(response['location'])
+            self.__getunrFromURLPORT(response['location'])
+            self.__getportunrFromURLPORT(response['location'])
+        except:
+            raise
+
+        headers = {'Content-type': 'application/x-www-form-urlencoded',
+                   'Connection': 'keep-alive',
+                   'Cookie': self.__unr}
+
+        try:
+            loginadresse = f'https://s{self.__Session.getServer()}.wurzelimperium.de/logw.php?port=1&unr=' + \
+                           f'{self.__unr}&portunr={self.__portunr}&hash={self.__token}&sno=1'
+
+            response, content = self.__webclient.request(loginadresse, 'GET', headers=headers)
+            self.__checkIfHTTPStateIsFOUND(response)
+        except:
+            raise
+        else:
+            cookie = SimpleCookie(response['set-cookie'])
+            self.__Session.openSession(cookie['PHPSESSID'].value, str(loginDaten.server), "s")
+            self.__cookie = cookie
+            self.__userID = self.__unr
+
     def getUserID(self):
         """
         Gibt die wunr als userID zurück die beim Login über das Cookie erhalten wurde.
@@ -399,14 +498,12 @@ class HTTPConnection(object):
         """
         Logout des Spielers inkl. Löschen der Session.
         """
-        # TODO: Was passiert beim Logout einer bereits ausgeloggten Session
-        # headers = {'Cookie': 'PHPSESSID=' + self.__Session.getSessionID() + '; ' +
-        #                      'wunr=' + self.__userID}
+        #TODO: Was passiert beim Logout einer bereits ausgeloggten Session
         headers = self.__getHeaders()
         server = self.__getServer()
         adresse = f'{server}main.php?page=logout'
-
-        try:  # content ist beim Logout leer
+        
+        try: #content ist beim Logout leer
             response, content = self.__webclient.request(adresse, 'GET', headers=headers)
             self.__checkIfHTTPStateIsFOUND(response)
             cookie = SimpleCookie(response['set-cookie'])
@@ -426,7 +523,6 @@ class HTTPConnection(object):
         server = self.__getServer()
         adresse = f'{server}ajax/ajax.php?do=statsGetStats&which=0&start=0' \
                   f'&additional={self.__userID}&token={self.__token}'
-
         try:
             response, content = self.__webclient.request(adresse, 'GET', headers=headers)
             self.__checkIfHTTPStateIsOK(response)
@@ -502,7 +598,6 @@ class HTTPConnection(object):
         headers = self.__getHeaders()
         server = self.__getServer()
         adresse = f'{server}ajax/ajax.php?do=watergardenGetGarden&token={self.__token}'
-
         try:
             response, content = self.__webclient.request(adresse, 'GET', headers=headers)
             self.__checkIfHTTPStateIsOK(response)
@@ -544,7 +639,6 @@ class HTTPConnection(object):
         headers = self.__getHeaders()
         server = self.__getServer()
         adresse = f'{server}ajax/gettrophies.php?category=giver'
-
         if not (iUserLevel < 10):
             try:
                 response, content = self.__webclient.request(adresse, 'GET', headers=headers)
@@ -600,7 +694,7 @@ class HTTPConnection(object):
         adresse = f'{server}nutzer/profil.php'
 
         try:
-            response, content = self.__webclient.request(adresse, 'GET', headers = headers)
+            response, content = self.__webclient.request(adresse, 'GET', headers=headers)
             self.__checkIfHTTPStateIsOK(response)
         except:
             raise
@@ -619,6 +713,10 @@ class HTTPConnection(object):
         server = self.__getServer()
         adress = f'{server}nachrichten/new.php'
 
+        headers = self.__getHeaders()
+        server = self.__getServer()
+        adress = f'{server}nachrichten/new.php'
+        
         try:
             response, content = self.__webclient.request(adress, 'GET', headers=headers)
             self.__checkIfHTTPStateIsOK(response)
@@ -652,6 +750,8 @@ class HTTPConnection(object):
         """
         #TODO: finalisieren
         """
+        userList = {'Nr':[], 'Gilde':[], 'Name':[], 'Punkte':[]}
+        #iStart darf nicht 0 sein, da sonst beim korrigierten Index -1 übergeben wird
         userList = {'Nr': [], 'Gilde': [], 'Name': [], 'Punkte': []}
         # iStart darf nicht 0 sein, da sonst beim korrigierten Index -1 übergeben wird
         if iStart <= 0:
@@ -745,6 +845,25 @@ class HTTPConnection(object):
             raise
         else:
             return weedFields
+
+    def getGrowingPlantsOfGarden(self, gardenID):
+        """
+        Returns all fields with growing plants of a garden.
+        """
+        headers = self.__getHeaders()
+        server = self.__getServer()
+        adresse = f'{server}ajax/ajax.php?do=changeGarden&garden={str(gardenID)}' \
+                  f'&token={self.__token}'
+
+        try:
+            response, content = self.__webclient.request(adresse, 'GET', headers=headers)
+            self.__checkIfHTTPStateIsOK(response)
+            jContent = self.__generateJSONContentAndCheckForOK(content)
+            growingPlants = self.__findGrowingPlantsFromJSONContent(jContent)
+        except:
+            raise
+        else:
+            return growingPlants
 
     def clearWeedFieldOfGarden(self, gardenID, fieldID):
         """
@@ -857,7 +976,6 @@ class HTTPConnection(object):
             raise
         else:
             pass
-
     def getAllProductInformations(self):
         """
         Sammelt alle Produktinformationen und gibt diese zur Weiterverarbeitung zurück.
@@ -915,6 +1033,7 @@ class HTTPConnection(object):
             return wimpsData
 
     def sellWimpProducts(self, wimp_id):
+
         """
         Sell products to wimp with a given id
         @param wimp_id: str
@@ -932,6 +1051,8 @@ class HTTPConnection(object):
             pass
         else:
             return jContent['newProductCounts']
+
+
 
     def declineWimp(self, wimp_id):
         """
@@ -964,7 +1085,6 @@ class HTTPConnection(object):
         self.__checkIfHTTPStateIsOK(response)
         content = content.decode('UTF-8').replace('Gärten & Regale', 'Gärten und Regale')
         dictNPCPrices = self.__parseNPCPricesFromHtml(content)
-
         return dictNPCPrices
 
     def getAllTradeableProductsFromOverview(self):
@@ -1070,13 +1190,12 @@ class HTTPConnection(object):
         else:
             return jContent
 
-
     def removeWeedOnFieldInGarden(self, gardenID, fieldID):
         """
         Befreit ein Feld im Garten von Unkraut.
         """
 
-        self.__changeGarden(gardenID)
+        self._changeGarden(gardenID)
         headers = self.__getHeaders()
         server = self.__getServer()
         adresse = f'{server}save/abriss.php?tile={fieldID}'
@@ -1088,6 +1207,44 @@ class HTTPConnection(object):
             raise
         else:
             return jContent['success']
+
+    #TODO: Bienenquest, change flower and hive-honey to automate the beequest
+    def sendBienen(self, hive):
+        """
+        sendet die Bienen für 2 Stunden.
+        """
+        headers = {'Cookie': 'PHPSESSID=' + self.__Session.getSessionID() + '; ' + \
+                             'wunr=' + self.__userID,
+                   'Connection': 'Keep-Alive'}
+
+        adresse = f'http{self.__Session.getSecure()}://s' + str(self.__Session.getServer()) + \
+                  '.wurzelimperium.de/ajax/ajax.php?do=bees_startflight&id=' + str(hive) + '&tour=1&token=' + self.__token
+        #TODO: Check if bee is sended, sometimes 1 hives got skipped
+        try:
+            response, content = self.__webclient.request(adresse, 'GET', headers=headers)
+            self.__checkIfHTTPStateIsOK(response)
+        except:
+            pass
+
+    def getNote(self):
+        """
+        get the users note
+        """
+
+        headers = self.__getHeaders()
+        server = self.__getServer()
+        adresse = f'{server}notiz.php'
+        try:
+            response, content = self.__webclient.request(adresse, 'POST', headers = headers)
+            self.__checkIfHTTPStateIsOK(response)
+            content = content.decode('UTF-8')
+            my_parser = etree.HTMLParser(recover=True)
+            html_tree = etree.fromstring(content, parser=my_parser)
+
+            note = html_tree.find('./body/form/div/textarea[@id="notiztext"]')
+            return note.text.strip()
+        except:
+            raise
 
 class HTTPStateError(Exception):
     def __init__(self, value):

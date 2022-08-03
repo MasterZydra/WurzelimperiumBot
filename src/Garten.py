@@ -2,9 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from collections import Counter, namedtuple
-
-import logging
-import i18n
+import logging, i18n
 
 i18n.load_path.append('lang')
 
@@ -77,7 +75,7 @@ class Garden():
 
     def getID(self):
         """
-        Gibt die Garten ID aus dem Spiel zurück.
+        Returns the ID of garden.
         """
         return self._id
 
@@ -100,7 +98,7 @@ class Garden():
 
     def getEmptyFields(self):
         """
-        Gibt alle leeren Felder des Gartens zurück.
+        Returns all empty fields in the garden.
         """
         try:
             tmpEmptyFields = self._httpConn.getEmptyFieldsOfGarden(self._id)
@@ -119,6 +117,38 @@ class Garden():
             self._logGarden.error(f'Could not get empty squares of garden {self._id}.')
         else:
             return tmpWeedFields
+
+    def getGrowingPlants(self):
+        """
+        Returns all growing plants in the garden.
+        """
+        try:
+            growing_plants = Counter(self._httpConn.getGrowingPlantsOfGarden(self._id))
+        except:
+            self._logGarden.error('Could not determine growing plants of garden ' + str(self._id) + '.')
+        else:
+            return growing_plants
+
+    def getNextWaterHarvest(self):
+        """
+            Returns all growing plants in the garden.
+        """
+        overall_time = []
+        Fields_data = namedtuple("Fields_data", "plant water harvest")
+        max_water_time = 86400
+        try:
+            garden = self._httpConn._changeGarden(self._id).get('garden')
+            for field in garden.values():
+                if field[0] in [41, 42, 43, 45]:
+                    continue
+                fields_time = Fields_data(field[10], field[4], field[3])
+                if fields_time.harvest - fields_time.water > max_water_time:
+                    overall_time.append(fields_time.water + max_water_time)
+                overall_time.append(fields_time.harvest)
+        except:
+            self._logGarden.error('Could not determine growing plants of garden ' + str(self._id) + '.')
+        else:
+            return min(overall_time)
 
     def clearWeedField(self, field_id):
         """
@@ -165,7 +195,7 @@ class Garden():
 
     def harvest(self):
         """
-        Erntet alles im Garten.
+        Harvest everything
         """
         try:
             self._httpConn.harvestGarden(self._id)

@@ -3,18 +3,21 @@ import src.Logger as logger
 from src.WurzelBot import WurzelBot
 import i18n
 
-i18n.load_path.append('lang')
-
 # Login data
 user = ''
 pw = ''
 server = 17
-
+lang = 'de' # de, en
+portalacc = False
 # Global vars
 wurzelBot = object
 
 # enable logging? change to True else change it to False
 log = False
+
+i18n.load_path.append('lang')
+i18n.set('locale', lang)
+i18n.set('fallback', 'en')
 
 def main():
     logo()
@@ -35,6 +38,8 @@ def main():
         elif inputLower == 'user': userData()
         elif inputLower == 'water': water()
         elif inputLower == 'weed': removeWeed()
+        elif inputLower == 'bonus': getDailyLoginBonus()
+        elif inputLower == 'wimp': processWimp()
         elif inputLower.startswith('details'): productDetails(userInput)
         else:
             print('Unknown command type \'help\' or \'?\' to see all available commands')
@@ -48,24 +53,27 @@ def logo():
     print('')
 
 def init():
-    print('Initialize WurzelBot...')
+    print(i18n.t('wimpb.initialize_bot'))
     
-    if user == '' or pw == '':
-        print('User and password not configured!\n')
+    if user == '' or pw == '' or portalacc == '':
+        print(i18n.t('wimpb.login_credentials_not_configured'))
+        print('')
         exit()
     
     global wurzelBot
     wurzelBot = WurzelBot()
-    wurzelBot.launchBot(server, user, pw)
+    wurzelBot.launchBot(server, user, pw, lang, portalacc)
 
 def closeConnection():
-    print('Close connection...\n')
+    print(i18n.t('wimpb.close_connection'))
+    print('')
     wurzelBot.exitBot()
     exit()
 
 def help():
     print('Available commands:')
     print('-------------------')
+    print('bonus        Get the daily login bonus')
     print('details      Show details to the products')
     print('             Opt. argument: "all"')
     print('exit         Close connection and exit bot')
@@ -79,6 +87,7 @@ def help():
     print('user         Show details to the current user')
     print('water        Water all plants')
     print('weed         Remove all weed')
+    print('wimp         Process Wimp Customers in Gardens')
 
 
 def harvest():
@@ -134,7 +143,7 @@ def userData():
     print('User:'.ljust(colWidth) + wurzelBot.spieler.getUserName())
     print('Anzahl der Gärten:'.ljust(colWidth) + str(wurzelBot.spieler.numberOfGardens))
     print('Level:'.ljust(colWidth) + str(wurzelBot.spieler.getLevelNr()) + ' (' + wurzelBot.spieler.getLevelName() + ')')
-    print('Bar:'.ljust(colWidth) + wurzelBot.spieler.getBar())
+    print('Bar:'.ljust(colWidth) + wurzelBot.spieler.getBarFormated())
     print('Points:'.ljust(colWidth) + f'{wurzelBot.spieler.getPoints():,}'.replace(',', '.'))
     print('Coins:'.ljust(colWidth) + str(wurzelBot.spieler.getCoins()))
     
@@ -157,11 +166,20 @@ def productDetails(argStr : str):
         wurzelBot.printProductDetails()
 
 def removeWeed():
-    print('Remove weed from all gardens...')
+    print(i18n.t('wimpb.remove_weed_from_all_gardens'))
     wurzelBot.removeWeedInAllGardens()
 
+def getDailyLoginBonus():
+    print('Claiming daily login bonus...')
+    wurzelBot.getDailyLoginBonus()
+    
+def processWimp():
+    # Process Wimp Customers in Gardens
+    print(i18n.t('wimpb.process_wimps'))
+    wurzelBot.sellWimpsProducts(0, 0)
+
 def logging():
-    if log == True:
+    if log:
         logger.logger()
 
 if __name__ == "__main__":

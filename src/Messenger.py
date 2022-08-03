@@ -6,8 +6,7 @@ Created on 24.10.2018
 '''
 
 from collections import namedtuple
-import re
-import i18n
+import re, i18n
 
 i18n.load_path.append('lang')
 

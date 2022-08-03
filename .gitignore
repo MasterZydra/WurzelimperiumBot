@@ -12,9 +12,13 @@ bin/
 include/
 lib/
 pyvenv.cfg
-/.idea/*
-# Some local files
-/automated_script_1.py
-/automated_script_ru.py
-/automated_script.py
-/test.py
+
+# Pyinstaller environment
+build/
+log/
+dist/
+*.spec
+
+# Visual Studio Code
+.vs/
+env/Scripts

@@ -5,10 +5,9 @@ Created on 21.03.2017
 @author: MrFlamez
 '''
 from collections import namedtuple
-import i18n
+import i18n, html
 
 i18n.load_path.append('lang')
-
 
 Login = namedtuple('Login', 'server user password language')
 
@@ -52,7 +51,7 @@ class Spieler():
         return self.__userData['levelnr']
     
     def getLevelName(self):
-        return self.__userData['level']
+        return html.unescape(self.__userData['level'])
     
     def getBar(self):
         return self.__userData['bar_unformat']
@@ -60,11 +59,14 @@ class Spieler():
     def getPoints(self):
         return self.__userData['points']
 
+    def getTime(self):
+        return self.__userData['time']
+
     def getCoins(self):
         return self.__userData['coins']
 
-    def getTime(self):
-        return self.__userData['time']
+    def getBarFormated(self):
+        return self.__userData['bar']
 
     def setUserNameFromServer(self, http):
         """

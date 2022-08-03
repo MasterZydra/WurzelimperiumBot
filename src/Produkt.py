@@ -29,6 +29,9 @@ class Product():
     def getCategory(self):
         return self.__category
 
+    def getCrop(self):
+        return self.__crop
+
     def getName(self):
         return self.__name
     
