@@ -24,8 +24,9 @@ if args.log:
 
 # Init connection
 wurzelBot = WurzelBot()
-wurzelBot.launchBot(args.server, args.user, args.password, args.lang, args.portalacc)
-
+succ = wurzelBot.launchBot(args.server, args.user, args.password, args.lang, args.portalacc)
+if succ != True:
+    exit(-1)
 
 # Remove weed
 print(i18n.t('wimpb.remove_weed_from_all_gardens'))

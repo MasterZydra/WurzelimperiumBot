@@ -93,7 +93,7 @@ class WurzelBot(object):
         return listFields
 
 
-    def launchBot(self, server, user, pw, lang, portalacc):
+    def launchBot(self, server, user, pw, lang, portalacc) -> bool:
         """
         Diese Methode startet und initialisiert den Wurzelbot. Dazu wird ein Login mit den
         übergebenen Logindaten durchgeführt und alles nötige initialisiert.
@@ -107,29 +107,31 @@ class WurzelBot(object):
                 self.__HTTPConn.logInPortal(loginDaten)
             except:
                 self.__logBot.error(i18n.t('wimpb.error_starting_wbot'))
-                return
+                return False
         else:
             try:
                 self.__HTTPConn.logIn(loginDaten)
             except:
                 self.__logBot.error(i18n.t('wimpb.error_starting_wbot'))
-                return
+                return False
 
         try:
             self.spieler.setUserNameFromServer(self.__HTTPConn)
         except:
             self.__logBot.error(i18n.t('wimpb.username_not_determined'))
-
+            return False
 
         try:
             self.spieler.setUserDataFromServer(self.__HTTPConn)
         except:
             self.__logBot.error(i18n.t('wimpb.error_refresh_userdata'))
+            return False
         
         try:
             tmpHoneyFarmAvailability = self.__HTTPConn.isHoneyFarmAvailable(self.spieler.getLevelNr())
         except:
             self.__logBot.error(i18n.t('wimpb.error_no_beehives'))
+            return False
         else:
             self.spieler.setHoneyFarmAvailability(tmpHoneyFarmAvailability)
 
@@ -137,6 +139,7 @@ class WurzelBot(object):
             tmpAquaGardenAvailability = self.__HTTPConn.isAquaGardenAvailable(self.spieler.getLevelNr())
         except:
             self.__logBot.error(i18n.t('wimpb.error_no_water_garden'))
+            return False
         else:
             self.spieler.setAquaGardenAvailability(tmpAquaGardenAvailability)
 
@@ -144,12 +147,14 @@ class WurzelBot(object):
             self.__initGardens()
         except:
             self.__logBot.error(i18n.t('wimpb.error_number_of_gardens'))
- 
+            return False
+
         self.spieler.accountLogin = loginDaten
         self.spieler.setUserID(self.__HTTPConn.getUserID())
         self.productData.initAllProducts()
         self.storage.initProductList(self.productData.getListOfAllProductIDs())
         self.storage.updateNumberInStock()
+        return True
 
 
     def exitBot(self):
