@@ -503,8 +503,18 @@ class WurzelBot(object):
                 break
         return to_sell
 
+    def getGrowingTime(self, item):
+        return self.productData.getProductByID(item[0]).getGrowingTime()
+
     def getQuestProducts(self, quest_name, quest_number=0):
-        return self.quest.getQuestProducts(quest_name, quest_number)
+        quest_products = self.quest.getQuestProducts(quest_name, quest_number)
+        if isinstance(quest_products, dict):
+            sorted_products = dict(sorted(quest_products.items(), key=self.getGrowingTime, reverse=True))
+        elif isinstance(quest_products, list):
+            sorted_products = []
+            for quest in quest_products:
+                sorted_products.append(dict(sorted(quest.items(), key=self.getGrowingTime, reverse=True)))
+        return sorted_products
 
     def getNextRunTime(self):
         garden_time = []
