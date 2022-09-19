@@ -42,7 +42,7 @@ class WurzelBot(object):
         self.storage = Storage(self.__HTTPConn)
         self.garten = []
         self.wassergarten = None
-        self.bienenfarm = None
+        self.bienenfarm = Honig(self.__HTTPConn)
         self.marktplatz = Marketplace(self.__HTTPConn)
         self.wimparea = Wimps(self.__HTTPConn)
         self.quest = Quest(self.__HTTPConn, self.spieler)
@@ -62,8 +62,9 @@ class WurzelBot(object):
             if self.spieler.isAquaGardenAvailable() is True:
                 self.wassergarten = AquaGarden(self.__HTTPConn)
 
-            if self.spieler.isHoneyFarmAvailable() is True:
-                self.bienenfarm = Honig(self.__HTTPConn)
+            # See my remarks in launchBot() method
+            # if self.spieler.isHoneyFarmAvailable() is True:
+            # self.bienenfarm = Honig(self.__HTTPConn)
 
         except:
             raise
@@ -126,8 +127,11 @@ class WurzelBot(object):
         except:
             self.__logBot.error(i18n.t('wimpb.error_refresh_userdata'))
         
+        # The question leaves open as there is a bonus using in HoneyFarm availability
+        # which is not available itself after HoneyFarm buying.
+        # my version is below
         try:
-            tmpHoneyFarmAvailability = self.__HTTPConn.isHoneyFarmAvailable(self.spieler.getLevelNr())
+            tmpHoneyFarmAvailability = self.bienenfarm.setHoneyFarmAvailability()
         except:
             self.__logBot.error(i18n.t('wimpb.error_no_beehives'))
         else:

@@ -1208,23 +1208,37 @@ class HTTPConnection(object):
         else:
             return jContent['success']
 
-    #TODO: Bienenquest, change flower and hive-honey to automate the beequest
+    def getHoneyFarmInfos(self):
+        headers = self.__getHeaders()
+        server = self.__getServer()
+        adresse = f'{server}ajax/ajax.php?do=bees_init&token={self.__token}'
+        try:
+            response, content = self.__webclient.request(adresse, 'GET', headers=headers)
+            self.__checkIfHTTPStateIsOK(response)
+            jContent = self.__generateJSONContentAndCheckForOK(content)
+        except:
+            pass
+        else:
+            return jContent
+
+    # TODO: Bienenquest, change flower and hive-honey to automate the beequest
     def sendBienen(self, hive):
         """
         sendet die Bienen für 2 Stunden.
         """
-        headers = {'Cookie': 'PHPSESSID=' + self.__Session.getSessionID() + '; ' + \
-                             'wunr=' + self.__userID,
-                   'Connection': 'Keep-Alive'}
+        headers = self.__getHeaders()
+        server = self.__getServer()
 
-        adresse = f'http{self.__Session.getSecure()}://s' + str(self.__Session.getServer()) + \
-                  '.wurzelimperium.de/ajax/ajax.php?do=bees_startflight&id=' + str(hive) + '&tour=1&token=' + self.__token
-        #TODO: Check if bee is sended, sometimes 1 hives got skipped
+        adresse = f'{server}ajax/ajax.php?do=bees_startflight&id={hive}' \
+                  f'&tour=1&token={self.__token}'
+        # TODO: Check if bee is sended, sometimes 1 hives got skipped
         try:
             response, content = self.__webclient.request(adresse, 'GET', headers=headers)
             self.__checkIfHTTPStateIsOK(response)
         except:
             pass
+        else:
+            return response
 
     def getNote(self):
         """
