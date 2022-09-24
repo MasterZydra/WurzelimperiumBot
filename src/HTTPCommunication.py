@@ -629,35 +629,6 @@ class HTTPConnection(object):
         except:
             raise
 
-    def isHoneyFarmAvailable(self, iUserLevel):
-        """
-        Funktion ermittelt, ob die Imkerei verfügbar ist und gibt True/False zurück.
-        Dazu muss ein Mindestlevel von 10 erreicht sein und diese dann freigeschaltet sein.
-        Die Freischaltung wird anhand eines Geschenks im Spiel geprüft.
-        """
-
-        headers = self.__getHeaders()
-        server = self.__getServer()
-        adresse = f'{server}ajax/gettrophies.php?category=giver'
-        if not (iUserLevel < 10):
-            try:
-                response, content = self.__webclient.request(adresse, 'GET', headers=headers)
-                self.__checkIfHTTPStateIsOK(response)
-                jContent = self.__generateJSONContentAndCheckForOK(content)
-            except:
-                raise
-            else:
-                if '316' in jContent['gifts']:
-                    if jContent['gifts']['316']['name'] == 'Bienen-Fan':
-                        return True
-                    else:
-                        return False
-                else:
-                    return False
-        else:
-            return False
-
-
     def isAquaGardenAvailable(self, iUserLevel):
         """
         Funktion ermittelt, ob ein Wassergarten verfügbar ist.
