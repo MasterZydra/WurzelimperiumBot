@@ -259,6 +259,7 @@ class WurzelBot(object):
                 else:
                     if self.checkWimpsRequiredAmount(minimal_balance, products[1], stock_list):
                         print("Selling products to wimp: " + wimp)
+                        print(self.wimparea.productsToString(products, self.productData))
                         new_products_counts = self.wimparea.sellWimpProducts(wimp)
                         for id, amount in products[1].items():
                             stock_list[id] -= amount
