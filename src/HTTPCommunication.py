@@ -1211,6 +1211,20 @@ class HTTPConnection(object):
         else:
             return response
 
+    def PourHoney(self):
+        headers = self.__getHeaders()
+        server = self.__getServer()
+
+        adresse = f'{server}ajax/ajax.php?do=bees_fill&token={self.__token}'
+        try:
+            response, content = self.__webclient.request(adresse, 'GET', headers=headers)
+            self.__checkIfHTTPStateIsOK(response)
+        except:
+            pass
+        else:
+            return response
+
+
     def getNote(self):
         """
         get the users note

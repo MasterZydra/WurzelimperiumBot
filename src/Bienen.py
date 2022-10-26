@@ -114,3 +114,17 @@ class Honig:
             raise
         else:
             pass
+
+    def checkPourHoney(self):
+        stock = self.__honeyFarmInfo['data']['stock']
+        if isinstance(stock, list):
+            stock_list = stock
+        else:
+            stock_list = list(stock.values())
+        if '100000' in stock_list:
+            try:
+                self._httpConn.PourHoney()
+            except:
+                raise
+            else:
+                self.setHoneyFarmInfo()
