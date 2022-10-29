@@ -4,6 +4,7 @@
 name: Wurzelimperium Bot
 
 on:
+  workflow_dispatch:
   schedule:
     - cron: "*/20 * * * *"
 
