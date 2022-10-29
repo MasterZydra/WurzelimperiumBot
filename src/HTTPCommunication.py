@@ -1253,6 +1253,23 @@ class HTTPConnection(object):
         except:
             raise
 
+    def buyFromShop(self, productId: int, amount: int = 1):
+        headers = self.__getHeaders()
+        headers['Content-Type'] = 'application/x-www-form-urlencoded'
+        server = self.__getServer()
+        adresse = f'{server}stadt/shop.php?s=2'
+        parameter = urlencode({'s': 2,
+                               'page': 1,
+                               'change_page_only': 0,
+                               'produkt[0]': productId,
+                               'anzahl[0]': amount
+                               })
+        try:
+            response, content = self.__webclient.request(adresse, 'POST', parameter, headers=headers)
+            self.__checkIfHTTPStateIsOK(response)
+        except:
+            raise
+
 class HTTPStateError(Exception):
     def __init__(self, value):
         self.value = value
