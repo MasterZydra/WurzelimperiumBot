@@ -43,7 +43,6 @@ class HTTPConnection(object):
         self.__cookie = None
         self.__unr = None
         self.__portunr = None
-        
 
 
     def __del__(self):
@@ -56,17 +55,16 @@ class HTTPConnection(object):
 
     def __getUserDataFromJSONContent(self, content):
         """Ermittelt userdaten aus JSON Content."""
-        user_data = {'bar': str(content['bar']),
-                     'bar_unformat': float(content['bar_unformat']),
-                     'points': int(content['points']),
-                     'coins': int(content['coins']),
-                     'level': str(content['level']),
-                     'levelnr': int(content['levelnr']),
-                     'mail': int(content['mail']),
-                     'contracts': int(content['contracts']),
-                     'g_tag': str(content['g_tag']),
-                     'time': int(content['time'])}
-        return user_data
+        return {'bar': str(content['bar']),
+                'bar_unformat': float(content['bar_unformat']),
+                'points': int(content['points']),
+                'coins': int(content['coins']),
+                'level': str(content['level']),
+                'levelnr': int(content['levelnr']),
+                'mail': int(content['mail']),
+                'contracts': int(content['contracts']),
+                'g_tag': str(content['g_tag']),
+                'time': int(content['time'])}
 
 
     def __checkIfHTTPStateIsOK(self, response):
@@ -553,11 +551,10 @@ class HTTPConnection(object):
             response, content = self.__webclient.request(adresse, 'GET', headers=self.__getHeaders())
             self.__checkIfHTTPStateIsOK(response)
             jContent = self.__generateJSONContentAndCheckForOK(content)
+            return self.__findPlantsToBeWateredFromJSONContent(jContent)
         except:
             raise
-        else:
-            return self.__findPlantsToBeWateredFromJSONContent(jContent)
-        
+
 
     def waterPlantInAquaGarden(self, iField, sFieldsToWater):
         """Status:"""
@@ -596,10 +593,7 @@ class HTTPConnection(object):
                 raise
             else:
                 if '316' in jContent['gifts']:
-                    if jContent['gifts']['316']['name'] == 'Bienen-Fan':
-                        return True
-                    else:
-                        return False
+                    return jContent['gifts']['316']['name'] == 'Bienen-Fan'
                 else:
                     return False
         else:
@@ -624,10 +618,7 @@ class HTTPConnection(object):
                 raise
             else:
                 result = re.search(r'trophy_54.png\);[^;]*(gray)[^;^class$]*class', jContent['html'])
-                if result == None:
-                    return True
-                else:
-                    return False
+                return result == None
         else:
             return False
 
@@ -657,10 +648,9 @@ class HTTPConnection(object):
         try:
             response, content = self.__webclient.request(adress, 'GET', headers=self.__getHeaders())
             self.__checkIfHTTPStateIsOK(response)
+            return content
         except:
             raise
-        else:
-            return content
 
 
     def sendMessageAndReturnResult(self, msg_id, msg_to, msg_subject, msg_body):
