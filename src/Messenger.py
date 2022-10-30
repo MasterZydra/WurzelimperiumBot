@@ -19,12 +19,9 @@ MSG_STATE_SENT_ERR_NO_TEXT = 16
 MSG_STATE_SENT_ERR_BLOCKED = 32
 MSG_STATE_SENT_ERR_RECIPIENT_DOESNT_EXIST = 64
 
-
 Message = namedtuple('Message', ['sender', 'to', 'subject', 'text', 'state'])
 
-
 class Messenger():
-
     __inbox = []
     __outbox = []
     __system = []
@@ -34,80 +31,45 @@ class Messenger():
         self.__httpConn = httpConnection
 
     def __getMessageIDFromNewMessageResult(self, result):
-        """
-        Extrahiert aus content die ID der neu angelegten Nachricht
-        """
-
+        """Extrahiert aus content die ID der neu angelegten Nachricht"""
         res = re.search(r'name="hpc" value="(.*)" id="hpc"', result)
         if res is None:
             raise MessengerError()
         else:
             return res.group(1)
 
-    def __wasDeliverySuccessful(self, result):
-        """
-        Prüft, ob der Versand der Nachricht erfolgreich war.
-        """
+    def __wasDeliverySuccessful(self, result) -> bool:
+        """Prüft, ob der Versand der Nachricht erfolgreich war."""
         res = re.search(r'Deine Nachricht wurde an.*verschickt.', result)
-        if (res is not None):
-            return True
-        else:
-            return False
+        return res is not None 
 
-    def __didTheMessageRecipientExist(self, result):
-        """
-        Prüft, ob der Empfänger der Nachricht vorhanden war.
-        """
+    def __didTheMessageRecipientExist(self, result) -> bool:
+        """Prüft, ob der Empfänger der Nachricht vorhanden war."""
         res = re.search(r'Der Empfänger existiert nicht.', result)
-        if (res is not None):
-            return False
-        else:
-            return True
+        return res is None
 
-    def __didTheMessageHadASubject(self, result):
-        """
-        Prüft, ob die Nachricht einen Betreff hatte.
-        """
+    def __didTheMessageHadASubject(self, result) -> bool:
+        """Prüft, ob die Nachricht einen Betreff hatte."""
         res = re.search(r'Es wurde kein Betreff angegeben.', result)
-        if (res is not None):
-            return False
-        else:
-            return True
+        return res is None
 
-    def __didTheMessageHadAText(self, result):
-        """
-        Prüft, ob die Nachricht einen Text hatte.
-        """
+    def __didTheMessageHadAText(self, result) -> bool:
+        """Prüft, ob die Nachricht einen Text hatte."""
         res = re.search(r'Es wurde keine Nachricht eingegeben.', result)
-        if (res is not None):
-            return False
-        else:
-            return True
+        return res is None
 
-    def __didTheMessageHadARecipient(self, result):
-        """
-        Prüft, ob die Nachricht einen Empfänger hatte.
-        """
+    def __didTheMessageHadARecipient(self, result) -> bool:
+        """Prüft, ob die Nachricht einen Empfänger hatte."""
         res = re.search(r'Es wurde kein Empfänger angegeben.', result)
-        if (res is not None):
-            return False
-        else:
-            return True
+        return res is None
 
-    def __blockedFromMessageRecipient(self, result):
-        """
-        Prüft, ob der Empfänger den Empfang von Nachrichten des Senders blockiert hat.
-        """
+    def __blockedFromMessageRecipient(self, result) -> bool:
+        """Prüft, ob der Empfänger den Empfang von Nachrichten des Senders blockiert hat."""
         res = re.search(r'Der Empfänger hat dich auf die Blockliste gesetzt.', result)
-        if (res is not None):
-            return True
-        else:
-            return False
+        return res is not None
 
     def __getMessageDeliveryState(self, result):
-        """
-        Gibt den Status der gesendeten Nachricht zurück.
-        """
+        """Gibt den Status der gesendeten Nachricht zurück."""
         state = 0
         if (self.__wasDeliverySuccessful(result) is True):
             state |= MSG_STATE_SENT_NO_ERR
@@ -133,43 +95,28 @@ class Messenger():
         return state
 
     def __getNewMessageID(self):
-        """"
-        Fordert mit der HTTP Connection eine neue Nachricht an und ermittelt die ID zum späteren Senden.
-        """
-
+        """"Fordert mit der HTTP Connection eine neue Nachricht an und ermittelt die ID zum späteren Senden."""
         try:
             result = self.__httpConn.createNewMessageAndReturnResult()
-            id = self.__getMessageIDFromNewMessageResult(result)
+            return self.__getMessageIDFromNewMessageResult(result)
         except:
             raise
-        else:
-            return id
 
     def __getMessageByState(self):
-        """
-        """
         pass
 
     def getMessagesWithFailedState(self):
-        """
-        """
         pass
 
     def getMessagesWithUnknownState(self):
-        """
-        """
         pass
 
     def clearSentList(self):
-        """
-        Löscht die Liste der gesendeten Nachrichten.
-        """
+        """Löscht die Liste der gesendeten Nachrichten."""
         self.__sent = []
 
     def getSummaryOfMessageDeliveryStates(self):
-        """
-        Gibt eine Zusammenfassung über die Stati aller gesendeten Nachrichten zurück.
-        """
+        """Gibt eine Zusammenfassung über die Stati aller gesendeten Nachrichten zurück."""
         numberOfAllSentMessages = len(self.__sent)
         numberOfsuccessfulMessages = 0
         numberOfFailedMessages = 0
@@ -199,12 +146,9 @@ class Messenger():
         return summary
 
     def writeMessage(self, sender, recipients, subject, body):
-        """
-        Verschickt eine Nachricht und fügt diese der Liste der gesendeten Nachrichten hinzu.
-        """
+        """Verschickt eine Nachricht und fügt diese der Liste der gesendeten Nachrichten hinzu."""
         if not type(recipients) is list:
             raise MessengerError()
-            return
 
         n = len(recipients)
         i = 0

@@ -9,21 +9,17 @@ Created on 21.03.2017
 from src.Produktdaten import ProductData
 
 class Wimps:
-
     def __init__(self, httpConnection):
         self.__httpConn = httpConnection
 
-
     def getWimpsData(self, garden):
-        wimpsData = self.__httpConn.getWimpsData(garden._id)
-        return wimpsData
+        return self.__httpConn.getWimpsData(garden._id)
 
     def sellWimpProducts(self, wimp_id):
-        result = self.__httpConn.sellWimpProducts(wimp_id)
-        return result
+        return self.__httpConn.sellWimpProducts(wimp_id)
 
     def declineWimp(self, wimp_id):
-        result = self.__httpConn.declineWimp(wimp_id)
+        return self.__httpConn.declineWimp(wimp_id)
     
     def productsToString(self, products, productData: ProductData):
         result = "Price: " + str(products[0]) + " wT"

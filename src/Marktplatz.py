@@ -27,18 +27,12 @@ class Marketplace():
         """
         Ermittelt das günstigste Angebot eines Produkts.
         """
-
         listOffers = self.getAllOffersOfProduct(id)
         
-        if len(listOffers) >= 1 \
-           and \
-           listOffers != None:
-            
+        if len(listOffers) >= 1 and listOffers != None:
             return listOffers[0][1]
-        
         else: #No Offers
             return None
-
 
     def getAllOffersOfProduct(self, id):
         """
@@ -86,7 +80,3 @@ class Marketplace():
                         gaps.append([listPrices[i], listPrices[i+1]])
             
             return gaps
-
-
-
-        

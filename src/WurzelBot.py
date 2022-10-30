@@ -29,9 +29,6 @@ class WurzelBot(object):
     """
 
     def __init__(self):
-        """
-        
-        """
         self.__logBot = logging.getLogger("bot")
         self.__logBot.setLevel(logging.DEBUG)
         self.__HTTPConn = HTTPConnection()
@@ -50,9 +47,7 @@ class WurzelBot(object):
 
 
     def __initGardens(self):
-        """
-        Ermittelt die Anzahl der Gärten und initialisiert alle.
-        """
+        """Ermittelt die Anzahl der Gärten und initialisiert alle."""
         try:
             tmpNumberOfGardens = self.__HTTPConn.getInfoFromStats("Gardens")
             self.spieler.numberOfGardens = tmpNumberOfGardens
@@ -128,20 +123,16 @@ class WurzelBot(object):
             return False
         
         try:
-            tmpHoneyFarmAvailability = self.__HTTPConn.isHoneyFarmAvailable(self.spieler.getLevelNr())
+            self.spieler.setHoneyFarmAvailability(self.__HTTPConn.isHoneyFarmAvailable(self.spieler.getLevelNr()))
         except:
             self.__logBot.error(i18n.t('wimpb.error_no_beehives'))
             return False
-        else:
-            self.spieler.setHoneyFarmAvailability(tmpHoneyFarmAvailability)
 
         try:
-            tmpAquaGardenAvailability = self.__HTTPConn.isAquaGardenAvailable(self.spieler.getLevelNr())
+            self.spieler.setAquaGardenAvailability(self.__HTTPConn.isAquaGardenAvailable(self.spieler.getLevelNr()))
         except:
             self.__logBot.error(i18n.t('wimpb.error_no_water_garden'))
             return False
-        else:
-            self.spieler.setAquaGardenAvailability(tmpAquaGardenAvailability)
 
         try:
             self.__initGardens()
@@ -158,41 +149,32 @@ class WurzelBot(object):
 
 
     def exitBot(self):
-        """
-        Diese Methode beendet den Wurzelbot geordnet und setzt alles zurück.
-        """
+        """Beendet den Wurzelbot geordnet und setzt alles zurück."""
         self.__logBot.info(i18n.t('wimpb.exit_wbot'))
         try:
             self.__HTTPConn.logOut()
-        except:
-            self.__logBot.error(i18n.t('wimpb.exit_wbot_abnormal'))
-        else:
             self.__logBot.info(i18n.t('wimpb.logout_success'))
             self.__logBot.info('-------------------------------------------')
+        except:
+            self.__logBot.error(i18n.t('wimpb.exit_wbot_abnormal'))
 
 
     def updateUserData(self):
-        """
-        Ermittelt die Userdaten und setzt sie in der Spielerklasse.
-        """
+        """Ermittelt die Userdaten und setzt sie in der Spielerklasse."""
         try:
-            userData = self.__HTTPConn.readUserDataFromServer()
+            self.spieler.userData = self.__HTTPConn.readUserDataFromServer()
         except:
             self.__logBot.error(i18n.t('wimpb.error_refresh_userdata'))
-        else:
-            self.spieler.userData = userData
 
 
     def waterPlantsInAllGardens(self):
-        """
-        Alle Gärten des Spielers werden komplett bewässert.
-        """
+        """Alle Gärten des Spielers werden komplett bewässert."""
         for garden in self.garten:
             garden.waterPlants()
         
         if self.spieler.isAquaGardenAvailable():
+            # TODO self.waterPlantsInAquaGarden()
             pass
-            #self.waterPlantsInAquaGarden()
 
 
     def writeMessagesIfMailIsConfirmed(self, recipients, subject, body):
@@ -206,8 +188,6 @@ class WurzelBot(object):
                 self.messenger.writeMessage(self.spieler.getUserName(), recipients, subject, body)
             except:
                 self.__logBot.error(i18n.t('wimpb.no_message'))
-            else:
-                pass
 
     def getEmptyFieldsOfGardens(self):
         """
@@ -220,8 +200,6 @@ class WurzelBot(object):
                 emptyFields.append(garden.getEmptyFields())
         except:
             self.__logBot.error(f'Could not determinate empty fields from garden {garden.getID()}.')
-        else:
-            pass
         return emptyFields
 
     def getGrowingPlantsInGardens(self):
@@ -231,8 +209,6 @@ class WurzelBot(object):
                 growingPlants.update(garden.getGrowingPlants())
         except:
             self.__logBot.error('Could not determine growing plants of garden ' + str(garden.getID()) + '.')
-        else:
-            pass
 
         return dict(growingPlants)
 
@@ -268,11 +244,7 @@ class WurzelBot(object):
         npc_sum = 0
         for id, amount in products[1].items():
             npc_sum += self.productData.getProductByID(id).getPriceNPC() * amount
-        if products[0] / npc_sum * 100 >= minimal_profit:
-            to_sell = True
-        else:
-            to_sell = False
-        return to_sell
+        return products[0] / npc_sum * 100 >= minimal_profit
 
     def checkWimpsRequiredAmount(self, minimal_balance, products, stock_list):
         to_sell = True
@@ -306,17 +278,13 @@ class WurzelBot(object):
         return amount > 0
 
     def getWeedFieldsOfGardens(self):
-        """
-        Gibt alle Unkrau-Felder aller normalen Gärten zurück.
-        """
+        """Gibt alle Unkrau-Felder aller normalen Gärten zurück."""
         weedFields = []
         try:
             for garden in self.garten:
                 weedFields.append(garden.getWeedFields())
         except:
             self.__logBot.error(f'Could not determinate weeds on fields of garden {garden.getID()}.')
-        else:
-            pass
 
         return weedFields
 
@@ -327,13 +295,13 @@ class WurzelBot(object):
                 garden.harvest()
                 
             if self.spieler.isAquaGardenAvailable():
-                pass#self.waterPlantsInAquaGarden()
+                # TODO self.waterPlantsInAquaGarden()
+                pass
 
             self.storage.updateNumberInStock()
+            self.__logBot.info(i18n.t('wimpb.harvest_successful'))
         except:
             self.__logBot.error(i18n.t('wimpb.harvest_not_successful'))
-        else:
-            self.__logBot.info(i18n.t('wimpb.harvest_successful'))
 
     def growPlantsInGardens(self, productName, amount=-1):
         """
@@ -359,6 +327,7 @@ class WurzelBot(object):
             amount = self.storage.getStockByProductID(product.getID())
 
         remainingAmount = amount
+        garden: Garden
         for garden in self.garten:
             planted += garden.growPlant(product.getID(), product.getSX(), product.getSY(), remainingAmount)
             remainingAmount = amount - planted
@@ -436,27 +405,25 @@ class WurzelBot(object):
         self.productData.printAllPlants()
 
     def removeWeedInAllGardens(self):
-        """
-        Entfernt Unrkaut/Maulwürfe/Steine aus allen Gärten.
-        """
+        """Entfernt Unkraut/Maulwürfe/Steine aus allen Gärten."""
         #TODO: Wassergarten ergänzen
         try:
             for garden in self.garten:
                 garden.removeWeed()
+            self.__logBot.info(i18n.t('wimpb.w_harvest_successful'))
         except:
             self.__logBot.error(i18n.t('wimpb.w_harvest_not_successful'))
-        else:
-            self.__logBot.info(i18n.t('wimpb.w_harvest_successful'))
 
     def getDailyLoginBonus(self):
         self.bonus.getDailyLoginBonus()
 
     # Bienen
     def doSendBienen(self):
-        if self.spieler.isHoneyFarmAvailable():
-            hives = self.__HTTPConn.getHoneyFarmInfos()[2]
-            for hive in hives:
-                self.__HTTPConn.sendeBienen(hive)
-                self.bienenfarm.harvest()
-        else:
+        if not self.spieler.isHoneyFarmAvailable():
             self.__logBot.error('Konnte nicht alle Bienen ernten.')
+            return
+        
+        hives = self.__HTTPConn.getHoneyFarmInfos()[2]
+        for hive in hives:
+            self.__HTTPConn.sendeBienen(hive)
+            self.bienenfarm.harvest()
