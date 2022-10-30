@@ -52,6 +52,13 @@ class HTTPConnection(object):
         self.__unr = None
         self.__portunr = None
 
+    def __sendRequest(self, address: str, method: str = 'GET', body = None, headers: dict = {}):
+        uri = self.__getServer() + address
+        headers = {**self.__getHeaders(), **headers}
+        try:
+            return self.__webclient.request(uri, method, body, headers)
+        except:
+            raise
 
     def __getUserDataFromJSONContent(self, content):
         """Ermittelt userdaten aus JSON Content."""
@@ -322,14 +329,11 @@ class HTTPConnection(object):
 
     def _changeGarden(self, gardenID):
         """Wechselt den Garten."""
-        server = self.__getServer()
-        adresse = f'{server}ajax/ajax.php?do=changeGarden&garden={str(gardenID)}&' \
-                  f'token={self.__token}'
-
         try:
-            response, content = self.__webclient.request(adresse, 'GET', headers=self.__getHeaders())
+            address = f'ajax/ajax.php?do=changeGarden&garden={str(gardenID)}&token={self.__token}'
+            response, content = self.__sendRequest(address)
             self.__checkIfHTTPStateIsOK(response)
-            jContent = self.__generateJSONContentAndCheckForOK(content)
+            self.__generateJSONContentAndCheckForOK(content)
         except:
             raise
 
@@ -453,11 +457,8 @@ class HTTPConnection(object):
     def logOut(self):
         """Logout des Spielers inkl. Löschen der Session."""
         #TODO: Was passiert beim Logout einer bereits ausgeloggten Session
-        server = self.__getServer()
-        adresse = f'{server}main.php?page=logout'
-        
         try: #content ist beim Logout leer
-            response, content = self.__webclient.request(adresse, 'GET', headers=self.__getHeaders())
+            response, content = self.__sendRequest('main.php?page=logout')
             self.__checkIfHTTPStateIsFOUND(response)
             cookie = SimpleCookie(response['set-cookie'])
             self.__checkIfSessionIsDeleted(cookie)
@@ -473,12 +474,10 @@ class HTTPConnection(object):
         @param info: available values: 'Username', 'Gardens', 'CompletedQuests'
         @return: parameter value
         """
-        server = self.__getServer()
-        adresse = f'{server}ajax/ajax.php?do=statsGetStats&which=0&start=0' \
-                  f'&additional={self.__userID}&token={self.__token}'
-        
         try:
-            response, content = self.__webclient.request(adresse, 'GET', headers=self.__getHeaders())
+            address =   f'ajax/ajax.php?do=statsGetStats&which=0&start=0' \
+                        f'&additional={self.__userID}&token={self.__token}'
+            response, content = self.__sendRequest(address)
             self.__checkIfHTTPStateIsOK(response)
             jContent = self.__generateJSONContentAndCheckForOK(content.decode('UTF-8'))
             result = self.__getInfoFromJSONContent(jContent, info)
@@ -490,11 +489,8 @@ class HTTPConnection(object):
 
     def readUserDataFromServer(self, data_type="UserData"):
         """Ruft eine Updatefunktion im Spiel auf und verarbeitet die empfangenen userdaten."""
-        server = self.__getServer()
-        adresse = f'{server}ajax/menu-update.php'
-
         try:
-            response, content = self.__webclient.request(adresse, 'GET', headers=self.__getHeaders())
+            response, content = self.__sendRequest('ajax/menu-update.php')
             self.__checkIfHTTPStateIsOK(response)
             jContent = self.__generateJSONContentAndCheckForSuccess(content)
         except:
@@ -511,12 +507,9 @@ class HTTPConnection(object):
         Ermittelt alle bepflanzten Felder im Garten mit der Nummer gardenID,
         die auch gegossen werden können und gibt diese zurück.
         """
-        server = self.__getServer()
-        adresse = f'{server}ajax/ajax.php?do=changeGarden&garden={str(gardenID)}' \
-                  f'&token={str(self.__token)}'
-
         try:
-            response, content = self.__webclient.request(adresse, 'GET', headers=self.__getHeaders())
+            address = f'ajax/ajax.php?do=changeGarden&garden={str(gardenID)}&token={str(self.__token)}'
+            response, content = self.__sendRequest(address)
             self.__checkIfHTTPStateIsOK(response)
             jContent = self.__generateJSONContentAndCheckForOK(content)
         except:
@@ -527,12 +520,10 @@ class HTTPConnection(object):
 
     def waterPlantInGarden(self, iGarten, iField, sFieldsToWater):
         """Bewässert die Pflanze iField mit der Größe sSize im Garten iGarten."""
-        server = self.__getServer()
-        adresse = f'{server}save/wasser.php?feld[]={str(iField)}&felder[]={sFieldsToWater}' \
-                  f'&cid={self.__token}&garden={str(iGarten)}'
-
         try:
-            response, content = self.__webclient.request(adresse, 'GET', headers=self.__getHeaders())
+            address =   f'save/wasser.php?feld[]={str(iField)}&felder[]={sFieldsToWater}' \
+                        f'&cid={self.__token}&garden={str(iGarten)}'
+            response, content = self.__sendRequest(address)
             self.__checkIfHTTPStateIsOK(response)
             self.__generateYAMLContentAndCheckForSuccess(content.decode('UTF-8'))
         except:
@@ -541,14 +532,10 @@ class HTTPConnection(object):
 
     def getPlantsToWaterInAquaGarden(self):
         """
-        Ermittelt alle bepflanzten Felder im Wassergartens,
-        die auch gegossen werden können und gibt diese zurück.
+        Ermittelt alle bepflanzten Felder im Wassergartens, die auch gegossen werden können und gibt diese zurück.
         """
-        server = self.__getServer()
-        adresse = f'{server}ajax/ajax.php?do=watergardenGetGarden&token={self.__token}'
-        
         try:
-            response, content = self.__webclient.request(adresse, 'GET', headers=self.__getHeaders())
+            response, content = self.__sendRequest(f'ajax/ajax.php?do=watergardenGetGarden&token={self.__token}')
             self.__checkIfHTTPStateIsOK(response)
             jContent = self.__generateJSONContentAndCheckForOK(content)
             return self.__findPlantsToBeWateredFromJSONContent(jContent)
@@ -564,11 +551,9 @@ class HTTPConnection(object):
         for i in listFieldsToWater:
             sFields += f'&water[]={i}'
 
-        server = self.__getServer()
-        adresse = f'{server}ajax/ajax.php?do=watergardenCache{sFields}&token={self.__token}'
-
         try:
-            response, content = self.__webclient.request(adresse, 'GET', headers=self.__getHeaders())
+            address = f'ajax/ajax.php?do=watergardenCache{sFields}&token={self.__token}'
+            response, content = self.__sendRequest(address)
             self.__checkIfHTTPStateIsOK(response)
             self.__generateYAMLContentAndCheckStatusForOK(content)
         except:
@@ -581,12 +566,9 @@ class HTTPConnection(object):
         Dazu muss ein Mindestlevel von 10 erreicht sein und diese dann freigeschaltet sein.
         Die Freischaltung wird anhand eines Geschenks im Spiel geprüft.
         """
-        server = self.__getServer()
-        adresse = f'{server}ajax/gettrophies.php?category=giver'
-        
         if not (iUserLevel < 10):
             try:
-                response, content = self.__webclient.request(adresse, 'GET', headers=self.__getHeaders())
+                response, content = self.__sendRequest('ajax/gettrophies.php?category=giver')
                 self.__checkIfHTTPStateIsOK(response)
                 jContent = self.__generateJSONContentAndCheckForOK(content)
             except:
@@ -606,12 +588,9 @@ class HTTPConnection(object):
         Dazu muss ein Mindestlevel von 19 erreicht sein und dieser dann freigeschaltet sein.
         Die Freischaltung wird anhand der Errungenschaften im Spiel geprüft.
         """
-        server = self.__getServer()
-        adresse = f'{server}ajax/achievements.php?token={self.__token}'
-
         if not (iUserLevel < 19):
             try:
-                response, content = self.__webclient.request(adresse, 'GET', headers=self.__getHeaders())
+                response, content = self.__sendRequest(f'ajax/achievements.php?token={self.__token}')
                 self.__checkIfHTTPStateIsOK(response)
                 jContent = self.__generateJSONContentAndCheckForOK(content)
             except:
@@ -626,11 +605,8 @@ class HTTPConnection(object):
 
     def checkIfEMailAdressIsConfirmed(self):
         """Prüft, ob die E-Mail Adresse im Profil bestätigt ist."""
-        server = self.__getServer()
-        adresse = f'{server}nutzer/profil.php'
-
         try:
-            response, content = self.__webclient.request(adresse, 'GET', headers=self.__getHeaders())
+            response, content = self.__sendRequest('nutzer/profil.php')
             self.__checkIfHTTPStateIsOK(response)
         except:
             raise
@@ -642,11 +618,8 @@ class HTTPConnection(object):
 
     def createNewMessageAndReturnResult(self):
         """Erstellt eine neue Nachricht und gibt deren ID zurück, die für das Senden benötigt wird."""
-        server = self.__getServer()
-        adress = f'{server}nachrichten/new.php'
-        
         try:
-            response, content = self.__webclient.request(adress, 'GET', headers=self.__getHeaders())
+            response, content = self.__sendRequest('nachrichten/new.php')
             self.__checkIfHTTPStateIsOK(response)
             return content
         except:
@@ -655,22 +628,17 @@ class HTTPConnection(object):
 
     def sendMessageAndReturnResult(self, msg_id, msg_to, msg_subject, msg_body):
         """Verschickt eine Nachricht mit den übergebenen Parametern."""
-        server = self.__getServer()
-        adress = f'{server}nachrichten/new.php'
-
-        #Nachricht absenden
         parameter = urlencode({'hpc': msg_id,
                                'msg_to': msg_to,
                                'msg_subject': msg_subject,
                                'msg_body': msg_body,
                                'msg_send': 'senden'}) 
         try:
-            response, content = self.__webclient.request(adress, 'POST', parameter, headers=self.__getHeaders())
+            response, content = self.__sendRequest('nachrichten/new.php', 'POST', parameter)
             self.__checkIfHTTPStateIsOK(response)
             return content
         except:
             raise
-
 
 
     def getUsrList(self, iStart, iEnd):
@@ -690,15 +658,13 @@ class HTTPConnection(object):
         iStartCorr = iStart - 1
         iCalls = int(math.ceil(float(iEnd - iStart) / 100))
 
-        server = self.__getServer()
         print(iCalls)
         for i in range(iCalls):
             print(i)
-            adress = f'{server}ajax/ajax.php?do=statsGetStats&which=1&' \
-                     f'start={str(iStartCorr)}&showMe=0&additional=0' \
-                     f'&token={self.__token}'
             try:
-                response, content = self.__webclient.request(adress, 'GET', headers=self.__getHeaders())
+                address =   f'ajax/ajax.php?do=statsGetStats&which=1&start={str(iStartCorr)}' \
+                            f'&showMe=0&additional=0&token={self.__token}'
+                response, content = self.__sendRequest(address)
                 self.__checkIfHTTPStateIsOK(response)
                 jContent = self.__generateJSONContentAndCheckForOK(content)
             except:
@@ -720,12 +686,9 @@ class HTTPConnection(object):
 
     def getEmptyFieldsOfGarden(self, gardenID):
         """Gibt alle leeren Felder eines Gartens zurück."""
-        server = self.__getServer()
-        adresse = f'{server}ajax/ajax.php?do=changeGarden&garden={str(gardenID)}' \
-                  f'&token={self.__token}'
-
         try:
-            response, content = self.__webclient.request(adresse, 'GET', headers=self.__getHeaders())
+            address = f'ajax/ajax.php?do=changeGarden&garden={str(gardenID)}&token={self.__token}'
+            response, content = self.__sendRequest(address)
             self.__checkIfHTTPStateIsOK(response)
             jContent = self.__generateJSONContentAndCheckForOK(content)
             emptyFields = self.__findEmptyFieldsFromJSONContent(jContent)
@@ -736,12 +699,9 @@ class HTTPConnection(object):
 
     def getWeedFieldsOfGarden(self, gardenID):
         """Gibt alle Unkraut-Felder eines Gartens zurück."""
-        server = self.__getServer()
-        adresse = f'{server}ajax/ajax.php?do=changeGarden&garden={str(gardenID)}' \
-                  f'&token={self.__token}'
-
         try:
-            response, content = self.__webclient.request(adresse, 'GET', headers=self.__getHeaders())
+            address = f'ajax/ajax.php?do=changeGarden&garden={str(gardenID)}&token={self.__token}'
+            response, content = self.__sendRequest(address)
             self.__checkIfHTTPStateIsOK(response)
             jContent = self.__generateJSONContentAndCheckForOK(content)
             weedFields = self.__findWeedFieldsFromJSONContent(jContent)
@@ -752,12 +712,9 @@ class HTTPConnection(object):
 
     def getGrowingPlantsOfGarden(self, gardenID):
         """Returns all fields with growing plants of a garden."""
-        server = self.__getServer()
-        adresse = f'{server}ajax/ajax.php?do=changeGarden&garden={str(gardenID)}' \
-                  f'&token={self.__token}'
-
         try:
-            response, content = self.__webclient.request(adresse, 'GET', headers=self.__getHeaders())
+            address = f'ajax/ajax.php?do=changeGarden&garden={str(gardenID)}&token={self.__token}'
+            response, content = self.__sendRequest(address)
             self.__checkIfHTTPStateIsOK(response)
             jContent = self.__generateJSONContentAndCheckForOK(content)
             growingPlants = self.__findGrowingPlantsFromJSONContent(jContent)
@@ -768,14 +725,11 @@ class HTTPConnection(object):
 
     def harvestGarden(self, gardenID):
         """Erntet alle fertigen Pflanzen im Garten."""
-        server = self.__getServer()
-        adresse = f'{server}ajax/ajax.php?do=gardenHarvestAll&token={self.__token}'
-
         try:
             self._changeGarden(gardenID)
-            response, content = self.__webclient.request(adresse, 'GET', headers=self.__getHeaders())
+            address = f'ajax/ajax.php?do=gardenHarvestAll&token={self.__token}'
+            response, content = self.__sendRequest(address)
             jContent = json.loads(content)
-            #print(content.decode('UTF-8'))
 
             if jContent['status'] == 'error':
                 print(jContent['message'])
@@ -790,47 +744,36 @@ class HTTPConnection(object):
 
     def harvestAquaGarden(self):
         """Erntet alle fertigen Pflanzen im Garten."""
-        server = self.__getServer()
-        adresse = f'{server}ajax/ajax.php?do=watergardenHarvestAll&token={self.__token}'
-
         try:
-            response, content = self.__webclient.request(adresse, 'GET', headers=self.__getHeaders())
+            address = f'ajax/ajax.php?do=watergardenHarvestAll&token={self.__token}'
+            response, content = self.__sendRequest(address)
             self.__checkIfHTTPStateIsOK(response)
         except:
             raise
 
     def growPlant(self, field, plant, gardenID, fields):
         """Baut eine Pflanze auf einem Feld an."""
-        server = self.__getServer()
-        adresse = f'{server}save/pflanz.php?pflanze[]={str(plant)}&feld[]={str(field)}' \
-                  f'&felder[]={fields}&cid={self.__token}&garden={str(gardenID)}'
         try:
-            response, content = self.__webclient.request(adresse, 'GET', headers=self.__getHeaders())
+            address =   f'save/pflanz.php?pflanze[]={str(plant)}&feld[]={str(field)}' \
+                        f'&felder[]={fields}&cid={self.__token}&garden={str(gardenID)}'
+            response, content = self.__sendRequest(address)
         except:
             print('except')
             raise
 
     def growPlantInAquaGarden(self, plant, field):
         """Baut eine Pflanze im Wassergarten an."""
-        server = self.__getServer()
-        adresse = f'{server}ajax/ajax.php?do=watergardenCache&' \
-                  f'plant[{str(field)}]={str(plant)}&token={self.__token}'
-    
         try:
-            response, content = self.__webclient.request(adresse, 'GET', headers=self.__getHeaders())
-            print(response)
-            print(content)
+            address = f'ajax/ajax.php?do=watergardenCache&plant[{str(field)}]={str(plant)}&token={self.__token}'
+            response, content = self.__sendRequest(address)
         except:
             print('except')
             raise
 
     def getAllProductInformations(self):
         """Sammelt alle Produktinformationen und gibt diese zur Weiterverarbeitung zurück."""
-        server = self.__getServer()
-        adresse = f'{server}main.php?page=garden'
-
         try:
-            response, content = self.__webclient.request(adresse, 'GET', headers=self.__getHeaders())
+            response, content = self.__sendRequest('main.php?page=garden')
             content = content.decode('UTF-8')
             self.__checkIfHTTPStateIsOK(response)
             reToken = re.search(r'ajax\.setToken\(\"(.*)\"\);', content)
@@ -842,12 +785,9 @@ class HTTPConnection(object):
 
     def getInventory(self):
         """Ermittelt den Lagerbestand und gibt diesen zurück."""
-        server = self.__getServer()
-        adresse = f'{server}ajax/updatelager.php?all=1&sort=1&type=honey&' \
-                  f'token={self.__token}'
-              
         try:
-            response, content = self.__webclient.request(adresse, 'POST', headers=self.__getHeaders())
+            address = f'ajax/updatelager.php?all=1&sort=1&type=honey&token={self.__token}'
+            response, content = self.__sendRequest(address, 'POST')
             self.__checkIfHTTPStateIsOK(response)
             jContent = self.__generateJSONContentAndCheckForOK(content)
             return jContent['produkte']
@@ -856,12 +796,10 @@ class HTTPConnection(object):
 
     def getWimpsData(self, gardenID):
         """Get wimps data including wimp_id and list of products with amount"""
-        server = self.__getServer()
-        adresse = f'{server}ajax/verkaufajax.php?do=getAreaData&token={self.__token}'
         try:
             self._changeGarden(gardenID)
 
-            response, content = self.__webclient.request(adresse, 'GET', headers=self.__getHeaders())
+            response, content = self.__sendRequest(f'ajax/verkaufajax.php?do=getAreaData&token={self.__token}')
             self.__checkIfHTTPStateIsOK(response)
 
             jContent = self.__generateJSONContentAndCheckForOK(content)
@@ -875,11 +813,9 @@ class HTTPConnection(object):
         @param wimp_id: str
         @return: dict of new balance of sold products
         """
-        server = self.__getServer()
-        adresse = f'{server}ajax/verkaufajax.php?do=accept&id={wimp_id}' \
-                  f'&token={self.__token}'
         try:
-            response, content = self.__webclient.request(adresse, 'POST', headers=self.__getHeaders())
+            address = f'ajax/verkaufajax.php?do=accept&id={wimp_id}&token={self.__token}'
+            response, content = self.__sendRequest(address, 'POST')
             self.__checkIfHTTPStateIsOK(response)
             jContent = self.__generateJSONContentAndCheckForOK(content)
             return jContent['newProductCounts']
@@ -893,11 +829,9 @@ class HTTPConnection(object):
         @param wimp_id: str
         @return: 'decline'
         """
-        server = self.__getServer()
-        adresse = f'{server}ajax/verkaufajax.php?do=decline&id={wimp_id}' \
-                  f'&token={self.__token}'
         try:
-            response, content = self.__webclient.request(adresse, 'GET', headers=self.__getHeaders())
+            address = f'ajax/verkaufajax.php?do=decline&id={wimp_id}&token={self.__token}'
+            response, content = self.__sendRequest(address)
             self.__checkIfHTTPStateIsOK(response)
             jContent = self.__generateJSONContentAndCheckForOK(content)
             return jContent['action']
@@ -906,10 +840,7 @@ class HTTPConnection(object):
 
     def getNPCPrices(self):
         """Ermittelt aus der Wurzelimperium-Hilfe die NPC Preise aller Produkte."""
-        server = self.__getServer()
-        adresse = f'{server}hilfe.php?item=2'
-
-        response, content = self.__webclient.request(adresse, 'GET', headers=self.__getHeaders())
+        response, content = self.__sendRequest('hilfe.php?item=2')
         self.__checkIfHTTPStateIsOK(response)
         content = content.decode('UTF-8').replace('Gärten & Regale', 'Gärten und Regale')
         dictNPCPrices = self.__parseNPCPricesFromHtml(content)
@@ -918,11 +849,8 @@ class HTTPConnection(object):
 
     def getAllTradeableProductsFromOverview(self):
         """Gibt eine Liste zurück, welche Produkte handelbar sind."""
-        server = self.__getServer()
-        adresse = f'{server}stadt/markt.php?show=overview'
-        
         try:
-            response, content = self.__webclient.request(adresse, 'GET', headers=self.__getHeaders())
+            response, content = self.__sendRequest('stadt/markt.php?show=overview')
             self.__checkIfHTTPStateIsOK(response)
             tradeableProducts = re.findall(r'markt\.php\?order=p&v=([0-9]{1,3})&filter=1', content)
         except:
@@ -936,19 +864,15 @@ class HTTPConnection(object):
 
     def getOffersFromProduct(self, prod_id):
         """Gibt eine Liste mit allen Angeboten eines Produkts zurück."""
-        server = self.__getServer()
-
         nextPage = True
         iPage = 1
         listOffers = []
         while nextPage:
-            
             nextPage = False
-            adresse = f'{server}stadt/markt.php?order=p&v={str(prod_id)}&' \
-                      f'filter=1&page={str(iPage)}'
             
             try:
-                response, content = self.__webclient.request(adresse, 'GET', headers=self.__getHeaders())
+                address = f'stadt/markt.php?order=p&v={str(prod_id)}&filter=1&page={str(iPage)}'
+                response, content = self.__sendRequest(address)
                 self.__checkIfHTTPStateIsOK(response)
             except:
                 pass #TODO: exception definieren
@@ -987,10 +911,9 @@ class HTTPConnection(object):
 
     def getBigQuestData(self):
         """Returns Data from Yearly Series of Quests"""
-        server = self.__getServer()
-        adresse = f'{server}ajax/ajax.php?do=bigquest_init&id=3&token={self.__token}'
         try:
-            response, content = self.__webclient.request(adresse, 'GET', headers=self.__getHeaders())
+            address = f'ajax/ajax.php?do=bigquest_init&id=3&token={self.__token}'
+            response, content = self.__sendRequest(address)
             self.__checkIfHTTPStateIsOK(response)
             jContent = self.__generateJSONContentAndCheckForOK(content)
             return jContent['data']
@@ -1001,11 +924,9 @@ class HTTPConnection(object):
         """
         @param day: string (day of daily bonus)
         """
-        server = self.__getServer()
-        adresse = f'{server}ajax/ajax.php?do=dailyloginbonus_getreward&' \
-                  f'day={str(day)}&token={self.__token}'
         try:
-            response, content = self.__webclient.request(adresse, 'GET', headers=self.__getHeaders())
+            address = f'ajax/ajax.php?do=dailyloginbonus_getreward&day={str(day)}&token={self.__token}'
+            response, content = self.__sendRequest(address)
             self.__checkIfHTTPStateIsOK(response)
             return self.__generateJSONContentAndCheckForOK(content)
         except:
@@ -1014,11 +935,8 @@ class HTTPConnection(object):
     def removeWeedOnFieldInGarden(self, gardenID, fieldID):
         """Befreit ein Feld im Garten von Unkraut."""
         self._changeGarden(gardenID)
-
-        server = self.__getServer()
-        adresse = f'{server}save/abriss.php?tile={fieldID}'
         try:
-            response, content = self.__webclient.request(adresse, 'POST', headers=self.__getHeaders())
+            response, content = self.__sendRequest(f'save/abriss.php?tile={fieldID}', 'POST')
             self.__checkIfHTTPStateIsOK(response)
             jContent = self.__generateJSONContentAndCheckForSuccess(content)
             return jContent['success']
@@ -1028,25 +946,18 @@ class HTTPConnection(object):
     #TODO: Bienenquest, change flower and hive-honey to automate the beequest
     def sendBienen(self, hive):
         """Sendet die Bienen für 2 Stunden."""
-        headers = {'Cookie': 'PHPSESSID=' + self.__Session.getSessionID() + '; ' + \
-                             'wunr=' + self.__userID,
-                   'Connection': 'Keep-Alive'}
-
-        adresse = f'http{self.__Session.getSecure()}://s' + str(self.__Session.getServer()) + \
-                  '.wurzelimperium.de/ajax/ajax.php?do=bees_startflight&id=' + str(hive) + '&tour=1&token=' + self.__token
         #TODO: Check if bee is sended, sometimes 1 hives got skipped
         try:
-            response, content = self.__webclient.request(adresse, 'GET', headers=headers)
+            address = f'ajax/ajax.php?do=bees_startflight&id={str(hive)}&tour=1&token={self.__token}'
+            response, content = self.__sendRequest(address)
             self.__checkIfHTTPStateIsOK(response)
         except:
             pass
 
     def getNote(self):
         """Get the users note"""
-        server = self.__getServer()
-        adresse = f'{server}notiz.php'
         try:
-            response, content = self.__webclient.request(adresse, 'POST', headers=self.__getHeaders())
+            response, content = self.__sendRequest('notiz.php', 'POST')
             self.__checkIfHTTPStateIsOK(response)
             content = content.decode('UTF-8')
             my_parser = etree.HTMLParser(recover=True)
@@ -1061,10 +972,6 @@ class HTTPConnection(object):
             raise
 
     def buyFromShop(self, productId: int, amount: int = 1):
-        headers = self.__getHeaders()
-        headers['Content-Type'] = 'application/x-www-form-urlencoded'
-        server = self.__getServer()
-        adresse = f'{server}stadt/shop.php?s=2'
         parameter = urlencode({'s': 2,
                                'page': 1,
                                'change_page_only': 0,
@@ -1072,7 +979,8 @@ class HTTPConnection(object):
                                'anzahl[0]': amount
                                })
         try:
-            response, content = self.__webclient.request(adresse, 'POST', parameter, headers=headers)
+            header =  {'Content-Type': 'application/x-www-form-urlencoded'}
+            response, content = self.__sendRequest('stadt/shop.php?s=2', 'POST', parameter, header)
             self.__checkIfHTTPStateIsOK(response)
         except:
             raise
