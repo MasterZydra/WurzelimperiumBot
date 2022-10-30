@@ -5,7 +5,7 @@ Created on 23.05.2019
 
 @author: MrFlamez
 '''
- 
+
 import json
 from src.Produkt import Product
 
@@ -20,16 +20,12 @@ CATEGORY_ADORNMENTS       = 'z'
 CATEGORY_OTHER            = 'u'
 
 class ProductData():
-    
     def __init__(self, httpConnection):
         self.__httpConn = httpConnection
         self.__products = []
     
     def __setAllPricesOfNPC(self):
-        """
-        Ermittelt alle möglichen NPC Preise und setzt diese in den Produkten.
-        """
-        
+        """Ermittelt alle möglichen NPC Preise und setzt diese in den Produkten."""
         dNPC = self.__httpConn.getNPCPrices()
         dNPCKeys = dNPC.keys()
         
@@ -41,21 +37,19 @@ class ProductData():
         #Coin manuell setzen, dieser ist in der Tabelle der Hilfe nicht enthalten
         coins = self.getProductByName('Coins')
         coins.setPriceNPC((300.0))
-    
+
     def getProductByID(self, id):
         for product in self.__products:
             if int(id) == int(product.getID()): return product
         return None
-            
+
     def getProductByName(self, name : str):
         for product in self.__products:
             if (name.lower() == product.getName().lower()): return product
         return None
-        
+
     def getListOfAllProductIDs(self):
-        
         productIDList = []
-        
         for product in self.__products:
             id = product.getID()
             productIDList.append(id)
@@ -109,5 +103,4 @@ class ProductData():
         for product in sortedProducts:
             if not product.isPlant():
                 continue
-
             product.printAll()

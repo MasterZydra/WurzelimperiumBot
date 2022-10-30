@@ -2,9 +2,7 @@
 # -*- coding: utf-8 -*-
 
 class Note():
-    """
-    Diese Daten-Klasse enthält alle wichtigen Informationen über die Notiz.
-    """
+    """Diese Daten-Klasse enthält alle wichtigen Informationen über die Notiz."""
 
     def __init__(self, httpConnection):
         self._httpConn = httpConnection
