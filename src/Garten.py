@@ -7,10 +7,9 @@ import logging, i18n
 i18n.load_path.append('lang')
 
 class Garden():
-    
-    _lenX = 17
-    _lenY = 12
-    _nMaxFields = _lenX * _lenY
+    _LEN_X = 17
+    _LEN_Y = 12
+    _MAX_FIELDS = _LEN_X * _LEN_Y
     
     def __init__(self, httpConnection, gardenID):
         self._httpConn = httpConnection
@@ -63,7 +62,7 @@ class Garden():
         # Abfrage abgedeckt, ob alle benötigten Felder frei sind.
         # Felder außerhalb (in y-Richtung) des Gartens sind nicht leer,
         # da sie nicht existieren.
-        if not ((self._nMaxFields - fieldID)%self._lenX >= sx - 1): return False
+        if not ((self._MAX_FIELDS - fieldID)%self._LEN_X >= sx - 1): return False
         fieldsToPlantSet = set(fieldsToPlant)
         emptyFieldsSet = set(emptyFields)
         
@@ -142,7 +141,7 @@ class Garden():
         emptyFields = self.getEmptyFields()
         
         try:
-            for field in range(1, self._nMaxFields + 1):
+            for field in range(1, self._MAX_FIELDS + 1):
                 if planted == amount: break
 
                 fieldsToPlant = self._getAllFieldIDsFromFieldIDAndSizeAsIntList(field, sx, sy)
