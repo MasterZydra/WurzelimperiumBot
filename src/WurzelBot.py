@@ -29,9 +29,6 @@ class WurzelBot(object):
     """
 
     def __init__(self):
-        """
-        
-        """
         self.__logBot = logging.getLogger("bot")
         self.__logBot.setLevel(logging.DEBUG)
         self.__HTTPConn = HTTPConnection()
@@ -50,9 +47,7 @@ class WurzelBot(object):
 
 
     def __initGardens(self):
-        """
-        Ermittelt die Anzahl der Gärten und initialisiert alle.
-        """
+        """Ermittelt die Anzahl der Gärten und initialisiert alle."""
         try:
             tmpNumberOfGardens = self.__HTTPConn.getInfoFromStats("Gardens")
             self.spieler.numberOfGardens = tmpNumberOfGardens
@@ -154,9 +149,7 @@ class WurzelBot(object):
 
 
     def exitBot(self):
-        """
-        Diese Methode beendet den Wurzelbot geordnet und setzt alles zurück.
-        """
+        """Beendet den Wurzelbot geordnet und setzt alles zurück."""
         self.__logBot.info(i18n.t('wimpb.exit_wbot'))
         try:
             self.__HTTPConn.logOut()
@@ -168,9 +161,7 @@ class WurzelBot(object):
 
 
     def updateUserData(self):
-        """
-        Ermittelt die Userdaten und setzt sie in der Spielerklasse.
-        """
+        """Ermittelt die Userdaten und setzt sie in der Spielerklasse."""
         try:
             userData = self.__HTTPConn.readUserDataFromServer()
         except:
@@ -180,9 +171,7 @@ class WurzelBot(object):
 
 
     def waterPlantsInAllGardens(self):
-        """
-        Alle Gärten des Spielers werden komplett bewässert.
-        """
+        """Alle Gärten des Spielers werden komplett bewässert."""
         for garden in self.garten:
             garden.waterPlants()
         
@@ -292,9 +281,7 @@ class WurzelBot(object):
         return amount > 0
 
     def getWeedFieldsOfGardens(self):
-        """
-        Gibt alle Unkrau-Felder aller normalen Gärten zurück.
-        """
+        """Gibt alle Unkrau-Felder aller normalen Gärten zurück."""
         weedFields = []
         try:
             for garden in self.garten:
@@ -421,9 +408,7 @@ class WurzelBot(object):
         self.productData.printAllPlants()
 
     def removeWeedInAllGardens(self):
-        """
-        Entfernt Unrkaut/Maulwürfe/Steine aus allen Gärten.
-        """
+        """Entfernt Unkraut/Maulwürfe/Steine aus allen Gärten."""
         #TODO: Wassergarten ergänzen
         try:
             for garden in self.garten:

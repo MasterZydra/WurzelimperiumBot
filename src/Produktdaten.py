@@ -74,9 +74,7 @@ class ProductData():
         return singleFieldPlants
 
     def initAllProducts(self):
-        """
-        Initialisiert alle Produkte.
-        """
+        """Initialisiert alle Produkte."""
         products = self.__httpConn.getAllProductInformations()
         jProducts = json.loads(products)
         dictProducts = dict(jProducts)

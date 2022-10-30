@@ -53,9 +53,7 @@ class Garden():
         return listFields
     
     def _isPlantGrowableOnField(self, fieldID, emptyFields, fieldsToPlant, sx):
-        """
-        Prüft anhand mehrerer Kriterien, ob ein Anpflanzen möglich ist.
-        """
+        """Prüft anhand mehrerer Kriterien, ob ein Anpflanzen möglich ist."""
         # Betrachtetes Feld darf nicht besetzt sein
         if not (fieldID in emptyFields): return False
         
@@ -74,15 +72,11 @@ class Garden():
         return True
 
     def getID(self):
-        """
-        Returns the ID of garden.
-        """
+        """Returns the ID of garden."""
         return self._id
 
     def waterPlants(self):
-        """
-        Ein Garten mit der gardenID wird komplett bewässert.
-        """
+        """Ein Garten mit der gardenID wird komplett bewässert."""
         self._logGarden.info(f'Gieße alle Pflanzen im Garten {self._id}.')
         try:
             plants = self._httpConn.getPlantsToWaterInGarden(self._id)
@@ -97,36 +91,28 @@ class Garden():
             print(f'Im Garten {self._id} wurden {nPlants} Pflanzen gegossen.')
 
     def getEmptyFields(self):
-        """
-        Returns all empty fields in the garden.
-        """
+        """Returns all empty fields in the garden."""
         try:
             return self._httpConn.getEmptyFieldsOfGarden(self._id)
         except:
             self._logGarden.error(f'Konnte leere Felder von Garten {self._id} nicht ermitteln.')
 
     def getWeedFields(self):
-        """
-        Returns all weed fields in the garden.
-        """
+        """Returns all weed fields in the garden."""
         try:
             return self._httpConn.getWeedFieldsOfGarden(self._id)
         except:
             self._logGarden.error(f'Konnte Unkraut-Felder von Garten {self._id} nicht ermitteln.')
 
     def getGrowingPlants(self):
-        """
-        Returns all growing plants in the garden.
-        """
+        """Returns all growing plants in the garden."""
         try:
             return Counter(self._httpConn.getGrowingPlantsOfGarden(self._id))
         except:
             self._logGarden.error('Could not determine growing plants of garden ' + str(self._id) + '.')
 
     def getNextWaterHarvest(self):
-        """
-            Returns all growing plants in the garden.
-        """
+        """Returns all growing plants in the garden."""
         overall_time = []
         Fields_data = namedtuple("Fields_data", "plant water harvest")
         max_water_time = 86400
@@ -144,19 +130,14 @@ class Garden():
             self._logGarden.error('Could not determine growing plants of garden ' + str(self._id) + '.')
 
     def harvest(self):
-        """
-        Harvest everything
-        """
+        """Harvest everything"""
         try:
             self._httpConn.harvestGarden(self._id)
         except:
             raise
 
     def growPlant(self, plantID, sx, sy, amount):
-        """
-        Grows a plant of any size.
-        """
-        
+        """Grows a plant of any size."""
         planted = 0
         emptyFields = self.getEmptyFields()
         
@@ -218,9 +199,7 @@ class AquaGarden(Garden):
 
 
     def waterPlants(self):
-        """
-        Alle Pflanzen im Wassergarten werden bewässert.
-        """
+        """Alle Pflanzen im Wassergarten werden bewässert."""
         try:
             plants = self._httpConn.getPlantsToWaterInAquaGarden()
             nPlants = len(plants['fieldID'])
@@ -233,9 +212,7 @@ class AquaGarden(Garden):
             self._logGarden.info(f'Im Wassergarten wurden {nPlants} Pflanzen gegossen.')
         
     def harvest(self):
-        """
-        Erntet alles im Wassergarten.
-        """
+        """Erntet alles im Wassergarten."""
         try:
             self._httpConn.harvestAquaGarden()
         except:

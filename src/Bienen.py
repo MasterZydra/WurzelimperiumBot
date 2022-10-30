@@ -64,18 +64,15 @@ class Honig():
             raise
 
     def harvest(self):
-        """
-        Sendet alle Bienen.
-        """
+        """Sendet alle Bienen."""
         try:
             self._httpConn.harvestBienen()
         except:
             raise
+
     #TODO: extend and create HTTP-Requests
     def changeHivesTypeQuest(self):
-        """
-        Ändert die Hives auf Questanfprderungen.
-        """
+        """Ändert die Hives auf Questanforderungen."""
         quest = self.__honeyquest
         for i in quest:
             if quest[i]['missing'] != 0:
