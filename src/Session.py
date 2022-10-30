@@ -39,12 +39,7 @@ class Session(object):
         """
         Prüft, ob die offene Session abgelaufen ist.
         """
-        currentTime = time.time()
-        if (currentTime > self.__endTime):
-            return True
-        else:
-            return False
-
+        return time.time() > self.__endTime
 
     def isSessionValid(self): #TODO: Prüfen wie die Methode sinnvoll eingesetzt werden kann
         """
@@ -87,8 +82,7 @@ class Session(object):
         """
         Gibt die verbleibende Zeit zurück, bis die Session abläuft.
         """
-        currentTime = time.time()
-        return self.__endTime - currentTime
+        return self.__endTime - time.time()
 
 
     def getSessionID(self):
@@ -109,5 +103,3 @@ class Session(object):
         Returns the server URL.
         """
         return self.__serverURL 
-
-        

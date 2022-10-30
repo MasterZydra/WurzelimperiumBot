@@ -377,9 +377,6 @@ class HTTPConnection(object):
             jContent = self.__generateJSONContentAndCheckForOK(content)
         except:
             raise
-        else:
-            pass
-
 
     def __parseNPCPricesFromHtml(self, html_data):
         """
@@ -1171,10 +1168,9 @@ class HTTPConnection(object):
             response, content = self.__webclient.request(adresse, 'GET', headers=headers)
             self.__checkIfHTTPStateIsOK(response)
             jContent = self.__generateJSONContentAndCheckForOK(content)
+            return jContent['data']
         except:
             pass
-        else:
-            return jContent['data']
 
     def getDailyLoginBonus(self, day):
         """
@@ -1187,11 +1183,9 @@ class HTTPConnection(object):
         try:
             response, content = self.__webclient.request(adresse, 'GET', headers=headers)
             self.__checkIfHTTPStateIsOK(response)
-            jContent = self.__generateJSONContentAndCheckForOK(content)
+            return self.__generateJSONContentAndCheckForOK(content)
         except:
             pass
-        else:
-            return jContent
 
     def removeWeedOnFieldInGarden(self, gardenID, fieldID):
         """

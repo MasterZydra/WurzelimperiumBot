@@ -73,23 +73,19 @@ class Spieler():
         Liest den Spielernamen vom Server und speichert ihn in der Klasse.
         """
         try:
-            tmpUserName = http.getInfoFromStats("Username")
+            self.__userName = http.getInfoFromStats("Username")
         except:
             raise
-        else:
-            self.__userName = tmpUserName
     
     def setUserDataFromServer(self, http):
         """
         Liest den Spielerdaten vom Server und speichert sie in der Klasse.
         """
         try:
-            tmpUserData = http.readUserDataFromServer()
+            self.__userData = http.readUserDataFromServer()
         except:
             print('Status der E-Mail Adresse konnte nicht ermittelt werden.')
-        else:
-            self.__userData = tmpUserData
-            
+
     def setUserID(self, userID):
         self.__userID = userID
         
@@ -98,10 +94,6 @@ class Spieler():
         Liest vom Server, ob die E-Mail Adresse bestätigt ist und speichert den Status in der KLasse.
         """
         try:
-            tmpEMailConf = http.checkIfEMailAdressIsConfirmed()
+            self.__eMailAdressConfirmed = http.checkIfEMailAdressIsConfirmed()
         except:
             pass
-        else:
-            self.__eMailAdressConfirmed = tmpEMailConf
-            
-

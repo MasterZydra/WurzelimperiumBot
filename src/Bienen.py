@@ -41,33 +41,27 @@ class Honig():
         Liest die Anzahl der Hives aus und speichert ihn in der Klasse.
         """
         try:
-            tmpHivesAvailable = http.getHoneyFarmInfos()[2]
+            self.__hivesavailable = http.getHoneyFarmInfos()[2]
         except:
             raise
-        else:
-            self.__hivesavailable = tmpHivesAvailable
 
     def setHoneyQuestNr(self, http):
         """
         Liest die Anzahl der Hives aus und speichert ihn in der Klasse.
         """
         try:
-            tmpHoneyQuestnr = http.getHoneyFarmInfos()[0]
+            self.__honeyquestnr = http.getHoneyFarmInfos()[0]
         except:
             raise
-        else:
-            self.__honeyquestnr = tmpHoneyQuestnr
 
     def setHoneyQuest(self, http):
         """
         Liest die aktuelle HoneyQuest aus und speichert ihn in der Klasse.
         """
         try:
-            tmpHoneyQuest = http.getHoneyFarmInfos()[1]
+            self.__honeyquest = http.getHoneyFarmInfos()[1]
         except:
             raise
-        else:
-            self.__honeyquest = tmpHoneyQuest
 
     def harvest(self):
         """
@@ -77,8 +71,6 @@ class Honig():
             self._httpConn.harvestBienen()
         except:
             raise
-        else:
-            pass
     #TODO: extend and create HTTP-Requests
     def changeHivesTypeQuest(self):
         """
@@ -97,5 +89,3 @@ class Honig():
             self._httpConn.changeHiveBienen(Questanforderung)
         except:
             raise
-        else:
-            pass

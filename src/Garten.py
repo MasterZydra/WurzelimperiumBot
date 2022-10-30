@@ -101,33 +101,27 @@ class Garden():
         Returns all empty fields in the garden.
         """
         try:
-            tmpEmptyFields = self._httpConn.getEmptyFieldsOfGarden(self._id)
+            return self._httpConn.getEmptyFieldsOfGarden(self._id)
         except:
             self._logGarden.error(f'Konnte leere Felder von Garten {self._id} nicht ermitteln.')
-        else:
-            return tmpEmptyFields
 
     def getWeedFields(self):
         """
         Returns all weed fields in the garden.
         """
         try:
-            tmpWeedFields = self._httpConn.getWeedFieldsOfGarden(self._id)
+            return self._httpConn.getWeedFieldsOfGarden(self._id)
         except:
             self._logGarden.error(f'Konnte Unkraut-Felder von Garten {self._id} nicht ermitteln.')
-        else:
-            return tmpWeedFields
 
     def getGrowingPlants(self):
         """
         Returns all growing plants in the garden.
         """
         try:
-            growing_plants = Counter(self._httpConn.getGrowingPlantsOfGarden(self._id))
+            return Counter(self._httpConn.getGrowingPlantsOfGarden(self._id))
         except:
             self._logGarden.error('Could not determine growing plants of garden ' + str(self._id) + '.')
-        else:
-            return growing_plants
 
     def getNextWaterHarvest(self):
         """
@@ -145,10 +139,9 @@ class Garden():
                 if fields_time.harvest - fields_time.water > max_water_time:
                     overall_time.append(fields_time.water + max_water_time)
                 overall_time.append(fields_time.harvest)
+            return min(overall_time)
         except:
             self._logGarden.error('Could not determine growing plants of garden ' + str(self._id) + '.')
-        else:
-            return min(overall_time)
 
     def harvest(self):
         """
@@ -158,8 +151,6 @@ class Garden():
             self._httpConn.harvestGarden(self._id)
         except:
             raise
-        else:
-            pass
 
     def growPlant(self, plantID, sx, sy, amount):
         """
@@ -249,5 +240,3 @@ class AquaGarden(Garden):
             self._httpConn.harvestAquaGarden()
         except:
             raise
-        else:
-            pass

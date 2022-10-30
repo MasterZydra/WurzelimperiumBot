@@ -44,65 +44,47 @@ class Messenger():
         else:
             return res.group(1)
 
-    def __wasDeliverySuccessful(self, result):
+    def __wasDeliverySuccessful(self, result) -> bool:
         """
         Prüft, ob der Versand der Nachricht erfolgreich war.
         """
         res = re.search(r'Deine Nachricht wurde an.*verschickt.', result)
-        if (res is not None):
-            return True
-        else:
-            return False
+        return res is not None 
 
-    def __didTheMessageRecipientExist(self, result):
+    def __didTheMessageRecipientExist(self, result) -> bool:
         """
         Prüft, ob der Empfänger der Nachricht vorhanden war.
         """
         res = re.search(r'Der Empfänger existiert nicht.', result)
-        if (res is not None):
-            return False
-        else:
-            return True
+        return res is None
 
-    def __didTheMessageHadASubject(self, result):
+    def __didTheMessageHadASubject(self, result) -> bool:
         """
         Prüft, ob die Nachricht einen Betreff hatte.
         """
         res = re.search(r'Es wurde kein Betreff angegeben.', result)
-        if (res is not None):
-            return False
-        else:
-            return True
+        return res is None
 
-    def __didTheMessageHadAText(self, result):
+    def __didTheMessageHadAText(self, result) -> bool:
         """
         Prüft, ob die Nachricht einen Text hatte.
         """
         res = re.search(r'Es wurde keine Nachricht eingegeben.', result)
-        if (res is not None):
-            return False
-        else:
-            return True
+        return res is None
 
-    def __didTheMessageHadARecipient(self, result):
+    def __didTheMessageHadARecipient(self, result) -> bool:
         """
         Prüft, ob die Nachricht einen Empfänger hatte.
         """
         res = re.search(r'Es wurde kein Empfänger angegeben.', result)
-        if (res is not None):
-            return False
-        else:
-            return True
+        return res is None
 
-    def __blockedFromMessageRecipient(self, result):
+    def __blockedFromMessageRecipient(self, result) -> bool:
         """
         Prüft, ob der Empfänger den Empfang von Nachrichten des Senders blockiert hat.
         """
         res = re.search(r'Der Empfänger hat dich auf die Blockliste gesetzt.', result)
-        if (res is not None):
-            return True
-        else:
-            return False
+        return res is not None
 
     def __getMessageDeliveryState(self, result):
         """
@@ -139,11 +121,9 @@ class Messenger():
 
         try:
             result = self.__httpConn.createNewMessageAndReturnResult()
-            id = self.__getMessageIDFromNewMessageResult(result)
+            return self.__getMessageIDFromNewMessageResult(result)
         except:
             raise
-        else:
-            return id
 
     def __getMessageByState(self):
         """
@@ -204,7 +184,6 @@ class Messenger():
         """
         if not type(recipients) is list:
             raise MessengerError()
-            return
 
         n = len(recipients)
         i = 0

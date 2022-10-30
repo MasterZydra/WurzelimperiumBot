@@ -128,20 +128,16 @@ class WurzelBot(object):
             return False
         
         try:
-            tmpHoneyFarmAvailability = self.__HTTPConn.isHoneyFarmAvailable(self.spieler.getLevelNr())
+            self.spieler.setHoneyFarmAvailability(self.__HTTPConn.isHoneyFarmAvailable(self.spieler.getLevelNr()))
         except:
             self.__logBot.error(i18n.t('wimpb.error_no_beehives'))
             return False
-        else:
-            self.spieler.setHoneyFarmAvailability(tmpHoneyFarmAvailability)
 
         try:
-            tmpAquaGardenAvailability = self.__HTTPConn.isAquaGardenAvailable(self.spieler.getLevelNr())
+            self.spieler.setAquaGardenAvailability(self.__HTTPConn.isAquaGardenAvailable(self.spieler.getLevelNr()))
         except:
             self.__logBot.error(i18n.t('wimpb.error_no_water_garden'))
             return False
-        else:
-            self.spieler.setAquaGardenAvailability(tmpAquaGardenAvailability)
 
         try:
             self.__initGardens()
@@ -206,8 +202,6 @@ class WurzelBot(object):
                 self.messenger.writeMessage(self.spieler.getUserName(), recipients, subject, body)
             except:
                 self.__logBot.error(i18n.t('wimpb.no_message'))
-            else:
-                pass
 
     def getEmptyFieldsOfGardens(self):
         """
@@ -220,8 +214,6 @@ class WurzelBot(object):
                 emptyFields.append(garden.getEmptyFields())
         except:
             self.__logBot.error(f'Could not determinate empty fields from garden {garden.getID()}.')
-        else:
-            pass
         return emptyFields
 
     def getGrowingPlantsInGardens(self):
@@ -231,8 +223,6 @@ class WurzelBot(object):
                 growingPlants.update(garden.getGrowingPlants())
         except:
             self.__logBot.error('Could not determine growing plants of garden ' + str(garden.getID()) + '.')
-        else:
-            pass
 
         return dict(growingPlants)
 
@@ -268,11 +258,7 @@ class WurzelBot(object):
         npc_sum = 0
         for id, amount in products[1].items():
             npc_sum += self.productData.getProductByID(id).getPriceNPC() * amount
-        if products[0] / npc_sum * 100 >= minimal_profit:
-            to_sell = True
-        else:
-            to_sell = False
-        return to_sell
+        return products[0] / npc_sum * 100 >= minimal_profit
 
     def checkWimpsRequiredAmount(self, minimal_balance, products, stock_list):
         to_sell = True
@@ -315,8 +301,6 @@ class WurzelBot(object):
                 weedFields.append(garden.getWeedFields())
         except:
             self.__logBot.error(f'Could not determinate weeds on fields of garden {garden.getID()}.')
-        else:
-            pass
 
         return weedFields
 
@@ -453,10 +437,11 @@ class WurzelBot(object):
 
     # Bienen
     def doSendBienen(self):
-        if self.spieler.isHoneyFarmAvailable():
-            hives = self.__HTTPConn.getHoneyFarmInfos()[2]
-            for hive in hives:
-                self.__HTTPConn.sendeBienen(hive)
-                self.bienenfarm.harvest()
-        else:
+        if not self.spieler.isHoneyFarmAvailable():
             self.__logBot.error('Konnte nicht alle Bienen ernten.')
+            return
+        
+        hives = self.__HTTPConn.getHoneyFarmInfos()[2]
+        for hive in hives:
+            self.__HTTPConn.sendeBienen(hive)
+            self.bienenfarm.harvest()
