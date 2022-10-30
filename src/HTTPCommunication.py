@@ -15,12 +15,9 @@ from lxml import html, etree
 
 i18n.load_path.append('lang')
 
-#Defines
-HTTP_STATE_CONTINUE            = 100
-HTTP_STATE_SWITCHING_PROTOCOLS = 101
-HTTP_STATE_PROCESSING          = 102
-HTTP_STATE_OK                  = 200
-HTTP_STATE_FOUND               = 302 #moved temporarily
+# Defines
+HTTP_STATE_OK = 200
+HTTP_STATE_FOUND = 302 # moved temporarily
 
 SERVER_URLS = {
     'de': '.wurzelimperium.de/',
