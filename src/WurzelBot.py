@@ -343,6 +343,7 @@ class WurzelBot(object):
             amount = self.storage.getStockByProductID(product.getID())
 
         remainingAmount = amount
+        garden: Garden
         for garden in self.garten:
             planted += garden.growPlant(product.getID(), product.getSX(), product.getSY(), remainingAmount)
             remainingAmount = amount - planted
