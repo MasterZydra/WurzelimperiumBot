@@ -832,8 +832,6 @@ class HTTPConnection(object):
                 self.__logHTTPConn.info(msg)
         except:
             raise
-        else:
-            pass
 
     def harvestAquaGarden(self):
         """Erntet alle fertigen Pflanzen im Garten."""
@@ -846,8 +844,6 @@ class HTTPConnection(object):
             self.__checkIfHTTPStateIsOK(response)
         except:
             raise
-        else:
-            pass
 
     def growPlant(self, field, plant, gardenID, fields):
         """Baut eine Pflanze auf einem Feld an."""
@@ -860,10 +856,7 @@ class HTTPConnection(object):
         except:
             print('except')
             raise
-        else:
-            pass
-    
-    
+
     def growPlantInAquaGarden(self, plant, field):
         """Baut eine Pflanze im Wassergarten an."""
         headers = self.__getHeaders()
@@ -878,9 +871,7 @@ class HTTPConnection(object):
         except:
             print('except')
             raise
-        else:
-            pass
- 
+
     def getAllProductInformations(self):
         """Sammelt alle Produktinformationen und gibt diese zur Weiterverarbeitung zurück."""
         headers = self.__getHeaders()
@@ -894,11 +885,10 @@ class HTTPConnection(object):
             reToken = re.search(r'ajax\.setToken\(\"(.*)\"\);', content)
             self.__token = reToken.group(1) #TODO: except, wenn token nicht aktualisiert werden kann
             reProducts = re.search(r'data_products = ({.*}});var', content)
+            return reProducts.group(1)
         except:
             raise
-        else:
-            return reProducts.group(1)
-            
+
     def getInventory(self):
         """Ermittelt den Lagerbestand und gibt diesen zurück."""
         headers = self.__getHeaders()
@@ -910,10 +900,9 @@ class HTTPConnection(object):
             response, content = self.__webclient.request(adresse, 'POST', headers = headers)
             self.__checkIfHTTPStateIsOK(response)
             jContent = self.__generateJSONContentAndCheckForOK(content)
+            return jContent['produkte']
         except:
             pass
-        else:
-            return jContent['produkte']
 
     def getWimpsData(self, gardenID):
         """Get wimps data including wimp_id and list of products with amount"""
@@ -927,11 +916,9 @@ class HTTPConnection(object):
             self.__checkIfHTTPStateIsOK(response)
 
             jContent = self.__generateJSONContentAndCheckForOK(content)
-            wimpsData = self.__findWimpsDataFromJSONContent(jContent)
+            return self.__findWimpsDataFromJSONContent(jContent)
         except:
             raise
-        else:
-            return wimpsData
 
     def sellWimpProducts(self, wimp_id):
         """
@@ -947,11 +934,9 @@ class HTTPConnection(object):
             response, content = self.__webclient.request(adresse, 'POST', headers=headers)
             self.__checkIfHTTPStateIsOK(response)
             jContent = self.__generateJSONContentAndCheckForOK(content)
+            return jContent['newProductCounts']
         except:
             pass
-        else:
-            return jContent['newProductCounts']
-
 
 
     def declineWimp(self, wimp_id):
@@ -968,10 +953,9 @@ class HTTPConnection(object):
             response, content = self.__webclient.request(adresse, 'GET', headers=headers)
             self.__checkIfHTTPStateIsOK(response)
             jContent = self.__generateJSONContentAndCheckForOK(content)
+            return jContent['action']
         except:
             pass
-        else:
-            return jContent['action']
 
     def getNPCPrices(self):
         """Ermittelt aus der Wurzelimperium-Hilfe die NPC Preise aller Produkte."""
@@ -1096,10 +1080,9 @@ class HTTPConnection(object):
             response, content = self.__webclient.request(adresse, 'POST', headers = headers)
             self.__checkIfHTTPStateIsOK(response)
             jContent = self.__generateJSONContentAndCheckForSuccess(content)
+            return jContent['success']
         except:
             raise
-        else:
-            return jContent['success']
     
     #TODO: Bienenquest, change flower and hive-honey to automate the beequest
     def sendBienen(self, hive):
