@@ -728,19 +728,6 @@ class HTTPConnection(object):
 
         return userList
 
-    def readStorageFromServer(self):
-        server = self.__getServer()
-        adress = f'{server}ajax/updatelager.php?all=1'
-
-        try:
-            response, content = self.__webclient.request(adress, 'GET', headers=self.__getHeaders())
-            self.__checkIfHTTPStateIsOK(response)
-            jContent = self.__generateJSONContentAndCheckForOK(content)
-        except:
-            raise
-        else:
-            print(jContent['produkte'])
-
     def getEmptyFieldsOfGarden(self, gardenID):
         """Gibt alle leeren Felder eines Gartens zurück."""
         server = self.__getServer()
