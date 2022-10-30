@@ -153,21 +153,18 @@ class WurzelBot(object):
         self.__logBot.info(i18n.t('wimpb.exit_wbot'))
         try:
             self.__HTTPConn.logOut()
-        except:
-            self.__logBot.error(i18n.t('wimpb.exit_wbot_abnormal'))
-        else:
             self.__logBot.info(i18n.t('wimpb.logout_success'))
             self.__logBot.info('-------------------------------------------')
+        except:
+            self.__logBot.error(i18n.t('wimpb.exit_wbot_abnormal'))
 
 
     def updateUserData(self):
         """Ermittelt die Userdaten und setzt sie in der Spielerklasse."""
         try:
-            userData = self.__HTTPConn.readUserDataFromServer()
+            self.spieler.userData = self.__HTTPConn.readUserDataFromServer()
         except:
             self.__logBot.error(i18n.t('wimpb.error_refresh_userdata'))
-        else:
-            self.spieler.userData = userData
 
 
     def waterPlantsInAllGardens(self):
@@ -176,8 +173,8 @@ class WurzelBot(object):
             garden.waterPlants()
         
         if self.spieler.isAquaGardenAvailable():
+            # TODO self.waterPlantsInAquaGarden()
             pass
-            #self.waterPlantsInAquaGarden()
 
 
     def writeMessagesIfMailIsConfirmed(self, recipients, subject, body):
@@ -298,13 +295,13 @@ class WurzelBot(object):
                 garden.harvest()
                 
             if self.spieler.isAquaGardenAvailable():
-                pass#self.waterPlantsInAquaGarden()
+                # TODO self.waterPlantsInAquaGarden()
+                pass
 
             self.storage.updateNumberInStock()
+            self.__logBot.info(i18n.t('wimpb.harvest_successful'))
         except:
             self.__logBot.error(i18n.t('wimpb.harvest_not_successful'))
-        else:
-            self.__logBot.info(i18n.t('wimpb.harvest_successful'))
 
     def growPlantsInGardens(self, productName, amount=-1):
         """
@@ -413,10 +410,9 @@ class WurzelBot(object):
         try:
             for garden in self.garten:
                 garden.removeWeed()
+            self.__logBot.info(i18n.t('wimpb.w_harvest_successful'))
         except:
             self.__logBot.error(i18n.t('wimpb.w_harvest_not_successful'))
-        else:
-            self.__logBot.info(i18n.t('wimpb.w_harvest_successful'))
 
     def getDailyLoginBonus(self):
         self.bonus.getDailyLoginBonus()
