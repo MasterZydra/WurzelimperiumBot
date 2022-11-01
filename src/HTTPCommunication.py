@@ -409,19 +409,21 @@ class HTTPConnection(object):
             self.__Session.openSession(cookie['PHPSESSID'].value, str(loginDaten.server), serverURL)
             self.__cookie = cookie
             self.__userID = cookie['wunr'].value
-            
+
     def logInPortal(self, loginDaten):
-        """Führt einen login durch und öffnet eine Session."""
+        """
+        Führt einen login durch und öffnet eine Session.
+        """
         parameter = urlencode({'portserver': 'server' + str(loginDaten.server),
                                'portname': loginDaten.user,
                                'portpass': loginDaten.password,
                                'portsubmit': 'Einloggen'})
-
+        serverURL = SERVER_URLS[loginDaten.language]
         headers = {'Content-type': 'application/x-www-form-urlencoded',
                    'Connection': 'keep-alive'}
 
         try:
-            response, content = self.__webclient.request('https://www.wurzelimperium.de/portal/game2port_login.php', \
+            response, content = self.__webclient.request(f'https://www{serverURL}/portal/game2port_login.php', \
                                                          'POST', \
                                                          parameter, \
                                                          headers)
@@ -436,16 +438,16 @@ class HTTPConnection(object):
                    'Cookie': self.__unr}
 
         try:
-            loginadresse = f'https://s{self.__Session.getServer()}.wurzelimperium.de/logw.php?port=1&unr=' + \
+            loginadresse = f'https://s{str(loginDaten.server)}{serverURL}/logw.php?port=1&unr=' + \
                            f'{self.__unr}&portunr={self.__portunr}&hash={self.__token}&sno=1'
-
             response, content = self.__webclient.request(loginadresse, 'GET', headers=headers)
             self.__checkIfHTTPStateIsFOUND(response)
         except:
             raise
         else:
             cookie = SimpleCookie(response['set-cookie'])
-            self.__Session.openSession(cookie['PHPSESSID'].value, str(loginDaten.server), "s")
+            cookie.load(str(response["set-cookie"]).replace("secure, ", "", -1))
+            self.__Session.openSession(cookie['PHPSESSID'].value, '1', '.wurzelimperium.de/')
             self.__cookie = cookie
             self.__userID = self.__unr
 
