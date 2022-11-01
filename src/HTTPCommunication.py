@@ -308,6 +308,16 @@ class HTTPConnection(object):
             wimpsData[wimp_id] = [cash, product_data]
         return wimpsData
 
+    def __findEmptyAquaFieldsFromJSONContent(self, jContent):
+        emptyAquaFields = []
+        for field in jContent['garden']:
+            if jContent['garden'][field][0] == 0:
+                emptyAquaFields.append(int(field))
+        # Sortierung über ein leeres Array ändert Objekttyp zu None
+        if len(emptyAquaFields) > 0:
+            emptyAquaFields.sort(reverse=False)
+        return emptyAquaFields
+
     def __generateYAMLContentAndCheckForSuccess(self, content: str):
         """Aufbereitung und Prüfung der vom Server empfangenen YAML Daten auf Erfolg."""
         content = content.replace('\n', ' ')
@@ -725,6 +735,18 @@ class HTTPConnection(object):
         else:
             return growingPlants
 
+    def getEmptyFieldsAqua(self):
+        try:
+            address = f'ajax/ajax.php?do=watergardenGetGarden&token={self.__token}'
+            response, content = self.__sendRequest(address)
+            self.__checkIfHTTPStateIsOK(response)
+            jContent = self.__generateJSONContentAndCheckForOK(content)
+            emptyAquaFields = self.__findEmptyAquaFieldsFromJSONContent(jContent)
+        except:
+            raise
+        else:
+            return emptyAquaFields
+
     def harvestGarden(self, gardenID):
         """Erntet alle fertigen Pflanzen im Garten."""
         try:
@@ -763,14 +785,19 @@ class HTTPConnection(object):
             print('except')
             raise
 
-    def growPlantInAquaGarden(self, plant, field):
-        """Baut eine Pflanze im Wassergarten an."""
+    def growAquaPlant(self, plant, field):
+        """
+        Baut eine Pflanze im Wassergarten an.
+        """
+        headers = self.__getHeaders()
+        server = self.__getServer()
+        adresse = f'{server}ajax/ajax.php?do=watergardenCache&plant[{plant}]={field}&token={self.__token}'
         try:
-            address = f'ajax/ajax.php?do=watergardenCache&plant[{str(field)}]={str(plant)}&token={self.__token}'
-            response, content = self.__sendRequest(address)
+            response, content = self.__webclient.request(adresse, 'GET', headers = headers)
         except:
-            print('except')
-            raise
+            pass
+        else:
+            pass
 
     def getAllProductInformations(self):
         """Sammelt alle Produktinformationen und gibt diese zur Weiterverarbeitung zurück."""
@@ -944,6 +971,20 @@ class HTTPConnection(object):
             return jContent['success']
         except:
             raise
+
+    def removeWeedOnFieldInAquaGarden(self, gardenID, fieldID):
+        """
+        Befreit ein Feld im Garten von Unkraut.
+        """
+        self._changeGarden(gardenID)
+        try:
+            response, content = self.__sendRequest(f'save/abriss.php?tile={fieldID}', 'POST')
+            self.__checkIfHTTPStateIsOK(response)
+            jContent = self.__generateJSONContentAndCheckForSuccess(content)
+        except:
+            raise
+        else:
+            return jContent['success']
     
     #TODO: Bienenquest, change flower and hive-honey to automate the beequest
     def sendBienen(self, hive):
