@@ -19,6 +19,7 @@ from src.Wimps import Wimps
 from src.Quests import Quest
 from src.Bonus import Bonus
 from src.Note import Note
+from src.Shop_lists import *
 import logging, i18n, datetime
 
 i18n.load_path.append('lang')
@@ -416,6 +417,26 @@ class WurzelBot(object):
 
     def getDailyLoginBonus(self):
         self.bonus.getDailyLoginBonus()
+
+    # Shops
+    def dobuyfromshop(self, productName, Amount):
+        if type(productName) is int:
+            productName = self.productData.getProductByID(productName).getName()
+        Shop = None
+        ProductID = self.productData.getProductByName(productName).getID()
+        for k, ID in Shops.items():
+            if productName in k:
+                Shop = ID
+        if Shop in [1,2,3,4]:
+            try:
+                self.__HTTPConn.buyFromShop(Shop, ProductID, Amount)
+            except:
+                pass
+        elif Shop == 0:
+            try:
+                self.__HTTPConn.buyFromAquaShop(ProductID, Amount)
+            except:
+                pass
 
     # Bienen
     def doSendBienen(self):

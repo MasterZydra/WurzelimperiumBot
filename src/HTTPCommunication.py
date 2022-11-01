@@ -973,7 +973,7 @@ class HTTPConnection(object):
         except:
             raise
 
-    def buyFromShop(self, productId: int, amount: int = 1):
+    def buyFromShop(self, shop: int, productId: int, amount: int = 1):
         parameter = urlencode({'s': 2,
                                'page': 1,
                                'change_page_only': 0,
@@ -981,11 +981,20 @@ class HTTPConnection(object):
                                'anzahl[0]': amount
                                })
         try:
-            header =  {'Content-Type': 'application/x-www-form-urlencoded'}
-            response, content = self.__sendRequest('stadt/shop.php?s=2', 'POST', parameter, header)
+            header = {'Content-Type': 'application/x-www-form-urlencoded'}
+            response, content = self.__sendRequest(f'stadt/shop.php?s={shop}', 'POST', parameter, header)
             self.__checkIfHTTPStateIsOK(response)
         except:
             raise
+
+    def buyFromAquaShop(self, productId: int, amount: int = 1):
+        adresse = f'ajax/ajax.php?products={productId}:{amount}&do=shopBuyProducts&type=aqua&token={self.__token}'
+
+        try:
+            response, content = self.__sendRequest(f'{adresse}')
+            self.__checkIfHTTPStateIsOK(response)
+        except:
+            return ''
 
 class HTTPStateError(Exception):
     def __init__(self, value):
