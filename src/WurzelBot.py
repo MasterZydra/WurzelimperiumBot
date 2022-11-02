@@ -448,3 +448,128 @@ class WurzelBot(object):
         for hive in hives:
             self.__HTTPConn.sendeBienen(hive)
             self.bienenfarm.harvest()
+
+    # Birds
+    def CollectBirds(self):
+        # Collect Jobs
+        jobsopen = []
+        print('Start - Sammele die Belohnungen der fertigen Jobs eins.')
+        print(f'Anzahl aller Jobs: {len(self.__HTTPConn.getBirdFarmInfos()[1])}')
+        for job in self.__HTTPConn.getBirdFarmInfos()[1]:
+            # print(f'job: {job}')
+            if int((self.__HTTPConn.getBirdFarmInfos()[4]['data']['data']['jobs'][job]['house'])) > 0:
+                if 'remain' in (self.__HTTPConn.getBirdFarmInfos()[4]['data']['data']['jobs'][job]):
+                    if int((self.__HTTPConn.getBirdFarmInfos()[4]['data']['data']['jobs'][job]['remain'])) > 0:
+                        print(f'Job {job} läuft noch')
+                        continue
+                    elif int((self.__HTTPConn.getBirdFarmInfos()[4]['data']['data']['jobs'][job]['remain'])) < 0:
+                        print(f'Job {job} ist fertig')
+                        status_check = False
+                        print(f'status_check: {status_check}')
+                        while status_check is False:
+                            if self.__HTTPConn.collectbirds(job) is True:
+                                print(self.__HTTPConn.collectbirds(job))
+                                jobsopen.append(job)
+                                break
+            elif int((self.__HTTPConn.getBirdFarmInfos()[4]['data']['data']['jobs'][job]['house'])) == 0:
+                if 'remove_remain' in (self.__HTTPConn.getBirdFarmInfos()[4]['data']['data']['jobs'][job]):
+                    if (self.__HTTPConn.getBirdFarmInfos()[4]['data']['data']['jobs'][job]['remove_remain']) > 0:
+                        print(f'Job {job} wurde weggeworfen')
+                        continue
+                    else:
+                        print(f'Job {job} ist offen')
+                        jobsopen.append(job)
+                else:
+                    print(f'Job {job} ist offen')
+                    jobsopen.append(job)
+        print(f'Diese Jobs sind bereit/offen:{jobsopen}')
+        return jobsopen
+
+    def CheckBirds(self):
+        # Check Birds
+        birdsopen = []
+        print(f"House: {self.__HTTPConn.getBirdFarmInfos()[3]}")
+        for house in self.__HTTPConn.getBirdFarmInfos()[3]:
+            check = False
+            birdcheck = self.__HTTPConn.getBirdFarmInfos()[4]
+            print(
+                f"Checking Houses - House {house}: {self.__HTTPConn.getBirdFarmInfos()[4]['data']['data']['houses'][str(house)]}")
+            if 'bird' in birdcheck['data']['data']['houses'][str(house)]:
+                print(f'bird in {house}')
+                birdsopen.append(house)
+            else:
+                print(f'no bird in {house} - buy new one')
+                self.__HTTPConn.buynewbird(house, 3) # buying möve
+            if 'bird' in self.__HTTPConn.getBirdFarmInfos()[4]['data']['data']['houses'][str(house)]:
+                endurance = self.__HTTPConn.getBirdFarmInfos()[2][house]['endurence']
+                endurance_max = self.__HTTPConn.getBirdFarmInfos()[2][house]['endurance_max']
+                if endurance < endurance_max:
+                    print(f'need to feed house: {house}')
+                    for product in self.__HTTPConn.getBirdFarmInfos()[2][house]['feed']:
+                        plant = product
+                        needed = self.__HTTPConn.getBirdFarmInfos()[2][house]['feed'][product]
+                        stored = self.storage.getStockByProductID(product)
+                        print(f'Product: {plant} - needed amount: {needed}')
+                        if stored > needed:
+                            check = True
+                        else:
+                            missing = abs(needed - stored)
+                            self.dobuyfromshop(plant, missing)
+                            check = True
+                    if check is True:
+                        print(f'Products are ready - {check}')
+                        self.__HTTPConn.feedbirds(house)
+        print(f'Diese Häuser sind bereit: {birdsopen}')
+        return birdsopen
+
+    def StartBird(self, jobsopen, birdsopen, lenX):
+        # Start Jobs
+        for index in range(0, lenX, 1):
+            check = False
+            print(f'index: {index}')
+            print(f'{birdsopen} -> {birdsopen[index]}')
+            print(f'{jobsopen} -> {jobsopen[index]}')
+            print('Prüfung der Ausderanforderung zwischen Job und Vofel')
+            job_endurence = self.__HTTPConn.getBirdFarmInfos()[0][jobsopen[index]]['endurence']
+            endurance = self.__HTTPConn.getBirdFarmInfos()[2][birdsopen[index]]['endurence']
+            print(f'Job_E: {job_endurence} Bird_E: {endurance}')
+            if int(job_endurence) <= int(endurance):
+                print(f"Job {index} - needs {self.__HTTPConn.getBirdFarmInfos()[0][jobsopen[index]]['products']}")
+                for product in self.__HTTPConn.getBirdFarmInfos()[0][jobsopen[index]]['products']:
+                    plant = product
+                    needed = self.__HTTPConn.getBirdFarmInfos()[0][jobsopen[index]]['products'][product]
+                    stored = self.storage.getStockByProductID(product)
+                    print(f'Product: {plant} - needed amount: {needed}')
+                    if stored > needed:
+                        check = True
+                    else:
+                        missing = abs(needed - stored)
+                        self.dobuyfromshop(plant, missing)
+                        check = True
+                    if check is True:
+                        print(f'Products are ready - Job {jobsopen[index]} Haus {birdsopen[index]}')
+                        self.__HTTPConn.startjobbirds(birdsopen[index], jobsopen[index])
+            #             status_check = False
+            #             while status_check is False:
+            #                 #print(status_check)
+            #                 if self.__HTTPConn.startjobbirds(birdsopen[index], jobsopen[index]) is True:
+            #                     break
+            elif int(job_endurence) > int(endurance):
+                print(f"Job {index} job endurence zu hoch")
+            #     self.__HTTPConn.skipjobbirds(job)
+        pass
+
+    def doBirds(self):
+        jobsopen = self.CollectBirds()
+        print('----------------------')
+        birdsopen = self.CheckBirds()
+        print('======================')
+        if jobsopen and birdsopen:
+            if len(jobsopen) > len(birdsopen):
+                lenX = len(birdsopen)
+                print('nutze birdsopen')
+            elif len(jobsopen) <= len(birdsopen):
+                lenX = len(jobsopen)
+                print('nutze jobsopen')
+            print(f'Jobs: {jobsopen} - Birds {birdsopen} - lenX {lenX}')
+            self.StartBird(jobsopen, birdsopen, lenX)

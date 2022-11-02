@@ -996,6 +996,128 @@ class HTTPConnection(object):
         except:
             return ''
 
+    # Birds
+    def __getjobdata(self, jContent):
+        jobdict = {}
+        jobcount = []
+        for course in sorted(jContent['data']['data']['jobs']):
+            jobs = str(course)
+            jobcount.append(str(jobs))
+            endurance = jContent['data']['data']['jobs'][str(jobs)]['endurance']
+            products = jContent['data']['data']['jobs'][str(jobs)]['products']
+            new = {jobs: {'endurence': endurance, 'products': products}}
+            jobdict.update(new)
+        return jobdict, jobcount
+
+    def __getbirddata(self, jContent):
+        birddict = {}
+        houses = []
+        for course in sorted(jContent['data']['data']['houses']):
+            house = course
+            if 'bird' in jContent['data']['data']['houses'][str(house)]:
+                type = jContent['data']['data']['houses'][str(house)]['bird']['type']
+                endurence = jContent['data']['data']['houses'][str(house)]['bird']['endurance']
+                if 'feed' in jContent['data']['data']['houses'][str(house)]['bird']:
+                    feed = jContent['data']['data']['houses'][str(house)]['bird']['feed']
+                else:
+                    feed = None
+                endurance_max = jContent['data']['data']['houses'][str(house)]['bird']['endurance_max']
+                durability = jContent['data']['data']['houses'][str(house)]['bird']['durability']
+                load_max = jContent['data']['data']['houses'][str(house)]['bird']['load_max']
+                new = {house: {'durability': durability, 'type': type, 'endurence': endurence,
+                               'endurance_max': endurance_max, 'load_max': load_max, 'feed': feed}}
+                birddict.update(new)
+            houses.append(house)
+        return birddict, houses
+
+    def getBirdFarmInfos(self):
+        """
+        Funktion ermittelt, alle wichtigen Infos des Bonsaigarten und gibt diese aus.
+        """
+        headers = self.__getHeaders()
+        server = self.__getServer()
+        adresse = f'{server}ajax/ajax.php?do=birds_init' + '&token=' + self.__token
+
+        try:
+            response, content = self.__webclient.request(adresse, 'GET', headers=headers)
+            self.__checkIfHTTPStateIsOK(response)
+            jContent = self.__generateJSONContentAndCheckForOK(content)
+            jobdata = self.__getjobdata(jContent)[0]
+            jobslots = self.__getjobdata(jContent)[1]
+            birdsdata = self.__getbirddata(jContent)[0]
+            birdslots = self.__getbirddata(jContent)[1]
+            return jobdata, jobslots, birdsdata, birdslots, jContent
+        except:
+            raise
+
+    def collectbirds(self, job):
+        """
+        xxx
+        """
+        headers = self.__getHeaders()
+        server = self.__getServer()
+        adresse = f'{server}ajax/ajax.php?do=birds_finish_job&slot={job}&token={self.__token}'
+        try:
+            response, content = self.__webclient.request(adresse, 'GET', headers=headers)
+            self.__checkIfHTTPStateIsOK(response)
+            response_code = response['status']
+            print(f'response_code: {response_code}')
+            if response_code == 200:
+                res = True
+            return res
+        except:
+            pass
+
+    def feedbirds(self, birdslot):
+        """
+        xxx
+        """
+        headers = self.__getHeaders()
+        server = self.__getServer()
+        adresse = f'{server}ajax/ajax.php?do=birds_feed_bird&slot={birdslot}&token={self.__token}'
+        try:
+            response, content = self.__webclient.request(adresse, 'GET', headers=headers)
+            self.__checkIfHTTPStateIsOK(response)
+        except:
+            pass
+
+    def skipjobbirds(self, jobslot):
+        headers = self.__getHeaders()
+        server = self.__getServer()
+        adresse = f'{server}ajax/ajax.php?do=birds_remove_job&slot={jobslot}&token={self.__token}'
+        try:
+            response, content = self.__webclient.request(adresse, 'GET', headers=headers)
+            self.__checkIfHTTPStateIsOK(response)
+        except:
+            pass
+
+    def buynewbird(self, birdslot, birdtype):
+        headers = self.__getHeaders()
+        server = self.__getServer()
+        adresse = f'{server}ajax/ajax.php?do=birds_buy_bird&slot={birdslot}&bird={birdtype}&token={self.__token}'
+        try:
+            response, content = self.__webclient.request(adresse, 'GET', headers=headers)
+            self.__checkIfHTTPStateIsOK(response)
+        except:
+            pass
+
+    def startjobbirds(self, birdslot, jobslot):
+        """
+        xxx
+        """
+        headers = self.__getHeaders()
+        server = self.__getServer()
+        adresse = f'{server}ajax/ajax.php?do=birds_start_job&jobslot={jobslot}&house={birdslot}&token={self.__token}'
+        try:
+            response, content = self.__webclient.request(adresse, 'GET', headers=headers)
+            self.__checkIfHTTPStateIsOK(response)
+            response_code = response['status']
+            if response_code == 200:
+                res = True
+            return res
+        except:
+            pass
+
 class HTTPStateError(Exception):
     def __init__(self, value):
         self.value = value
