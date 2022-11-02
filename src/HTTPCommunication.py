@@ -409,19 +409,21 @@ class HTTPConnection(object):
             self.__Session.openSession(cookie['PHPSESSID'].value, str(loginDaten.server), serverURL)
             self.__cookie = cookie
             self.__userID = cookie['wunr'].value
-            
+
     def logInPortal(self, loginDaten):
-        """Führt einen login durch und öffnet eine Session."""
+        """
+        Führt einen login durch und öffnet eine Session.
+        """
         parameter = urlencode({'portserver': 'server' + str(loginDaten.server),
                                'portname': loginDaten.user,
                                'portpass': loginDaten.password,
                                'portsubmit': 'Einloggen'})
-
+        serverURL = SERVER_URLS[loginDaten.language]
         headers = {'Content-type': 'application/x-www-form-urlencoded',
                    'Connection': 'keep-alive'}
 
         try:
-            response, content = self.__webclient.request('https://www.wurzelimperium.de/portal/game2port_login.php', \
+            response, content = self.__webclient.request(f'https://www{serverURL}/portal/game2port_login.php', \
                                                          'POST', \
                                                          parameter, \
                                                          headers)
@@ -436,16 +438,16 @@ class HTTPConnection(object):
                    'Cookie': self.__unr}
 
         try:
-            loginadresse = f'https://s{self.__Session.getServer()}.wurzelimperium.de/logw.php?port=1&unr=' + \
+            loginadresse = f'https://s{str(loginDaten.server)}{serverURL}/logw.php?port=1&unr=' + \
                            f'{self.__unr}&portunr={self.__portunr}&hash={self.__token}&sno=1'
-
             response, content = self.__webclient.request(loginadresse, 'GET', headers=headers)
             self.__checkIfHTTPStateIsFOUND(response)
         except:
             raise
         else:
             cookie = SimpleCookie(response['set-cookie'])
-            self.__Session.openSession(cookie['PHPSESSID'].value, str(loginDaten.server), "s")
+            cookie.load(str(response["set-cookie"]).replace("secure, ", "", -1))
+            self.__Session.openSession(cookie['PHPSESSID'].value, '1', '.wurzelimperium.de/')
             self.__cookie = cookie
             self.__userID = self.__unr
 
@@ -971,7 +973,7 @@ class HTTPConnection(object):
         except:
             raise
 
-    def buyFromShop(self, productId: int, amount: int = 1):
+    def buyFromShop(self, shop: int, productId: int, amount: int = 1):
         parameter = urlencode({'s': 2,
                                'page': 1,
                                'change_page_only': 0,
@@ -979,11 +981,142 @@ class HTTPConnection(object):
                                'anzahl[0]': amount
                                })
         try:
-            header =  {'Content-Type': 'application/x-www-form-urlencoded'}
-            response, content = self.__sendRequest('stadt/shop.php?s=2', 'POST', parameter, header)
+            header = {'Content-Type': 'application/x-www-form-urlencoded'}
+            response, content = self.__sendRequest(f'stadt/shop.php?s={shop}', 'POST', parameter, header)
             self.__checkIfHTTPStateIsOK(response)
         except:
             raise
+
+    def buyFromAquaShop(self, productId: int, amount: int = 1):
+        adresse = f'ajax/ajax.php?products={productId}:{amount}&do=shopBuyProducts&type=aqua&token={self.__token}'
+
+        try:
+            response, content = self.__sendRequest(f'{adresse}')
+            self.__checkIfHTTPStateIsOK(response)
+        except:
+            return ''
+
+    # Birds
+    def __getjobdata(self, jContent):
+        jobdict = {}
+        jobcount = []
+        for course in sorted(jContent['data']['data']['jobs']):
+            jobs = str(course)
+            jobcount.append(str(jobs))
+            endurance = jContent['data']['data']['jobs'][str(jobs)]['endurance']
+            products = jContent['data']['data']['jobs'][str(jobs)]['products']
+            new = {jobs: {'endurence': endurance, 'products': products}}
+            jobdict.update(new)
+        return jobdict, jobcount
+
+    def __getbirddata(self, jContent):
+        birddict = {}
+        houses = []
+        for course in sorted(jContent['data']['data']['houses']):
+            house = course
+            if 'bird' in jContent['data']['data']['houses'][str(house)]:
+                type = jContent['data']['data']['houses'][str(house)]['bird']['type']
+                endurence = jContent['data']['data']['houses'][str(house)]['bird']['endurance']
+                if 'feed' in jContent['data']['data']['houses'][str(house)]['bird']:
+                    feed = jContent['data']['data']['houses'][str(house)]['bird']['feed']
+                else:
+                    feed = None
+                endurance_max = jContent['data']['data']['houses'][str(house)]['bird']['endurance_max']
+                durability = jContent['data']['data']['houses'][str(house)]['bird']['durability']
+                load_max = jContent['data']['data']['houses'][str(house)]['bird']['load_max']
+                new = {house: {'durability': durability, 'type': type, 'endurence': endurence,
+                               'endurance_max': endurance_max, 'load_max': load_max, 'feed': feed}}
+                birddict.update(new)
+            houses.append(house)
+        return birddict, houses
+
+    def getBirdFarmInfos(self):
+        """
+        Funktion ermittelt, alle wichtigen Infos des Bonsaigarten und gibt diese aus.
+        """
+        headers = self.__getHeaders()
+        server = self.__getServer()
+        adresse = f'{server}ajax/ajax.php?do=birds_init' + '&token=' + self.__token
+
+        try:
+            response, content = self.__webclient.request(adresse, 'GET', headers=headers)
+            self.__checkIfHTTPStateIsOK(response)
+            jContent = self.__generateJSONContentAndCheckForOK(content)
+            jobdata = self.__getjobdata(jContent)[0]
+            jobslots = self.__getjobdata(jContent)[1]
+            birdsdata = self.__getbirddata(jContent)[0]
+            birdslots = self.__getbirddata(jContent)[1]
+            return jobdata, jobslots, birdsdata, birdslots, jContent
+        except:
+            raise
+
+    def collectbirds(self, job):
+        """
+        xxx
+        """
+        headers = self.__getHeaders()
+        server = self.__getServer()
+        adresse = f'{server}ajax/ajax.php?do=birds_finish_job&slot={job}&token={self.__token}'
+        try:
+            response, content = self.__webclient.request(adresse, 'GET', headers=headers)
+            self.__checkIfHTTPStateIsOK(response)
+            response_code = response['status']
+            print(f'response_code: {response_code}')
+            if response_code == 200:
+                res = True
+            return res
+        except:
+            pass
+
+    def feedbirds(self, birdslot):
+        """
+        xxx
+        """
+        headers = self.__getHeaders()
+        server = self.__getServer()
+        adresse = f'{server}ajax/ajax.php?do=birds_feed_bird&slot={birdslot}&token={self.__token}'
+        try:
+            response, content = self.__webclient.request(adresse, 'GET', headers=headers)
+            self.__checkIfHTTPStateIsOK(response)
+        except:
+            pass
+
+    def skipjobbirds(self, jobslot):
+        headers = self.__getHeaders()
+        server = self.__getServer()
+        adresse = f'{server}ajax/ajax.php?do=birds_remove_job&slot={jobslot}&token={self.__token}'
+        try:
+            response, content = self.__webclient.request(adresse, 'GET', headers=headers)
+            self.__checkIfHTTPStateIsOK(response)
+        except:
+            pass
+
+    def buynewbird(self, birdslot, birdtype):
+        headers = self.__getHeaders()
+        server = self.__getServer()
+        adresse = f'{server}ajax/ajax.php?do=birds_buy_bird&slot={birdslot}&bird={birdtype}&token={self.__token}'
+        try:
+            response, content = self.__webclient.request(adresse, 'GET', headers=headers)
+            self.__checkIfHTTPStateIsOK(response)
+        except:
+            pass
+
+    def startjobbirds(self, birdslot, jobslot):
+        """
+        xxx
+        """
+        headers = self.__getHeaders()
+        server = self.__getServer()
+        adresse = f'{server}ajax/ajax.php?do=birds_start_job&jobslot={jobslot}&house={birdslot}&token={self.__token}'
+        try:
+            response, content = self.__webclient.request(adresse, 'GET', headers=headers)
+            self.__checkIfHTTPStateIsOK(response)
+            response_code = response['status']
+            if response_code == 200:
+                res = True
+            return res
+        except:
+            pass
 
 class HTTPStateError(Exception):
     def __init__(self, value):

@@ -42,6 +42,13 @@ wurzelBot.waterPlantsInAllGardens()
 wurzelBot.getDailyLoginBonus()
 wurzelBot.sellWimpsProducts(0, 0) # Process Wimp Customers in Gardens
 
+
+print(f'Kaufe Salat - im Lager sind: {wurzelBot.storage.getStockByProductID("2")}')
+wurzelBot.dobuyfromshop('Salat', 1) #buy plant with name and amount
+wurzelBot.dobuyfromshop(2, 1) #buy plant with id and amount
+wurzelBot.storage.updateNumberInStock()
+print(f'neuer Lagerstand: {wurzelBot.storage.getStockByProductID("2")}')
+
 #Deinitialisierung des Bots
 wurzelBot.exitBot()
 
