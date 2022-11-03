@@ -337,6 +337,33 @@ class WurzelBot(object):
 
         return planted
 
+    def growPlantsInAquaGardens(self, productName, amount=-1):
+        """
+        Pflanzt so viele Pflanzen von einer Sorte wie möglich über alle Gärten hinweg an.
+        """
+        if self.spieler.isAquaGardenAvailable():
+            planted = 0
+            product = self.productData.getProductByName(productName)
+            if product is None:
+                logMsg = f'Plant "{productName}" not found'
+                self.__logBot.error(logMsg)
+                print(logMsg)
+                return -1
+
+            if not product.isPlantable():
+                logMsg = f'"{productName}" could not be planted'
+                self.__logBot.error(logMsg)
+                print(logMsg)
+                return -1
+
+            if amount == -1 or amount > self.storage.getStockByProductID(product.getID()):
+                amount = self.storage.getStockByProductID(product.getID())
+            remainingAmount = amount
+            planted += self.wassergarten.growPlant(product.getID(), product.getSX(), product.getSY(), remainingAmount)
+            self.storage.updateNumberInStock()
+
+            return planted
+
     def printStock(self):
         isSmthPrinted = False
         for productID in self.storage.getKeys():
