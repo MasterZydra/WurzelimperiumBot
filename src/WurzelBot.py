@@ -10,7 +10,8 @@ from src.Spieler import Spieler, Login
 from src.HTTPCommunication import HTTPConnection
 from src.Messenger import Messenger
 from src.Garten import Garden, AquaGarden
-from src.Bienen import Honig
+from src.Honig import Honig
+from src.Bonsai import Bonsai
 from src.Lager import Storage
 from src.Marktplatz import Marketplace
 from src.Produktdaten import ProductData
@@ -40,6 +41,7 @@ class WurzelBot(object):
         self.garten = []
         self.wassergarten = None
         self.bienenfarm = None
+        self.bonsaifarm = None
         self.marktplatz = Marketplace(self.__HTTPConn)
         self.wimparea = Wimps(self.__HTTPConn)
         self.quest = Quest(self.__HTTPConn, self.spieler)
@@ -60,6 +62,9 @@ class WurzelBot(object):
 
             if self.spieler.isHoneyFarmAvailable() is True:
                 self.bienenfarm = Honig(self.__HTTPConn)
+
+            if self.spieler.isBonsaiFarmAvailable() is True:
+                self.bonsaifarm = Bonsai(self.__HTTPConn)
 
         except:
             raise
@@ -133,6 +138,12 @@ class WurzelBot(object):
             self.spieler.setAquaGardenAvailability(self.__HTTPConn.isAquaGardenAvailable(self.spieler.getLevelNr()))
         except:
             self.__logBot.error(i18n.t('wimpb.error_no_water_garden'))
+            return False
+
+        try:
+            self.spieler.setBonsaiFarmAvailability(self.__HTTPConn.isBonsaiFarmAvailable(self.spieler.getLevelNr()))
+        except:
+            self.__logBot.error(i18n.t('wimpb.error_no_bonsaifarm'))
             return False
 
         try:
@@ -445,6 +456,27 @@ class WurzelBot(object):
     def getDailyLoginBonus(self):
         self.bonus.getDailyLoginBonus()
 
+    def infinityQuest(self):
+        if self.spieler.getLevelNr() > 23:
+            questnr = self.__HTTPConn.initInfinityQuest()['questnr']
+            if int(questnr) <= 500:
+                for item in self.__HTTPConn.initInfinityQuest()['questData']['products']:
+                    #print(item)
+                    product = item['pid']
+                    product = self.productData.getProductByID(product)
+                    #print(f'Pid {product.getID()}')
+                    needed = item['amount']
+                    stored = self.storage.getStockByProductID(product.getID())
+                    #print(f'stored {stored}')
+                    if needed >= stored:
+                        missing = abs(needed - stored) + 10
+                        #print(f'missing {missing}')
+                        self.dobuyfromshop(product.getID(),missing)
+                    try:
+                        self.__HTTPConn.sendInfinityQuest(questnr, product.getID(), needed)
+                    except:
+                        pass
+
     # Shops
     def dobuyfromshop(self, productName, Amount):
         if type(productName) is int:
@@ -467,11 +499,16 @@ class WurzelBot(object):
 
     # Bienen
     def doSendBienen(self):
-        if not self.spieler.isHoneyFarmAvailable():
+        if self.spieler.isHoneyFarmAvailable():
+            hives = self.__HTTPConn.getHoneyFarmInfos()[2]
+            for hive in hives:
+                self.__HTTPConn.sendeBienen(hive)
+                self.bienenfarm.harvest()
+        else:
             self.__logBot.error('Konnte nicht alle Bienen ernten.')
-            return
-        
-        hives = self.__HTTPConn.getHoneyFarmInfos()[2]
-        for hive in hives:
-            self.__HTTPConn.sendeBienen(hive)
-            self.bienenfarm.harvest()
+
+    # Bonsai
+    def doCutBonsai(self):
+        trees = self.bonsaifarm.getBonsaiAvailable()
+        for tree in trees:
+            self.__HTTPConn.doCutBonsai(tree)

@@ -51,6 +51,10 @@ wurzelBot.dobuyfromshop(2, 1) #buy plant with id and amount
 wurzelBot.storage.updateNumberInStock()
 print(f'neuer Lagerstand: {wurzelBot.storage.getStockByProductID("2")}')
 
+wurzelBot.doSendBienen() #probiert die bienen für 2h zu senden - weitere ideen: zeit mitgabe, prüfen ob es gesendet wurde
+wurzelBot.doCutBonsai() #probiert die äste zu schneiden - weitere ideen: prüfen ob es gesendet wurde
+wurzelBot.infinityQuest() #probiert die infinityquest zulösen und kauft die fehlenden Produkte nach - weitere ideen: wt check
+
 #Deinitialisierung des Bots
 wurzelBot.exitBot()
 
