@@ -9,6 +9,7 @@ de:
   error_starting_wbot: "Problem beim Starten des Wurzelbots."
   error_refresh_userdata: "Userdaten konnten nicht aktualisiert werden"
   error_no_beehives: "Verfügbarkeit der Imkerei konnte nicht ermittelt werden."
+  error_no_bonsaifarm: "Verfügbarkeit der BonsaiFarm konnte nicht ermittelt werden."
   error_no_water_garden: "Verfügbarkeit des Wassergartens konnte nicht ermittelt werden."
   error_number_of_gardens: "Anzahl der Gärten konnte nicht ermittelt werden."
   exit_wbot: "Beende Wurzelbot"

@@ -613,6 +613,17 @@ class HTTPConnection(object):
         else:
             return False
 
+    def isBonsaiFarmAvailable(self, iUserLevel):
+        if not (iUserLevel < 10):
+            try:
+                response, content = self.__sendRequest(f'ajax/ajax.php?do=bonsai_init&token={self.__token}')
+                self.__checkIfHTTPStateIsOK(response)
+                return True
+            except:
+                raise
+        else:
+            return False
+
     #TODO: Was passiert wenn ein Garten hinzukommt (parallele Sitzungen im Browser und Bot)? Globale Aktualisierungsfunktion?
 
     def checkIfEMailAdressIsConfirmed(self):
@@ -985,14 +996,197 @@ class HTTPConnection(object):
             raise
         else:
             return jContent['success']
+
+    def initInfinityQuest(self):
+        headers = self.__getHeaders()
+        server = self.__getServer()
+        adresse = f'{server}ajax/ajax.php?do=infinite_quest_get&token={self.__token}'
+        try:
+            response, content = self.__webclient.request(adresse, 'GET', headers=headers)
+            self.__checkIfHTTPStateIsOK(response)
+            jContent = self.__generateJSONContentAndCheckForOK(content)
+            return jContent
+        except:
+            pass
+
+    def sendInfinityQuest(self, questnr, product, amount):
+        headers = self.__getHeaders()
+        server = self.__getServer()
+        adresse = f'{server}ajax/ajax.php?do=infinite_quest_entry&pid={product}&amount={amount}&questnr={questnr}&token={self.__token}'
+        try:
+            response, content = self.__webclient.request(adresse, 'GET', headers=headers)
+            self.__checkIfHTTPStateIsOK(response)
+            jContent = self.__generateJSONContentAndCheckForOK(content)
+            return jContent
+        except:
+            pass
     
     #TODO: Bienenquest, change flower and hive-honey to automate the beequest
-    def sendBienen(self, hive):
-        """Sendet die Bienen für 2 Stunden."""
+    def __getavailablehives(self, jContent):
+        """
+        Sucht im JSON Content nach verfügbaren Bienenstöcken und gibt diese zurück.
+        """
+        availablehives = []
+
+        for hive in jContent['data']['data']['hives']:
+            if "blocked" not in jContent['data']['data']['hives'][hive]:
+                availablehives.append(int(hive))
+
+        # Sortierung über ein leeres Array ändert Objekttyp zu None
+        if len(availablehives) > 0:
+            availablehives.sort(reverse=False)
+
+        return availablehives
+
+    def __gethivetype(self, jContent):
+        """
+        Sucht im JSON Content nach dem Typ der Bienenstöcke und gibt diese zurück.
+        """
+        hivetype = []
+
+        for hive in jContent['data']['data']['hives']:
+            if "blocked" not in jContent['data']['data']['hives'][hive]:
+                hivetype.append(int(hive))
+
+        # Sortierung über ein leeres Array ändert Objekttyp zu None
+        if len(hivetype) > 0:
+            hivetype.sort(reverse=False)
+
+        return hivetype
+
+    def __gethoneyquest(self, jContent):
+        """
+        Sucht im JSON Content nach verfügbaren Bienenquesten und gibt diese zurück.
+        """
+        honeyquest = {}
+        i = 1
+        for course in jContent['questData']['products']:
+            new = {i: {'pid': course['pid'], 'type': course['name']}}
+            honeyquest.update(new)
+            i = i + 1
+        return honeyquest
+
+    def getHoneyFarmInfos(self):
+        """
+        Funktion ermittelt, alle wichtigen Infos des Bienengarten und gibt diese aus.
+        """
+        headers = self.__getHeaders()
+        server = self.__getServer()
+        adresse = f'{server}ajax/ajax.php?do=bees_init' + '&token=' + self.__token
+
+        try:
+            response, content = self.__webclient.request(adresse, 'GET', headers=headers)
+            self.__checkIfHTTPStateIsOK(response)
+            jContent = self.__generateJSONContentAndCheckForOK(content)
+            honeyquestnr = jContent['questnr']
+            honeyquest = self.__gethoneyquest(jContent)
+            hives = self.__getavailablehives(jContent)
+            hivetype = self.__gethivetype(jContent)
+            return honeyquestnr, honeyquest, hives, hivetype
+        except:
+            raise
+
+    def doQuestBienen(self):
+        """
+        Sucht im JSON Content nach verfügbaren Bienenquesten und gibt diese zurück.
+        """
+
+    def harvestBienen(self):
+        """
+        Erntet den vollen Honigtopf.
+        """
+        headers = self.__getHeaders()
+        server = self.__getServer()
+        adresse = f'{server}ajax/ajax.php?do=bees_fill&token=' + self.__token
+
+        try:
+            response, content = self.__webclient.request(adresse, 'GET', headers=headers)
+            self.__checkIfHTTPStateIsOK(response)
+        except:
+            raise
+        else:
+            pass
+
+    def changeHivesTypeQuest(self, hive, Questanforderung):
+        """
+        Ändert den Typ vom Bienenstock auf die Questanforderung.
+        """
+        headers = self.__getHeaders()
+        server = self.__getServer()
+        adresse = f'{server}ajax/ajax.php?do=bees_changehiveproduct&id=' + str(hive) + '&pid=' + str(Questanforderung) + '&token=' + self.__token
+
+        try:
+            response, content = self.__webclient.request(adresse, 'GET', headers=headers)
+            self.__checkIfHTTPStateIsOK(response)
+        except:
+            pass
+
+    def sendeBienen(self, hive):
+        """
+        sendet die Bienen für 2 Stunden.
+        """
+        headers = self.__getHeaders()
+        server = self.__getServer()
+        adresse = f'{server}ajax/ajax.php?do=bees_startflight&id=' + str(hive) + '&tour=1&token=' + self.__token
         #TODO: Check if bee is sended, sometimes 1 hives got skipped
         try:
-            address = f'ajax/ajax.php?do=bees_startflight&id={str(hive)}&tour=1&token={self.__token}'
-            response, content = self.__sendRequest(address)
+            response, content = self.__webclient.request(adresse, 'GET', headers=headers)
+            self.__checkIfHTTPStateIsOK(response)
+        except:
+            pass
+
+    #Bonsai
+    def __getbonsaiquest(self, jContent):
+        """
+        Sucht im JSON Content nach verfügbaren bonsaiquesten und gibt diese zurück.
+        """
+        bonsaiquest = {}
+        i = 1
+        for course in jContent['questData']['products']:
+            new = {i: {'pid': course['pid'], 'type': course['name']}}
+            bonsaiquest.update(new)
+            i = i + 1
+        return bonsaiquest
+    
+    def __getavailablebonsaislots(self, jContent):
+        """
+        Sucht im JSON Content nach verfügbaren bonsai und gibt diese zurück.
+        """
+        availabletreeslots = []
+
+        for tree in jContent['data']['data']['slots']:
+            if "block" not in jContent['data']['data']['slots'][tree]:
+                availabletreeslots.append(int(tree))
+
+        # Sortierung über ein leeres Array ändert Objekttyp zu None
+        if len(availabletreeslots) > 0:
+            availabletreeslots.sort(reverse=False)
+
+        return availabletreeslots
+
+    def getBonsaiFarmInfos(self):
+        """
+        Funktion ermittelt, alle wichtigen Infos des Bonsaigarten und gibt diese aus.
+        """
+        adresse = f'ajax/ajax.php?do=bonsai_init&token={self.__token}'
+        try:
+            response, content = self.__sendRequest(f'{adresse}')
+            self.__checkIfHTTPStateIsOK(response)
+            jContent = self.__generateJSONContentAndCheckForOK(content)
+            bonsaiquestnr = jContent['questnr']
+            bonsaiquest = self.__getbonsaiquest(jContent)
+            bonsaislots = self.__getavailablebonsaislots(jContent)
+            return bonsaiquestnr, bonsaiquest, bonsaislots
+        except:
+            raise
+
+    def doCutBonsai(self, tree):
+        """
+        Schneidet den Ast vom Bonsai..
+        """
+        adresse = f'ajax/ajax.php?do=bonsai_branch_click&slot={str(tree)}&scissor=299142&cache=%5B1%5D&token={self.__token}'
+        try:
+            response, content = self.__sendRequest(f'{adresse}')
             self.__checkIfHTTPStateIsOK(response)
         except:
             pass

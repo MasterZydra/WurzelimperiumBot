@@ -9,6 +9,7 @@ ru:
   error_starting_wbot: "Произошла ошибка при запуске Wurzelbot."
   error_refresh_userdata: "Произошла ошибка при обновлении данных пользователя."
   error_no_beehives: "Не удалось определить наличие пчелиных ульев."
+  error_no_bonsaifarm: "Error Bonsai"
   error_no_water_garden: "Не удалось определить наличие водных садов."
   error_number_of_gardens: "Количество садов не может быть определено."
   exit_wbot: "Завершение Wurzelbot."
