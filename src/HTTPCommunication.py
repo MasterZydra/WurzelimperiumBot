@@ -1013,44 +1013,43 @@ class HTTPConnection(object):
         except:
             pass
     
-    #TODO: Bienenquest, change flower and hive-honey to automate the beequest
-    def __getavailablehives(self, jContent):
+    def __getAvailableHives(self, jContent):
         """Sucht im JSON Content nach verfügbaren Bienenstöcken und gibt diese zurück."""
-        availablehives = []
+        availableHives = []
 
         for hive in jContent['data']['data']['hives']:
             if "blocked" not in jContent['data']['data']['hives'][hive]:
-                availablehives.append(int(hive))
+                availableHives.append(int(hive))
 
         # Sortierung über ein leeres Array ändert Objekttyp zu None
-        if len(availablehives) > 0:
-            availablehives.sort(reverse=False)
+        if len(availableHives) > 0:
+            availableHives.sort(reverse=False)
 
-        return availablehives
+        return availableHives
 
-    def __gethivetype(self, jContent):
+    def __getHiveType(self, jContent):
         """Sucht im JSON Content nach dem Typ der Bienenstöcke und gibt diese zurück."""
-        hivetype = []
+        hiveType = []
 
         for hive in jContent['data']['data']['hives']:
             if "blocked" not in jContent['data']['data']['hives'][hive]:
-                hivetype.append(int(hive))
+                hiveType.append(int(hive))
 
         # Sortierung über ein leeres Array ändert Objekttyp zu None
-        if len(hivetype) > 0:
-            hivetype.sort(reverse=False)
+        if len(hiveType) > 0:
+            hiveType.sort(reverse=False)
 
-        return hivetype
+        return hiveType
 
-    def __gethoneyquest(self, jContent):
+    def __getHoneyQuest(self, jContent):
         """Sucht im JSON Content nach verfügbaren Bienenquesten und gibt diese zurück."""
-        honeyquest = {}
+        honeyQuest = {}
         i = 1
         for course in jContent['questData']['products']:
             new = {i: {'pid': course['pid'], 'type': course['name']}}
-            honeyquest.update(new)
+            honeyQuest.update(new)
             i = i + 1
-        return honeyquest
+        return honeyQuest
 
     def getHoneyFarmInfos(self):
         """Funktion ermittelt, alle wichtigen Infos des Bienengarten und gibt diese aus."""
@@ -1058,11 +1057,11 @@ class HTTPConnection(object):
             response, content = self.__sendRequest(f'ajax/ajax.php?do=bees_init&token={self.__token}')
             self.__checkIfHTTPStateIsOK(response)
             jContent = self.__generateJSONContentAndCheckForOK(content)
-            honeyquestnr = jContent['questnr']
-            honeyquest = self.__gethoneyquest(jContent)
-            hives = self.__getavailablehives(jContent)
-            hivetype = self.__gethivetype(jContent)
-            return honeyquestnr, honeyquest, hives, hivetype
+            honeyQuestNr = jContent['questnr']
+            honeyQuest = self.__getHoneyQuest(jContent)
+            hives = self.__getAvailableHives(jContent)
+            hivetype = self.__getHiveType(jContent)
+            return honeyQuestNr, honeyQuest, hives, hivetype
         except:
             raise
 
@@ -1099,29 +1098,29 @@ class HTTPConnection(object):
             pass
 
     #Bonsai
-    def __getbonsaiquest(self, jContent):
+    def __getBonsaiQuest(self, jContent):
         """Sucht im JSON Content nach verfügbaren bonsaiquesten und gibt diese zurück."""
-        bonsaiquest = {}
+        bonsaiQuest = {}
         i = 1
         for course in jContent['questData']['products']:
             new = {i: {'pid': course['pid'], 'type': course['name']}}
-            bonsaiquest.update(new)
+            bonsaiQuest.update(new)
             i = i + 1
-        return bonsaiquest
+        return bonsaiQuest
     
-    def __getavailablebonsaislots(self, jContent):
+    def __getAvailableBonsaiSlots(self, jContent):
         """Sucht im JSON Content nach verfügbaren bonsai und gibt diese zurück."""
-        availabletreeslots = []
+        availableTreeSlots = []
 
         for tree in jContent['data']['data']['slots']:
             if "block" not in jContent['data']['data']['slots'][tree]:
-                availabletreeslots.append(int(tree))
+                availableTreeSlots.append(int(tree))
 
         # Sortierung über ein leeres Array ändert Objekttyp zu None
-        if len(availabletreeslots) > 0:
-            availabletreeslots.sort(reverse=False)
+        if len(availableTreeSlots) > 0:
+            availableTreeSlots.sort(reverse=False)
 
-        return availabletreeslots
+        return availableTreeSlots
 
     def getBonsaiFarmInfos(self):
         """Funktion ermittelt, alle wichtigen Infos des Bonsaigarten und gibt diese aus."""
@@ -1131,8 +1130,8 @@ class HTTPConnection(object):
             self.__checkIfHTTPStateIsOK(response)
             jContent = self.__generateJSONContentAndCheckForOK(content)
             bonsaiquestnr = jContent['questnr']
-            bonsaiquest = self.__getbonsaiquest(jContent)
-            bonsaislots = self.__getavailablebonsaislots(jContent)
+            bonsaiquest = self.__getBonsaiQuest(jContent)
+            bonsaislots = self.__getAvailableBonsaiSlots(jContent)
             return bonsaiquestnr, bonsaiquest, bonsaislots
         except:
             raise
