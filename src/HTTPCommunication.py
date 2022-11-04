@@ -792,9 +792,7 @@ class HTTPConnection(object):
             raise
 
     def growAquaPlant(self, plant, field):
-        """
-        Baut eine Pflanze im Wassergarten an.
-        """
+        """Baut eine Pflanze im Wassergarten an."""
         headers = self.__getHeaders()
         server = self.__getServer()
         adresse = f'{server}ajax/ajax.php?do=watergardenCache&plant[{plant}]={field}&token={self.__token}'
