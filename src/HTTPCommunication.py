@@ -1003,11 +1003,10 @@ class HTTPConnection(object):
             pass
 
     def sendInfinityQuest(self, questnr, product, amount):
-        headers = self.__getHeaders()
-        server = self.__getServer()
-        adresse = f'{server}ajax/ajax.php?do=infinite_quest_entry&pid={product}&amount={amount}&questnr={questnr}&token={self.__token}'
         try:
-            response, content = self.__webclient.request(adresse, 'GET', headers=headers)
+            address =   f'ajax/ajax.php?do=infinite_quest_entry&pid={product}' \
+                        f'&amount={amount}&questnr={questnr}&token={self.__token}'
+            response, content = self.__sendRequest(address)
             self.__checkIfHTTPStateIsOK(response)
             jContent = self.__generateJSONContentAndCheckForOK(content)
             return jContent
@@ -1055,12 +1054,8 @@ class HTTPConnection(object):
 
     def getHoneyFarmInfos(self):
         """Funktion ermittelt, alle wichtigen Infos des Bienengarten und gibt diese aus."""
-        headers = self.__getHeaders()
-        server = self.__getServer()
-        adresse = f'{server}ajax/ajax.php?do=bees_init' + '&token=' + self.__token
-
         try:
-            response, content = self.__webclient.request(adresse, 'GET', headers=headers)
+            response, content = self.__sendRequest(f'ajax/ajax.php?do=bees_init&token={self.__token}')
             self.__checkIfHTTPStateIsOK(response)
             jContent = self.__generateJSONContentAndCheckForOK(content)
             honeyquestnr = jContent['questnr']
@@ -1077,38 +1072,28 @@ class HTTPConnection(object):
 
     def harvestBienen(self):
         """Erntet den vollen Honigtopf"""
-        headers = self.__getHeaders()
-        server = self.__getServer()
-        adresse = f'{server}ajax/ajax.php?do=bees_fill&token=' + self.__token
-
         try:
-            response, content = self.__webclient.request(adresse, 'GET', headers=headers)
+            response, content = self.__sendRequest(f'ajax/ajax.php?do=bees_fill&token={self.__token}')
             self.__checkIfHTTPStateIsOK(response)
         except:
             raise
-        else:
-            pass
 
     def changeHivesTypeQuest(self, hive, Questanforderung):
         """Ändert den Typ vom Bienenstock auf die Questanforderung."""
-        headers = self.__getHeaders()
-        server = self.__getServer()
-        adresse = f'{server}ajax/ajax.php?do=bees_changehiveproduct&id=' + str(hive) + '&pid=' + str(Questanforderung) + '&token=' + self.__token
-
         try:
-            response, content = self.__webclient.request(adresse, 'GET', headers=headers)
+            address =   f'ajax/ajax.php?do=bees_changehiveproduct&id={str(hive)}' \
+                        f'&pid={str(Questanforderung)}&token={self.__token}'
+            response, content = self.__sendRequest(address)
             self.__checkIfHTTPStateIsOK(response)
         except:
             pass
 
     def sendeBienen(self, hive):
         """Sendet die Bienen für 2 Stunden"""
-        headers = self.__getHeaders()
-        server = self.__getServer()
-        adresse = f'{server}ajax/ajax.php?do=bees_startflight&id=' + str(hive) + '&tour=1&token=' + self.__token
         #TODO: Check if bee is sended, sometimes 1 hives got skipped
         try:
-            response, content = self.__webclient.request(adresse, 'GET', headers=headers)
+            address = f'ajax/ajax.php?do=bees_startflight&id={str(hive)}&tour=1&token={self.__token}'
+            response, content = self.__sendRequest(address)
             self.__checkIfHTTPStateIsOK(response)
         except:
             pass
@@ -1154,9 +1139,10 @@ class HTTPConnection(object):
 
     def doCutBonsai(self, tree):
         """Schneidet den Ast vom Bonsai"""
-        adresse = f'ajax/ajax.php?do=bonsai_branch_click&slot={str(tree)}&scissor=299142&cache=%5B1%5D&token={self.__token}'
         try:
-            response, content = self.__sendRequest(f'{adresse}')
+            address =   f'ajax/ajax.php?do=bonsai_branch_click&slot={str(tree)}' \
+                        f'&scissor=299142&cache=%5B1%5D&token={self.__token}'
+            response, content = self.__sendRequest(address)
             self.__checkIfHTTPStateIsOK(response)
         except:
             pass
