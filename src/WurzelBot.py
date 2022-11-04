@@ -512,7 +512,7 @@ class WurzelBot(object):
         return 0
 
     # Bienen
-    def doSendBienen(self):
+    def sendBienen(self):
         if self.spieler.isHoneyFarmAvailable():
             hives = self.__HTTPConn.getHoneyFarmInfos()[2]
             for hive in hives:
