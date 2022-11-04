@@ -1062,10 +1062,6 @@ class HTTPConnection(object):
         except:
             raise
 
-    def doQuestBienen(self):
-        """Sucht im JSON Content nach verfügbaren Bienenquesten und gibt diese zurück."""
-        pass
-
     def harvestBienen(self):
         """Erntet den vollen Honigtopf"""
         try:
