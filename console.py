@@ -30,6 +30,7 @@ def main():
         inputLower = userInput.lower()
 
         if inputLower == 'exit': closeConnection()
+        elif inputLower == 'bee': bee()
         elif inputLower == 'harvest': harvest()
         elif inputLower == '?' or inputLower == 'help': help()
         elif inputLower.startswith('buy'): buy(userInput)
@@ -76,6 +77,7 @@ def closeConnection():
 def help():
     print('Available commands:')
     print('-------------------')
+    print('bee          Send bees')
     print('bonus        Get the daily login bonus')
     print('details      Show details to the products')
     print('             Opt. argument: "all"')
@@ -96,6 +98,10 @@ def help():
 def harvest():
     print('Harvest all gardens...')
     wurzelBot.harvestAllGarden()
+
+def bee():
+    print('Sending bees...')
+    wurzelBot.sendBienen()
 
 def buy(argStr : str):
     argStr = argStr.replace('buy', '', 1).strip()
@@ -189,7 +195,7 @@ def getDailyLoginBonus():
     wurzelBot.getDailyLoginBonus()
     
 def processWimp():
-    # Process Wimp Customers in Gardens
+    """Process Wimp Customers in Gardens"""
     print(i18n.t('wimpb.process_wimps'))
     wurzelBot.sellWimpsProducts(0, 0)
 
