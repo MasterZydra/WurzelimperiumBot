@@ -57,7 +57,3 @@ wurzelBot.infinityQuest() #probiert die infinityquest zulösen und kauft die feh
 
 #Deinitialisierung des Bots
 wurzelBot.exitBot()
-
-
-
-

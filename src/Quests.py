@@ -4,7 +4,6 @@
 from collections import Counter
 from src.Quests_lists import *
 
-
 class Quest:
     def __init__(self, httpConnection, spieler):
         self.__httpConn = httpConnection

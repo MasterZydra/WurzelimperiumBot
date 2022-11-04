@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-
 class Storage():
     def __init__(self, httpConnection):
         self.__httpConn = httpConnection
