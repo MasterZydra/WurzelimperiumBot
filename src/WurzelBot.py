@@ -456,8 +456,11 @@ class WurzelBot(object):
     def getDailyLoginBonus(self):
         self.bonus.getDailyLoginBonus()
 
-    def infinityQuest(self):
-        if self.spieler.getLevelNr() > 23:
+    def infinityQuest(self, MINwt):
+        if self.spieler.getBar() < MINwt:
+            print('Zuwenig WT')
+            pass
+        if self.spieler.getLevelNr() > 23 and self.spieler.getBar() > MINwt:
             questnr = self.__HTTPConn.initInfinityQuest()['questnr']
             if int(questnr) <= 500:
                 for item in self.__HTTPConn.initInfinityQuest()['questData']['products']:
@@ -520,6 +523,14 @@ class WurzelBot(object):
 
     # Bonsai
     def doCutBonsai(self):
+        sissor = None
+        for key,value in self.__HTTPConn.getBonsaiFarmInfos()[3]['data']['items'].items():
+            if value['item'] == "21":
+                sissor = key
+            else: 
+                sissor = None
+        if sissor is None:
+            pass
         trees = self.bonsaifarm.getBonsaiAvailable()
         for tree in trees:
-            self.__HTTPConn.doCutBonsai(tree)
+            self.__HTTPConn.doCutBonsai(tree, sissor)
