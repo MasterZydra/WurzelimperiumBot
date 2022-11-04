@@ -1125,15 +1125,15 @@ class HTTPConnection(object):
             bonsaiquestnr = jContent['questnr']
             bonsaiquest = self.__getBonsaiQuest(jContent)
             bonsaislots = self.__getAvailableBonsaiSlots(jContent)
-            return bonsaiquestnr, bonsaiquest, bonsaislots
+            return bonsaiquestnr, bonsaiquest, bonsaislots, jContent
         except:
             raise
 
-    def doCutBonsai(self, tree):
+    def doCutBonsai(self, tree, sissor):
         """Schneidet den Ast vom Bonsai"""
         try:
             address =   f'ajax/ajax.php?do=bonsai_branch_click&slot={str(tree)}' \
-                        f'&scissor=299142&cache=%5B1%5D&token={self.__token}'
+                        f'&scissor={str(sissor)}&cache=%5B1%5D&token={self.__token}'
             response, content = self.__sendRequest(address)
             self.__checkIfHTTPStateIsOK(response)
         except:
