@@ -983,10 +983,9 @@ class HTTPConnection(object):
             response, content = self.__sendRequest(f'save/abriss.php?tile={fieldID}', 'POST')
             self.__checkIfHTTPStateIsOK(response)
             jContent = self.__generateJSONContentAndCheckForSuccess(content)
+            return jContent['success']
         except:
             raise
-        else:
-            return jContent['success']
 
     def initInfinityQuest(self):
         headers = self.__getHeaders()
