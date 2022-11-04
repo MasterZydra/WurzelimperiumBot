@@ -10,7 +10,7 @@ server = 17
 lang = 'de' # de, en
 portalacc = False
 # Global vars
-wurzelBot = object
+wurzelBot: WurzelBot = object
 
 # enable logging? change to True else change it to False
 log = False
@@ -32,6 +32,7 @@ def main():
         if inputLower == 'exit': closeConnection()
         elif inputLower == 'harvest': harvest()
         elif inputLower == '?' or inputLower == 'help': help()
+        elif inputLower.startswith('buy'): buy(userInput)
         elif inputLower.startswith('grow'): grow(userInput)
         elif inputLower.startswith('lowest'): lowest(userInput)
         elif inputLower.startswith('stock'): getStock(userInput)
@@ -78,6 +79,7 @@ def help():
     print('bonus        Get the daily login bonus')
     print('details      Show details to the products')
     print('             Opt. argument: "all"')
+    print('buy          Buy a given plant')
     print('exit         Close connection and exit bot')
     print('grow         Grow a given plant')
     print('harvest      Harvest all gardens')
@@ -91,10 +93,21 @@ def help():
     print('weed         Remove all weed')
     print('wimp         Process Wimp Customers in Gardens')
 
-
 def harvest():
     print('Harvest all gardens...')
     wurzelBot.harvestAllGarden()
+
+def buy(argStr : str):
+    argStr = argStr.replace('buy', '', 1).strip()
+    args = argStr.split(' ')
+
+    if len(args) != 2 or (len(args) == 2 and not args[1].isnumeric()):
+        print('Cannot parse input.')
+        print('Expected format: grow [plant name] [opt. amount]')
+        return
+
+    print('Buying ' + args[1] + ' ' + args[0] + '...')
+    wurzelBot.doBuyFromShop(args[0], int(args[1]))
 
 def grow(argStr : str):
     argStr = argStr.replace('grow', '', 1).strip()
