@@ -21,6 +21,9 @@ server = 46
 lang = 'de' # Define Region of Game and Language of bot (en/de/ru etc)
 portalacc = False
 
+#Minimum WT to keep:
+MINwt = 1000000
+
 i18n.load_path.append('lang')
 i18n.set('locale', lang)
 i18n.set('fallback', 'en')
