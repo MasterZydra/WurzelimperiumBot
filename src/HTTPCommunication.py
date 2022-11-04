@@ -27,9 +27,7 @@ SERVER_URLS = {
 }
 
 class HTTPConnection(object):
-    """
-    Mit der Klasse HTTPConnection werden alle anfallenden HTTP-Verbindungen verarbeitet.
-    """
+    """Mit der Klasse HTTPConnection werden alle anfallenden HTTP-Verbindungen verarbeitet."""
 
     def __init__(self):
         self.__webclient = httplib2.Http(disable_ssl_certificate_validation=True)
@@ -381,8 +379,7 @@ class HTTPConnection(object):
         return dictResult
 
     def __getHeaders(self):
-        headers = {'Cookie': f'PHPSESSID={self.__Session.getSessionID()}; ' +
-                             f'wunr={self.__userID}',
+        headers = {'Cookie': f'PHPSESSID={self.__Session.getSessionID()};wunr={self.__userID}',
                    'Connection': 'Keep-Alive'}
         return headers
 
@@ -421,9 +418,7 @@ class HTTPConnection(object):
             self.__userID = cookie['wunr'].value
 
     def logInPortal(self, loginDaten):
-        """
-        Führt einen login durch und öffnet eine Session.
-        """
+        """Führt einen login durch und öffnet eine Session."""
         parameter = urlencode({'portserver': 'server' + str(loginDaten.server),
                                'portname': loginDaten.user,
                                'portpass': loginDaten.password,
@@ -797,9 +792,7 @@ class HTTPConnection(object):
             raise
 
     def growAquaPlant(self, plant, field):
-        """
-        Baut eine Pflanze im Wassergarten an.
-        """
+        """Baut eine Pflanze im Wassergarten an."""
         headers = self.__getHeaders()
         server = self.__getServer()
         adresse = f'{server}ajax/ajax.php?do=watergardenCache&plant[{plant}]={field}&token={self.__token}'
@@ -984,18 +977,15 @@ class HTTPConnection(object):
             raise
 
     def removeWeedOnFieldInAquaGarden(self, gardenID, fieldID):
-        """
-        Befreit ein Feld im Garten von Unkraut.
-        """
+        """Befreit ein Feld im Garten von Unkraut."""
         self._changeGarden(gardenID)
         try:
             response, content = self.__sendRequest(f'save/abriss.php?tile={fieldID}', 'POST')
             self.__checkIfHTTPStateIsOK(response)
             jContent = self.__generateJSONContentAndCheckForSuccess(content)
+            return jContent['success']
         except:
             raise
-        else:
-            return jContent['success']
 
     def initInfinityQuest(self):
         headers = self.__getHeaders()
@@ -1010,183 +1000,141 @@ class HTTPConnection(object):
             pass
 
     def sendInfinityQuest(self, questnr, product, amount):
-        headers = self.__getHeaders()
-        server = self.__getServer()
-        adresse = f'{server}ajax/ajax.php?do=infinite_quest_entry&pid={product}&amount={amount}&questnr={questnr}&token={self.__token}'
         try:
-            response, content = self.__webclient.request(adresse, 'GET', headers=headers)
+            address =   f'ajax/ajax.php?do=infinite_quest_entry&pid={product}' \
+                        f'&amount={amount}&questnr={questnr}&token={self.__token}'
+            response, content = self.__sendRequest(address)
             self.__checkIfHTTPStateIsOK(response)
             jContent = self.__generateJSONContentAndCheckForOK(content)
             return jContent
         except:
             pass
     
-    #TODO: Bienenquest, change flower and hive-honey to automate the beequest
-    def __getavailablehives(self, jContent):
-        """
-        Sucht im JSON Content nach verfügbaren Bienenstöcken und gibt diese zurück.
-        """
-        availablehives = []
+    def __getAvailableHives(self, jContent):
+        """Sucht im JSON Content nach verfügbaren Bienenstöcken und gibt diese zurück."""
+        availableHives = []
 
         for hive in jContent['data']['data']['hives']:
             if "blocked" not in jContent['data']['data']['hives'][hive]:
-                availablehives.append(int(hive))
+                availableHives.append(int(hive))
 
         # Sortierung über ein leeres Array ändert Objekttyp zu None
-        if len(availablehives) > 0:
-            availablehives.sort(reverse=False)
+        if len(availableHives) > 0:
+            availableHives.sort(reverse=False)
 
-        return availablehives
+        return availableHives
 
-    def __gethivetype(self, jContent):
-        """
-        Sucht im JSON Content nach dem Typ der Bienenstöcke und gibt diese zurück.
-        """
-        hivetype = []
+    def __getHiveType(self, jContent):
+        """Sucht im JSON Content nach dem Typ der Bienenstöcke und gibt diese zurück."""
+        hiveType = []
 
         for hive in jContent['data']['data']['hives']:
             if "blocked" not in jContent['data']['data']['hives'][hive]:
-                hivetype.append(int(hive))
+                hiveType.append(int(hive))
 
         # Sortierung über ein leeres Array ändert Objekttyp zu None
-        if len(hivetype) > 0:
-            hivetype.sort(reverse=False)
+        if len(hiveType) > 0:
+            hiveType.sort(reverse=False)
 
-        return hivetype
+        return hiveType
 
-    def __gethoneyquest(self, jContent):
-        """
-        Sucht im JSON Content nach verfügbaren Bienenquesten und gibt diese zurück.
-        """
-        honeyquest = {}
+    def __getHoneyQuest(self, jContent):
+        """Sucht im JSON Content nach verfügbaren Bienenquesten und gibt diese zurück."""
+        honeyQuest = {}
         i = 1
         for course in jContent['questData']['products']:
             new = {i: {'pid': course['pid'], 'type': course['name']}}
-            honeyquest.update(new)
+            honeyQuest.update(new)
             i = i + 1
-        return honeyquest
+        return honeyQuest
 
     def getHoneyFarmInfos(self):
-        """
-        Funktion ermittelt, alle wichtigen Infos des Bienengarten und gibt diese aus.
-        """
-        headers = self.__getHeaders()
-        server = self.__getServer()
-        adresse = f'{server}ajax/ajax.php?do=bees_init' + '&token=' + self.__token
-
+        """Funktion ermittelt, alle wichtigen Infos des Bienengarten und gibt diese aus."""
         try:
-            response, content = self.__webclient.request(adresse, 'GET', headers=headers)
+            response, content = self.__sendRequest(f'ajax/ajax.php?do=bees_init&token={self.__token}')
             self.__checkIfHTTPStateIsOK(response)
             jContent = self.__generateJSONContentAndCheckForOK(content)
-            honeyquestnr = jContent['questnr']
-            honeyquest = self.__gethoneyquest(jContent)
-            hives = self.__getavailablehives(jContent)
-            hivetype = self.__gethivetype(jContent)
-            return honeyquestnr, honeyquest, hives, hivetype
+            honeyQuestNr = jContent['questnr']
+            honeyQuest = self.__getHoneyQuest(jContent)
+            hives = self.__getAvailableHives(jContent)
+            hivetype = self.__getHiveType(jContent)
+            return honeyQuestNr, honeyQuest, hives, hivetype
         except:
             raise
 
-    def doQuestBienen(self):
-        """
-        Sucht im JSON Content nach verfügbaren Bienenquesten und gibt diese zurück.
-        """
-
     def harvestBienen(self):
-        """
-        Erntet den vollen Honigtopf.
-        """
-        headers = self.__getHeaders()
-        server = self.__getServer()
-        adresse = f'{server}ajax/ajax.php?do=bees_fill&token=' + self.__token
-
+        """Erntet den vollen Honigtopf"""
         try:
-            response, content = self.__webclient.request(adresse, 'GET', headers=headers)
+            response, content = self.__sendRequest(f'ajax/ajax.php?do=bees_fill&token={self.__token}')
             self.__checkIfHTTPStateIsOK(response)
         except:
             raise
-        else:
-            pass
 
     def changeHivesTypeQuest(self, hive, Questanforderung):
-        """
-        Ändert den Typ vom Bienenstock auf die Questanforderung.
-        """
-        headers = self.__getHeaders()
-        server = self.__getServer()
-        adresse = f'{server}ajax/ajax.php?do=bees_changehiveproduct&id=' + str(hive) + '&pid=' + str(Questanforderung) + '&token=' + self.__token
-
+        """Ändert den Typ vom Bienenstock auf die Questanforderung."""
         try:
-            response, content = self.__webclient.request(adresse, 'GET', headers=headers)
+            address =   f'ajax/ajax.php?do=bees_changehiveproduct&id={str(hive)}' \
+                        f'&pid={str(Questanforderung)}&token={self.__token}'
+            response, content = self.__sendRequest(address)
             self.__checkIfHTTPStateIsOK(response)
         except:
             pass
 
     def sendeBienen(self, hive):
-        """
-        sendet die Bienen für 2 Stunden.
-        """
-        headers = self.__getHeaders()
-        server = self.__getServer()
-        adresse = f'{server}ajax/ajax.php?do=bees_startflight&id=' + str(hive) + '&tour=1&token=' + self.__token
+        """Sendet die Bienen für 2 Stunden"""
         #TODO: Check if bee is sended, sometimes 1 hives got skipped
         try:
-            response, content = self.__webclient.request(adresse, 'GET', headers=headers)
+            address = f'ajax/ajax.php?do=bees_startflight&id={str(hive)}&tour=1&token={self.__token}'
+            response, content = self.__sendRequest(address)
             self.__checkIfHTTPStateIsOK(response)
         except:
             pass
 
     #Bonsai
-    def __getbonsaiquest(self, jContent):
-        """
-        Sucht im JSON Content nach verfügbaren bonsaiquesten und gibt diese zurück.
-        """
-        bonsaiquest = {}
+    def __getBonsaiQuest(self, jContent):
+        """Sucht im JSON Content nach verfügbaren bonsaiquesten und gibt diese zurück."""
+        bonsaiQuest = {}
         i = 1
         for course in jContent['questData']['products']:
             new = {i: {'pid': course['pid'], 'type': course['name']}}
-            bonsaiquest.update(new)
+            bonsaiQuest.update(new)
             i = i + 1
-        return bonsaiquest
+        return bonsaiQuest
     
-    def __getavailablebonsaislots(self, jContent):
-        """
-        Sucht im JSON Content nach verfügbaren bonsai und gibt diese zurück.
-        """
-        availabletreeslots = []
+    def __getAvailableBonsaiSlots(self, jContent):
+        """Sucht im JSON Content nach verfügbaren bonsai und gibt diese zurück."""
+        availableTreeSlots = []
 
         for tree in jContent['data']['data']['slots']:
             if "block" not in jContent['data']['data']['slots'][tree]:
-                availabletreeslots.append(int(tree))
+                availableTreeSlots.append(int(tree))
 
         # Sortierung über ein leeres Array ändert Objekttyp zu None
-        if len(availabletreeslots) > 0:
-            availabletreeslots.sort(reverse=False)
+        if len(availableTreeSlots) > 0:
+            availableTreeSlots.sort(reverse=False)
 
-        return availabletreeslots
+        return availableTreeSlots
 
     def getBonsaiFarmInfos(self):
-        """
-        Funktion ermittelt, alle wichtigen Infos des Bonsaigarten und gibt diese aus.
-        """
+        """Funktion ermittelt, alle wichtigen Infos des Bonsaigarten und gibt diese aus."""
         adresse = f'ajax/ajax.php?do=bonsai_init&token={self.__token}'
         try:
             response, content = self.__sendRequest(f'{adresse}')
             self.__checkIfHTTPStateIsOK(response)
             jContent = self.__generateJSONContentAndCheckForOK(content)
             bonsaiquestnr = jContent['questnr']
-            bonsaiquest = self.__getbonsaiquest(jContent)
-            bonsaislots = self.__getavailablebonsaislots(jContent)
+            bonsaiquest = self.__getBonsaiQuest(jContent)
+            bonsaislots = self.__getAvailableBonsaiSlots(jContent)
             return bonsaiquestnr, bonsaiquest, bonsaislots, jContent
         except:
             raise
 
     def doCutBonsai(self, tree, sissor):
-        """
-        Schneidet den Ast vom Bonsai..
-        """
-        adresse = f'ajax/ajax.php?do=bonsai_branch_click&slot={str(tree)}&scissor={str(sissor)}&cache=%5B1%5D&token={self.__token}'
+        """Schneidet den Ast vom Bonsai"""
         try:
-            response, content = self.__sendRequest(f'{adresse}')
+            address =   f'ajax/ajax.php?do=bonsai_branch_click&slot={str(tree)}' \
+                        f'&scissor={str(sissor)}&cache=%5B1%5D&token={self.__token}'
+            response, content = self.__sendRequest(address)
             self.__checkIfHTTPStateIsOK(response)
         except:
             pass
@@ -1209,7 +1157,7 @@ class HTTPConnection(object):
             raise
 
     def buyFromShop(self, shop: int, productId: int, amount: int = 1):
-        parameter = urlencode({'s': 2,
+        parameter = urlencode({'s': shop,
                                'page': 1,
                                'change_page_only': 0,
                                'produkt[0]': productId,

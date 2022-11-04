@@ -4,10 +4,7 @@
 import logging
 
 class Bonsai():
-    """
-    Diese Daten-Klasse enthält alle wichtigen Informationen über den Bonsaigarten.
-    """
-    # Bonsai
+    """Diese Daten-Klasse enthält alle wichtigen Informationen über den Bonsaigarten."""
     __bonsaiFarmAvailability = None
     __bonsaiavailable = None
     __bonsaiquestnr = None
@@ -34,35 +31,22 @@ class Bonsai():
         return self._httpConn.getBonsaiFarmInfos()[2]
 
     def setBonsaiAvailable(self, http):
-        """
-        Liest die Anzahl der Hives aus und speichert ihn in der Klasse.
-        """
+        """Liest die Anzahl der Hives aus und speichert ihn in der Klasse."""
         try:
-            tmpBonsaiAvailable = http.getBonsaiFarmInfos()[2]
+            self.__bonsaiavailable = http.getBonsaiFarmInfos()[2]
         except:
             raise
-        else:
-            self.__bonsaiavailable = tmpBonsaiAvailable
 
     def setBonsaiQuestNr(self, http):
-        """
-        Liest die Anzahl der Hives aus und speichert ihn in der Klasse.
-        """
+        """Liest die Anzahl der Hives aus und speichert ihn in der Klasse."""
         try:
-            tmpBonsaiQuestnr = http.getBonsaiFarmInfos()[0]
+            self.__bonsaiquestnr = http.getBonsaiFarmInfos()[0]
         except:
             raise
-        else:
-            self.__bonsaiquestnr = tmpBonsaiQuestnr
 
     def setBonsaiQuest(self, http):
-        """
-        Liest die aktuelle HoneyQuest aus und speichert ihn in der Klasse.
-        """
+        """Liest die aktuelle HoneyQuest aus und speichert ihn in der Klasse."""
         try:
-            tmpBonsaiQuest = http.getBonsaiFarmInfos()[1]
+            self.__bonsaiquest = http.getBonsaiFarmInfos()[1]
         except:
             raise
-        else:
-            self.__bonsaiquest = tmpBonsaiQuest
-

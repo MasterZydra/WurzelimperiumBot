@@ -474,14 +474,14 @@ class WurzelBot(object):
                     if needed >= stored:
                         missing = abs(needed - stored) + 10
                         #print(f'missing {missing}')
-                        self.dobuyfromshop(product.getID(),missing)
+                        self.doBuyFromShop(product.getID(),missing)
                     try:
                         self.__HTTPConn.sendInfinityQuest(questnr, product.getID(), needed)
                     except:
                         pass
 
     # Shops
-    def dobuyfromshop(self, productName, Amount):
+    def doBuyFromShop(self, productName, Amount):
         if type(productName) is int:
             productName = self.productData.getProductByID(productName).getName()
         Shop = None
