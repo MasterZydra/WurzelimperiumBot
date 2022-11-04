@@ -9,6 +9,7 @@ en:
   error_starting_wbot: "An error occured while starting Wurzelbot."
   error_refresh_userdata: "An error occured while refreshing user database."
   error_no_beehives: "Could not determinate availability of any bee hives."
+  error_no_bonsaifarm: "Could not determinate availability of bonsaifarm."
   error_no_water_garden: "Could not determinate availability of any water gardens."
   error_number_of_gardens: "Amount of gardens could not be resolved."
   exit_wbot: "Shutting down Wurzelbot."

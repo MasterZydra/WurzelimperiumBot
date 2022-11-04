@@ -192,27 +192,102 @@ class Garden():
 
 
 class AquaGarden(Garden):
-    
+
+    _lenX = 17
+    _lenY = 12
+    _nMaxFields = _lenX * _lenY
+
     def __init__(self, httpConnection):
         Garden.__init__(self, httpConnection, 101)
 
+    def getEmptyAquaFields(self):
+        """
+        Gibt alle leeren Felder des Gartens zurück.
+        """
+        try:
+            tmpEmptyAquaFields = self._httpConn.getEmptyFieldsAqua()
+        except:
+            self._logGarden.error('Konnte leere Felder von AquaGarten nicht ermitteln.')
+        else:
+            return tmpEmptyAquaFields
 
     def waterPlants(self):
-        """Alle Pflanzen im Wassergarten werden bewässert."""
+        """
+        Alle Pflanzen im Wassergarten werden bewässert.
+        """
         try:
             plants = self._httpConn.getPlantsToWaterInAquaGarden()
             nPlants = len(plants['fieldID'])
             for i in range(0, nPlants):
-                sFields = self._getAllFieldIDsFromFieldIDAndSizeAsString(plants['fieldID'][i], plants['sx'][i], plants['sy'][i])
+                sFields = self._getAllFieldIDsFromFieldIDAndSizeAsString(plants['fieldID'][i], plants['sx'][i],
+                                                                         plants['sy'][i])
                 self._httpConn.waterPlantInAquaGarden(plants['fieldID'][i], sFields)
         except:
             self._logGarden.error('Wassergarten konnte nicht bewässert werden.')
         else:
             self._logGarden.info(f'Im Wassergarten wurden {nPlants} Pflanzen gegossen.')
-        
+
     def harvest(self):
-        """Erntet alles im Wassergarten."""
+        """
+        Erntet alles im Wassergarten.
+        """
         try:
             self._httpConn.harvestAquaGarden()
         except:
             raise
+        else:
+            pass
+
+    def growPlant(self, plantID, sx, sy, amount):
+        planted = 0
+        emptyFields = self.getEmptyAquaFields()
+        try:
+            for field in range(1, self._nMaxFields + 1):
+                if planted == amount: break
+
+                fieldsToPlant = self._getAllFieldIDsFromFieldIDAndSizeAsIntList(field, sx, sy)
+
+                if (self._isPlantGrowableOnField(field, emptyFields, fieldsToPlant, sx)):
+                    self._httpConn.growAquaPlant(field, plantID)
+                    planted += 1
+
+                    # Nach dem Anbau belegte Felder aus der Liste der leeren Felder loeschen
+                    fieldsToPlantSet = set(fieldsToPlant)
+                    emptyFieldsSet = set(emptyFields)
+                    tmpSet = emptyFieldsSet - fieldsToPlantSet
+                    emptyFields = list(tmpSet)
+
+        except:
+            self._logGarden.error(f'Im Wassergarten konnte nicht gepflanzt werden.')
+            return 0
+        else:
+            msg = f'Im Wassergarten wurden {planted} Pflanzen gepflanzt.'
+            self._logGarden.info(msg)
+            print(msg)
+
+            if emptyFields:
+                msg = f'Im Wassergarten sind noch leere Felder vorhanden.'
+
+            return planted
+
+    def removeWeed(self):
+        """
+        Entfernt alles Unkraut, Steine und Maulwürfe, wenn ausreichend Geld vorhanden ist.
+        """
+        weedFieldsAqua = self.getWeedFields()
+        freeFields = []
+        for fieldID in weedFieldsAqua:
+            try:
+                result = self._httpConn.removeWeedOnFieldInAquaGarden(self._id, fieldID)
+            except:
+                self._logGarden.error(
+                    f'Feld {fieldID} im Auqagarten {self._id} konnte nicht von Unkraut befreit werden!')
+            else:
+                if result == 1:
+                    self._logGarden.info(f'Feld {fieldID} im Auqagarten {self._id} wurde von Unkraut befreit!')
+                    freeFields.append(fieldID)
+                else:
+                    self._logGarden.error(
+                        f'Feld {fieldID} im Auqagarten {self._id} konnte nicht von Unkraut befreit werden!')
+
+        self._logGarden.info(f'Im Auqagarten {self._id} wurden {len(freeFields)} Felder von Unkraut befreit.')

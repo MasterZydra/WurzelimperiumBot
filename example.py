@@ -38,9 +38,22 @@ wurzelBot.launchBot(server, user, pw, lang, portalacc)
 wurzelBot.harvestAllGarden()
 wurzelBot.growPlantsInGardens('Salat', 2) # Nur 2 Pflanzen
 wurzelBot.growPlantsInGardens('Kürbis') # So viele Pflanzen wie möglich
+wurzelBot.growPlantsInAquaGardens('Wasserfeder') # So viele Pflanzen wie möglich (außen)
+wurzelBot.growPlantsInAquaGardens('Schwertlilie') # So viele Pflanzen wie möglich (innen)
 wurzelBot.waterPlantsInAllGardens()
 wurzelBot.getDailyLoginBonus()
 wurzelBot.sellWimpsProducts(0, 0) # Process Wimp Customers in Gardens
+
+
+print(f'Kaufe Salat - im Lager sind: {wurzelBot.storage.getStockByProductID("2")}')
+wurzelBot.dobuyfromshop('Salat', 1) #buy plant with name and amount
+wurzelBot.dobuyfromshop(2, 1) #buy plant with id and amount
+wurzelBot.storage.updateNumberInStock()
+print(f'neuer Lagerstand: {wurzelBot.storage.getStockByProductID("2")}')
+
+wurzelBot.doSendBienen() #probiert die bienen für 2h zu senden - weitere ideen: zeit mitgabe, prüfen ob es gesendet wurde
+wurzelBot.doCutBonsai() #probiert die äste zu schneiden - weitere ideen: prüfen ob es gesendet wurde
+wurzelBot.infinityQuest() #probiert die infinityquest zulösen und kauft die fehlenden Produkte nach - weitere ideen: wt check
 
 #Deinitialisierung des Bots
 wurzelBot.exitBot()
