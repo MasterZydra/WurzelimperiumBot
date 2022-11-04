@@ -478,24 +478,35 @@ class WurzelBot(object):
                         pass
 
     # Shops
-    def doBuyFromShop(self, productName, Amount):
+    def doBuyFromShop(self, productName, amount: int):
         if type(productName) is int:
             productName = self.productData.getProductByID(productName).getName()
+
+        product = self.productData.getProductByName(productName)
+        if product is None:
+            logMsg = f'Plant "{productName}" not found'
+            self.__logBot.error(logMsg)
+            print(logMsg)
+            return -1
+
+        productId = product.getID()
+
         Shop = None
-        ProductID = self.productData.getProductByName(productName).getID()
         for k, ID in Shops.items():
             if productName in k:
                 Shop = ID
+                break
         if Shop in [1,2,3,4]:
             try:
-                self.__HTTPConn.buyFromShop(Shop, ProductID, Amount)
+                self.__HTTPConn.buyFromShop(Shop, productId, amount)
             except:
                 pass
         elif Shop == 0:
             try:
-                self.__HTTPConn.buyFromAquaShop(ProductID, Amount)
+                self.__HTTPConn.buyFromAquaShop(productId, amount)
             except:
                 pass
+        return 0
 
     # Bienen
     def doSendBienen(self):
