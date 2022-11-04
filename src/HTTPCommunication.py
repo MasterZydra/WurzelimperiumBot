@@ -27,9 +27,7 @@ SERVER_URLS = {
 }
 
 class HTTPConnection(object):
-    """
-    Mit der Klasse HTTPConnection werden alle anfallenden HTTP-Verbindungen verarbeitet.
-    """
+    """Mit der Klasse HTTPConnection werden alle anfallenden HTTP-Verbindungen verarbeitet."""
 
     def __init__(self):
         self.__webclient = httplib2.Http(disable_ssl_certificate_validation=True)
@@ -381,8 +379,7 @@ class HTTPConnection(object):
         return dictResult
 
     def __getHeaders(self):
-        headers = {'Cookie': f'PHPSESSID={self.__Session.getSessionID()}; ' +
-                             f'wunr={self.__userID}',
+        headers = {'Cookie': f'PHPSESSID={self.__Session.getSessionID()};wunr={self.__userID}',
                    'Connection': 'Keep-Alive'}
         return headers
 
@@ -421,9 +418,7 @@ class HTTPConnection(object):
             self.__userID = cookie['wunr'].value
 
     def logInPortal(self, loginDaten):
-        """
-        Führt einen login durch und öffnet eine Session.
-        """
+        """Führt einen login durch und öffnet eine Session."""
         parameter = urlencode({'portserver': 'server' + str(loginDaten.server),
                                'portname': loginDaten.user,
                                'portpass': loginDaten.password,
@@ -984,9 +979,7 @@ class HTTPConnection(object):
             raise
 
     def removeWeedOnFieldInAquaGarden(self, gardenID, fieldID):
-        """
-        Befreit ein Feld im Garten von Unkraut.
-        """
+        """Befreit ein Feld im Garten von Unkraut."""
         self._changeGarden(gardenID)
         try:
             response, content = self.__sendRequest(f'save/abriss.php?tile={fieldID}', 'POST')
@@ -1023,9 +1016,7 @@ class HTTPConnection(object):
     
     #TODO: Bienenquest, change flower and hive-honey to automate the beequest
     def __getavailablehives(self, jContent):
-        """
-        Sucht im JSON Content nach verfügbaren Bienenstöcken und gibt diese zurück.
-        """
+        """Sucht im JSON Content nach verfügbaren Bienenstöcken und gibt diese zurück."""
         availablehives = []
 
         for hive in jContent['data']['data']['hives']:
@@ -1039,9 +1030,7 @@ class HTTPConnection(object):
         return availablehives
 
     def __gethivetype(self, jContent):
-        """
-        Sucht im JSON Content nach dem Typ der Bienenstöcke und gibt diese zurück.
-        """
+        """Sucht im JSON Content nach dem Typ der Bienenstöcke und gibt diese zurück."""
         hivetype = []
 
         for hive in jContent['data']['data']['hives']:
@@ -1055,9 +1044,7 @@ class HTTPConnection(object):
         return hivetype
 
     def __gethoneyquest(self, jContent):
-        """
-        Sucht im JSON Content nach verfügbaren Bienenquesten und gibt diese zurück.
-        """
+        """Sucht im JSON Content nach verfügbaren Bienenquesten und gibt diese zurück."""
         honeyquest = {}
         i = 1
         for course in jContent['questData']['products']:
@@ -1067,9 +1054,7 @@ class HTTPConnection(object):
         return honeyquest
 
     def getHoneyFarmInfos(self):
-        """
-        Funktion ermittelt, alle wichtigen Infos des Bienengarten und gibt diese aus.
-        """
+        """Funktion ermittelt, alle wichtigen Infos des Bienengarten und gibt diese aus."""
         headers = self.__getHeaders()
         server = self.__getServer()
         adresse = f'{server}ajax/ajax.php?do=bees_init' + '&token=' + self.__token
@@ -1087,14 +1072,11 @@ class HTTPConnection(object):
             raise
 
     def doQuestBienen(self):
-        """
-        Sucht im JSON Content nach verfügbaren Bienenquesten und gibt diese zurück.
-        """
+        """Sucht im JSON Content nach verfügbaren Bienenquesten und gibt diese zurück."""
+        pass
 
     def harvestBienen(self):
-        """
-        Erntet den vollen Honigtopf.
-        """
+        """Erntet den vollen Honigtopf"""
         headers = self.__getHeaders()
         server = self.__getServer()
         adresse = f'{server}ajax/ajax.php?do=bees_fill&token=' + self.__token
@@ -1108,9 +1090,7 @@ class HTTPConnection(object):
             pass
 
     def changeHivesTypeQuest(self, hive, Questanforderung):
-        """
-        Ändert den Typ vom Bienenstock auf die Questanforderung.
-        """
+        """Ändert den Typ vom Bienenstock auf die Questanforderung."""
         headers = self.__getHeaders()
         server = self.__getServer()
         adresse = f'{server}ajax/ajax.php?do=bees_changehiveproduct&id=' + str(hive) + '&pid=' + str(Questanforderung) + '&token=' + self.__token
@@ -1122,9 +1102,7 @@ class HTTPConnection(object):
             pass
 
     def sendeBienen(self, hive):
-        """
-        sendet die Bienen für 2 Stunden.
-        """
+        """Sendet die Bienen für 2 Stunden"""
         headers = self.__getHeaders()
         server = self.__getServer()
         adresse = f'{server}ajax/ajax.php?do=bees_startflight&id=' + str(hive) + '&tour=1&token=' + self.__token
@@ -1137,9 +1115,7 @@ class HTTPConnection(object):
 
     #Bonsai
     def __getbonsaiquest(self, jContent):
-        """
-        Sucht im JSON Content nach verfügbaren bonsaiquesten und gibt diese zurück.
-        """
+        """Sucht im JSON Content nach verfügbaren bonsaiquesten und gibt diese zurück."""
         bonsaiquest = {}
         i = 1
         for course in jContent['questData']['products']:
@@ -1149,9 +1125,7 @@ class HTTPConnection(object):
         return bonsaiquest
     
     def __getavailablebonsaislots(self, jContent):
-        """
-        Sucht im JSON Content nach verfügbaren bonsai und gibt diese zurück.
-        """
+        """Sucht im JSON Content nach verfügbaren bonsai und gibt diese zurück."""
         availabletreeslots = []
 
         for tree in jContent['data']['data']['slots']:
@@ -1165,9 +1139,7 @@ class HTTPConnection(object):
         return availabletreeslots
 
     def getBonsaiFarmInfos(self):
-        """
-        Funktion ermittelt, alle wichtigen Infos des Bonsaigarten und gibt diese aus.
-        """
+        """Funktion ermittelt, alle wichtigen Infos des Bonsaigarten und gibt diese aus."""
         adresse = f'ajax/ajax.php?do=bonsai_init&token={self.__token}'
         try:
             response, content = self.__sendRequest(f'{adresse}')
@@ -1181,9 +1153,7 @@ class HTTPConnection(object):
             raise
 
     def doCutBonsai(self, tree):
-        """
-        Schneidet den Ast vom Bonsai..
-        """
+        """Schneidet den Ast vom Bonsai"""
         adresse = f'ajax/ajax.php?do=bonsai_branch_click&slot={str(tree)}&scissor=299142&cache=%5B1%5D&token={self.__token}'
         try:
             response, content = self.__sendRequest(f'{adresse}')
@@ -1209,7 +1179,7 @@ class HTTPConnection(object):
             raise
 
     def buyFromShop(self, shop: int, productId: int, amount: int = 1):
-        parameter = urlencode({'s': 2,
+        parameter = urlencode({'s': shop,
                                'page': 1,
                                'change_page_only': 0,
                                'produkt[0]': productId,
