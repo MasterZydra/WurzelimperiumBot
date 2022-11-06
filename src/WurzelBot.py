@@ -519,7 +519,9 @@ class WurzelBot(object):
                 self.__HTTPConn.sendeBienen(hive)
                 self.bienenfarm.harvest()
         else:
-            self.__logBot.error('Konnte nicht alle Bienen ernten.')
+            logMsg = 'Konnte nicht alle Bienen ernten.'
+            print(logMsg)
+            self.__logBot.error(logMsg)
 
     # Bonsai
     def doCutBonsai(self):
