@@ -457,6 +457,7 @@ class WurzelBot(object):
         self.bonus.getDailyLoginBonus()
 
     def infinityQuest(self, MINwt):
+        #TODO: Mehr Checks bzw Option wieviele Quests/WT man ausgeben mag - da es kein cooldown gibt! (hoher wt verlust)
         if self.spieler.getBar() < MINwt:
             print('Zuwenig WT')
             pass
@@ -513,6 +514,10 @@ class WurzelBot(object):
 
     # Bienen
     def sendBienen(self):
+        #TODO prüfen ob wirklich gesendet wurde, ansonsten Befehl wiederholen
+        """
+        Probiert alle Bienen für Zeitoption 1 (ohne Verkürzung 2h) zu senden
+        """
         if self.spieler.isHoneyFarmAvailable():
             hives = self.__HTTPConn.getHoneyFarmInfos()[2]
             for hive in hives:
@@ -525,12 +530,15 @@ class WurzelBot(object):
 
     # Bonsai
     def doCutBonsai(self):
+        #TODO Item automatisch nach kaufen, Bonsai in den Garten setzen wenn lvl 3 erreicht
+        """
+        Probiert bei allen Bäumen den ersten Ast zu schneiden
+        """
         sissor = None
         for key,value in self.__HTTPConn.getBonsaiFarmInfos()[3]['data']['items'].items():
             if value['item'] == "21":
                 sissor = key
-            else: 
-                sissor = None
+                print(sissor)
         if sissor is None:
             pass
         trees = self.bonsaifarm.getBonsaiAvailable()
