@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import logging
+from src.HTTPCommunication import HTTPConnection
 
 class Honig():
     """
@@ -13,7 +14,7 @@ class Honig():
     __honeyquestnr = None
     __honeyquest = None
 
-    def __init__(self, httpConnection):
+    def __init__(self, httpConnection: HTTPConnection):
         self._httpConn = httpConnection
         self._logHonig = logging.getLogger('bot.Honig')
         self._logHonig.setLevel(logging.DEBUG)

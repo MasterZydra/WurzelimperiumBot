@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import logging
+from src.HTTPCommunication import HTTPConnection
 
 class Bonsai():
     """Diese Daten-Klasse enthält alle wichtigen Informationen über den Bonsaigarten."""
@@ -10,7 +11,7 @@ class Bonsai():
     __bonsaiquestnr = None
     __bonsaiquest = None
 
-    def __init__(self, httpConnection):
+    def __init__(self, httpConnection: HTTPConnection):
         self._httpConn = httpConnection
         self._logBonsai = logging.getLogger('bot.Bonsai')
         self._logBonsai.setLevel(logging.DEBUG)

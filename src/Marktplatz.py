@@ -7,9 +7,11 @@ Created on 15.05.2019
 @author: MrFlamez
 '''
 
+from src.HTTPCommunication import HTTPConnection
+
 class Marketplace():
     
-    def __init__(self, httpConnection):
+    def __init__(self, httpConnection: HTTPConnection):
         self.__httpConn = httpConnection
         self.__tradeableProductIDs = None
         

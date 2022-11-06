@@ -7,6 +7,7 @@ Created on 24.10.2018
 
 from collections import namedtuple
 import re, i18n
+from src.HTTPCommunication import HTTPConnection
 
 i18n.load_path.append('lang')
 
@@ -27,7 +28,7 @@ class Messenger():
     __system = []
     __sent = []
 
-    def __init__(self, httpConnection):
+    def __init__(self, httpConnection: HTTPConnection):
         self.__httpConn = httpConnection
 
     def __getMessageIDFromNewMessageResult(self, result):

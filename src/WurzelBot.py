@@ -45,7 +45,7 @@ class WurzelBot(object):
         self.marktplatz = Marketplace(self.__HTTPConn)
         self.wimparea = Wimps(self.__HTTPConn)
         self.quest = Quest(self.__HTTPConn, self.spieler)
-        self.bonus = Bonus(self.__HTTPConn, self.spieler)
+        self.bonus = Bonus(self.__HTTPConn)
         self.note = Note(self.__HTTPConn)
 
 

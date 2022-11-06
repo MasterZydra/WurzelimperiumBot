@@ -1,10 +1,12 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from src.HTTPCommunication import HTTPConnection
+
 class Note():
     """Diese Daten-Klasse enthält alle wichtigen Informationen über die Notiz."""
 
-    def __init__(self, httpConnection):
+    def __init__(self, httpConnection: HTTPConnection):
         self._httpConn = httpConnection
 
     def getNote(self):

@@ -1,8 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from src.HTTPCommunication import HTTPConnection
+
 class Storage():
-    def __init__(self, httpConnection):
+    def __init__(self, httpConnection: HTTPConnection):
         self.__httpConn = httpConnection
         self.__products = {}
 

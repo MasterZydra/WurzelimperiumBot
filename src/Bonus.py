@@ -1,9 +1,9 @@
 import time
+from src.HTTPCommunication import HTTPConnection
 
 class Bonus:
-    def __init__(self, httpConnection, spieler):
+    def __init__(self, httpConnection: HTTPConnection):
         self.__httpConn = httpConnection
-        self.__spieler = spieler
 
     def getDailyLoginBonus(self):
         bonus_data = self.__httpConn.readUserDataFromServer(data_type="dailyloginbonus")['dailyloginbonus']

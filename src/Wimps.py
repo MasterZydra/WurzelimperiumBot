@@ -6,10 +6,11 @@ Created on 21.03.2017
 @author: Gosha_iv
 """
 
+from src.HTTPCommunication import HTTPConnection
 from src.Produktdaten import ProductData
 
 class Wimps:
-    def __init__(self, httpConnection):
+    def __init__(self, httpConnection: HTTPConnection):
         self.__httpConn = httpConnection
 
     def getWimpsData(self, garden):

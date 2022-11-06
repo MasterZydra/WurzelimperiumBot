@@ -3,6 +3,7 @@
 
 from collections import Counter, namedtuple
 import logging, i18n
+from src.HTTPCommunication import HTTPConnection
 
 i18n.load_path.append('lang')
 
@@ -11,7 +12,7 @@ class Garden():
     _LEN_Y = 12
     _MAX_FIELDS = _LEN_X * _LEN_Y
     
-    def __init__(self, httpConnection, gardenID):
+    def __init__(self, httpConnection: HTTPConnection, gardenID):
         self._httpConn = httpConnection
         self._id = gardenID
         self._logGarden = logging.getLogger('bot.Garden_' + str(gardenID))

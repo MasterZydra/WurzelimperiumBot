@@ -2,10 +2,12 @@
 # -*- coding: utf-8 -
 
 from collections import Counter
+from src.HTTPCommunication import HTTPConnection
 from src.Quests_lists import *
+from src.Spieler import Spieler
 
 class Quest:
-    def __init__(self, httpConnection, spieler):
+    def __init__(self, httpConnection: HTTPConnection, spieler: Spieler):
         self.__httpConn = httpConnection
         self.__spieler = spieler
 
