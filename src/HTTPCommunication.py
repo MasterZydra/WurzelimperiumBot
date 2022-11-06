@@ -566,25 +566,18 @@ class HTTPConnection(object):
         except:
             raise
 
-
     def isHoneyFarmAvailable(self, iUserLevel):
-        """
-        Funktion ermittelt, ob die Imkerei verfügbar ist und gibt True/False zurück.
-        Dazu muss ein Mindestlevel von 10 erreicht sein und diese dann freigeschaltet sein.
-        Die Freischaltung wird anhand eines Geschenks im Spiel geprüft.
-        """
         if not (iUserLevel < 10):
             try:
-                response, content = self.__sendRequest('ajax/gettrophies.php?category=giver')
+                response, content = self.__sendRequest(f'ajax/ajax.php?do=citymap_init&token={self.__token}')
                 self.__checkIfHTTPStateIsOK(response)
                 jContent = self.__generateJSONContentAndCheckForOK(content)
+                #print(f"Code: {jContent['data']['location']['bees']['bought']}")
+                if jContent['data']['location']['bees']['bought'] == 1:
+                    return True
+                return False
             except:
                 raise
-            else:
-                if '316' in jContent['gifts']:
-                    return jContent['gifts']['316']['name'] == 'Bienen-Fan'
-                else:
-                    return False
         else:
             return False
 
@@ -611,9 +604,16 @@ class HTTPConnection(object):
     def isBonsaiFarmAvailable(self, iUserLevel):
         if not (iUserLevel < 10):
             try:
-                response, content = self.__sendRequest(f'ajax/ajax.php?do=bonsai_init&token={self.__token}')
+                response, content = self.__sendRequest(f'ajax/ajax.php?do=citymap_init&token={self.__token}')
                 self.__checkIfHTTPStateIsOK(response)
-                return True
+                jContent = self.__generateJSONContentAndCheckForOK(content)
+                if 'bonsai' in jContent['data']['location']:
+                    if jContent['data']['location']['bonsai']['bought'] == 1:
+                       return True
+                    else:
+                        return False
+                else:
+                    return False
             except:
                 raise
         else:

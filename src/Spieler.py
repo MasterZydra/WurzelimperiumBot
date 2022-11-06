@@ -24,6 +24,7 @@ class Spieler():
     __userData = None
     __honeyFarmAvailability = None
     __aquaGardenAvailability = None
+    __bonsaiFarmAvailability = None
     __eMailAdressConfirmed = None
 
     def __init__(self):
