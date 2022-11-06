@@ -572,10 +572,7 @@ class HTTPConnection(object):
                 response, content = self.__sendRequest(f'ajax/ajax.php?do=citymap_init&token={self.__token}')
                 self.__checkIfHTTPStateIsOK(response)
                 jContent = self.__generateJSONContentAndCheckForOK(content)
-                #print(f"Code: {jContent['data']['location']['bees']['bought']}")
-                if jContent['data']['location']['bees']['bought'] == 1:
-                    return True
-                return False
+                return jContent['data']['location']['bees']['bought'] == 1
             except:
                 raise
         else:
