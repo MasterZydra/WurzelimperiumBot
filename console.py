@@ -109,7 +109,7 @@ def buy(argStr : str):
 
     if len(args) != 2 or (len(args) == 2 and not args[1].isnumeric()):
         print('Cannot parse input.')
-        print('Expected format: grow [plant name] [opt. amount]')
+        print('Expected format: buy [plant name] [amount]')
         return
 
     print('Buying ' + args[1] + ' ' + args[0] + '...')
