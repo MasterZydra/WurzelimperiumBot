@@ -551,7 +551,7 @@ class HTTPConnection(object):
 
 
     def waterPlantInAquaGarden(self, iField, sFieldsToWater):
-        """Status:"""
+        """Gießt alle Pflanzen im Wassergarten"""
         listFieldsToWater = sFieldsToWater.split(',')
         
         sFields = ''
@@ -562,7 +562,6 @@ class HTTPConnection(object):
             address = f'ajax/ajax.php?do=watergardenCache{sFields}&token={self.__token}'
             response, content = self.__sendRequest(address)
             self.__checkIfHTTPStateIsOK(response)
-            self.__generateYAMLContentAndCheckStatusForOK(content)
         except:
             raise
 
