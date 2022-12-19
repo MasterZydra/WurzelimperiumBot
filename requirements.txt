@@ -1,5 +1,5 @@
 httplib2==0.20.4
-lxml==4.9.1
+lxml==4.9.2
 pyparsing==3.0.9
 PyYAML==6.0
 python-i18n
