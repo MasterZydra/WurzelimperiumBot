@@ -6,7 +6,7 @@ name: Wurzelimperium Bot
 on:
   workflow_dispatch:
   schedule:
-    - cron: "*/20 * * * *"
+    - cron: "*/59 * * * *"
 
 jobs:
   build:
@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2.5.0
+    - uses: actions/checkout@v3.1.0
     - name: Set up Python 3.11
       uses: actions/setup-python@v4.3.0
       with:
