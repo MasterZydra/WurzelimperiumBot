@@ -258,14 +258,12 @@ class WurzelBot(object):
         return products[0] / npc_sum * 100 >= minimal_profit
 
     def checkWimpsRequiredAmount(self, minimal_balance, products, stock_list):
-        to_sell = True
         for id, amount in products.items():
             product = self.productData.getProductByID(id)
-            minimal_balance = max(self.note.getMinStock(), self.note.getMinStock(product.getName()), minimal_balance)
-            if stock_list.get(id, 0) - (amount + minimal_balance) <= 0:
-                to_sell = False
-                break
-        return to_sell
+            min_stock = max(self.note.getMinStock(), self.note.getMinStock(product.getName()), minimal_balance)
+            if stock_list.get(id, 0) < amount + min_stock:
+                return False
+        return True
 
     def getQuestProducts(self, quest_name, quest_number=0):
         return self.quest.getQuestProducts(quest_name, quest_number)
