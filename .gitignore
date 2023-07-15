@@ -22,3 +22,6 @@ dist/
 # Visual Studio Code
 .vs/
 env/Scripts
+
+# Venv
+env

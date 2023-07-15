@@ -37,6 +37,12 @@ There is also a standalone executable file for windows. [Win32-CLI-Standalone](h
 - Automatically claiming of daily login bonus.
 
 ## Installation
+**Using venv**  <small>[askUbuntu](https://askubuntu.com/questions/1465218/pip-error-on-ubuntu-externally-managed-environment-%C3%97-this-environment-is-extern)</small>  
+1. Install venv: `sudo apt install python3-venv`  
+2. Create a new virtual environment in directory named env: `python3 -m venv env`
+3. Activate virtual environment: `source env/bin/activate`  
+4. Installation of requirements: `pip install -r ./requirements.txt`
+
 **Requirements:** [Python 3](https://www.python.org/download/releases/3.0/)
 1. Installation of requirements:  
 `pip install -r ./requirements.txt`
