@@ -219,15 +219,14 @@ class AquaGarden(Garden):
         try:
             plants = self._httpConn.getPlantsToWaterInAquaGarden()
             nPlants = len(plants['fieldID'])
-            print(f'nPlants:  {nPlants}')
             for i in range(0, nPlants):
-                sFields = self._getAllFieldIDsFromFieldIDAndSizeAsString(plants['fieldID'][i], plants['sx'][i],
-                                                                         plants['sy'][i])
-                self._httpConn.waterPlantInAquaGarden(sFields)
+                sFields = self._getAllFieldIDsFromFieldIDAndSizeAsString(plants['fieldID'][i], plants['sx'][i], plants['sy'][i])
+                self._httpConn.waterPlantInAquaGarden(plants['fieldID'][i], sFields)
         except:
             self._logGarden.error('Wassergarten konnte nicht bewässert werden.')
         else:
             self._logGarden.info(f'Im Wassergarten wurden {nPlants} Pflanzen gegossen.')
+            print(f'Im Wassergarten wurden {nPlants} Pflanzen gegossen.')
 
     def harvest(self):
         """
