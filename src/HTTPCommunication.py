@@ -773,7 +773,16 @@ class HTTPConnection(object):
         try:
             address = f'ajax/ajax.php?do=watergardenHarvestAll&token={self.__token}'
             response, content = self.__sendRequest(address)
-            self.__checkIfHTTPStateIsOK(response)
+            jContent = json.loads(content)
+
+            if jContent['status'] == 'error':
+                print(jContent['message'])
+                self.__logHTTPConn.info(jContent['message'])
+            elif jContent['status'] == 'ok':
+                msg = jContent['harvestMsg'].replace('<div>', '').replace('</div>', '\n').replace('&nbsp;', ' ')
+                msg = msg.strip()
+                print(msg)
+                self.__logHTTPConn.info(msg)
         except:
             raise
 

@@ -298,13 +298,12 @@ class WurzelBot(object):
         return weedFields
 
     def harvestAllGarden(self):
-        #TODO: Wassergarten ergänzen
         try:
             for garden in self.garten:
                 garden.harvest()
                 
             if self.spieler.isAquaGardenAvailable():
-                # TODO self.waterPlantsInAquaGarden()
+                self.wassergarten.harvest()
                 pass
 
             self.storage.updateNumberInStock()
