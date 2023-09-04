@@ -49,6 +49,9 @@ class Product():
     def isVegetable(self):
         return self.__category == "v" and not self.getPriceNPC() is None
 
+    def isWaterPlant(self):
+        return self.__category == "w"
+
     def isDecoration(self):
         return self.__category == "d"
 

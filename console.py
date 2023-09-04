@@ -80,7 +80,7 @@ def help():
     print('bee          Send bees')
     print('bonus        Get the daily login bonus')
     print('details      Show details to the products')
-    print('             Opt. argument: "all"')
+    print('             Opt. argument: "all", "water"')
     print('buy          Buy a given plant')
     print('exit         Close connection and exit bot')
     print('grow         Grow a given plant')
@@ -176,15 +176,17 @@ def productDetails(argStr : str):
     argStr = argStr.replace('details', '', 1).strip()
     args = argStr.split(' ')
 
-    if len(args) > 1 or (len(args) == 1 and args[0] != 'all' and args[0] != ''):
+    if len(args) > 1 or (len(args) == 1 and args[0] not in ['all', 'water'] and args[0] != ''):
         print('Cannot parse input.')
         print('Expected format: details [all]')
         return
 
     if args[0] == '':
-        wurzelBot.printPlantDetails()
+        wurzelBot.printVegetableDetails()
     elif args[0] == 'all':
         wurzelBot.printProductDetails()
+    elif args[0] == 'water':
+        wurzelBot.printWaterPlantDetails()
 
 def removeWeed():
     print(i18n.t('wimpb.remove_weed_from_all_gardens'))

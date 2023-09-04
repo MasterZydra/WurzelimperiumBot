@@ -436,8 +436,11 @@ class WurzelBot(object):
     def printProductDetails(self):
         self.productData.printAll()
     
-    def printPlantDetails(self):
-        self.productData.printAllPlants()
+    def printVegetableDetails(self):
+        self.productData.printAllVegetables()
+    
+    def printWaterPlantDetails(self):
+        self.productData.printAllWaterPlants()
 
     def removeWeedInAllGardens(self):
         """Entfernt Unkraut/Maulwürfe/Steine aus allen Gärten."""

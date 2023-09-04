@@ -105,10 +105,18 @@ class ProductData():
         for product in sortedProducts:
             product.printAll()
 
-    def printAllPlants(self):
+    def printAllVegetables(self):
         sortedProducts = sorted(self.__products, key=lambda x:x.getName().lower())
         product: Product
         for product in sortedProducts:
             if not product.isVegetable():
+                continue
+            product.printAll()
+
+    def printAllWaterPlants(self):
+        sortedProducts = sorted(self.__products, key=lambda x:x.getName().lower())
+        product: Product
+        for product in sortedProducts:
+            if not product.isWaterPlant():
                 continue
             product.printAll()
