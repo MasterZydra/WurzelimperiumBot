@@ -311,7 +311,7 @@ class WurzelBot(object):
         except:
             self.__logBot.error(i18n.t('wimpb.harvest_not_successful'))
 
-    def growPlantsInGardens(self, productName, amount=-1):
+    def growVegetablesInGardens(self, productName, amount=-1):
         """
         Pflanzt so viele Pflanzen von einer Sorte wie möglich über alle Gärten hinweg an.
         """
@@ -432,6 +432,23 @@ class WurzelBot(object):
 
         if lowestSingleProductId == -1: return 'Your stock is empty'
         return self.productData.getProductByID(lowestSingleProductId).getName()       
+
+    def getLowestWaterPlantStockEntry(self):
+        lowestStock = -1
+        lowestProductId = -1
+        for productID in self.storage.getOrderedStockList():
+            if not self.productData.getProductByID(productID).isWaterPlant() or \
+                not self.productData.getProductByID(productID).isPlantable():
+                continue
+
+            currentStock = self.storage.getStockByProductID(productID)
+            if lowestStock == -1 or currentStock < lowestStock:
+                lowestStock = currentStock
+                lowestProductId = productID
+                continue
+
+        if lowestProductId == -1: return 'Your stock is empty'
+        return self.productData.getProductByID(lowestProductId).getName()
 
     def printProductDetails(self):
         self.productData.printAll()

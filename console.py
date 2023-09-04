@@ -87,7 +87,7 @@ def help():
     print('harvest      Harvest all gardens')
     print('help         Show all available commands')
     print('lowest       Show the plant with the lowest stock (unequal zero)')
-    print('             Opt. argument: "single"')
+    print('             Opt. argument: "single", "water"')
     print('stock        Show all plants in stock')
     print('             Opt. argument: "sort"')
     print('user         Show details to the current user')
@@ -126,24 +126,26 @@ def grow(argStr : str):
     
     if len(args) == 1:
         print('Grow ' + args[0] + '...')
-        wurzelBot.growPlantsInGardens(args[0])
+        wurzelBot.growVegetablesInGardens(args[0])
     if len(args) == 2:
         print('Grow ' + args[1] + ' ' + args[0] + '...')
-        wurzelBot.growPlantsInGardens(args[0], int(args[1]))
+        wurzelBot.growVegetablesInGardens(args[0], int(args[1]))
 
 def lowest(argStr : str):
     argStr = argStr.replace('lowest', '', 1).strip()
     args = argStr.split(' ')
     
-    if len(args) > 1 or (len(args) == 1 and args[0] != 'single' and args[0] != ''):
+    if len(args) > 1 or (len(args) == 1 and args[0] not in ['single', 'water'] and args[0] != ''):
         print('Cannot parse input.')
-        print('Expected format: lowest [single]')
+        print('Expected format: lowest [single|water]')
         return
 
     if args[0] == '':
         print(wurzelBot.getLowestVegetableStockEntry())
     elif args[0] == 'single':
         print(wurzelBot.getLowestSingleVegetableStockEntry())
+    elif args[0] == 'water':
+        print(wurzelBot.getLowestWaterPlantStockEntry())
 
 def getStock(argStr : str):
     argStr = argStr.replace('stock', '', 1).strip()
@@ -178,7 +180,7 @@ def productDetails(argStr : str):
 
     if len(args) > 1 or (len(args) == 1 and args[0] not in ['all', 'water'] and args[0] != ''):
         print('Cannot parse input.')
-        print('Expected format: details [all]')
+        print('Expected format: details [all|water]')
         return
 
     if args[0] == '':

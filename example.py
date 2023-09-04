@@ -39,8 +39,8 @@ wurzelBot.launchBot(server, user, pw, lang, portalacc)
 #TODO: Aktionen definieren
 #Beispiel: Alles ernten, in allen Gärten Kürbis anbauen und alles gießen
 wurzelBot.harvestAllGarden()
-wurzelBot.growPlantsInGardens('Salat', 2) # Nur 2 Pflanzen
-wurzelBot.growPlantsInGardens('Kürbis') # So viele Pflanzen wie möglich
+wurzelBot.growVegetablesInGardens('Salat', 2) # Nur 2 Pflanzen
+wurzelBot.growVegetablesInGardens('Kürbis') # So viele Pflanzen wie möglich
 wurzelBot.growPlantsInAquaGardens('Wasserfeder') # So viele Pflanzen wie möglich (außen)
 wurzelBot.growPlantsInAquaGardens('Schwertlilie') # So viele Pflanzen wie möglich (innen)
 wurzelBot.waterPlantsInAllGardens()
