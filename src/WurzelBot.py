@@ -325,7 +325,7 @@ class WurzelBot(object):
             print(logMsg)
             return -1
 
-        if not product.isPlant() or not product.isPlantable():
+        if not product.isVegetable() or not product.isPlantable():
             logMsg = f'"{productName}" could not be planted'
             self.__logBot.error(logMsg)
             print(logMsg)
@@ -402,7 +402,7 @@ class WurzelBot(object):
         lowestStock = -1
         lowestProductId = -1
         for productID in self.storage.getOrderedStockList():
-            if not self.productData.getProductByID(productID).isPlant() or \
+            if not self.productData.getProductByID(productID).isVegetable() or \
                 not self.productData.getProductByID(productID).isPlantable():
                 continue
 
@@ -419,7 +419,7 @@ class WurzelBot(object):
         lowestSingleStock = -1
         lowestSingleProductId = -1
         for productID in self.storage.getOrderedStockList():
-            if not self.productData.getProductByID(productID).isPlant() or \
+            if not self.productData.getProductByID(productID).isVegetable() or \
                 not self.productData.getProductByID(productID).isPlantable() or \
                 not self.productData.getProductByID(productID).getName() in self.productData.getListOfSingleFieldPlants():
                 continue

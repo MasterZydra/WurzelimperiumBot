@@ -66,7 +66,7 @@ class ProductData():
         product: Product
         for product in self.__products:
             if product.getSX() != 1 or product.getSY() != 1 \
-            or not product.isPlant() or not product.isPlantable():
+            or not product.isVegetable() or not product.isPlantable():
                 continue
         
             singleFieldPlants.append(product.getName())
@@ -109,6 +109,6 @@ class ProductData():
         sortedProducts = sorted(self.__products, key=lambda x:x.getName().lower())
         product: Product
         for product in sortedProducts:
-            if not product.isPlant():
+            if not product.isVegetable():
                 continue
             product.printAll()
