@@ -159,7 +159,7 @@ def lowest(argStr : str):
         print('Expected format: lowest [single|water]')
         return
 
-    if args[0] == '':
+    if len(args) == 0:
         print(wurzelBot.getLowestVegetableStockEntry())
     elif args[0] == 'single':
         print(wurzelBot.getLowestSingleVegetableStockEntry())
@@ -175,7 +175,7 @@ def getStock(argStr : str):
         print('Expected format: stock [sort]')
         return
 
-    if args[0] == '':
+    if len(args) == 0:
         wurzelBot.printStock()
     elif args[0] == 'sort':
         print(wurzelBot.getOrderedStockList())
@@ -202,7 +202,7 @@ def productDetails(argStr : str):
         print('Expected format: details [all|water]')
         return
 
-    if args[0] == '':
+    if len(args) == 0:
         wurzelBot.printVegetableDetails()
     elif args[0] == 'all':
         wurzelBot.printProductDetails()
