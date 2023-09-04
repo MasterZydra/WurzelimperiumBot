@@ -4,7 +4,7 @@
 
 A forked from [MrFlamez/Wurzelimperium-Bot](https://github.com/MrFlamez/Wurzelimperium-Bot)
 
-*Read this in other languages: [English](README.md), [German](README.de.md), [Russian](README.ru.md).*
+*Read this in other languages: [English](README.md), [German](README.de.md).*
 
 # Wurzelimperium-Bot
 Ein Bot für das Browserspiel Wurzelimperium von Upjers. Mit ihm wird es den kostenlosen Spielern ermöglicht die Vorzüge eines Premiumaccounts zu nutzen.
