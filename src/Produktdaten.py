@@ -86,6 +86,10 @@ class ProductData():
             if key == '999':
                 continue
                 
+            # Skip products without field sizes (e.g. honey)
+            if not 'sx' in dictProducts[key]:
+                continue
+
             name = dictProducts[key]['name'].replace('&nbsp;', ' ')
             self.__products.append(Product(id        = int(key), \
                                            cat       = dictProducts[key]['category'], \
