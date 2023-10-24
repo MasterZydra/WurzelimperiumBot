@@ -61,7 +61,7 @@ class ProductData():
             
         return productIDList
 
-    def getListOfSingleFieldPlants(self):
+    def getListOfSingleFieldVegetables(self):
         singleFieldPlants = []
         product: Product
         for product in self.__products:
