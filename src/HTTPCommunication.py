@@ -761,7 +761,9 @@ class HTTPConnection(object):
                 print(jContent['message'])
                 self.__logHTTPConn.info(jContent['message'])
             elif jContent['status'] == 'ok':
-                msg = jContent['harvestMsg'].replace('<div>', '').replace('</div>', '\n').replace('&nbsp;', ' ')
+                msg = jContent['harvestMsg'].replace('</div>', '\n').replace('&nbsp;', ' ')
+                msg = re.sub('<div.*>', '', msg)
+                msg = re.sub('x[ \n]*', 'x ', msg)
                 msg = msg.strip()
                 print(msg)
                 self.__logHTTPConn.info(msg)
