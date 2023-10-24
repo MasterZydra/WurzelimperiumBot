@@ -85,10 +85,13 @@ class ProductData():
             # 999 ist nur ein Testeintrag und wird nicht benötigt.
             if key == '999':
                 continue
-                
-            # Skip products without field sizes (e.g. honey)
-            if not 'sx' in dictProducts[key]:
-                continue
+            
+            sx = 0
+            sy = 0
+            if 'sx' in dictProducts[key]:
+                sx = dictProducts[key]['sx']
+            if 'sy' in dictProducts[key]:
+                sy = dictProducts[key]['sy']
 
             name = dictProducts[key]['name'].replace('&nbsp;', ' ')
             self.__products.append(Product(id        = int(key), \
