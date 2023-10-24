@@ -96,8 +96,8 @@ class ProductData():
             name = dictProducts[key]['name'].replace('&nbsp;', ' ')
             self.__products.append(Product(id        = int(key), \
                                            cat       = dictProducts[key]['category'], \
-                                           sx        = dictProducts[key]['sx'], \
-                                           sy        = dictProducts[key]['sy'], \
+                                           sx        = sx, \
+                                           sy        = sy, \
                                            name      = name.encode('utf-8'), \
                                            lvl       = dictProducts[key]['level'], \
                                            crop      = dictProducts[key]['crop'], \
