@@ -30,24 +30,55 @@ class Bonsai():
 
     def getBonsaiAvailable(self):
         return self._httpConn.getBonsaiFarmInfos()[2]
+    
+    def getBonsaiSlotInfo(self):
+        return self._httpConn.getBonsaiFarmInfos()[4]
 
-    def setBonsaiAvailable(self, http):
+    def setBonsaiAvailable(self, http: HTTPConnection):
         """Liest die Anzahl der Hives aus und speichert ihn in der Klasse."""
         try:
             self.__bonsaiavailable = http.getBonsaiFarmInfos()[2]
         except:
             raise
 
-    def setBonsaiQuestNr(self, http):
+    def setBonsaiQuestNr(self, http: HTTPConnection):
         """Liest die Anzahl der Hives aus und speichert ihn in der Klasse."""
         try:
             self.__bonsaiquestnr = http.getBonsaiFarmInfos()[0]
         except:
             raise
 
-    def setBonsaiQuest(self, http):
+    def setBonsaiQuest(self, http: HTTPConnection):
         """Liest die aktuelle HoneyQuest aus und speichert ihn in der Klasse."""
         try:
             self.__bonsaiquest = http.getBonsaiFarmInfos()[1]
         except:
             raise
+
+    
+
+    def doCutBonsai(self, http: HTTPConnection):
+        #TODO Item automatisch nach kaufen, Bonsai in den Garten setzen wenn lvl 3 erreicht
+        """
+        Probiert bei allen Bäumen die Äste zu schneiden
+        """
+        sissor = None
+        sissor_loads = 0
+        for key, value in http.getBonsaiFarmInfos()[3]['data']['items'].items():
+            if value['item'] == "21":
+                sissor = key
+                sissor_loads = value['loads']
+                print(f"Key: {key}; value: {value}")
+        if sissor_loads < 50:
+            self.buyScissors(http)
+        if sissor is None:
+            print("No scissors found...")
+            pass
+        
+        slotinfos = http.getBonsaiSlotInfos()
+        for key in slotinfos.keys():
+            for branch in slotinfos[key][2]:
+                http.doCutBonsaiBranch(key, branch, sissor)
+
+    def buyScissors(self, http: HTTPConnection):
+        http.buyScissors()

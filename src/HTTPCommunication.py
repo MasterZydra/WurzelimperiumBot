@@ -1121,6 +1121,19 @@ class HTTPConnection(object):
             availableTreeSlots.sort(reverse=False)
 
         return availableTreeSlots
+    
+    def getBonsaiSlotInfos(self, jContent):
+        """Sucht im JSON Content nach den Bonsais und gibt diese zurück."""
+        availableBonsais = {}
+
+        for bonsai in jContent['data']['breed']:
+            bonsaiLevel = jContent['data']['breed'][bonsai]['level']
+            bonsaiReward = jContent['data']['breed'][bonsai]['reward']
+            bonsaiSlotNr = jContent['data']['breed'][bonsai]['slot']
+            bonsaiBranches = jContent['data']['breed'][bonsai]['branches']
+            availableBonsais[bonsaiSlotNr] = [bonsaiLevel, bonsaiReward, bonsaiBranches]
+
+        return availableBonsais
 
     def getBonsaiFarmInfos(self):
         """Funktion ermittelt, alle wichtigen Infos des Bonsaigarten und gibt diese aus."""
@@ -1132,19 +1145,37 @@ class HTTPConnection(object):
             bonsaiquestnr = jContent['questnr']
             bonsaiquest = self.__getBonsaiQuest(jContent)
             bonsaislots = self.__getAvailableBonsaiSlots(jContent)
-            return bonsaiquestnr, bonsaiquest, bonsaislots, jContent
+            slotinfos = self.getBonsaiSlotInfos(jContent)
+
+            return bonsaiquestnr, bonsaiquest, bonsaislots, jContent, slotinfos
         except:
             raise
 
-    def doCutBonsai(self, tree, sissor):
+    def doCutBonsaiBranch(self, slot, branch, sissor):
         """Schneidet den Ast vom Bonsai"""
         try:
-            address =   f'ajax/ajax.php?do=bonsai_branch_click&slot={str(tree)}' \
-                        f'&scissor={str(sissor)}&cache=%5B1%5D&token={self.__token}'
+            address =   f'ajax/ajax.php?do=bonsai_branch_click&slot={str(slot)}' \
+                        f'&scissor={str(sissor)}&cache=%5B{branch}%5D&token={self.__token}'
             response, content = self.__sendRequest(address)
             self.__checkIfHTTPStateIsOK(response)
         except:
             pass
+
+    def getScissorLoads(self):
+        pass
+
+    def buyScissors(self, item):
+        # TODO
+        # 10 Stück: https://s8.wurzelimperium.de/ajax/ajax.php?do=bonsai_buy_item&item=21&pack=1&slot=0&token=a626526034b332e8cf4d2f34c3781e21
+        # 50 Stück: https://s8.wurzelimperium.de/ajax/ajax.php?do=bonsai_buy_item&item=21&pack=2&slot=0&token=a626526034b332e8cf4d2f34c3781e21
+        try:
+            address = f'ajax/ajax.php?do=bonsai_buy_item&item={item}&pack=4&slot=0&token={self.__token}'
+            response, content = self.__sendRequest(address)
+            self.__checkIfHTTPStateIsOK(response)
+            jContent = self.__generateJSONContentAndCheckForOK(content)
+            scissor_loads = jContent['data']['items']['']
+        except:
+            raise
 
     def getNote(self):
         """Get the users note"""
