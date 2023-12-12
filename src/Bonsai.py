@@ -6,25 +6,28 @@ from src.HTTPCommunication import HTTPConnection
 
 class Bonsai():
     """Diese Daten-Klasse enthält alle wichtigen Informationen über den Bonsaigarten."""
-    __jContent = None
-    __bonsaiFarmAvailability = None
-    __bonsaiavailable = None
-    __bonsaiquestnr = None
-    __bonsaiquest = None
-    __slotinfos = None
-    __sissor = None
-    __items = None
 
     def __init__(self, httpConnection: HTTPConnection):
         self._httpConn = httpConnection
         self._logBonsai = logging.getLogger('bot.Bonsai')
         self._logBonsai.setLevel(logging.DEBUG)
-        self.setBonsaiFarmInfos(self._httpConn.getBonsaiFarmInfos())
+        self.initialiseBonsaiInfo(self._httpConn.bonsaiInit())
 
-    def setBonsaiAvailability(self, bAvl):
+    def initialiseBonsaiInfo(self, jContent):
+        self.__jContentData = jContent['data'] ###TODO: only use jContent[data] --> check if is equal over all possible http requests
+        self.__bonsaiquestnr = jContent['questnr']
+        self.__bonsaiquest = self.__getBonsaiQuest(jContent) ###not in every jContent response
+        self.__bonsaiavailable = self.__getAvailableBonsaiSlots(jContent) ###not in every jContent response
+        self.__bonsaiFarmAvailability = True ###Abfrage wie die alte?
+        self.__slotinfos = self.__getBonsaiSlotInfos(jContent)
+    
+    def setBonsaiFarmData(self, jContent):
+        self.__jContentData = jContent['data']
+
+    def setBonsaiAvailability(self, bAvl): #???
         self.__bonsaiFarmAvailability = bAvl
 
-    def isBonsaiFarmAvailable(self):
+    def isBonsaiFarmAvailable(self): #???
         return self.__bonsaiFarmAvailability
 
     def __getBonsaiQuest(self, jContent):
@@ -64,15 +67,6 @@ class Bonsai():
 
         return availableBonsais
 
-    def setBonsaiFarmInfos(self, jContent):
-        self.__jContent = jContent
-        self.__bonsaiquestnr = jContent['questnr']
-        self.__bonsaiquest = self.__getBonsaiQuest(jContent)
-        self.__bonsaiavailable = self.__getAvailableBonsaiSlots(jContent)
-        self.__bonsaiFarmAvailability = True #Abfrage wie die alte?
-        self.__slotinfos = self.__getBonsaiSlotInfos(jContent)
-
-
     def cutAllBonsai(self) -> None:
         #TODO Item automatisch nach kaufen, Bonsai in den Garten setzen wenn lvl 3 erreicht
         """
@@ -80,7 +74,7 @@ class Bonsai():
         """
         sissorID = None
         sissorLoads = 0
-        for key, value in self.__jContent['data']['items'].items():
+        for key, value in self.__jContentData['items'].items():
             if value['item'] == "21":
                 sissorID = key
                 sissorLoads = value['loads']
@@ -91,10 +85,9 @@ class Bonsai():
         
         for key in self.__slotinfos.keys():
             for branch in self.__slotinfos[key][2]:
-                self.__jContent = self._httpConn.cutBonsaiBranch(key, sissorID, branch)
+                jContent = self._httpConn.cutBonsaiBranch(key, sissorID, branch)
+                self.setBonsaiFarmData(jContent)
                 self._logBonsai.info(f'Cut branch {branch} from Bonsai in slot {key}')
-
-        self.setBonsaiFarmInfos(self.__jContent)
 
     def checkBonsai(self):
         """checks if bonsai is a certain level: places bonsai in bonsaigarden and renews it"""
@@ -102,8 +95,7 @@ class Bonsai():
             level = self.__slotinfos[key][0]
             if level > 1: #zusätzlich reward != 0 prüfen?
                 self._logBonsai.info(f'Finish Bonsai in slot {key} with level {level}')
-                # self.__jContent = self._httpConn.finishBonsai(key)
-                # self.__jContent = self._httpConn.buyAndPlaceBonsaiItem(5, 1, key)
+                jContent = self._httpConn.finishBonsai(key)
+                jContent = self._httpConn.buyAndPlaceBonsaiItem(5, 1, key)
+                self.setBonsaiFarmData(jContent)
             self._logBonsai.info(f'Do nothing: Bonsai in slot {key} is level {level}')
-
-        # self.setBonsaiFarmInfos(self.__jContent)
