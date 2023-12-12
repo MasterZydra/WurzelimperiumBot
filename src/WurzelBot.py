@@ -20,6 +20,7 @@ from src.Produktdaten import ProductData
 from src.Quests import Quest
 from src.Shop_lists import *
 from src.Spieler import Spieler, Login
+from src.Stadtpark import Park
 from src.Wimps import Wimps
 import logging, i18n, datetime
 
@@ -47,6 +48,7 @@ class WurzelBot(object):
         self.quest = Quest(self.__HTTPConn, self.spieler)
         self.bonus = Bonus(self.__HTTPConn)
         self.note = Note(self.__HTTPConn)
+        self.park = Park(self.__HTTPConn)
 
 
     def __initGardens(self):
@@ -560,3 +562,8 @@ class WurzelBot(object):
         trees = self.bonsaifarm.getBonsaiAvailable()
         for tree in trees:
             self.__HTTPConn.doCutBonsai(tree, sissor)
+
+    # Stadtpark
+    def checkPark(self):
+        self.park.collectCashFromCashpoint()
+        self.park.renewAllItemsInPark()

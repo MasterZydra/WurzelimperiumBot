@@ -1146,6 +1146,49 @@ class HTTPConnection(object):
         except:
             pass
 
+
+# Stadtpark
+    def initPark(self): # status, data, init, questnr, questData, quest
+        address = f'ajax/ajax.php?do=park_init&token={self.__token}'
+        try:
+            response, content = self.__sendRequest(address)
+            self.__checkIfHTTPStateIsOK(response)
+            jContent = self.__generateJSONContentAndCheckForOK(content)
+            return jContent
+        except:
+            raise
+
+    def initCashPoint(self): # status, data, initcashpoint
+        address = f'ajax/ajax.php?do=park_initcashpoint&token={self.__token}'
+        try:
+            response, content = self.__sendRequest(address)
+            self.__checkIfHTTPStateIsOK(response)
+            jContent = self.__generateJSONContentAndCheckForOK(content)
+            return jContent ### return jContent["data"]["data"]["cashpoint"] contains money, points, parkpoints
+        except:
+            raise
+        
+    def collectCashPointFromPark(self): # status, data, clearcashpoint, updateMenu
+        address = f'ajax/ajax.php?do=park_clearcashpoint&token={self.__token}'
+        try:
+            response, content = self.__sendRequest(address)
+            self.__checkIfHTTPStateIsOK(response)
+            jContent = self.__generateJSONContentAndCheckForOK(content)
+            return jContent
+        except:
+            raise
+
+    def renewItemInPark(self, tile, parkID=1): # status, data, renewitem, updateMenu
+        address = f'ajax/ajax.php?do=park_renewitem&parkid={parkID}&tile={tile}&token={self.__token}'
+        try:
+            response, content = self.__sendRequest(address)
+            self.__checkIfHTTPStateIsOK(response)
+            jContent = self.__generateJSONContentAndCheckForOK(content)
+            return jContent
+        except:
+            raise
+
+# Notizen
     def getNote(self):
         """Get the users note"""
         try:
