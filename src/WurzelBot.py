@@ -547,10 +547,9 @@ class WurzelBot(object):
 
     # Bonsai
     def cutAndRenewBonsais(self):
-        """cut all branches and renew bonsais if lvl 2"""
+        """TODO: cut all branches and renew bonsais if lvl 2"""
         self.bonsaifarm.cutAllBonsai()
         self.bonsaifarm.checkBonsai()
-        self.bonsaifarm.cutAllBonsai()
 
 
     
