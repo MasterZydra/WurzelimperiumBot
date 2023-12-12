@@ -157,7 +157,7 @@ class HTTPConnection(object):
 
     def __getunrFromURLPORT(self, url):
         """Ermittelt aus einer übergebenen URL den security token."""
-        split = re.search(r'.*portal/port_logw.php.*unr=([a-f0-9]{6}).*port', url)
+        split = re.search(r'.*portal/port_logw.php.*unr=([a-f0-9]{7}).*port', url)
         iErr = 0
         if split:
             tmpunr = split.group(1)
@@ -174,7 +174,7 @@ class HTTPConnection(object):
 
     def __getportunrFromURLPORT(self, url):
         """Ermittelt aus einer übergebenen URL den security token."""
-        split = re.search(r'.*portal/port_logw.php.*portunr=([a-f0-9]{7})', url)
+        split = re.search(r'.*portal/port_logw.php.*portunr=([a-f0-9]{6})', url)
         iErr = 0
         if split:
             tmpportunr = split.group(1)
@@ -452,7 +452,7 @@ class HTTPConnection(object):
         else:
             cookie = SimpleCookie(response['set-cookie'])
             cookie.load(str(response["set-cookie"]).replace("secure, ", "", -1))
-            self.__Session.openSession(cookie['PHPSESSID'].value, '1', '.wurzelimperium.de/')
+            self.__Session.openSession(cookie['PHPSESSID'].value, str(loginDaten.server), serverURL)
             self.__cookie = cookie
             self.__userID = self.__unr
 
