@@ -37,8 +37,7 @@ class Park():
     def renewAllItemsInPark(self):
         renewableItems = self.__getRenewableDekoFromPark()
         for itemID in renewableItems.keys():
-            self._logPark.info(f"Erneuere tile: {itemID}")
-            # jContent = self._httpConn.renewItemInPark(itemID)
-            # self.setParkData(jContent)
+            jContent = self._httpConn.renewItemInPark(itemID)
+            self.__setParkData(jContent)
         self._logPark.info("Es wurden {} Items erneuert.".format(len(renewableItems)))
             
