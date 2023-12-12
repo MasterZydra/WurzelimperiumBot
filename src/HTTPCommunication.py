@@ -1098,8 +1098,8 @@ class HTTPConnection(object):
             pass
 
     #Bonsai
-    def getBonsaiFarmInfos(self):
-        """Funktion ermittelt, alle wichtigen Infos des Bonsaigarten und gibt diese aus."""
+    def bonsaiInit(self): #status, data, init, questnr, questData, quest
+        """Funktion aktiviert Bonsaigarten und Infos darüber zurück."""
         address = f'ajax/ajax.php?do=bonsai_init&token={self.__token}'
         try:
             response, content = self.__sendRequest(f'{address}')
@@ -1109,7 +1109,7 @@ class HTTPConnection(object):
         except:
             raise
 
-    def cutBonsaiBranch(self, slot, sissor, branch):
+    def cutBonsaiBranch(self, slot, sissor, branch): #status, data, branchclick, updateMenu
         """Schneidet den Ast vom Bonsai"""
         address =   f'ajax/ajax.php?do=bonsai_branch_click&slot={slot}' \
                     f'&scissor={sissor}&cache=%5B{branch}%5D&token={self.__token}'
@@ -1121,7 +1121,7 @@ class HTTPConnection(object):
         except:
             raise
 
-    def finishBonsai(self, slot):
+    def finishBonsai(self, slot): #
         """Setzt Bonsai in den Bonsaigarten"""
         address =   f'ajax/ajax.php?do=bonsai_finish_breed&slot={slot}&token={self.__token}'
         try:
