@@ -27,10 +27,10 @@ class Park():
         items = self._jContentData["data"]["park"][str(parkID)]["items"]
         renewableItems = {}
         for key, value in items.items():
-            print(f"i: {key}, item: {value}")
-            if not value['parent']:
-                if value["remain"] < 0:
-                    renewableItems.update({key:value})
+            if 'parent' in value: 
+                continue
+            if value["remain"] < 0:
+                renewableItems.update({key:value})
         self._logPark.info("Es können {} Items erneuert werden.".format(len(renewableItems)))            
         return renewableItems
     

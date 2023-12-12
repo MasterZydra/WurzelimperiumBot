@@ -48,7 +48,7 @@ class WurzelBot(object):
         self.quest = Quest(self.__HTTPConn, self.spieler)
         self.bonus = Bonus(self.__HTTPConn)
         self.note = Note(self.__HTTPConn)
-        self.park = Park(self.__HTTPConn)
+        self.park = None
 
 
     def __initGardens(self):
@@ -67,6 +67,8 @@ class WurzelBot(object):
 
             if self.spieler.isBonsaiFarmAvailable() is True:
                 self.bonsaifarm = Bonsai(self.__HTTPConn)
+
+            self.park = Park(self.__HTTPConn)
 
         except:
             raise
