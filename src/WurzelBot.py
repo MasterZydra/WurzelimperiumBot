@@ -546,8 +546,10 @@ class WurzelBot(object):
             self.__logBot.error(logMsg)
 
     # Bonsai
-    def doCutAndRenewBonsais(self):
+    def cutAndRenewBonsais(self):
         """TODO: cut all branches and renew bonsais if lvl 2"""
+        self.bonsaifarm.cutAllBonsai()
+        self.bonsaifarm.checkBonsai()
 
 
     

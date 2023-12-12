@@ -6,15 +6,20 @@ from src.HTTPCommunication import HTTPConnection
 
 class Bonsai():
     """Diese Daten-Klasse enthält alle wichtigen Informationen über den Bonsaigarten."""
+    __jContent = None
     __bonsaiFarmAvailability = None
     __bonsaiavailable = None
     __bonsaiquestnr = None
     __bonsaiquest = None
+    __slotinfos = None
+    __sissor = None
+    __items = None
 
     def __init__(self, httpConnection: HTTPConnection):
         self._httpConn = httpConnection
         self._logBonsai = logging.getLogger('bot.Bonsai')
         self._logBonsai.setLevel(logging.DEBUG)
+        self.setBonsaiFarmInfos(self._httpConn.getBonsaiFarmInfos())
 
     def setBonsaiAvailability(self, bAvl):
         self.__bonsaiFarmAvailability = bAvl
@@ -22,63 +27,83 @@ class Bonsai():
     def isBonsaiFarmAvailable(self):
         return self.__bonsaiFarmAvailability
 
-    def getQuestNrBonsai(self):
-        return self._httpConn.getBonsaiFarmInfos()[0]
-
-    def getQuestBonsai(self):
-        return self._httpConn.getBonsaiFarmInfos()[1]
-
-    def getBonsaiAvailable(self):
-        return self._httpConn.getBonsaiFarmInfos()[2]
+    def __getBonsaiQuest(self, jContent):
+        """Sucht im JSON Content nach verfügbaren bonsaiquesten und gibt diese zurück."""
+        bonsaiQuest = {}
+        i = 1
+        for course in jContent['questData']['products']:
+            new = {i: {'pid': course['pid'], 'type': course['name']}}
+            bonsaiQuest.update(new)
+            i = i + 1
+        return bonsaiQuest
     
-    def getBonsaiSlotInfo(self):
-        return self._httpConn.getBonsaiFarmInfos()[4]
+    def __getAvailableBonsaiSlots(self, jContent): # noch notwendig???
+        """Sucht im JSON Content nach verfügbaren bonsai und gibt diese zurück."""
+        availableTreeSlots = []
 
-    def setBonsaiAvailable(self, http: HTTPConnection):
-        """Liest die Anzahl der Hives aus und speichert ihn in der Klasse."""
-        try:
-            self.__bonsaiavailable = http.getBonsaiFarmInfos()[2]
-        except:
-            raise
+        for tree in jContent['data']['data']['slots']:
+            if "block" not in jContent['data']['data']['slots'][tree]:
+                availableTreeSlots.append(int(tree))
 
-    def setBonsaiQuestNr(self, http: HTTPConnection):
-        """Liest die Anzahl der Hives aus und speichert ihn in der Klasse."""
-        try:
-            self.__bonsaiquestnr = http.getBonsaiFarmInfos()[0]
-        except:
-            raise
+        # Sortierung über ein leeres Array ändert Objekttyp zu None
+        if len(availableTreeSlots) > 0:
+            availableTreeSlots.sort(reverse=False)
 
-    def setBonsaiQuest(self, http: HTTPConnection):
-        """Liest die aktuelle HoneyQuest aus und speichert ihn in der Klasse."""
-        try:
-            self.__bonsaiquest = http.getBonsaiFarmInfos()[1]
-        except:
-            raise
-
+        return availableTreeSlots
     
+    def __getBonsaiSlotInfos(self, jContent):
+        """Sucht im JSON Content nach den Bonsais und gibt diese zurück."""
+        availableBonsais = {}
 
-    def doCutBonsai(self, http: HTTPConnection):
+        for bonsai in jContent['data']['breed']:
+            bonsaiLevel: int = jContent['data']['breed'][bonsai]['level']
+            bonsaiReward: dict = jContent['data']['breed'][bonsai]['reward']
+            bonsaiSlotNr = jContent['data']['breed'][bonsai]['slot']
+            bonsaiBranches = jContent['data']['breed'][bonsai]['branches']
+            availableBonsais[bonsaiSlotNr] = [bonsaiLevel, bonsaiReward, bonsaiBranches]
+
+        return availableBonsais
+
+    def setBonsaiFarmInfos(self, jContent):
+        self.__jContent = jContent
+        self.__bonsaiquestnr = jContent['questnr']
+        self.__bonsaiquest = self.__getBonsaiQuest(jContent)
+        self.__bonsaiavailable = self.__getAvailableBonsaiSlots(jContent)
+        self.__bonsaiFarmAvailability = True #Abfrage wie die alte?
+        self.__slotinfos = self.__getBonsaiSlotInfos(jContent)
+
+
+    def cutAllBonsai(self) -> None:
         #TODO Item automatisch nach kaufen, Bonsai in den Garten setzen wenn lvl 3 erreicht
         """
         Probiert bei allen Bäumen die Äste zu schneiden
         """
-        sissor = None
-        sissor_loads = 0
-        for key, value in http.getBonsaiFarmInfos()[3]['data']['items'].items():
+        sissorID = None
+        sissorLoads = 0
+        for key, value in self.__jContent['data']['items'].items():
             if value['item'] == "21":
-                sissor = key
-                sissor_loads = value['loads']
-                print(f"Key: {key}; value: {value}")
-        if sissor_loads < 50:
-            self.buyScissors(http)
-        if sissor is None:
+                sissorID = key
+                sissorLoads = value['loads']
+                self._logBonsai.info(f"In storage: {sissorLoads} normal scissors with ID {sissorID}")
+        if sissorID is None or int(sissorLoads) < 50:
             print("No scissors found...")
             pass
         
-        slotinfos = http.getBonsaiSlotInfos()
-        for key in slotinfos.keys():
-            for branch in slotinfos[key][2]:
-                http.doCutBonsaiBranch(key, branch, sissor)
+        for key in self.__slotinfos.keys():
+            for branch in self.__slotinfos[key][2]:
+                self.__jContent = self._httpConn.cutBonsaiBranch(key, sissorID, branch)
+                self._logBonsai.info(f'Cut branch {branch} from Bonsai in slot {key}')
 
-    def buyScissors(self, http: HTTPConnection):
-        http.buyScissors()
+        self.setBonsaiFarmInfos(self.__jContent)
+
+    def checkBonsai(self):
+        """checks if bonsai is a certain level: places bonsai in bonsaigarden and renews it"""
+        for key in self.__slotinfos.keys():
+            level = self.__slotinfos[key][0]
+            if level > 1: #zusätzlich reward != 0 prüfen?
+                self._logBonsai.info(f'Finish Bonsai in slot {key} with level {level}')
+                # self.__jContent = self._httpConn.finishBonsai(key)
+                # self.__jContent = self._httpConn.buyAndPlaceBonsaiItem(5, 1, key)
+            self._logBonsai.info(f'Do nothing: Bonsai in slot {key} is level {level}')
+
+        # self.setBonsaiFarmInfos(self.__jContent)

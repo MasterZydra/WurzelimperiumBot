@@ -1098,85 +1098,73 @@ class HTTPConnection(object):
             pass
 
     #Bonsai
-    def __getBonsaiQuest(self, jContent):
-        """Sucht im JSON Content nach verfügbaren bonsaiquesten und gibt diese zurück."""
-        bonsaiQuest = {}
-        i = 1
-        for course in jContent['questData']['products']:
-            new = {i: {'pid': course['pid'], 'type': course['name']}}
-            bonsaiQuest.update(new)
-            i = i + 1
-        return bonsaiQuest
-    
-    def __getAvailableBonsaiSlots(self, jContent):
-        """Sucht im JSON Content nach verfügbaren bonsai und gibt diese zurück."""
-        availableTreeSlots = []
-
-        for tree in jContent['data']['data']['slots']:
-            if "block" not in jContent['data']['data']['slots'][tree]:
-                availableTreeSlots.append(int(tree))
-
-        # Sortierung über ein leeres Array ändert Objekttyp zu None
-        if len(availableTreeSlots) > 0:
-            availableTreeSlots.sort(reverse=False)
-
-        return availableTreeSlots
-    
-    def getBonsaiSlotInfos(self, jContent):
-        """Sucht im JSON Content nach den Bonsais und gibt diese zurück."""
-        availableBonsais = {}
-
-        for bonsai in jContent['data']['breed']:
-            bonsaiLevel = jContent['data']['breed'][bonsai]['level']
-            bonsaiReward = jContent['data']['breed'][bonsai]['reward']
-            bonsaiSlotNr = jContent['data']['breed'][bonsai]['slot']
-            bonsaiBranches = jContent['data']['breed'][bonsai]['branches']
-            availableBonsais[bonsaiSlotNr] = [bonsaiLevel, bonsaiReward, bonsaiBranches]
-
-        return availableBonsais
-
     def getBonsaiFarmInfos(self):
         """Funktion ermittelt, alle wichtigen Infos des Bonsaigarten und gibt diese aus."""
-        adresse = f'ajax/ajax.php?do=bonsai_init&token={self.__token}'
+        address = f'ajax/ajax.php?do=bonsai_init&token={self.__token}'
         try:
-            response, content = self.__sendRequest(f'{adresse}')
+            response, content = self.__sendRequest(f'{address}')
             self.__checkIfHTTPStateIsOK(response)
             jContent = self.__generateJSONContentAndCheckForOK(content)
-            bonsaiquestnr = jContent['questnr']
-            bonsaiquest = self.__getBonsaiQuest(jContent)
-            bonsaislots = self.__getAvailableBonsaiSlots(jContent)
-            slotinfos = self.getBonsaiSlotInfos(jContent)
-
-            return bonsaiquestnr, bonsaiquest, bonsaislots, jContent, slotinfos
+            return jContent
         except:
             raise
 
-    def doCutBonsaiBranch(self, slot, branch, sissor):
+    def cutBonsaiBranch(self, slot, sissor, branch):
         """Schneidet den Ast vom Bonsai"""
+        address =   f'ajax/ajax.php?do=bonsai_branch_click&slot={slot}' \
+                    f'&scissor={sissor}&cache=%5B{branch}%5D&token={self.__token}'
         try:
-            address =   f'ajax/ajax.php?do=bonsai_branch_click&slot={str(slot)}' \
-                        f'&scissor={str(sissor)}&cache=%5B{branch}%5D&token={self.__token}'
-            response, content = self.__sendRequest(address)
-            self.__checkIfHTTPStateIsOK(response)
-        except:
-            pass
-
-    def getScissorLoads(self):
-        pass
-
-    def buyScissors(self, item):
-        # TODO
-        # 10 Stück: https://s8.wurzelimperium.de/ajax/ajax.php?do=bonsai_buy_item&item=21&pack=1&slot=0&token=a626526034b332e8cf4d2f34c3781e21
-        # 50 Stück: https://s8.wurzelimperium.de/ajax/ajax.php?do=bonsai_buy_item&item=21&pack=2&slot=0&token=a626526034b332e8cf4d2f34c3781e21
-        try:
-            address = f'ajax/ajax.php?do=bonsai_buy_item&item={item}&pack=4&slot=0&token={self.__token}'
             response, content = self.__sendRequest(address)
             self.__checkIfHTTPStateIsOK(response)
             jContent = self.__generateJSONContentAndCheckForOK(content)
-            scissor_loads = jContent['data']['items']['']
+            return jContent
         except:
             raise
 
+    def finishBonsai(self, slot):
+        """Setzt Bonsai in den Bonsaigarten"""
+        address =   f'ajax/ajax.php?do=bonsai_finish_breed&slot={slot}&token={self.__token}'
+        try:
+            response, content = self.__sendRequest(address)
+            self.__checkIfHTTPStateIsOK(response)
+            jContent = self.__generateJSONContentAndCheckForOK(content)
+            return jContent
+        except:
+            raise
+
+    def buyAndPlaceBonsaiItem(self, item, pack, slot):
+        """ 
+        slot: 1-10; if 0, item stays in storage
+        item: 
+            bonsais: 1-10 (Mädchenkiefer, Mangrove, Geldbaum, Fichten-Wald, Zypresse, Wacholder, Eiche, ...), 
+            pots: 11-20 (Einfache Schale, ...), 
+            scissors: 21-24 (Normale Schere, ...)
+        ???pack: 1, 5, 10 for bonsais and pots; 1, 2, 3, 4 for 10, 50, 100, 500 scissors
+        """
+        address = f'ajax/ajax.php?do=bonsai_buy_item&item={item}&pack={pack}&slot={slot}&token={self.__token}'
+        try:
+            response, content = self.__sendRequest(address)
+            self.__checkIfHTTPStateIsOK(response)
+            jContent = self.__generateJSONContentAndCheckForOK(content)
+            return jContent
+        except:
+            raise
+
+    def placeBonsaiItem(self, id, slot):
+        """ 
+        id: item id from internal storage --> has to be determined individually
+        slot: 1-10; if 0, item stays in storage
+        """
+        address = f'ajax/ajax.php?do=bonsai_set_item&id={id}&slot={slot}&token={self.__token}'
+        try:
+            response, content = self.__sendRequest(address)
+            self.__checkIfHTTPStateIsOK(response)
+            jContent = self.__generateJSONContentAndCheckForOK(content)
+            return jContent
+        except:
+            raise
+        
+    # Notes
     def getNote(self):
         """Get the users note"""
         try:
