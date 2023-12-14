@@ -23,6 +23,7 @@ class Bonsai():
     
     def setBonsaiFarmData(self, jContent):
         self.__jContentData = jContent['data']
+        self.__slotinfos = self.__getBonsaiSlotInfos(jContent)
 
     def setBonsaiAvailability(self, bAvl): #???
         self.__bonsaiFarmAvailability = bAvl
@@ -84,18 +85,22 @@ class Bonsai():
             pass
         
         for key in self.__slotinfos.keys():
+            self._logBonsai.info(f'Bonsai in slot {key}:')
             for branch in self.__slotinfos[key][2]:
                 jContent = self._httpConn.cutBonsaiBranch(key, sissorID, branch)
                 self.setBonsaiFarmData(jContent)
-                self._logBonsai.info(f'Cut branch {branch} from Bonsai in slot {key}')
+                self._logBonsai.info(f'Cut branch {branch}')
+
 
     def checkBonsai(self):
         """checks if bonsai is a certain level: places bonsai in bonsaigarden and renews it"""
         for key in self.__slotinfos.keys():
             level = self.__slotinfos[key][0]
-            if level > 1: #zusätzlich reward != 0 prüfen?
+            if level > 1:
                 self._logBonsai.info(f'Finish Bonsai in slot {key} with level {level}')
                 jContent = self._httpConn.finishBonsai(key)
+                jContent = self._httpConn.buyAndPlaceBonsaiItem(11, 1, key)
                 jContent = self._httpConn.buyAndPlaceBonsaiItem(5, 1, key)
                 self.setBonsaiFarmData(jContent)
-            self._logBonsai.info(f'Do nothing: Bonsai in slot {key} is level {level}')
+            else:
+                self._logBonsai.info(f'Do nothing: Bonsai in slot {key} is level {level}')
