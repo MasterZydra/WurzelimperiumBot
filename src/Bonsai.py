@@ -82,7 +82,8 @@ class Bonsai():
                 self._logBonsai.info(f"In storage: {sissorLoads} normal scissors with ID {sissorID}")
         if sissorID is None or int(sissorLoads) < 50:
             print("No scissors found...")
-            pass
+            jContent = self._httpConn.buyAndPlaceBonsaiItem(21, 4, 0)
+            self.setBonsaiFarmData(jContent)
         
         for key in self.__slotinfos.keys():
             self._logBonsai.info(f'Bonsai in slot {key}:')
