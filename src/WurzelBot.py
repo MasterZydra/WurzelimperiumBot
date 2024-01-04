@@ -251,11 +251,14 @@ class WurzelBot(object):
                         for id, amount in products[1].items():
                             stock_list[id] -= amount
 
-    def checkWimpsProfitable(self, products, minimal_profit):
+
+    def checkWimpsProfitable(self, products, minimal_profit_in_percent) -> bool:
+        # Check if the price the wimp wants to pay is more than the price of buying every product in the shops.
+        # If the profit in percent is greater or equal to the given value, the return value is True.
         npc_sum = 0
         for id, amount in products[1].items():
             npc_sum += self.productData.getProductByID(id).getPriceNPC() * amount
-        return products[0] / npc_sum * 100 >= minimal_profit
+        return (products[0] - npc_sum) / npc_sum * 100 >= minimal_profit_in_percent
 
     def checkWimpsRequiredAmount(self, minimal_balance, products, stock_list):
         for id, amount in products.items():
