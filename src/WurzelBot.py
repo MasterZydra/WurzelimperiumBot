@@ -255,6 +255,8 @@ class WurzelBot(object):
     def checkWimpsProfitable(self, products, minimal_profit_in_percent) -> bool:
         # Check if the price the wimp wants to pay is more than the price of buying every product in the shops.
         # If the profit in percent is greater or equal to the given value, the return value is True.
+        return True
+        # TODO How to calculate profitability? It seems that none of the wimps is profitable when using the shop prices.
         npc_sum = 0
         for id, amount in products[1].items():
             npc_sum += self.productData.getProductByID(id).getPriceNPC() * amount
