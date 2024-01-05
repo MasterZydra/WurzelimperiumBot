@@ -1098,8 +1098,8 @@ class HTTPConnection(object):
             pass
 
     #Bonsai
-    def bonsaiInit(self): #status, data, init, questnr, questData, quest
-        """Funktion aktiviert Bonsaigarten und Infos darüber zurück."""
+    def bonsaiInit(self):
+        """selects bonsaigarden returns JSON content(status, data, init, questnr, questData, quest)"""
         address = f'ajax/ajax.php?do=bonsai_init&token={self.__token}'
         try:
             response, content = self.__sendRequest(f'{address}')
@@ -1109,8 +1109,8 @@ class HTTPConnection(object):
         except:
             raise
 
-    def cutBonsaiBranch(self, slot, sissor, branch): #status, data, branchclick, updateMenu
-        """Schneidet den Ast vom Bonsai"""
+    def cutBonsaiBranch(self, slot, sissor, branch):
+        """Cuts the branch from the bonsai and returns JSON content(status, data, branchclick, updateMenu)"""
         address =   f'ajax/ajax.php?do=bonsai_branch_click&slot={slot}' \
                     f'&scissor={sissor}&cache=%5B{branch}%5D&token={self.__token}'
         try:
@@ -1121,8 +1121,8 @@ class HTTPConnection(object):
         except:
             raise
 
-    def finishBonsai(self, slot): #
-        """Setzt Bonsai in den Bonsaigarten"""
+    def finishBonsai(self, slot):
+        """finishes bonsai to the bonsaigarden and returns JSON content"""
         address =   f'ajax/ajax.php?do=bonsai_finish_breed&slot={slot}&token={self.__token}'
         try:
             response, content = self.__sendRequest(address)
@@ -1134,12 +1134,18 @@ class HTTPConnection(object):
 
     def buyAndPlaceBonsaiItem(self, item, pack, slot):
         """ 
-        slot: 1-10; if 0, item stays in storage
-        item: 
-            bonsais: 1-10 (Mädchenkiefer, Mangrove, Geldbaum, Fichten-Wald, Zypresse, Wacholder, Eiche, ...), 
-            pots: 11-20 (Einfache Schale, ...), 
-            scissors: 21-24 (Normale Schere, ...)
-        ???pack: 1, 5, 10 for bonsais and pots; 1, 2, 3, 4 for 10, 50, 100, 500 scissors
+        buys and places an item from the bonsai shop and returns JSON content
+
+        Parameters
+        -------------
+            slot: 0-10; if 0, item stays in storage
+            item: 
+                bonsais: 1-10 (Mädchenkiefer, Mangrove, Geldbaum, Fichten-Wald, Zypresse, Wacholder, Eiche, ...), 
+                pots: 11-20 (Einfache Schale, ...), 
+                scissors: 21-24 (Normale Schere, ...)
+            pack: 
+                1, 5, 10 for bonsais or pots; 
+                1, 2, 3, 4 for 10, 50, 100, 500 scissors
         """
         address = f'ajax/ajax.php?do=bonsai_buy_item&item={item}&pack={pack}&slot={slot}&token={self.__token}'
         try:
@@ -1152,8 +1158,12 @@ class HTTPConnection(object):
 
     def placeBonsaiItem(self, id, slot):
         """ 
-        id: item id from internal storage --> has to be determined individually
-        slot: 1-10; if 0, item stays in storage
+        places an item from the internal storage and returns JSON content
+
+        Parameters
+        -------------
+            id: item id from internal storage --> has to be determined individually
+            slot: 0-10; if 0, item stays in storage
         """
         address = f'ajax/ajax.php?do=bonsai_set_item&id={id}&slot={slot}&token={self.__token}'
         try:
