@@ -21,6 +21,7 @@ HTTP_STATE_FOUND = 302 # moved temporarily
 
 SERVER_URLS = {
     'de': '.wurzelimperium.de/',
+    'bg': '.molehillempire.com/',
     'en': '.molehillempire.com/',
     'us': '.molehillempire.com/',
     'ru': '.sadowajaimperija.ru/'
