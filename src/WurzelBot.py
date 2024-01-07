@@ -567,5 +567,6 @@ class WurzelBot(object):
 
     # Stadtpark
     def checkPark(self):
+        """automate Park: first collect the cashpoint, then check if any item has to be renewed"""
         self.park.collectCashFromCashpoint()
         self.park.renewAllItemsInPark()

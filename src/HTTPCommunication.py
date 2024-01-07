@@ -1148,7 +1148,8 @@ class HTTPConnection(object):
 
 
 # Stadtpark
-    def initPark(self): # status, data, init, questnr, questData, quest
+    def initPark(self):
+        """activate the park and return JSON content(status, data, init, questnr, questData, quest)"""
         address = f'ajax/ajax.php?do=park_init&token={self.__token}'
         try:
             response, content = self.__sendRequest(address)
@@ -1158,7 +1159,8 @@ class HTTPConnection(object):
         except:
             raise
 
-    def initCashPoint(self): # status, data, initcashpoint
+    def initCashPoint(self): #TODO: usecase?!
+        """open the cashpoint and return JSON content(status, data, initcashpoint)"""
         address = f'ajax/ajax.php?do=park_initcashpoint&token={self.__token}'
         try:
             response, content = self.__sendRequest(address)
@@ -1168,7 +1170,8 @@ class HTTPConnection(object):
         except:
             raise
         
-    def collectCashPointFromPark(self): # status, data, clearcashpoint, updateMenu
+    def collectCashPointFromPark(self):
+        """collect the rewards from the cashpoint and return JSON content(status, data, clearcashpoint, updateMenu)"""
         address = f'ajax/ajax.php?do=park_clearcashpoint&token={self.__token}'
         try:
             response, content = self.__sendRequest(address)
@@ -1178,7 +1181,8 @@ class HTTPConnection(object):
         except:
             raise
 
-    def renewItemInPark(self, tile, parkID=1): # status, data, renewitem, updateMenu
+    def renewItemInPark(self, tile, parkID=1):
+        """renew an item on the given tile in the park and return JSON content(status, data, renewitem, updateMenu)"""
         address = f'ajax/ajax.php?do=park_renewitem&parkid={parkID}&tile={tile}&token={self.__token}'
         try:
             response, content = self.__sendRequest(address)
