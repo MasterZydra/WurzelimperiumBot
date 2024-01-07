@@ -765,6 +765,12 @@ class HTTPConnection(object):
                 msg = re.sub('<div.*>', '', msg)
                 msg = re.sub('x[ \n]*', 'x ', msg)
                 msg = msg.strip()
+                if 'biogas' in jContent: 
+                    biogas = jContent['biogas']
+                    msg = msg + f"\n{biogas} Gartenabfälle"
+                if 'eventitems' in jContent: 
+                    eventitems = jContent['collectevent']
+                    msg = msg + f"\n{eventitems} Eventitems" #TODO check which event is active
                 print(msg)
                 self.__logHTTPConn.info(msg)
         except:
@@ -781,7 +787,9 @@ class HTTPConnection(object):
                 print(jContent['message'])
                 self.__logHTTPConn.info(jContent['message'])
             elif jContent['status'] == 'ok':
-                msg = jContent['harvestMsg'].replace('<div>', '').replace('</div>', '\n').replace('&nbsp;', ' ')
+                msg = jContent['harvestMsg'].replace('</div>', '\n').replace('&nbsp;', ' ')
+                msg = re.sub('<div.*>', '', msg)
+                msg = re.sub('x[ \n]*', 'x ', msg)
                 msg = msg.strip()
                 print(msg)
                 self.__logHTTPConn.info(msg)
@@ -790,25 +798,23 @@ class HTTPConnection(object):
 
     def growPlant(self, field, plant, gardenID, fields):
         """Baut eine Pflanze auf einem Feld an."""
+        address =   f'save/pflanz.php?pflanze[]={str(plant)}&feld[]={str(field)}' \
+                    f'&felder[]={fields}&cid={self.__token}&garden={str(gardenID)}'
         try:
-            address =   f'save/pflanz.php?pflanze[]={str(plant)}&feld[]={str(field)}' \
-                        f'&felder[]={fields}&cid={self.__token}&garden={str(gardenID)}'
             response, content = self.__sendRequest(address)
+            self.__checkIfHTTPStateIsOK(response)
         except:
-            print('except')
             raise
 
     def growAquaPlant(self, plant, field):
         """Baut eine Pflanze im Wassergarten an."""
-        headers = self.__getHeaders()
-        server = self.__getServer()
-        adresse = f'{server}ajax/ajax.php?do=watergardenCache&plant[{plant}]={field}&token={self.__token}'
+        address = f'ajax/ajax.php?do=watergardenCache&plant[{plant}]={field}&token={self.__token}'
         try:
-            response, content = self.__webclient.request(adresse, 'GET', headers = headers)
+            response, content = self.__sendRequest(address)
+            self.__checkIfHTTPStateIsOK(response)
+            self.__generateJSONContentAndCheckForOK(content)
         except:
-            pass
-        else:
-            pass
+            raise
 
     def getAllProductInformations(self):
         """Sammelt alle Produktinformationen und gibt diese zur Weiterverarbeitung zurück."""

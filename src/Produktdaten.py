@@ -102,7 +102,8 @@ class ProductData():
                                            lvl       = dictProducts[key]['level'], \
                                            crop      = dictProducts[key]['crop'], \
                                            plantable = dictProducts[key]['plantable'], \
-                                           time      = dictProducts[key]['time']))
+                                           time      = dictProducts[key]['time'], \
+                                           edge      = dictProducts[key]['edge']))
                 
         self.__setAllPricesOfNPC()
 

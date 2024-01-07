@@ -371,7 +371,7 @@ class WurzelBot(object):
             if amount == -1 or amount > self.storage.getStockByProductID(product.getID()):
                 amount = self.storage.getStockByProductID(product.getID())
             remainingAmount = amount
-            planted += self.wassergarten.growPlant(product.getID(), product.getSX(), product.getSY(), remainingAmount)
+            planted += self.wassergarten.growPlant(product.getID(), product.getSX(), product.getSY(), product.getEdge(), remainingAmount)
             self.storage.updateNumberInStock()
 
             return planted

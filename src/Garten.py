@@ -163,12 +163,10 @@ class Garden():
             return 0
         else:
             msg = f'Im Garten {self._id} wurden {planted} Pflanzen gepflanzt.'
+            if emptyFields: 
+                msg = msg + f' Im Garten {self._id} sind noch leere Felder vorhanden.'
             self._logGarden.info(msg)
             print(msg)
-
-            if emptyFields: 
-                msg = f'Im Garten {self._id} sind noch leere Felder vorhanden.'
-
             return planted
 
     def removeWeed(self):
@@ -192,14 +190,42 @@ class Garden():
         self._logGarden.info(f'Im Garten {self._id} wurden {len(freeFields)} Felder von Unkraut befreit.')
 
 
-class AquaGarden(Garden):
-
-    _lenX = 17
-    _lenY = 12
-    _nMaxFields = _lenX * _lenY
-
+class AquaGarden(Garden):   
     def __init__(self, httpConnection):
         Garden.__init__(self, httpConnection, 101)
+        self.__setInnerFields()
+        self.__setOuterFields()
+
+    def __setInnerFields(self, distance=2):
+        """defines the fieldID's of the inner watergarden planting area"""
+        self._INNER_FIELDS = []
+        for i in range(distance, self._LEN_Y-distance):
+            self._INNER_FIELDS.extend(range(i * self._LEN_X + distance + 1, (i + 1) * self._LEN_X - distance + 1))
+
+    def __setOuterFields(self):
+        """defines the fieldID's of the outer watergarden planting area"""
+        temp_fields = list(range(1, self._MAX_FIELDS+1))
+        self._OUTER_FIELDS = [x for x in temp_fields if x not in self._INNER_FIELDS]
+        
+    def _isPlantGrowableOnField(self, fieldID, emptyFields, fieldsToPlant, edge):
+        """Prüft anhand mehrerer Kriterien, ob ein Anpflanzen möglich ist."""
+        # Betrachtetes Feld darf nicht besetzt sein
+        if not (fieldID in emptyFields): return False
+
+        #Randpflanze im Wassergarten
+        if edge == 1:
+            if not [x for x in fieldsToPlant if x in self._OUTER_FIELDS] == fieldsToPlant: return False
+
+        #Wasserpflanzen im Wassergarten
+        if edge == 0:
+            if not [x for x in fieldsToPlant if x in self._INNER_FIELDS] == fieldsToPlant: return False
+    
+        fieldsToPlantSet = set(fieldsToPlant)
+        emptyFieldsSet = set(emptyFields)
+        
+        # Alle benötigten Felder der Pflanze müssen leer sein
+        if not (fieldsToPlantSet.issubset(emptyFieldsSet)): return False
+        return True
 
     def getEmptyAquaFields(self):
         """
@@ -239,16 +265,17 @@ class AquaGarden(Garden):
         else:
             pass
 
-    def growPlant(self, plantID, sx, sy, amount):
+    def growPlant(self, plantID, sx, sy, edge, amount):
+        """Grows a watergarden plant of any size and type."""
         planted = 0
         emptyFields = self.getEmptyAquaFields()
         try:
-            for field in range(1, self._nMaxFields + 1):
+            for field in range(1, self._MAX_FIELDS + 1):
                 if planted == amount: break
 
                 fieldsToPlant = self._getAllFieldIDsFromFieldIDAndSizeAsIntList(field, sx, sy)
 
-                if (self._isPlantGrowableOnField(field, emptyFields, fieldsToPlant, sx)):
+                if (self._isPlantGrowableOnField(field, emptyFields, fieldsToPlant, edge)):
                     self._httpConn.growAquaPlant(field, plantID)
                     planted += 1
 
@@ -263,12 +290,10 @@ class AquaGarden(Garden):
             return 0
         else:
             msg = f'Im Wassergarten wurden {planted} Pflanzen gepflanzt.'
+            if emptyFields:
+                msg = msg + f' Im Wassergarten sind noch {len(emptyFields)} leere Felder vorhanden.'
             self._logGarden.info(msg)
             print(msg)
-
-            if emptyFields:
-                msg = f'Im Wassergarten sind noch leere Felder vorhanden.'
-
             return planted
 
     def removeWeed(self):
