@@ -181,6 +181,7 @@ class WurzelBot(object):
 
     def waterPlantsInAllGardens(self):
         """Alle Gärten des Spielers werden komplett bewässert."""
+        garden: Garden
         for garden in self.garten:
             garden.waterPlants()
         
@@ -550,18 +551,11 @@ class WurzelBot(object):
             self.__logBot.error(logMsg)
 
     # Bonsai
-    def doCutBonsai(self):
-        #TODO Item automatisch nach kaufen, Bonsai in den Garten setzen wenn lvl 3 erreicht
-        """
-        Probiert bei allen Bäumen den ersten Ast zu schneiden
-        """
-        sissor = None
-        for key,value in self.__HTTPConn.getBonsaiFarmInfos()[3]['data']['items'].items():
-            if value['item'] == "21":
-                sissor = key
-                print(sissor)
-        if sissor is None:
-            pass
-        trees = self.bonsaifarm.getBonsaiAvailable()
-        for tree in trees:
-            self.__HTTPConn.doCutBonsai(tree, sissor)
+    def cutAndRenewBonsais(self):
+        """cut all branches and renew bonsais if lvl 2"""
+        self.bonsaifarm.cutAllBonsai()
+        self.bonsaifarm.checkBonsai()
+        self.bonsaifarm.cutAllBonsai()
+
+
+    

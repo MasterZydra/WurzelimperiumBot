@@ -1106,54 +1106,83 @@ class HTTPConnection(object):
             pass
 
     #Bonsai
-    def __getBonsaiQuest(self, jContent):
-        """Sucht im JSON Content nach verfügbaren bonsaiquesten und gibt diese zurück."""
-        bonsaiQuest = {}
-        i = 1
-        for course in jContent['questData']['products']:
-            new = {i: {'pid': course['pid'], 'type': course['name']}}
-            bonsaiQuest.update(new)
-            i = i + 1
-        return bonsaiQuest
-    
-    def __getAvailableBonsaiSlots(self, jContent):
-        """Sucht im JSON Content nach verfügbaren bonsai und gibt diese zurück."""
-        availableTreeSlots = []
-
-        for tree in jContent['data']['data']['slots']:
-            if "block" not in jContent['data']['data']['slots'][tree]:
-                availableTreeSlots.append(int(tree))
-
-        # Sortierung über ein leeres Array ändert Objekttyp zu None
-        if len(availableTreeSlots) > 0:
-            availableTreeSlots.sort(reverse=False)
-
-        return availableTreeSlots
-
-    def getBonsaiFarmInfos(self):
-        """Funktion ermittelt, alle wichtigen Infos des Bonsaigarten und gibt diese aus."""
-        adresse = f'ajax/ajax.php?do=bonsai_init&token={self.__token}'
+    def bonsaiInit(self):
+        """selects bonsaigarden returns JSON content(status, data, init, questnr, questData, quest)"""
+        address = f'ajax/ajax.php?do=bonsai_init&token={self.__token}'
         try:
-            response, content = self.__sendRequest(f'{adresse}')
+            response, content = self.__sendRequest(f'{address}')
             self.__checkIfHTTPStateIsOK(response)
             jContent = self.__generateJSONContentAndCheckForOK(content)
-            bonsaiquestnr = jContent['questnr']
-            bonsaiquest = self.__getBonsaiQuest(jContent)
-            bonsaislots = self.__getAvailableBonsaiSlots(jContent)
-            return bonsaiquestnr, bonsaiquest, bonsaislots, jContent
+            return jContent
         except:
             raise
 
-    def doCutBonsai(self, tree, sissor):
-        """Schneidet den Ast vom Bonsai"""
+    def cutBonsaiBranch(self, slot, sissor, branch):
+        """Cuts the branch from the bonsai and returns JSON content(status, data, branchclick, updateMenu)"""
+        address =   f'ajax/ajax.php?do=bonsai_branch_click&slot={slot}' \
+                    f'&scissor={sissor}&cache=%5B{branch}%5D&token={self.__token}'
         try:
-            address =   f'ajax/ajax.php?do=bonsai_branch_click&slot={str(tree)}' \
-                        f'&scissor={str(sissor)}&cache=%5B1%5D&token={self.__token}'
             response, content = self.__sendRequest(address)
             self.__checkIfHTTPStateIsOK(response)
+            jContent = self.__generateJSONContentAndCheckForOK(content)
+            return jContent
         except:
-            pass
+            raise
 
+    def finishBonsai(self, slot):
+        """finishes bonsai to the bonsaigarden and returns JSON content"""
+        address =   f'ajax/ajax.php?do=bonsai_finish_breed&slot={slot}&token={self.__token}'
+        try:
+            response, content = self.__sendRequest(address)
+            self.__checkIfHTTPStateIsOK(response)
+            jContent = self.__generateJSONContentAndCheckForOK(content)
+            return jContent
+        except:
+            raise
+
+    def buyAndPlaceBonsaiItem(self, item, pack, slot):
+        """ 
+        buys and places an item from the bonsai shop and returns JSON content
+
+        Parameters
+        -------------
+            slot: 0-10; if 0, item stays in storage
+            item: 
+                bonsais: 1-10 (Mädchenkiefer, Mangrove, Geldbaum, Fichten-Wald, Zypresse, Wacholder, Eiche, ...), 
+                pots: 11-20 (Einfache Schale, ...), 
+                scissors: 21-24 (Normale Schere, ...)
+            pack: 
+                1, 5, 10 for bonsais or pots; 
+                1, 2, 3, 4 for 10, 50, 100, 500 scissors
+        """
+        address = f'ajax/ajax.php?do=bonsai_buy_item&item={item}&pack={pack}&slot={slot}&token={self.__token}'
+        try:
+            response, content = self.__sendRequest(address)
+            self.__checkIfHTTPStateIsOK(response)
+            jContent = self.__generateJSONContentAndCheckForOK(content)
+            return jContent
+        except:
+            raise
+
+    def placeBonsaiItem(self, id, slot):
+        """ 
+        places an item from the internal storage and returns JSON content
+
+        Parameters
+        -------------
+            id: item id from internal storage --> has to be determined individually
+            slot: 0-10; if 0, item stays in storage
+        """
+        address = f'ajax/ajax.php?do=bonsai_set_item&id={id}&slot={slot}&token={self.__token}'
+        try:
+            response, content = self.__sendRequest(address)
+            self.__checkIfHTTPStateIsOK(response)
+            jContent = self.__generateJSONContentAndCheckForOK(content)
+            return jContent
+        except:
+            raise
+        
+    # Notes
     def getNote(self):
         """Get the users note"""
         try:
