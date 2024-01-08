@@ -21,7 +21,7 @@ HTTP_STATE_FOUND = 302 # moved temporarily
 
 SERVER_URLS = {
     'de': '.wurzelimperium.de/',
-    'bg': '.molehillempire.com/',
+    'bg': '.bg.molehillempire.com/',
     'en': '.molehillempire.com/',
     'us': '.molehillempire.com/',
     'ru': '.sadowajaimperija.ru/'
@@ -158,7 +158,7 @@ class HTTPConnection(object):
 
     def __getunrFromURLPORT(self, url):
         """Ermittelt aus einer übergebenen URL den security token."""
-        split = re.search(r'.*portal/port_logw.php.*unr=([a-f0-9]{7}).*port', url)
+        split = re.search(r'.*portal/port_logw.php.*unr=([a-f0-9]+)&port', url)
         iErr = 0
         if split:
             tmpunr = split.group(1)
@@ -175,7 +175,7 @@ class HTTPConnection(object):
 
     def __getportunrFromURLPORT(self, url):
         """Ermittelt aus einer übergebenen URL den security token."""
-        split = re.search(r'.*portal/port_logw.php.*portunr=([a-f0-9]{6})', url)
+        split = re.search(r'.*portal/port_logw.php.*portunr=([a-f0-9]+)&token', url)
         iErr = 0
         if split:
             tmpportunr = split.group(1)
@@ -369,6 +369,7 @@ class HTTPConnection(object):
                 npc_preis = npc_preis[0:len(npc_preis) - 3]
                 npc_preis = npc_preis.replace('.', '')
                 npc_preis = npc_preis.replace(',', '.')
+                npc_preis = npc_preis.replace(' ', '')
                 npc_preis = npc_preis.strip()
                 if len(npc_preis) == 0:
                     npc_preis = None
@@ -445,7 +446,7 @@ class HTTPConnection(object):
 
         try:
             loginadresse = f'https://s{str(loginDaten.server)}{serverURL}/logw.php?port=1&unr=' + \
-                           f'{self.__unr}&portunr={self.__portunr}&hash={self.__token}&sno=1'
+                           f'{self.__unr}&portunr={self.__portunr}&hash={self.__token}&sno={loginDaten.server}'
             response, content = self.__webclient.request(loginadresse, 'GET', headers=headers)
             self.__checkIfHTTPStateIsFOUND(response)
         except:
