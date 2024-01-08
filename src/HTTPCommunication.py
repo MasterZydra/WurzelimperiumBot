@@ -1186,6 +1186,36 @@ class HTTPConnection(object):
             self.__checkIfHTTPStateIsOK(response)
         except:
             return ''
+        
+    # Garden Shed
+    def initGardenShed(self):
+        address = f'ajax/ajax.php?do=houseInit&token={self.__token}'
+        try:
+            response, content = self.__sendRequest(f'{address}')
+            self.__checkIfHTTPStateIsOK(response)
+            self.__generateJSONContentAndCheckForOK(content)
+        except:
+            raise
+
+    def openTrophyCase(self):
+        address = f'ajax/gettrophies.php?category=giver'
+        try:
+            response, content = self.__sendRequest(f'{address}')
+            self.__checkIfHTTPStateIsOK(response)
+            self.__generateJSONContentAndCheckForOK(content)
+        except:
+            raise
+
+    def collectBonusitems(self):
+        address = f'ajax/presentclick.php'
+        try:
+            response, content = self.__sendRequest(f'{address}', 'POST')
+            self.__checkIfHTTPStateIsOK(response)
+            jContent = self.__generateJSONContentAndCheckForOK(content)
+        except:
+            raise
+        else:
+            return jContent
 
 class HTTPStateError(Exception):
     def __init__(self, value):
