@@ -10,7 +10,7 @@ Created on 23.01.2019
 import datetime
 
 class Product():
-    def __init__(self, id, cat, sx, sy, name, lvl, crop, plantable, time):
+    def __init__(self, id, cat, sx, sy, name, lvl, crop, plantable, time, edge):
         self.__id = id
         self.__category = cat
         self.__sx = sx
@@ -20,6 +20,7 @@ class Product():
         self.__crop = crop
         self.__isPlantable = plantable
         self.__timeUntilHarvest = time
+        self.__edge = edge
         self.__priceNPC = None
         
     def getID(self):
@@ -39,6 +40,9 @@ class Product():
 
     def getSY(self):
         return self.__sy
+    
+    def getEdge(self):
+        return self.__edge
     
     def getPriceNPC(self):
         return self.__priceNPC
