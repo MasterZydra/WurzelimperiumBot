@@ -8,7 +8,10 @@ class Honig():
     """
     Diese Daten-Klasse enthält alle wichtigen Informationen über den Honiggarten.
     """
+    #BG- Тази класа данни съдържа цялата важна информация за пчелната градина.
+
     # Honig
+    #BG- Мед
     __honeyFarmAvailability = None
     __hivesavailable = None
     __honeyquestnr = None
@@ -41,6 +44,7 @@ class Honig():
         """
         Liest die Anzahl der Hives aus und speichert ihn in der Klasse.
         """
+        #BG- Четене на броя на кошерите и съхраняването му в класа.
         try:
             self.__hivesavailable = http.getHoneyFarmInfos()[2]
         except:
@@ -50,6 +54,7 @@ class Honig():
         """
         Liest die Anzahl der Hives aus und speichert ihn in der Klasse.
         """
+        #BG- Четене на броя на кошерите и съхраняването му в класа.
         try:
             self.__honeyquestnr = http.getHoneyFarmInfos()[0]
         except:
@@ -59,6 +64,7 @@ class Honig():
         """
         Liest die aktuelle HoneyQuest aus und speichert ihn in der Klasse.
         """
+        #BG- Четене на текущата HoneyQuest и съхраняването ѝ в класа.
         try:
             self.__honeyquest = http.getHoneyFarmInfos()[1]
         except:
@@ -66,6 +72,7 @@ class Honig():
 
     def harvest(self):
         """Sendet alle Bienen."""
+        #BG- Изпраща всички пчели.
         try:
             self._httpConn.harvestBienen()
         except:
@@ -74,6 +81,7 @@ class Honig():
     #TODO: extend and create HTTP-Requests
     def changeHivesTypeQuest(self):
         """Ändert die Hives auf Questanforderungen."""
+        #BG- Променя кошерите според изискванията на куеста.
         quest = self.__honeyquest
         for i in quest:
             if quest[i]['missing'] != 0:

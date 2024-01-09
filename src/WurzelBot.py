@@ -29,6 +29,8 @@ class WurzelBot(object):
     """
     Die Klasse WurzelBot übernimmt jegliche Koordination aller anstehenden Aufgaben.
     """
+    #BG- """ Класът WurzelBot се грижи за координацията на всички предстоящи задачи."""
+
 
     def __init__(self):
         self.__logBot = logging.getLogger("bot")
@@ -51,12 +53,14 @@ class WurzelBot(object):
 
     def __initGardens(self):
         """Ermittelt die Anzahl der Gärten und initialisiert alle."""
+        #BG-"""Определя броя на градините и ги инициализира всички."""
+
         try:
             tmpNumberOfGardens = self.__HTTPConn.getInfoFromStats("Gardens")
             self.spieler.numberOfGardens = tmpNumberOfGardens
             for i in range(1, tmpNumberOfGardens + 1):
                 self.garten.append(Garden(self.__HTTPConn, i))
-            
+
             if self.spieler.isAquaGardenAvailable() is True:
                 self.wassergarten = AquaGarden(self.__HTTPConn)
 
@@ -74,6 +78,8 @@ class WurzelBot(object):
         """
         Rechnet anhand der fieldID und Größe der Pflanze (sx, sy) alle IDs aus und gibt diese als String zurück.
         """
+        #BG-Изчислява всички идентификационни номера чрез fieldID и размера на растението (sx, sy) и ги връща като низ.
+
         if (sx == '1' and sy == '1'): return str(fieldID)
         if (sx == '2' and sy == '1'): return str(fieldID) + ',' + str(fieldID + 1)
         if (sx == '1' and sy == '2'): return str(fieldID) + ',' + str(fieldID + 17)
@@ -85,12 +91,14 @@ class WurzelBot(object):
         """
         Rechnet anhand der fieldID und Größe der Pflanze (sx, sy) alle IDs aus und gibt diese als Integer-Liste zurück.
         """
+        #BG-Изчислява всички идентификационни номера чрез fieldID и размера на растението (sx, sy) и ги връща като списък от цели числа.
+
         sFields = self.__getAllFieldIDsFromFieldIDAndSizeAsString(fieldID, sx, sy)
         listFields = sFields.split(',') #Stringarray
-                        
+
         for i in range(0, len(listFields)):
             listFields[i] = int(listFields[i])
-            
+
         return listFields
 
 
@@ -99,6 +107,8 @@ class WurzelBot(object):
         Diese Methode startet und initialisiert den Wurzelbot. Dazu wird ein Login mit den
         übergebenen Logindaten durchgeführt und alles nötige initialisiert.
         """
+        #BG-Този метод стартира и инициализира Wurzelbot. За целта се извършва вход с предоставените данни за влизане и се инициализира всичко необходимо.
+
         self.__logBot.info('-------------------------------------------')
         self.__logBot.info(f'Starting Wurzelbot for User {user} on Server No. {server}')
         loginDaten = Login(server=server, user=user, password=pw, language=lang)
@@ -127,7 +137,7 @@ class WurzelBot(object):
         except:
             self.__logBot.error(i18n.t('wimpb.error_refresh_userdata'))
             return False
-        
+
         try:
             self.spieler.setHoneyFarmAvailability(self.__HTTPConn.isHoneyFarmAvailable(self.spieler.getLevelNr()))
         except:
@@ -162,6 +172,8 @@ class WurzelBot(object):
 
     def exitBot(self):
         """Beendet den Wurzelbot geordnet und setzt alles zurück."""
+        #BG-"""Завършва Wurzelbot подредено и нулира всичко."""
+
         self.__logBot.info(i18n.t('wimpb.exit_wbot'))
         try:
             self.__HTTPConn.logOut()
@@ -173,6 +185,8 @@ class WurzelBot(object):
 
     def updateUserData(self):
         """Ermittelt die Userdaten und setzt sie in der Spielerklasse."""
+        #BG-"""Определя потребителските данни и ги задава в класа на играча."""
+
         try:
             self.spieler.userData = self.__HTTPConn.readUserDataFromServer()
         except:
@@ -181,10 +195,12 @@ class WurzelBot(object):
 
     def waterPlantsInAllGardens(self):
         """Alle Gärten des Spielers werden komplett bewässert."""
+        #BG-"""Всички градини на играча се поливат напълно."""
+
         garden: Garden
         for garden in self.garten:
             garden.waterPlants()
-        
+
         if self.spieler.isAquaGardenAvailable():
             self.wassergarten.waterPlants()
 
@@ -195,6 +211,8 @@ class WurzelBot(object):
         recipients muss ein Array sein!.
         Eine Nachricht kann nur verschickt werden, wenn die E-Mail Adresse bestätigt ist.
         """
+        #BG-Създава ново съобщение, попълва го и го изпраща.Получателите трябва да са в масив! Съобщение може да бъде изпратено само ако електронната поща е потвърдена.
+
         if (self.spieler.isEMailAdressConfirmed()):
             try:
                 self.messenger.writeMessage(self.spieler.getUserName(), recipients, subject, body)
@@ -206,6 +224,8 @@ class WurzelBot(object):
         Gibt alle leeren Felder aller normalen Gärten zurück.
         Kann dazu verwendet werden zu entscheiden, wie viele Pflanzen angebaut werden können.
         """
+        #BG-Връща всички празни полета във всички обикновени градини. Може да се използва за вземане на решение колко растения могат да бъдат засадени.
+
         emptyFields = []
         try:
             for garden in self.garten:
@@ -255,9 +275,13 @@ class WurzelBot(object):
 
     def checkWimpsProfitable(self, products, minimal_profit_in_percent) -> bool:
         # Check if the price the wimp wants to pay is more than the price of buying every product in the shops.
+        #BG-Проверява дали цената, която мамата иска да плати, е по-голяма от цената за закупуване на всеки продукт в магазините.
+
         # If the profit in percent is greater or equal to the given value, the return value is True.
+        #BG-Ако печалбата в проценти е по-голяма или равна на предоставената стойност, връщаемата стойност е True
         return True
         # TODO How to calculate profitability? It seems that none of the wimps is profitable when using the shop prices.
+        #BG-TODO Как да изчислявам печалбата? Изглежда, че нито един от „wimps“ не е печеливш, когато се използват цените от магазините.
         npc_sum = 0
         for id, amount in products[1].items():
             npc_sum += self.productData.getProductByID(id).getPriceNPC() * amount
@@ -294,6 +318,7 @@ class WurzelBot(object):
 
     def getWeedFieldsOfGardens(self):
         """Gibt alle Unkrau-Felder aller normalen Gärten zurück."""
+        #BG- Връща всички полета с плевели във всички обикновени градини.
         weedFields = []
         try:
             for garden in self.garten:
@@ -307,7 +332,7 @@ class WurzelBot(object):
         try:
             for garden in self.garten:
                 garden.harvest()
-                
+
             if self.spieler.isAquaGardenAvailable():
                 self.wassergarten.harvest()
                 pass
@@ -321,6 +346,7 @@ class WurzelBot(object):
         """
         Pflanzt so viele Pflanzen von einer Sorte wie möglich über alle Gärten hinweg an.
         """
+        #BG-Засажда колкото е възможно повече растения от определен вид през всички градини.
         planted = 0
 
         product = self.productData.getProductByName(productName)
@@ -345,7 +371,7 @@ class WurzelBot(object):
         for garden in self.garten:
             planted += garden.growPlant(product.getID(), product.getSX(), product.getSY(), remainingAmount)
             remainingAmount = amount - planted
-        
+
         self.storage.updateNumberInStock()
 
         return planted
@@ -354,6 +380,7 @@ class WurzelBot(object):
         """
         Pflanzt so viele Pflanzen von einer Sorte wie möglich über alle Gärten hinweg an.
         """
+        #BG-Засаждане на възможно най-много растения от определен вид през всички градини.
         if self.spieler.isAquaGardenAvailable():
             planted = 0
             product = self.productData.getProductByName(productName)
@@ -381,16 +408,16 @@ class WurzelBot(object):
         isSmthPrinted = False
         for productID in self.storage.getKeys():
             product = self.productData.getProductByID(productID)
-            
+
             amount = self.storage.getStockByProductID(productID)
             if amount == 0: continue
-            
+
             print(str(product.getName()).ljust(30) + 'Amount: ' + str(amount).rjust(5))
             isSmthPrinted = True
-    
+
         if not isSmthPrinted:
             print('Your stock is empty')
-    
+
     def getLowestStockEntry(self):
         entryID = self.storage.getLowestStockEntry()
         if entryID == -1: return 'Your stock is empty'
@@ -403,7 +430,7 @@ class WurzelBot(object):
             orderedList += str(self.storage.getOrderedStockList()[productID]).rjust(5)
             orderedList += str('\n')
         return orderedList.strip()
-    
+
     def getLowestVegetableStockEntry(self):
         lowestStock = -1
         lowestProductId = -1
@@ -437,7 +464,7 @@ class WurzelBot(object):
                 continue
 
         if lowestSingleProductId == -1: return 'Your stock is empty'
-        return self.productData.getProductByID(lowestSingleProductId).getName()       
+        return self.productData.getProductByID(lowestSingleProductId).getName()
 
     def getLowestWaterPlantStockEntry(self):
         lowestStock = -1
@@ -458,15 +485,16 @@ class WurzelBot(object):
 
     def printProductDetails(self):
         self.productData.printAll()
-    
+
     def printVegetableDetails(self):
         self.productData.printAllVegetables()
-    
+
     def printWaterPlantDetails(self):
         self.productData.printAllWaterPlants()
 
     def removeWeedInAllGardens(self):
         """Entfernt Unkraut/Maulwürfe/Steine aus allen Gärten."""
+        #BG-Премахва плевели, кърлежи и камъни от всички градини.
         #TODO: Wassergarten ergänzen
         try:
             for garden in self.garten:
@@ -504,6 +532,7 @@ class WurzelBot(object):
                         pass
 
     # Shops
+    #BG- Магазини
     def doBuyFromShop(self, productName, amount: int):
         if type(productName) is int:
             productName = self.productData.getProductByID(productName).getName()
@@ -535,11 +564,13 @@ class WurzelBot(object):
         return 0
 
     # Bienen
+    #BG- Пчели
     def sendBienen(self):
         #TODO prüfen ob wirklich gesendet wurde, ansonsten Befehl wiederholen
         """
         Probiert alle Bienen für Zeitoption 1 (ohne Verkürzung 2h) zu senden
         """
+        #BG-Пробва да изпрати всички пчели за времева опция 1 (без намаляване 2 часа).
         if self.spieler.isHoneyFarmAvailable():
             hives = self.__HTTPConn.getHoneyFarmInfos()[2]
             for hive in hives:
@@ -553,9 +584,7 @@ class WurzelBot(object):
     # Bonsai
     def cutAndRenewBonsais(self):
         """cut all branches and renew bonsais if lvl 2"""
+        #BG-Ако нивото е 2, отрежи всички клони и поднови бонсаите.
         self.bonsaifarm.cutAllBonsai()
         self.bonsaifarm.checkBonsai()
         self.bonsaifarm.cutAllBonsai()
-
-
-    

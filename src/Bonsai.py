@@ -6,7 +6,7 @@ from src.HTTPCommunication import HTTPConnection
 
 class Bonsai():
     """Wrapper for the bonsaigarden"""
-    #BG - Интерфейс за бонсаевата градина
+    #BG - Интерфейс за бонсаевата градина 
 
     def __init__(self, httpConnection: HTTPConnection):
         self._httpConn = httpConnection
@@ -22,7 +22,7 @@ class Bonsai():
         self.__bonsaiquest = self.__getBonsaiQuest(jContent)
         self.__bonsaiavailable = self.__getAvailableBonsaiSlots(jContent)
         self.__slotinfos = self.__getBonsaiSlotInfos(jContent)
-    
+
     def setBonsaiFarmData(self, jContent):
         """function to update the bonsaigarden data"""
         #BG - Функция за актуализиране на данните за бонсаевата градина
@@ -39,7 +39,7 @@ class Bonsai():
             bonsaiQuest.update(new)
             i = i + 1
         return bonsaiQuest
-    
+
     def __getAvailableBonsaiSlots(self, jContent): #TODO: usecase of this?
         """searches for available bonsai in the JSON Content and returns them"""
 	#BG - Търси налични бонсаи в JSON съдържанието и ги връща. - Каква е употребата?
@@ -54,7 +54,7 @@ class Bonsai():
             availableTreeSlots.sort(reverse=False)
 
         return availableTreeSlots
-    
+
     def __getBonsaiSlotInfos(self, jContent):
         """searches for breeded bonsai in the JSON content and returns level, reward and branches"""
 	#BG - Търси размножени бонсаи в JSON съдържанието и връща ниво, награда и разклонения.
@@ -83,7 +83,7 @@ class Bonsai():
             self._logBonsai.info("Rebuying 500 normal scissors for 80.000 wT.")
             jContent = self._httpConn.buyAndPlaceBonsaiItem(21, 4, 0)
             self.setBonsaiFarmData(jContent)
-        
+
         for key in self.__slotinfos.keys():
             self._logBonsai.info(f'Bonsai in slot {key}:')
             for branch in self.__slotinfos[key][2]:

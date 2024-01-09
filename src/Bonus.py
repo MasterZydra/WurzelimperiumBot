@@ -12,3 +12,4 @@ class Bonus:
                 if any(_ in bonus for _ in ('money', 'products')):
                     self.__httpConn.getDailyLoginBonus(day)
                     time.sleep(3)
+                    

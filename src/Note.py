@@ -5,7 +5,7 @@ from src.HTTPCommunication import HTTPConnection
 
 class Note():
     """Diese Daten-Klasse enthält alle wichtigen Informationen über die Notiz."""
-
+    #BG- Тази класа данни съдържа цялата важна информация за бележката.
     def __init__(self, httpConnection: HTTPConnection):
         self._httpConn = httpConnection
 
@@ -24,11 +24,12 @@ class Note():
 
         if not isPlantGiven and line.startswith('minStock:'):
           return self.__extractAmount(line, 'minStock:')
-        
+
         if isPlantGiven and line.startswith(f'minStock({plantName}):'):
           return self.__extractAmount(line, f'minStock({plantName}):')
 
       # Return default 0 if not found in note
+      #BG- Връща задание 0 ако не е намерена в бележката
       return 0
 
     def __extractAmount(self, line, prefix):

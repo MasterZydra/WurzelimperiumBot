@@ -23,19 +23,23 @@ if args.log:
     logger.logger()
 
 # Init connection
+#BG- Създаване на връзка
 wurzelBot = WurzelBot()
 succ = wurzelBot.launchBot(args.server, args.user, args.password, args.lang, args.portalacc)
 if succ != True:
     exit(-1)
 
 # Remove weed
+#BG-Премахване на плевели
 print(i18n.t('wimpb.remove_weed_from_all_gardens'))
 wurzelBot.removeWeedInAllGardens()
 
 # Harvest
+#BG-Жътва
 wurzelBot.harvestAllGarden()
 
 # Plant plants
+#BG-Посаждане на растения
 planted = -1
 plantedSingle = -1
 while wurzelBot.hasEmptyFields() and planted != 0 and plantedSingle != 0:
@@ -44,6 +48,7 @@ while wurzelBot.hasEmptyFields() and planted != 0 and plantedSingle != 0:
     print(i18n.t('wimpb.grow_plant_X', plant=lowest))
     planted = wurzelBot.growVegetablesInGardens(lowest)
     # If no more "lowest plants" can be grown, try to grow single field plants
+    #BG-Ако няма растения с малък брой, посаждане на еденични такива.
     if planted == 0:
         lowestSingle = wurzelBot.getLowestSingleVegetableStockEntry()
         if lowestSingle == 'Your stock is empty': break
@@ -51,15 +56,19 @@ while wurzelBot.hasEmptyFields() and planted != 0 and plantedSingle != 0:
         plantedSingle = wurzelBot.growVegetablesInGardens(lowestSingle)
 
 # Water plants
+#BG-Поливане на растенията
 time.sleep(3)
 print(i18n.t('wimpb.watering_all_plants'))
 wurzelBot.waterPlantsInAllGardens()
 # Claim Daily
+#BG-Събиране на дневният бонус
 print(i18n.t('wimpb.claim_bonus'))
 wurzelBot.getDailyLoginBonus()
 # Process Wimp Customers in Gardens
+#BG-Изпълни нуждите на Wimps в градините
 print(i18n.t('wimpb.process_wimps'))
 wurzelBot.sellWimpsProducts(0,0)
 
 # Close connection
+#BG-Затваряне на връзката
 wurzelBot.exitBot()

@@ -18,6 +18,7 @@ class Storage():
 
     def updateNumberInStock(self):
         """Aktualisiert den Lagerbestand für alle Produkte."""
+        #BG-Актуализира наличните количества за всички продукти.
         self.__resetNumbersInStock()
 
         inventory = self.__httpConn.getInventory()
@@ -26,10 +27,10 @@ class Storage():
 
     def getStockByProductID(self, productID):
         return self.__products[str(productID)]
-    
+
     def getKeys(self):
         return self.__products.keys()
-    
+
     def getOrderedStockList(self):
         sortedStock = dict(sorted(self.__products.items(), key=lambda item: item[1]))
         filteredStock = dict()
