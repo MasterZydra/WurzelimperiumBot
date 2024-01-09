@@ -27,6 +27,7 @@ class ProductData():
     
     def __setAllPricesOfNPC(self):
         """Ermittelt alle möglichen NPC Preise und setzt diese in den Produkten."""
+           #BG-Определете всички възможни NPC цени и ги задайте в продуктите.
         dNPC = self.__httpConn.getNPCPrices()
         dNPCKeys = dNPC.keys()
         
@@ -37,6 +38,7 @@ class ProductData():
                 product.setPriceNPC(dNPC[productname])
                 
         #Coin manuell setzen, dieser ist in der Tabelle der Hilfe nicht enthalten
+	#BG - Задайте монета ръчно, тази не е включена в таблицата за помощ.
         # coins = self.getProductByName('Coins')
         # coins.setPriceNPC((300.0))
 
@@ -75,14 +77,17 @@ class ProductData():
 
     def initAllProducts(self):
         """Initialisiert alle Produkte."""
+	#BG - Инициализирайте всички продукти.
         products = self.__httpConn.getAllProductInformations()
         jProducts = json.loads(products)
         dictProducts = dict(jProducts)
         keys = dictProducts.keys()
         keys = sorted(keys)
         # Nicht genutzte Attribute: img, imgPhase, fileext, clear, edge, pieces, speedup_cooldown in Kategorie z
+	#BG - Неизползвани атрибути: img, imgPhase, fileext, clear, edge, pieces, speedup_cooldown в категория z
         for key in keys:
             # 999 ist nur ein Testeintrag und wird nicht benötigt.
+            #BG - 999 е само тестова стойност и не е необходима.
             if key == '999':
                 continue
             
