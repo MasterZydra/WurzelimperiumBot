@@ -23,3 +23,16 @@ class Bonus:
         claim_msg = jContent['msg']
         already_claimed_msg = jContent['message']
         self._logBonus.info(f"{claim_msg}{already_claimed_msg}")
+
+    def collectLuckyMole(self):
+        jContent = self.__httpConn.initGuild()
+        guild_id = jContent['data']['id']
+        lucky = jContent['data']['lucky']
+        msg = "Lucky mole not available! Try next day."
+
+        if lucky == 1:
+            jContent = self.__httpConn.collectLuckyMole(guild_id)
+            msg = jContent['message']
+
+        self._logBonus.info(f"{msg}")
+        

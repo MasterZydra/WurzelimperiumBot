@@ -84,16 +84,4 @@ class Quest:
                     quest_products.append(products)
 
         return quest_products
-    
-
-class WeeklyTask():
-    def __init__(self, httpConnection: HTTPConnection, spieler: Spieler):
-        self.__httpConn = httpConnection
-        self.__spieler = spieler
-
-    def getWeeklyTaskInfo(self):
-        pass
-
-    def speedupWeeklyTask(self):
-        pass
 

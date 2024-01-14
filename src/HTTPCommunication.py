@@ -1216,6 +1216,29 @@ class HTTPConnection(object):
             raise
         else:
             return jContent
+    
+    # Guild
+    def initGuild(self):
+        address = f"ajax/ajax.php?do=gildeGetData&&token={self.__token}"
+        try:
+            response, content = self.__sendRequest(f'{address}')
+            self.__checkIfHTTPStateIsOK(response)
+            jContent = self.__generateJSONContentAndCheckForOK(content)
+        except:
+            raise
+        else:
+            return jContent
+    
+    def collectLuckyMole(self, guild_id):
+        address = f"ajax/ajax.php?do=gilde&action=luckyWurf&id={guild_id}&token={self.__token}"
+        try:
+            response, content = self.__sendRequest(f'{address}')
+            self.__checkIfHTTPStateIsOK(response)
+            jContent = self.__generateJSONContentAndCheckForOK(content)
+        except:
+            raise
+        else:
+            return jContent
 
 class HTTPStateError(Exception):
     def __init__(self, value):
