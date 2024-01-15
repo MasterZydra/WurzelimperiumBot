@@ -1184,7 +1184,52 @@ class HTTPConnection(object):
         except:
             raise
 
-    # Notes
+# Stadtpark
+    def initPark(self):
+        """activate the park and return JSON content(status, data, init, questnr, questData, quest)"""
+        address = f'ajax/ajax.php?do=park_init&token={self.__token}'
+        try:
+            response, content = self.__sendRequest(address)
+            self.__checkIfHTTPStateIsOK(response)
+            jContent = self.__generateJSONContentAndCheckForOK(content)
+            return jContent
+        except:
+            raise
+
+    def initCashPoint(self): #TODO: usecase?!
+        """open the cashpoint and return JSON content(status, data, initcashpoint)"""
+        address = f'ajax/ajax.php?do=park_initcashpoint&token={self.__token}'
+        try:
+            response, content = self.__sendRequest(address)
+            self.__checkIfHTTPStateIsOK(response)
+            jContent = self.__generateJSONContentAndCheckForOK(content)
+            return jContent ### return jContent["data"]["data"]["cashpoint"] contains money, points, parkpoints
+        except:
+            raise
+        
+    def collectCashPointFromPark(self):
+        """collect the rewards from the cashpoint and return JSON content(status, data, clearcashpoint, updateMenu)"""
+        address = f'ajax/ajax.php?do=park_clearcashpoint&token={self.__token}'
+        try:
+            response, content = self.__sendRequest(address)
+            self.__checkIfHTTPStateIsOK(response)
+            jContent = self.__generateJSONContentAndCheckForOK(content)
+            return jContent
+        except:
+            raise
+
+    def renewItemInPark(self, tile, parkID=1):
+        """renew an item on the given tile in the park and return JSON content(status, data, renewitem, updateMenu)"""
+        address = f'ajax/ajax.php?do=park_renewitem&parkid={parkID}&tile={tile}&token={self.__token}'
+        try:
+            response, content = self.__sendRequest(address)
+            self.__checkIfHTTPStateIsOK(response)
+            jContent = self.__generateJSONContentAndCheckForOK(content)
+            return jContent
+        except:
+            raise
+
+# Notes
     def getNote(self):
         """Get the users note"""
         try:

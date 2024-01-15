@@ -20,6 +20,7 @@ from src.Produktdaten import ProductData
 from src.Quests import Quest
 from src.Shop_lists import *
 from src.Spieler import Spieler, Login
+from src.Stadtpark import Park
 from src.Wimps import Wimps
 import logging, i18n, datetime
 
@@ -49,6 +50,7 @@ class WurzelBot(object):
         self.quest = Quest(self.__HTTPConn, self.spieler)
         self.bonus = Bonus(self.__HTTPConn)
         self.note = Note(self.__HTTPConn)
+        self.park = None
 
 
     def __initGardens(self):
@@ -69,6 +71,8 @@ class WurzelBot(object):
 
             if self.spieler.isBonsaiFarmAvailable() is True:
                 self.bonsaifarm = Bonsai(self.__HTTPConn)
+
+            self.park = Park(self.__HTTPConn)
 
         except:
             raise
@@ -588,3 +592,9 @@ class WurzelBot(object):
         self.bonsaifarm.cutAllBonsai()
         self.bonsaifarm.checkBonsai()
         self.bonsaifarm.cutAllBonsai()
+
+    # Stadtpark
+    def checkPark(self):
+        """automate Park: first collect the cashpoint, then check if any item has to be renewed"""
+        self.park.collectCashFromCashpoint()
+        self.park.renewAllItemsInPark()
