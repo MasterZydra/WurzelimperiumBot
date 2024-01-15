@@ -21,6 +21,7 @@ HTTP_STATE_FOUND = 302 # moved temporarily
 
 SERVER_URLS = {
     'de': '.wurzelimperium.de/',
+    'bg': '.bg.molehillempire.com/',
     'en': '.molehillempire.com/',
     'us': '.molehillempire.com/',
     'ru': '.sadowajaimperija.ru/'
@@ -157,7 +158,7 @@ class HTTPConnection(object):
 
     def __getunrFromURLPORT(self, url):
         """Ermittelt aus einer übergebenen URL den security token."""
-        split = re.search(r'.*portal/port_logw.php.*unr=([a-f0-9]{6}).*port', url)
+        split = re.search(r'.*portal/port_logw.php.*unr=([a-f0-9]+)&port', url)
         iErr = 0
         if split:
             tmpunr = split.group(1)
@@ -174,7 +175,7 @@ class HTTPConnection(object):
 
     def __getportunrFromURLPORT(self, url):
         """Ermittelt aus einer übergebenen URL den security token."""
-        split = re.search(r'.*portal/port_logw.php.*portunr=([a-f0-9]{7})', url)
+        split = re.search(r'.*portal/port_logw.php.*portunr=([a-f0-9]+)&token', url)
         iErr = 0
         if split:
             tmpportunr = split.group(1)
@@ -368,6 +369,7 @@ class HTTPConnection(object):
                 npc_preis = npc_preis[0:len(npc_preis) - 3]
                 npc_preis = npc_preis.replace('.', '')
                 npc_preis = npc_preis.replace(',', '.')
+                npc_preis = npc_preis.replace(' ', '')
                 npc_preis = npc_preis.strip()
                 if len(npc_preis) == 0:
                     npc_preis = None
@@ -444,7 +446,7 @@ class HTTPConnection(object):
 
         try:
             loginadresse = f'https://s{str(loginDaten.server)}{serverURL}/logw.php?port=1&unr=' + \
-                           f'{self.__unr}&portunr={self.__portunr}&hash={self.__token}&sno=1'
+                           f'{self.__unr}&portunr={self.__portunr}&hash={self.__token}&sno={loginDaten.server}'
             response, content = self.__webclient.request(loginadresse, 'GET', headers=headers)
             self.__checkIfHTTPStateIsFOUND(response)
         except:
@@ -452,7 +454,7 @@ class HTTPConnection(object):
         else:
             cookie = SimpleCookie(response['set-cookie'])
             cookie.load(str(response["set-cookie"]).replace("secure, ", "", -1))
-            self.__Session.openSession(cookie['PHPSESSID'].value, '1', '.wurzelimperium.de/')
+            self.__Session.openSession(cookie['PHPSESSID'].value, str(loginDaten.server), serverURL)
             self.__cookie = cookie
             self.__userID = self.__unr
 
@@ -765,6 +767,12 @@ class HTTPConnection(object):
                 msg = re.sub('<div.*>', '', msg)
                 msg = re.sub('x[ \n]*', 'x ', msg)
                 msg = msg.strip()
+                if 'biogas' in jContent: 
+                    biogas = jContent['biogas']
+                    msg = msg + f"\n{biogas} Gartenabfälle"
+                if 'eventitems' in jContent: 
+                    eventitems = jContent['collectevent']
+                    msg = msg + f"\n{eventitems} Eventitems" #TODO check which event is active
                 print(msg)
                 self.__logHTTPConn.info(msg)
         except:
@@ -781,7 +789,9 @@ class HTTPConnection(object):
                 print(jContent['message'])
                 self.__logHTTPConn.info(jContent['message'])
             elif jContent['status'] == 'ok':
-                msg = jContent['harvestMsg'].replace('<div>', '').replace('</div>', '\n').replace('&nbsp;', ' ')
+                msg = jContent['harvestMsg'].replace('</div>', '\n').replace('&nbsp;', ' ')
+                msg = re.sub('<div.*>', '', msg)
+                msg = re.sub('x[ \n]*', 'x ', msg)
                 msg = msg.strip()
                 print(msg)
                 self.__logHTTPConn.info(msg)
@@ -790,25 +800,23 @@ class HTTPConnection(object):
 
     def growPlant(self, field, plant, gardenID, fields):
         """Baut eine Pflanze auf einem Feld an."""
+        address =   f'save/pflanz.php?pflanze[]={str(plant)}&feld[]={str(field)}' \
+                    f'&felder[]={fields}&cid={self.__token}&garden={str(gardenID)}'
         try:
-            address =   f'save/pflanz.php?pflanze[]={str(plant)}&feld[]={str(field)}' \
-                        f'&felder[]={fields}&cid={self.__token}&garden={str(gardenID)}'
             response, content = self.__sendRequest(address)
+            self.__checkIfHTTPStateIsOK(response)
         except:
-            print('except')
             raise
 
     def growAquaPlant(self, plant, field):
         """Baut eine Pflanze im Wassergarten an."""
-        headers = self.__getHeaders()
-        server = self.__getServer()
-        adresse = f'{server}ajax/ajax.php?do=watergardenCache&plant[{plant}]={field}&token={self.__token}'
+        address = f'ajax/ajax.php?do=watergardenCache&plant[{plant}]={field}&token={self.__token}'
         try:
-            response, content = self.__webclient.request(adresse, 'GET', headers = headers)
+            response, content = self.__sendRequest(address)
+            self.__checkIfHTTPStateIsOK(response)
+            self.__generateJSONContentAndCheckForOK(content)
         except:
-            pass
-        else:
-            pass
+            raise
 
     def getAllProductInformations(self):
         """Sammelt alle Produktinformationen und gibt diese zur Weiterverarbeitung zurück."""
@@ -1098,54 +1106,128 @@ class HTTPConnection(object):
             pass
 
     #Bonsai
-    def __getBonsaiQuest(self, jContent):
-        """Sucht im JSON Content nach verfügbaren bonsaiquesten und gibt diese zurück."""
-        bonsaiQuest = {}
-        i = 1
-        for course in jContent['questData']['products']:
-            new = {i: {'pid': course['pid'], 'type': course['name']}}
-            bonsaiQuest.update(new)
-            i = i + 1
-        return bonsaiQuest
-    
-    def __getAvailableBonsaiSlots(self, jContent):
-        """Sucht im JSON Content nach verfügbaren bonsai und gibt diese zurück."""
-        availableTreeSlots = []
-
-        for tree in jContent['data']['data']['slots']:
-            if "block" not in jContent['data']['data']['slots'][tree]:
-                availableTreeSlots.append(int(tree))
-
-        # Sortierung über ein leeres Array ändert Objekttyp zu None
-        if len(availableTreeSlots) > 0:
-            availableTreeSlots.sort(reverse=False)
-
-        return availableTreeSlots
-
-    def getBonsaiFarmInfos(self):
-        """Funktion ermittelt, alle wichtigen Infos des Bonsaigarten und gibt diese aus."""
-        adresse = f'ajax/ajax.php?do=bonsai_init&token={self.__token}'
+    def bonsaiInit(self):
+        """selects bonsaigarden returns JSON content(status, data, init, questnr, questData, quest)"""
+        address = f'ajax/ajax.php?do=bonsai_init&token={self.__token}'
         try:
-            response, content = self.__sendRequest(f'{adresse}')
+            response, content = self.__sendRequest(f'{address}')
             self.__checkIfHTTPStateIsOK(response)
             jContent = self.__generateJSONContentAndCheckForOK(content)
-            bonsaiquestnr = jContent['questnr']
-            bonsaiquest = self.__getBonsaiQuest(jContent)
-            bonsaislots = self.__getAvailableBonsaiSlots(jContent)
-            return bonsaiquestnr, bonsaiquest, bonsaislots, jContent
+            return jContent
         except:
             raise
 
-    def doCutBonsai(self, tree, sissor):
-        """Schneidet den Ast vom Bonsai"""
+    def cutBonsaiBranch(self, slot, sissor, branch):
+        """Cuts the branch from the bonsai and returns JSON content(status, data, branchclick, updateMenu)"""
+        address =   f'ajax/ajax.php?do=bonsai_branch_click&slot={slot}' \
+                    f'&scissor={sissor}&cache=%5B{branch}%5D&token={self.__token}'
         try:
-            address =   f'ajax/ajax.php?do=bonsai_branch_click&slot={str(tree)}' \
-                        f'&scissor={str(sissor)}&cache=%5B1%5D&token={self.__token}'
             response, content = self.__sendRequest(address)
             self.__checkIfHTTPStateIsOK(response)
+            jContent = self.__generateJSONContentAndCheckForOK(content)
+            return jContent
         except:
-            pass
+            raise
 
+    def finishBonsai(self, slot):
+        """finishes bonsai to the bonsaigarden and returns JSON content"""
+        address =   f'ajax/ajax.php?do=bonsai_finish_breed&slot={slot}&token={self.__token}'
+        try:
+            response, content = self.__sendRequest(address)
+            self.__checkIfHTTPStateIsOK(response)
+            jContent = self.__generateJSONContentAndCheckForOK(content)
+            return jContent
+        except:
+            raise
+
+    def buyAndPlaceBonsaiItem(self, item, pack, slot):
+        """ 
+        buys and places an item from the bonsai shop and returns JSON content
+
+        Parameters
+        -------------
+            slot: 0-10; if 0, item stays in storage
+            item: 
+                bonsais: 1-10 (Mädchenkiefer, Mangrove, Geldbaum, Fichten-Wald, Zypresse, Wacholder, Eiche, ...), 
+                pots: 11-20 (Einfache Schale, ...), 
+                scissors: 21-24 (Normale Schere, ...)
+            pack: 
+                1, 5, 10 for bonsais or pots; 
+                1, 2, 3, 4 for 10, 50, 100, 500 scissors
+        """
+        address = f'ajax/ajax.php?do=bonsai_buy_item&item={item}&pack={pack}&slot={slot}&token={self.__token}'
+        try:
+            response, content = self.__sendRequest(address)
+            self.__checkIfHTTPStateIsOK(response)
+            jContent = self.__generateJSONContentAndCheckForOK(content)
+            return jContent
+        except:
+            raise
+
+    def placeBonsaiItem(self, id, slot):
+        """ 
+        places an item from the internal storage and returns JSON content
+
+        Parameters
+        -------------
+            id: item id from internal storage --> has to be determined individually
+            slot: 0-10; if 0, item stays in storage
+        """
+        address = f'ajax/ajax.php?do=bonsai_set_item&id={id}&slot={slot}&token={self.__token}'
+        try:
+            response, content = self.__sendRequest(address)
+            self.__checkIfHTTPStateIsOK(response)
+            jContent = self.__generateJSONContentAndCheckForOK(content)
+            return jContent
+        except:
+            raise
+
+# Stadtpark
+    def initPark(self):
+        """activate the park and return JSON content(status, data, init, questnr, questData, quest)"""
+        address = f'ajax/ajax.php?do=park_init&token={self.__token}'
+        try:
+            response, content = self.__sendRequest(address)
+            self.__checkIfHTTPStateIsOK(response)
+            jContent = self.__generateJSONContentAndCheckForOK(content)
+            return jContent
+        except:
+            raise
+
+    def initCashPoint(self): #TODO: usecase?!
+        """open the cashpoint and return JSON content(status, data, initcashpoint)"""
+        address = f'ajax/ajax.php?do=park_initcashpoint&token={self.__token}'
+        try:
+            response, content = self.__sendRequest(address)
+            self.__checkIfHTTPStateIsOK(response)
+            jContent = self.__generateJSONContentAndCheckForOK(content)
+            return jContent ### return jContent["data"]["data"]["cashpoint"] contains money, points, parkpoints
+        except:
+            raise
+        
+    def collectCashPointFromPark(self):
+        """collect the rewards from the cashpoint and return JSON content(status, data, clearcashpoint, updateMenu)"""
+        address = f'ajax/ajax.php?do=park_clearcashpoint&token={self.__token}'
+        try:
+            response, content = self.__sendRequest(address)
+            self.__checkIfHTTPStateIsOK(response)
+            jContent = self.__generateJSONContentAndCheckForOK(content)
+            return jContent
+        except:
+            raise
+
+    def renewItemInPark(self, tile, parkID=1):
+        """renew an item on the given tile in the park and return JSON content(status, data, renewitem, updateMenu)"""
+        address = f'ajax/ajax.php?do=park_renewitem&parkid={parkID}&tile={tile}&token={self.__token}'
+        try:
+            response, content = self.__sendRequest(address)
+            self.__checkIfHTTPStateIsOK(response)
+            jContent = self.__generateJSONContentAndCheckForOK(content)
+            return jContent
+        except:
+            raise
+
+# Notizen
     def getNote(self):
         """Get the users note"""
         try:

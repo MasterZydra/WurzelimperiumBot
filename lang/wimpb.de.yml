@@ -1,4 +1,5 @@
 de:
+  portal_login: "Einloggen"
   close_connection: "Verbindung beenden..."
   grow_plant_X: "%{plant} anpflanzen..."
   initialize_bot: "Initialisiere WurzelBot..."

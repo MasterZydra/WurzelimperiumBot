@@ -20,6 +20,7 @@ from src.Produktdaten import ProductData
 from src.Quests import Quest
 from src.Shop_lists import *
 from src.Spieler import Spieler, Login
+from src.Stadtpark import Park
 from src.Wimps import Wimps
 import logging, i18n, datetime
 
@@ -47,6 +48,7 @@ class WurzelBot(object):
         self.quest = Quest(self.__HTTPConn, self.spieler)
         self.bonus = Bonus(self.__HTTPConn)
         self.note = Note(self.__HTTPConn)
+        self.park = None
 
 
     def __initGardens(self):
@@ -65,6 +67,8 @@ class WurzelBot(object):
 
             if self.spieler.isBonsaiFarmAvailable() is True:
                 self.bonsaifarm = Bonsai(self.__HTTPConn)
+
+            self.park = Park(self.__HTTPConn)
 
         except:
             raise
@@ -181,6 +185,7 @@ class WurzelBot(object):
 
     def waterPlantsInAllGardens(self):
         """Alle Gärten des Spielers werden komplett bewässert."""
+        garden: Garden
         for garden in self.garten:
             garden.waterPlants()
         
@@ -251,11 +256,16 @@ class WurzelBot(object):
                         for id, amount in products[1].items():
                             stock_list[id] -= amount
 
-    def checkWimpsProfitable(self, products, minimal_profit):
+
+    def checkWimpsProfitable(self, products, minimal_profit_in_percent) -> bool:
+        # Check if the price the wimp wants to pay is more than the price of buying every product in the shops.
+        # If the profit in percent is greater or equal to the given value, the return value is True.
+        return True
+        # TODO How to calculate profitability? It seems that none of the wimps is profitable when using the shop prices.
         npc_sum = 0
         for id, amount in products[1].items():
             npc_sum += self.productData.getProductByID(id).getPriceNPC() * amount
-        return products[0] / npc_sum * 100 >= minimal_profit
+        return (products[0] - npc_sum) / npc_sum * 100 >= minimal_profit_in_percent
 
     def checkWimpsRequiredAmount(self, minimal_balance, products, stock_list):
         for id, amount in products.items():
@@ -366,7 +376,7 @@ class WurzelBot(object):
             if amount == -1 or amount > self.storage.getStockByProductID(product.getID()):
                 amount = self.storage.getStockByProductID(product.getID())
             remainingAmount = amount
-            planted += self.wassergarten.growPlant(product.getID(), product.getSX(), product.getSY(), remainingAmount)
+            planted += self.wassergarten.growPlant(product.getID(), product.getSX(), product.getSY(), product.getEdge(), remainingAmount)
             self.storage.updateNumberInStock()
 
             return planted
@@ -545,18 +555,14 @@ class WurzelBot(object):
             self.__logBot.error(logMsg)
 
     # Bonsai
-    def doCutBonsai(self):
-        #TODO Item automatisch nach kaufen, Bonsai in den Garten setzen wenn lvl 3 erreicht
-        """
-        Probiert bei allen Bäumen den ersten Ast zu schneiden
-        """
-        sissor = None
-        for key,value in self.__HTTPConn.getBonsaiFarmInfos()[3]['data']['items'].items():
-            if value['item'] == "21":
-                sissor = key
-                print(sissor)
-        if sissor is None:
-            pass
-        trees = self.bonsaifarm.getBonsaiAvailable()
-        for tree in trees:
-            self.__HTTPConn.doCutBonsai(tree, sissor)
+    def cutAndRenewBonsais(self):
+        """cut all branches and renew bonsais if lvl 2"""
+        self.bonsaifarm.cutAllBonsai()
+        self.bonsaifarm.checkBonsai()
+        self.bonsaifarm.cutAllBonsai()
+
+    # Stadtpark
+    def checkPark(self):
+        """automate Park: first collect the cashpoint, then check if any item has to be renewed"""
+        self.park.collectCashFromCashpoint()
+        self.park.renewAllItemsInPark()
