@@ -307,16 +307,6 @@ class HTTPConnection(object):
             wimpsData[wimp_id] = [cash, product_data]
         return wimpsData
 
-    def __findEmptyAquaFieldsFromJSONContent(self, jContent):
-        emptyAquaFields = []
-        for field in jContent['garden']:
-            if jContent['garden'][field][0] == 0:
-                emptyAquaFields.append(int(field))
-        # Sortierung über ein leeres Array ändert Objekttyp zu None
-        if len(emptyAquaFields) > 0:
-            emptyAquaFields.sort(reverse=False)
-        return emptyAquaFields
-
     def __generateYAMLContentAndCheckForSuccess(self, content: str):
         """Aufbereitung und Prüfung der vom Server empfangenen YAML Daten auf Erfolg."""
         content = content.replace('\n', ' ')
@@ -745,7 +735,7 @@ class HTTPConnection(object):
             response, content = self.__sendRequest(address)
             self.__checkIfHTTPStateIsOK(response)
             jContent = self.__generateJSONContentAndCheckForOK(content)
-            emptyAquaFields = self.__findEmptyAquaFieldsFromJSONContent(jContent)
+            emptyAquaFields = self.__findEmptyFieldsFromJSONContent(jContent)
         except:
             raise
         else:
@@ -798,13 +788,23 @@ class HTTPConnection(object):
         except:
             raise
 
-    def growPlant(self, field, plant, gardenID, fields):
-        """Baut eine Pflanze auf einem Feld an."""
-        address =   f'save/pflanz.php?pflanze[]={str(plant)}&feld[]={str(field)}' \
-                    f'&felder[]={fields}&cid={self.__token}&garden={str(gardenID)}'
+    def harvestHerbGarden(self):
+        address = f'ajax/ajax.php?do=gardenHarvestAll&token={self.__token}'
         try:
             response, content = self.__sendRequest(address)
             self.__checkIfHTTPStateIsOK(response)
+            return json.loads(content)
+        except:
+            raise          
+
+    def growPlant(self, field, plant, gardenID, fields):
+        """Baut eine Pflanze auf einem Feld an."""
+        address =   f'save/pflanz.php?pflanze[]={plant}&feld[]={field}' \
+                    f'&felder[]={fields}&cid={self.__token}&garden={gardenID}'
+        try:
+            response, content = self.__sendRequest(address)
+            self.__checkIfHTTPStateIsOK(response)
+            return self.__generateJSONContentAndCheckForOK(content)
         except:
             raise
 
@@ -999,6 +999,24 @@ class HTTPConnection(object):
             self.__checkIfHTTPStateIsOK(response)
             jContent = self.__generateJSONContentAndCheckForSuccess(content)
             return jContent['success']
+        except:
+            raise
+
+    def removeWeedInHerbGarden(self):
+        address = f"ajax/ajax.php?do=herb&action=removeHerbWeed&token={self.__token}"
+        try:
+            response, content = self.__sendRequest(address)
+            self.__checkIfHTTPStateIsOK(response)
+            return self.__generateJSONContentAndCheckForOK(content)
+        except:
+            raise
+
+    def initHerbGarden(self):
+        address = f"ajax/ajax.php?do=herb&action=getGarden&token={self.__token}"
+        try:
+            response, content = self.__sendRequest(address)
+            self.__checkIfHTTPStateIsOK(response)
+            return self.__generateJSONContentAndCheckForOK(content)
         except:
             raise
 

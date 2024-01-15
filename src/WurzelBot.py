@@ -568,3 +568,10 @@ class WurzelBot(object):
         """automate Park: first collect the cashpoint, then check if any item has to be renewed"""
         self.park.collectCashFromCashpoint()
         self.park.renewAllItemsInPark()
+
+    # Herb Garden
+    def checkHerbGarden(self):
+        if True: #Test if available and active
+            self.herbgarden.removeWeed()
+            self.herbgarden.harvest()
+            self.herbgarden.growPlant()
