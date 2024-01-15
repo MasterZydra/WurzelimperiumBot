@@ -37,8 +37,8 @@ class ProductData():
                 product.setPriceNPC(dNPC[productname])
                 
         #Coin manuell setzen, dieser ist in der Tabelle der Hilfe nicht enthalten
-        # coins = self.getProductByName('Coins')
-        # coins.setPriceNPC((300.0))
+        coins = self.getProductByID(0)
+        coins.setPriceNPC((300.0))
 
     def getProductByID(self, id):
         product: Product

@@ -479,8 +479,10 @@ class WurzelBot(object):
         except:
             self.__logBot.error(i18n.t('wimpb.w_harvest_not_successful'))
 
-    def getDailyLoginBonus(self):
+    def getDailyBoni(self):
         self.bonus.getDailyLoginBonus()
+        self.bonus.collectBonusitemPoints()
+        self.bonus.collectLuckyMole()
 
     def infinityQuest(self, MINwt):
         #TODO: Mehr Checks bzw Option wieviele Quests/WT man ausgeben mag - da es kein cooldown gibt! (hoher wt verlust)

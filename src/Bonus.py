@@ -20,7 +20,7 @@ class Bonus:
         self.__httpConn.initGardenShed()
         self.__httpConn.openTrophyCase()
         jContent = self.__httpConn.collectBonusitems()
-        claim_msg = jContent['msg']
+        claim_msg = jContent['msg'].replace('<br>', '')
         already_claimed_msg = jContent['message']
         self._logBonus.info(f"{claim_msg}{already_claimed_msg}")
 
