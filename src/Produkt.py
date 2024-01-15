@@ -22,10 +22,10 @@ class Product():
         self.__timeUntilHarvest = time
         self.__edge = edge
         self.__priceNPC = None
-        
+
     def getID(self):
         return self.__id
-    
+
     def getCategory(self):
         return self.__category
 
@@ -34,22 +34,22 @@ class Product():
 
     def getName(self):
         return self.__name
-    
+
     def getSX(self):
         return self.__sx
 
     def getSY(self):
         return self.__sy
-    
+
     def getEdge(self):
         return self.__edge
-    
+
     def getPriceNPC(self):
         return self.__priceNPC
-    
+
     def isPlantable(self):
         return self.__isPlantable
-    
+
     def isVegetable(self):
         return self.__category == "v" and not self.getPriceNPC() is None
 
@@ -61,9 +61,10 @@ class Product():
 
     def setPriceNPC(self, price):
         self.__priceNPC = price
-        
+
     def printAll(self):
         # Show nothing instead of None
+        #BG- Не показва нищо вместо липсващите
         xstr = lambda s: s or ""
 
         print('ID:', str(self.__id).rjust(3), ' ', \

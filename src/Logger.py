@@ -7,6 +7,7 @@
 import logging, os, time
 
 #vars
+#BG- Променливи
 logtime = time.strftime("%d-%m-%y-%H.%M.%S")
 
 if not os.path.exists('logs'):

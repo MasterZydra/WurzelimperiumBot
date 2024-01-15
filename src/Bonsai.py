@@ -6,6 +6,7 @@ from src.HTTPCommunication import HTTPConnection
 
 class Bonsai():
     """Wrapper for the bonsaigarden"""
+    #BG - Интерфейс за бонсаевата градина 
 
     def __init__(self, httpConnection: HTTPConnection):
         self._httpConn = httpConnection
@@ -15,19 +16,22 @@ class Bonsai():
 
     def __initialiseBonsaiInfo(self, jContent):
         """initialise info from JSON content of the bonsaigarden"""
+	#BG - Инициализиране на информация от JSON съдържанието на бонсаевата градина
         self.__jContentData = jContent['data']
         self.__bonsaiquestnr = jContent['questnr']
         self.__bonsaiquest = self.__getBonsaiQuest(jContent)
         self.__bonsaiavailable = self.__getAvailableBonsaiSlots(jContent)
         self.__slotinfos = self.__getBonsaiSlotInfos(jContent)
-    
+
     def setBonsaiFarmData(self, jContent):
         """function to update the bonsaigarden data"""
+        #BG - Функция за актуализиране на данните за бонсаевата градина
         self.__jContentData = jContent['data']
         self.__slotinfos = self.__getBonsaiSlotInfos(jContent)
 
     def __getBonsaiQuest(self, jContent):
         """searches for available bonsai quest in the JSON content and returns the questdata"""
+	#BG - Търси налични куестове за бонсай в JSON съдържанието и връща данните за куеста.
         bonsaiQuest = {}
         i = 1
         for course in jContent['questData']['products']:
@@ -35,9 +39,10 @@ class Bonsai():
             bonsaiQuest.update(new)
             i = i + 1
         return bonsaiQuest
-    
+
     def __getAvailableBonsaiSlots(self, jContent): #TODO: usecase of this?
         """searches for available bonsai in the JSON Content and returns them"""
+	#BG - Търси налични бонсаи в JSON съдържанието и ги връща. - Каква е употребата?
         availableTreeSlots = []
 
         for tree in jContent['data']['data']['slots']:
@@ -49,9 +54,10 @@ class Bonsai():
             availableTreeSlots.sort(reverse=False)
 
         return availableTreeSlots
-    
+
     def __getBonsaiSlotInfos(self, jContent):
         """searches for breeded bonsai in the JSON content and returns level, reward and branches"""
+	#BG - Търси размножени бонсаи в JSON съдържанието и връща ниво, награда и разклонения.
         availableBonsais = {}
 
         for bonsai in jContent['data']['breed']:
@@ -65,6 +71,7 @@ class Bonsai():
 
     def cutAllBonsai(self, min_scissor_stock=50) -> None:
         """cuts every branch of available bonsai and rebuys scissors if necessary"""
+	#BG - Отрязва всички клони на наличните бонсаи и купува нови ножици, ако е необходимо.
         sissorID = None
         sissorLoads = None
         for key, value in self.__jContentData['items'].items():
@@ -76,7 +83,7 @@ class Bonsai():
             self._logBonsai.info("Rebuying 500 normal scissors for 80.000 wT.")
             jContent = self._httpConn.buyAndPlaceBonsaiItem(21, 4, 0)
             self.setBonsaiFarmData(jContent)
-        
+
         for key in self.__slotinfos.keys():
             self._logBonsai.info(f'Bonsai in slot {key}:')
             for branch in self.__slotinfos[key][2]:
@@ -87,6 +94,7 @@ class Bonsai():
 
     def checkBonsai(self, finish_level=2) -> None:
         """checks if bonsai is a certain level: finishes bonsai to bonsaigarden and renews it with a Zypresse and a normal pot"""
+	#BG - Проверява дали бонсаят е с определено ниво: допълва бонсая към градината и го подновява с кипарис и стандартна саксия.
         for key in self.__slotinfos.keys():
             level = self.__slotinfos[key][0]
             if level >= finish_level:

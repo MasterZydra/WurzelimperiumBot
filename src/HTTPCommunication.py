@@ -132,7 +132,7 @@ class HTTPConnection(object):
                 iErr = 1
         else:
             iErr = 1
-            
+
         if iErr == 1:
             self.__logHTTPConn.debug(tmpToken)
             raise JSONError('Fehler bei der Ermittlung des tokens')
@@ -250,7 +250,7 @@ class HTTPConnection(object):
             splittedPlantSize = str(plantSize).split('x')
             sx = splittedPlantSize[0]
             sy = splittedPlantSize[1]
-            
+
             if not self.__isFieldWatered(jContent, plantedFieldID):
                 fieldIDToBeWatered = plantedFieldID
                 plantsToBeWatered['fieldID'].append(fieldIDToBeWatered)
@@ -258,11 +258,11 @@ class HTTPConnection(object):
                 plantsToBeWatered['sy'].append(int(sy))
 
         return plantsToBeWatered
-    
+
     def __findEmptyFieldsFromJSONContent(self, jContent):
         """Sucht im JSON Content nach Felder die leer sind und gibt diese zurück."""
         emptyFields = []
-        
+
         for field in jContent['garden']:
             if jContent['garden'][field][0] == 0:
                 emptyFields.append(int(field))
@@ -276,7 +276,7 @@ class HTTPConnection(object):
     def __findWeedFieldsFromJSONContent(self, jContent):
         """Sucht im JSON Content nach Felder die mit Unkraut befallen sind und gibt diese zurück."""
         weedFields = {}
-        
+
         # 41 Unkraut, 42 Baumstumpf, 43 Stein, 45 Maulwurf
         for field in jContent['garden']:
             if jContent['garden'][field][0] in [41, 42, 43, 45]:
@@ -322,7 +322,7 @@ class HTTPConnection(object):
         content = content.replace('\n', ' ')
         content = content.replace('\t', ' ')
         yContent = yaml.load(content, Loader=yaml.FullLoader)
-        
+
         if yContent['success'] != 1:
             raise YAMLError()
 
@@ -332,7 +332,7 @@ class HTTPConnection(object):
         content = content.replace('\n', ' ')
         content = content.replace('\t', ' ')
         yContent = yaml.load(content, Loader=yaml.FullLoader)
-        
+
         if yContent['status'] != 'ok':
             raise YAMLError()
 
@@ -354,14 +354,14 @@ class HTTPConnection(object):
         html_tree = etree.fromstring(str(html_data), parser=my_parser)
 
         table = html_tree.find('./body/div[@id="content"]/table')
-        
+
         dictResult = {}
-        
+
         for row in table.iter('tr'):
-            
+
             produktname = row[0].text
             npc_preis = row[1].text
-            
+
             #Bei der Tabellenüberschrift ist der Text None
             if produktname != None and npc_preis != None:
                 # NPC-Preis aufbereiten
@@ -375,9 +375,9 @@ class HTTPConnection(object):
                     npc_preis = None
                 else:
                     npc_preis = float(npc_preis)
-                    
+
                 dictResult[produktname] = npc_preis
-                
+
         return dictResult
 
     def __getHeaders(self):
@@ -396,7 +396,7 @@ class HTTPConnection(object):
                                'server': f'server{str(loginDaten.server)}',
                                'user': loginDaten.user,
                                'pass': loginDaten.password})
-    
+
         headers = {'Content-type': 'application/x-www-form-urlencoded',
                    'Connection': 'keep-alive'}
 
@@ -555,7 +555,7 @@ class HTTPConnection(object):
     def waterPlantInAquaGarden(self, iField, sFieldsToWater):
         """Gießt alle Pflanzen im Wassergarten"""
         listFieldsToWater = sFieldsToWater.split(',')
-        
+
         sFields = ''
         for i in listFieldsToWater:
             sFields += f'&water[]={i}'
@@ -579,7 +579,7 @@ class HTTPConnection(object):
         else:
             return False
 
-            
+
     def isAquaGardenAvailable(self, iUserLevel):
         """
         Funktion ermittelt, ob ein Wassergarten verfügbar ist.
@@ -648,7 +648,7 @@ class HTTPConnection(object):
                                'msg_to': msg_to,
                                'msg_subject': msg_subject,
                                'msg_body': msg_body,
-                               'msg_send': 'senden'}) 
+                               'msg_send': 'senden'})
         try:
             response, content = self.__sendRequest('nachrichten/new.php', 'POST', parameter)
             self.__checkIfHTTPStateIsOK(response)
@@ -670,7 +670,7 @@ class HTTPConnection(object):
 
         if iStart == iEnd or iStart > iEnd:
             return False
-                
+
         iStartCorr = iStart - 1
         iCalls = int(math.ceil(float(iEnd - iStart) / 100))
 
@@ -767,10 +767,10 @@ class HTTPConnection(object):
                 msg = re.sub('<div.*>', '', msg)
                 msg = re.sub('x[ \n]*', 'x ', msg)
                 msg = msg.strip()
-                if 'biogas' in jContent: 
+                if 'biogas' in jContent:
                     biogas = jContent['biogas']
                     msg = msg + f"\n{biogas} Gartenabfälle"
-                if 'eventitems' in jContent: 
+                if 'eventitems' in jContent:
                     eventitems = jContent['collectevent']
                     msg = msg + f"\n{eventitems} Eventitems" #TODO check which event is active
                 print(msg)
@@ -893,7 +893,7 @@ class HTTPConnection(object):
         content = content.decode('UTF-8').replace('Gärten & Regale', 'Gärten und Regale')
         dictNPCPrices = self.__parseNPCPricesFromHtml(content)
         return dictNPCPrices
-        
+
 
     def getAllTradeableProductsFromOverview(self):
         """Gibt eine Liste zurück, welche Produkte handelbar sind."""
@@ -906,7 +906,7 @@ class HTTPConnection(object):
         else:
             for i in range(0, len(tradeableProducts)):
                 tradeableProducts[i] = int(tradeableProducts[i])
-                
+
             return tradeableProducts
 
 
@@ -917,7 +917,7 @@ class HTTPConnection(object):
         listOffers = []
         while nextPage:
             nextPage = False
-            
+
             try:
                 address = f'stadt/markt.php?order=p&v={str(prod_id)}&filter=1&page={str(iPage)}'
                 response, content = self.__sendRequest(address)
@@ -929,7 +929,7 @@ class HTTPConnection(object):
                 html_tree = html.parse(html_file)
                 root = html_tree.getroot()
                 table = root.findall('./body/div/table/*')
-                
+
                 if table[1][0].text == 'Keine Angebote':
                     pass
                 else:
@@ -939,7 +939,7 @@ class HTTPConnection(object):
                         anzahl = table[i][0].text
                         anzahl = anzahl.encode('utf-8')
                         anzahl = anzahl.replace('.', '')
-                        
+
                         preis = table[i][3].text
                         preis = preis.encode('utf-8')
                         preis = preis.replace('\xc2\xa0wT', '')
@@ -947,7 +947,7 @@ class HTTPConnection(object):
                         preis = preis.replace(',', '.')
                         #produkt = table[i][1][0].text
                         #verkaeufer = table[i][2][0].text
-        
+
                         listOffers.append([int(anzahl), float(preis)])
 
                     for element in table[len(table)-1][0]:
@@ -1024,7 +1024,7 @@ class HTTPConnection(object):
             return jContent
         except:
             pass
-    
+
     def __getAvailableHives(self, jContent):
         """Sucht im JSON Content nach verfügbaren Bienenstöcken und gibt diese zurück."""
         availableHives = []
@@ -1079,6 +1079,7 @@ class HTTPConnection(object):
 
     def harvestBienen(self):
         """Erntet den vollen Honigtopf"""
+
         try:
             response, content = self.__sendRequest(f'ajax/ajax.php?do=bees_fill&token={self.__token}')
             self.__checkIfHTTPStateIsOK(response)
@@ -1087,6 +1088,7 @@ class HTTPConnection(object):
 
     def changeHivesTypeQuest(self, hive, Questanforderung):
         """Ändert den Typ vom Bienenstock auf die Questanforderung."""
+
         try:
             address =   f'ajax/ajax.php?do=bees_changehiveproduct&id={str(hive)}' \
                         f'&pid={str(Questanforderung)}&token={self.__token}'
@@ -1141,18 +1143,18 @@ class HTTPConnection(object):
             raise
 
     def buyAndPlaceBonsaiItem(self, item, pack, slot):
-        """ 
+        """
         buys and places an item from the bonsai shop and returns JSON content
 
         Parameters
         -------------
             slot: 0-10; if 0, item stays in storage
-            item: 
-                bonsais: 1-10 (Mädchenkiefer, Mangrove, Geldbaum, Fichten-Wald, Zypresse, Wacholder, Eiche, ...), 
-                pots: 11-20 (Einfache Schale, ...), 
+            item:
+                bonsais: 1-10 (Mädchenkiefer, Mangrove, Geldbaum, Fichten-Wald, Zypresse, Wacholder, Eiche, ...),
+                pots: 11-20 (Einfache Schale, ...),
                 scissors: 21-24 (Normale Schere, ...)
-            pack: 
-                1, 5, 10 for bonsais or pots; 
+            pack:
+                1, 5, 10 for bonsais or pots;
                 1, 2, 3, 4 for 10, 50, 100, 500 scissors
         """
         address = f'ajax/ajax.php?do=bonsai_buy_item&item={item}&pack={pack}&slot={slot}&token={self.__token}'
@@ -1165,7 +1167,7 @@ class HTTPConnection(object):
             raise
 
     def placeBonsaiItem(self, id, slot):
-        """ 
+        """
         places an item from the internal storage and returns JSON content
 
         Parameters
@@ -1227,7 +1229,7 @@ class HTTPConnection(object):
         except:
             raise
 
-# Notizen
+# Notes
     def getNote(self):
         """Get the users note"""
         try:
@@ -1281,7 +1283,7 @@ class JSONError(Exception):
 
     def __str__(self):
         return repr(self.value)
-    
+
 class HTTPRequestError(Exception):
     def __init__(self, value):
         self.value = value
@@ -1292,6 +1294,6 @@ class HTTPRequestError(Exception):
 class YAMLError(Exception):
     def __init__(self, value):
         self.value = value
-        
+
     def __str__(self):
         return repr(self.value)
