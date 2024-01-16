@@ -339,16 +339,10 @@ class HerbGarden(Garden):
         self.__info = self.__jContent['info']
         self.__weed = self.__jContent['weed']
 
-    def _isPlantGrowableOnField(self, fieldID, emptyFields, fieldsToPlant):
+    def _isPlantGrowableOnField(self, fieldID, emptyFields):
         """Prüft anhand mehrerer Kriterien, ob ein Anpflanzen möglich ist."""
         # Betrachtetes Feld darf nicht besetzt sein
         if not (fieldID in emptyFields): return False
-    
-        fieldsToPlantSet = set(fieldsToPlant)
-        emptyFieldsSet = set(emptyFields)
-        
-        # Alle benötigten Felder der Pflanze müssen leer sein
-        if not (fieldsToPlantSet.issubset(emptyFieldsSet)): return False
         return True
 
     def harvest(self): # TODO: proof if any harvestable
@@ -372,9 +366,8 @@ class HerbGarden(Garden):
     def getEmptyFields(self):
         """Sucht im JSON Content nach Felder die leer sind und gibt diese zurück."""
         emptyFields = []
-        
         for field in self.__jContent['garden']:
-            if self.__jContent['garden'][field][0] == 0 and field in self._VALID_FIELDS.values():
+            if self.__jContent['garden'][field][0] == 0 and int(field) in self._VALID_FIELDS.keys():
                 emptyFields.append(int(field))
 
         #Sortierung über ein leeres Array ändert Objekttyp zu None
@@ -400,15 +393,13 @@ class HerbGarden(Garden):
                 if planted == amount: 
                     break
 
-                fieldsToPlant = self._getAllFieldIDsFromFieldIDAndSizeAsIntList(field, 2, 2)
-
-                if (self._isPlantGrowableOnField(field, emptyFields, fieldsToPlant)):
+                if (self._isPlantGrowableOnField(int(field), emptyFields)):
                     fields = self._getAllFieldIDsFromFieldIDAndSizeAsString(field, 2, 2)
                     self._httpConn.growPlant(field, herbID, self._id, fields)
                     planted += 1
 
                     #Nach dem Anbau belegte Felder aus der Liste der leeren Felder loeschen
-                    fieldsToPlantSet = set(fieldsToPlant)
+                    fieldsToPlantSet = {field}
                     emptyFieldsSet = set(emptyFields)
                     tmpSet = emptyFieldsSet - fieldsToPlantSet
                     emptyFields = list(tmpSet)
@@ -422,3 +413,7 @@ class HerbGarden(Garden):
             self._logGarden.info(msg)
             print(msg)
             return planted
+        
+
+    def exchangeHerb(self):
+        pass #TODO: exchange herb for cheapest product
