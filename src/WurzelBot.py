@@ -576,4 +576,4 @@ class WurzelBot(object):
         if True: #Test if available and active
             self.herbgarden.removeWeed()
             self.herbgarden.harvest()
-            self.herbgarden.growPlant(self.storage)
+            self.herbgarden.growPlant(self)

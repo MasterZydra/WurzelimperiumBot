@@ -4,7 +4,7 @@
 from collections import Counter, namedtuple
 import logging, i18n
 from src.HTTPCommunication import HTTPConnection
-from src.Lager import Storage
+from src.WurzelBot import WurzelBot
 
 i18n.load_path.append('lang')
 
@@ -376,14 +376,14 @@ class HerbGarden(Garden):
 
         return emptyFields
 
-    def growPlant(self, stock: Storage, amount=24):
+    def growPlant(self, bot: WurzelBot, amount=24):
         """Grows a plant of any size."""
         herbID = self.__info.get('herbid')
-        herb_stock = stock.getStockByProductID(herbID)
+        herb_stock = bot.storage.getStockByProductID(herbID)
 
-        if not herb_stock >= amount:
-            print("Need to buy more herbs to plant!")
-            return
+        while not herb_stock >= amount:
+            self.exchangeHerb(bot)
+            herb_stock = bot.storage.getStockByProductID(herbID)
         
         planted = 0
         emptyFields = self.getEmptyFields()
@@ -415,5 +415,25 @@ class HerbGarden(Garden):
             return planted
         
 
-    def exchangeHerb(self):
-        pass #TODO: exchange herb for cheapest product
+    def exchangeHerb(self, bot: WurzelBot):
+        exchange = {}
+        buy_price = {}
+
+        for plant in self.__exchange:
+            pid = plant['plant']
+            amount = plant['amount']
+            exchange.update({pid: amount})
+            total = amount * bot.productData.getProductByID(pid).getPriceNPC()
+            buy_price.update({pid: total})
+
+        sorted_dict = sorted(buy_price.items(), key=lambda x:x[1])
+        cheapest_plant = next(iter(sorted_dict))[0]
+
+        stock = bot.storage.getStockByProductID(cheapest_plant)
+        amount = exchange[cheapest_plant]
+
+        if not stock >= amount:
+            bot.doBuyFromShop(bot.productData.getProductByID(cheapest_plant).getName(), amount)
+        self._httpConn.exchangeHerb(cheapest_plant)
+
+        bot.storage.updateNumberInStock()
