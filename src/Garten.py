@@ -4,7 +4,6 @@
 from collections import Counter, namedtuple
 import logging, i18n
 from src.HTTPCommunication import HTTPConnection
-from src.WurzelBot import WurzelBot
 
 i18n.load_path.append('lang')
 
@@ -376,10 +375,16 @@ class HerbGarden(Garden):
 
         return emptyFields
 
-    def growPlant(self, bot: WurzelBot, amount=24):
+    def growPlant(self, bot, amount=24):
         """Grows a plant of any size."""
         herbID = self.__info.get('herbid')
         herb_stock = bot.storage.getStockByProductID(herbID)
+
+        if not self.__info.get('canPlant'):
+            return
+        
+        if self.__info.get('send') >= self.__info.get('amount'):
+            return
 
         while not herb_stock >= amount:
             self.exchangeHerb(bot)
@@ -415,7 +420,7 @@ class HerbGarden(Garden):
             return planted
         
 
-    def exchangeHerb(self, bot: WurzelBot):
+    def exchangeHerb(self, bot):
         exchange = {}
         buy_price = {}
 
