@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -
 
 from collections import Counter
-from src.HTTPCommunication import HTTPConnection
+from src.core.HTTPCommunication import HTTPConnection
 from src.Quests_lists import *
 from src.Spieler import Spieler
 

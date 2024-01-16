@@ -6,7 +6,7 @@ Created on 21.03.2017
 @author: Gosha_iv
 """
 
-from src.HTTPCommunication import HTTPConnection
+from src.core.HTTPCommunication import HTTPConnection
 from src.Produktdaten import ProductData
 
 class Wimps:

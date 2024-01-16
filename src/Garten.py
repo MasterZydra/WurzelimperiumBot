@@ -3,7 +3,7 @@
 
 from collections import Counter, namedtuple
 import logging, i18n
-from src.HTTPCommunication import HTTPConnection
+from src.core.HTTPCommunication import HTTPConnection
 
 i18n.load_path.append('lang')
 

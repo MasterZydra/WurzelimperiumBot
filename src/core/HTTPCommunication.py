@@ -30,7 +30,15 @@ SERVER_URLS = {
 class HTTPConnection(object):
     """Mit der Klasse HTTPConnection werden alle anfallenden HTTP-Verbindungen verarbeitet."""
 
-    def __init__(self):
+    _instance = None
+
+    def __new__(self):
+        if self._instance is None:
+            self._instance = super(HTTPConnection, self).__new__(self)
+            self._instance.__initClass()
+        return self._instance
+    
+    def __initClass(self):
         self.__webclient = httplib2.Http(disable_ssl_certificate_validation=True)
         self.__webclient.follow_redirects = False
         self.__userAgent = 'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36 Vivaldi/2.2.1388.37'
@@ -43,13 +51,15 @@ class HTTPConnection(object):
         self.__unr = None
         self.__portunr = None
 
-
     def __del__(self):
         self.__Session = None
         self.__token = None
         self.__userID = None
         self.__unr = None
         self.__portunr = None
+
+    def sendRequest(self, address: str, method: str = 'GET', body = None, headers: dict = {}):
+        return self.__sendRequest(address, method, body, headers)
 
     def __sendRequest(self, address: str, method: str = 'GET', body = None, headers: dict = {}):
         uri = self.__getServer() + address
@@ -72,6 +82,8 @@ class HTTPConnection(object):
                 'g_tag': str(content['g_tag']),
                 'time': int(content['time'])}
 
+    def checkIfHTTPStateIsOK(self, response):
+        return self.__checkIfHTTPStateIsOK(response)
 
     def __checkIfHTTPStateIsOK(self, response):
         """Prüft, ob der Status der HTTP Anfrage OK ist."""
@@ -1229,24 +1241,7 @@ class HTTPConnection(object):
         except:
             raise
 
-# Notes
-    def getNote(self):
-        """Get the users note"""
-        try:
-            response, content = self.__sendRequest('notiz.php', 'POST')
-            self.__checkIfHTTPStateIsOK(response)
-            content = content.decode('UTF-8')
-            my_parser = etree.HTMLParser(recover=True)
-            html_tree = etree.fromstring(content, parser=my_parser)
-
-            note = html_tree.find('./body/form/div/textarea[@id="notiztext"]')
-            noteText = note.text
-            if noteText is None:
-                return ''
-            return noteText.strip()
-        except:
-            raise
-
+# Shop
     def buyFromShop(self, shop: int, productId: int, amount: int = 1):
         parameter = urlencode({'s': shop,
                                'page': 1,

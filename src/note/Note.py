@@ -1,18 +1,21 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from src.HTTPCommunication import HTTPConnection
+from src.note.Http import Http
 
 class Note():
-    """Diese Daten-Klasse enthält alle wichtigen Informationen über die Notiz."""
+    """This class handles reading from the user notes"""
     #BG- Тази класа данни съдържа цялата важна информация за бележката.
-    def __init__(self, httpConnection: HTTPConnection):
-        self._httpConn = httpConnection
+
+    # TODO Add fn to write into notes
+  
+    def __init__(self):
+        self._httpConn = Http()
 
     def getNote(self):
       return self._httpConn.getNote()
 
-    def getMinStock(self, plantName = None):
+    def getMinStock(self, plantName = None) -> int:
       note = self.getNote()
       note = note.replace('\r\n', '\n')
       lines = note.split('\n')
@@ -32,7 +35,7 @@ class Note():
       #BG- Връща задание 0 ако не е намерена в бележката
       return 0
 
-    def __extractAmount(self, line, prefix):
+    def __extractAmount(self, line, prefix) -> int:
       minStockStr = line.replace(prefix, '').strip()
       minStockInt = 0
       try:
