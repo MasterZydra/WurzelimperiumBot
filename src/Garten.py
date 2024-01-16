@@ -4,6 +4,7 @@
 from collections import Counter, namedtuple
 import logging, i18n
 from src.HTTPCommunication import HTTPConnection
+from src.Lager import Storage
 
 i18n.load_path.append('lang')
 
@@ -325,7 +326,7 @@ class HerbGarden(Garden):
         self.__setValidFields()
         self.__jContent = self._httpConn.initHerbGarden()
         self.__exchange = self.__jContent['exchange']
-        self.__setHerbGardenInfo()
+        self.__setHerbGardenInfo(self.__jContent)
 
     def __setValidFields(self):
         self._VALID_FIELDS = {}
@@ -351,7 +352,7 @@ class HerbGarden(Garden):
         return True
 
     def harvest(self): # TODO: proof if any harvestable
-        jContent = self._httpConn.harvestHerbGarden(self._id)
+        jContent = self._httpConn.harvestHerbGarden()
         if jContent['status'] == 'error':
             msg = jContent['message']
         elif jContent['status'] == 'ok':
@@ -361,11 +362,11 @@ class HerbGarden(Garden):
         self._logGarden.info(msg)
 
     def removeWeed(self): #Abfrage if jContent['weed']
-        msg = "In deinem Kräutergarten ist kein Unkraut."
-        if self.__weed:
-            jContent = self._httpConn.removeWeedInHerbGarden
-            msg = jContent['message']
-            self.__setHerbGardenInfo(jContent)
+        # msg = "In deinem Kräutergarten ist kein Unkraut."
+        # if self.__weed:
+        jContent = self._httpConn.removeWeedInHerbGarden()
+        msg = jContent.get('message', None)
+        self.__setHerbGardenInfo(jContent)
         self._logGarden.info(msg)
 
     def getEmptyFields(self):
@@ -373,7 +374,7 @@ class HerbGarden(Garden):
         emptyFields = []
         
         for field in self.__jContent['garden']:
-            if self.__['garden'][field][0] == 0:
+            if self.__jContent['garden'][field][0] == 0 and field in self._VALID_FIELDS.values():
                 emptyFields.append(int(field))
 
         #Sortierung über ein leeres Array ändert Objekttyp zu None
@@ -382,17 +383,28 @@ class HerbGarden(Garden):
 
         return emptyFields
 
-    def growPlant(self, plantID, amount=24):
+    def growPlant(self, stock: Storage, amount=24):
         """Grows a plant of any size."""
+        herbID = self.__info.get('herbid')
+        herb_stock = stock.getStockByProductID(herbID)
+
+        if not herb_stock >= amount:
+            print("Need to buy more herbs to plant!")
+            return
+        
         planted = 0
         emptyFields = self.getEmptyFields()
-        
+
         try:
-            for field, fieldsToPlant in self._VALID_FIELDS.items():
-                if planted == amount: break
+            for field in self._VALID_FIELDS.keys():
+                if planted == amount: 
+                    break
+
+                fieldsToPlant = self._getAllFieldIDsFromFieldIDAndSizeAsIntList(field, 2, 2)
 
                 if (self._isPlantGrowableOnField(field, emptyFields, fieldsToPlant)):
-                    self._httpConn.growPlant(field, plantID, self._id, fieldsToPlant)
+                    fields = self._getAllFieldIDsFromFieldIDAndSizeAsString(field, 2, 2)
+                    self._httpConn.growPlant(field, herbID, self._id, fields)
                     planted += 1
 
                     #Nach dem Anbau belegte Felder aus der Liste der leeren Felder loeschen
