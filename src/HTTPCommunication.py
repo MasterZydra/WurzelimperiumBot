@@ -804,7 +804,7 @@ class HTTPConnection(object):
         try:
             response, content = self.__sendRequest(address)
             self.__checkIfHTTPStateIsOK(response)
-            return self.__generateJSONContentAndCheckForOK(content)
+            return self.__generateJSONContentAndCheckForSuccess(content)
         except:
             raise
 

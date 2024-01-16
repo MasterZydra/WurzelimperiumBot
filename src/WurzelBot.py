@@ -9,7 +9,7 @@ Created on 21.03.2017
 from collections import Counter
 from src.Bonsai import Bonsai
 from src.Bonus import Bonus
-from src.Garten import Garden, AquaGarden
+from src.Garten import Garden, AquaGarden, HerbGarden
 from src.Honig import Honig
 from src.HTTPCommunication import HTTPConnection
 from src.Lager import Storage
@@ -49,6 +49,7 @@ class WurzelBot(object):
         self.bonus = Bonus(self.__HTTPConn)
         self.note = Note(self.__HTTPConn)
         self.park = None
+        self.herbgarden = None
 
 
     def __initGardens(self):
@@ -69,6 +70,7 @@ class WurzelBot(object):
                 self.bonsaifarm = Bonsai(self.__HTTPConn)
 
             self.park = Park(self.__HTTPConn)
+            self.herbgarden = HerbGarden(self.__HTTPConn)
 
         except:
             raise
@@ -574,4 +576,4 @@ class WurzelBot(object):
         if True: #Test if available and active
             self.herbgarden.removeWeed()
             self.herbgarden.harvest()
-            self.herbgarden.growPlant()
+            self.herbgarden.growPlant(self.storage)
