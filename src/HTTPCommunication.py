@@ -763,9 +763,9 @@ class HTTPConnection(object):
                 print(jContent['message'])
                 self.__logHTTPConn.info(jContent['message'])
             elif jContent['status'] == 'ok':
-                msg = jContent['harvestMsg'].replace('</div>', '\n').replace('&nbsp;', ' ')
+                msg = jContent['harvestMsg'].replace('</div>', '').replace('&nbsp;', ' ').replace('<div class="line">', '\n')
                 msg = re.sub('<div.*>', '', msg)
-                msg = re.sub('x[ \n]*', 'x ', msg)
+                msg = re.sub('x', 'x ', msg)
                 msg = msg.strip()
                 if 'biogas' in jContent: 
                     biogas = jContent['biogas']
@@ -789,9 +789,9 @@ class HTTPConnection(object):
                 print(jContent['message'])
                 self.__logHTTPConn.info(jContent['message'])
             elif jContent['status'] == 'ok':
-                msg = jContent['harvestMsg'].replace('</div>', '\n').replace('&nbsp;', ' ')
+                msg = jContent['harvestMsg'].replace('</div>', '').replace('&nbsp;', ' ').replace('<div class="line">', '\n')
                 msg = re.sub('<div.*>', '', msg)
-                msg = re.sub('x[ \n]*', 'x ', msg)
+                msg = re.sub('x', 'x ', msg)
                 msg = msg.strip()
                 print(msg)
                 self.__logHTTPConn.info(msg)
