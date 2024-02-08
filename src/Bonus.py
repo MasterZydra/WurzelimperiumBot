@@ -1,5 +1,5 @@
 import time
-from src.HTTPCommunication import HTTPConnection
+from src.core.HTTPCommunication import HTTPConnection
 
 class Bonus:
     def __init__(self, httpConnection: HTTPConnection):

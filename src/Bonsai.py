@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import logging
-from src.HTTPCommunication import HTTPConnection
+from src.core.HTTPCommunication import HTTPConnection
 
 class Bonsai():
     """Wrapper for the bonsaigarden"""

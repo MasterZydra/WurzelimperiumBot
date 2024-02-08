@@ -7,7 +7,7 @@ Created on 24.10.2018
 
 from collections import namedtuple
 import re, i18n
-from src.HTTPCommunication import HTTPConnection
+from src.core.HTTPCommunication import HTTPConnection
 
 i18n.load_path.append('lang')
 

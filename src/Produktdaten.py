@@ -7,7 +7,7 @@ Created on 23.05.2019
 '''
 
 import json
-from src.HTTPCommunication import HTTPConnection
+from src.core.HTTPCommunication import HTTPConnection
 from src.Produkt import Product
 
 CATEGORY_DECORATION       = 'd'

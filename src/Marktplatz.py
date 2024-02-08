@@ -7,7 +7,7 @@ Created on 15.05.2019
 @author: MrFlamez
 '''
 
-from src.HTTPCommunication import HTTPConnection
+from src.core.HTTPCommunication import HTTPConnection
 
 class Marketplace():
 

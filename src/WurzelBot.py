@@ -11,11 +11,11 @@ from src.Bonsai import Bonsai
 from src.Bonus import Bonus
 from src.Garten import Garden, AquaGarden
 from src.Honig import Honig
-from src.HTTPCommunication import HTTPConnection
+from src.core.HTTPCommunication import HTTPConnection
 from src.Lager import Storage
 from src.Marktplatz import Marketplace
 from src.Messenger import Messenger
-from src.Note import Note
+from src.note.Note import Note
 from src.Produktdaten import ProductData
 from src.Quests import Quest
 from src.Shop_lists import *
@@ -49,7 +49,7 @@ class WurzelBot(object):
         self.wimparea = Wimps(self.__HTTPConn)
         self.quest = Quest(self.__HTTPConn, self.spieler)
         self.bonus = Bonus(self.__HTTPConn)
-        self.note = Note(self.__HTTPConn)
+        self.note = Note()
         self.park = None
 
 
