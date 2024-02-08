@@ -9,9 +9,10 @@ Created on 21.03.2017
 from collections import Counter
 from src.Bonsai import Bonsai
 from src.Bonus import Bonus
+from src.core.Config import Config
+from src.core.HTTPCommunication import HTTPConnection
 from src.Garten import Garden, AquaGarden
 from src.Honig import Honig
-from src.core.HTTPCommunication import HTTPConnection
 from src.Lager import Storage
 from src.Marktplatz import Marketplace
 from src.Messenger import Messenger
@@ -34,6 +35,7 @@ class WurzelBot(object):
 
 
     def __init__(self):
+        self.__config = Config()
         self.__logBot = logging.getLogger("bot")
         self.__logBot.setLevel(logging.DEBUG)
         self.__HTTPConn = HTTPConnection()
@@ -120,49 +122,65 @@ class WurzelBot(object):
         if portalacc == True:
             try:
                 self.__HTTPConn.logInPortal(loginDaten)
-            except:
+            except Exception as e:
+                if self.__config.isDevMode:
+                    raise e
                 self.__logBot.error(i18n.t('wimpb.error_starting_wbot'))
                 return False
         else:
             try:
                 self.__HTTPConn.logIn(loginDaten)
-            except:
+            except Exception as e:
+                if self.__config.isDevMode:
+                    raise e
                 self.__logBot.error(i18n.t('wimpb.error_starting_wbot'))
                 return False
 
         try:
             self.spieler.setUserNameFromServer(self.__HTTPConn)
-        except:
+        except Exception as e:
+            if self.__config.isDevMode:
+                raise e
             self.__logBot.error(i18n.t('wimpb.username_not_determined'))
             return False
 
         try:
             self.spieler.setUserDataFromServer(self.__HTTPConn)
-        except:
+        except Exception as e:
+            if self.__config.isDevMode:
+                raise e
             self.__logBot.error(i18n.t('wimpb.error_refresh_userdata'))
             return False
 
         try:
             self.spieler.setHoneyFarmAvailability(self.__HTTPConn.isHoneyFarmAvailable(self.spieler.getLevelNr()))
-        except:
+        except Exception as e:
+            if self.__config.isDevMode:
+                raise e
             self.__logBot.error(i18n.t('wimpb.error_no_beehives'))
             return False
 
         try:
             self.spieler.setAquaGardenAvailability(self.__HTTPConn.isAquaGardenAvailable(self.spieler.getLevelNr()))
-        except:
+        except Exception as e:
+            if self.__config.isDevMode:
+                raise e
             self.__logBot.error(i18n.t('wimpb.error_no_water_garden'))
             return False
 
         try:
             self.spieler.setBonsaiFarmAvailability(self.__HTTPConn.isBonsaiFarmAvailable(self.spieler.getLevelNr()))
-        except:
+        except Exception as e:
+            if self.__config.isDevMode:
+                raise e
             self.__logBot.error(i18n.t('wimpb.error_no_bonsaifarm'))
             return False
 
         try:
             self.__initGardens()
-        except:
+        except Exception as e:
+            if self.__config.isDevMode:
+                raise e
             self.__logBot.error(i18n.t('wimpb.error_number_of_gardens'))
             return False
 
@@ -183,7 +201,9 @@ class WurzelBot(object):
             self.__HTTPConn.logOut()
             self.__logBot.info(i18n.t('wimpb.logout_success'))
             self.__logBot.info('-------------------------------------------')
-        except:
+        except Exception as e:
+            if self.__config.isDevMode:
+                raise e
             self.__logBot.error(i18n.t('wimpb.exit_wbot_abnormal'))
 
 
