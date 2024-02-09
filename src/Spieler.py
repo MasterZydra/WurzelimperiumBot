@@ -25,6 +25,7 @@ class Spieler():
     __honeyFarmAvailability = None
     __aquaGardenAvailability = None
     __bonsaiFarmAvailability = None
+    __cityParkAvailability = None
     __eMailAdressConfirmed = None
 
     def __init__(self):
@@ -47,6 +48,12 @@ class Spieler():
 
     def isAquaGardenAvailable(self):
         return self.__aquaGardenAvailability
+
+    def setCityParkAvailability(self, bAvl):
+        self.__cityParkAvailability = bAvl
+
+    def isCityParkAvailable(self):
+        return self.__cityParkAvailability
 
     def isEMailAdressConfirmed(self):
         return self.__eMailAdressConfirmed

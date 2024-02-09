@@ -629,6 +629,9 @@ class HTTPConnection(object):
         else:
             return False
 
+    def isCityParkAvailable(self, iUserLevel):
+        return iUserLevel >= 5
+
     #TODO: Was passiert wenn ein Garten hinzukommt (parallele Sitzungen im Browser und Bot)? Globale Aktualisierungsfunktion?
 
     def checkIfEMailAdressIsConfirmed(self):

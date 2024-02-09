@@ -74,7 +74,8 @@ class WurzelBot(object):
             if self.spieler.isBonsaiFarmAvailable() is True:
                 self.bonsaifarm = Bonsai(self.__HTTPConn)
 
-            self.park = Park(self.__HTTPConn)
+            if self.spieler.isCityParkAvailable() is True:
+                self.park = Park(self.__HTTPConn)
 
         except:
             raise
@@ -174,6 +175,14 @@ class WurzelBot(object):
             if self.__config.isDevMode:
                 raise e
             self.__logBot.error(i18n.t('wimpb.error_no_bonsaifarm'))
+            return False
+
+        try:
+            self.spieler.setCityParkAvailability(self.__HTTPConn.isCityParkAvailable(self.spieler.getLevelNr()))
+        except Exception as e:
+            if self.__config.isDevMode:
+                raise e
+            self.__logBot.error(i18n.t('wimpb.error_no_citypark'))
             return False
 
         try:
