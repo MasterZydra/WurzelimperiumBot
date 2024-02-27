@@ -14,8 +14,8 @@ class Http(object):
             response, content = self.__http.sendRequest('notiz.php', 'POST')
             self.__http.checkIfHTTPStateIsOK(response)
             content = content.decode('UTF-8')
-            my_parser = etree.HTMLParser(recover=True)
-            html_tree = etree.fromstring(content, parser=my_parser)
+            parser = etree.HTMLParser(recover=True)
+            html_tree = etree.fromstring(content, parser=parser)
 
             note = html_tree.find('./body/form/div/textarea[@id="notiztext"]')
             noteText = note.text
