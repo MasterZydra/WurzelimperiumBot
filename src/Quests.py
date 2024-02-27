@@ -52,44 +52,20 @@ class Quest:
 
     def __getCactusQuestProducts(self):
         quest_products = []
-        if int(self.__spieler.getLevelNr()) >= 12:
-            # Initial Cactus quest
-            #BG- Главна Кактус мисии
-            quest_number = self.__httpConn.getInfoFromStats("CactusQuest")
-            raw_products = cactus_quest.get(str(quest_number), {})
-            if len(raw_products) > 0:
-                products = {str(k): v for k, v in raw_products.items()}
-                quest_products.append(products)
-            # Echino quests
-            #BG- Таралежова мисия
-            quest_number = self.__httpConn.getInfoFromStats("EchinoQuest") + 1
-            raw_products = echinocactus_quest.get(str(quest_number), {})
-            if len(raw_products) > 0:
-                products = {str(k): v for k, v in raw_products.items()}
-                quest_products.append(products)
-            # Bighead quests
-            #BG- Голяма глава мисия
-            if int(self.__spieler.getLevelNr()) >= 15:
-                quest_number = self.__httpConn.getInfoFromStats("BigheadQuest") + 1
-                raw_products = bighead_quest.get(str(quest_number), {})
-                if len(raw_products) > 0:
+
+        def add_quest_products(quest_name, level_requirement):
+            if int(self.__spieler.getLevelNr()) >= level_requirement:
+                quest_number = self.__httpConn.getInfoFromStats(quest_name) + 1
+                raw_products = quest_data.get(str(quest_number), {})
+                if raw_products:
                     products = {str(k): v for k, v in raw_products.items()}
                     quest_products.append(products)
-            # Opuntia quests
-            #BG- Опунтия мисия
-            if int(self.__spieler.getLevelNr()) >= 18:
-                quest_number = self.__httpConn.getInfoFromStats("OpuntiaQuest") + 1
-                raw_products = opuntia_quest.get(str(quest_number), {})
-                if len(raw_products) > 0:
-                    products = {str(k): v for k, v in raw_products.items()}
-                    quest_products.append(products)
-            # Saguaro quests
-            #BG- Сагуаро мисия
-            if int(self.__spieler.getLevelNr()) >= 21:
-                quest_number = self.__httpConn.getInfoFromStats("SaguaroQuest") + 1
-                raw_products = saguaro_quest.get(str(quest_number), {})
-                if len(raw_products) > 0:
-                    products = {str(k): v for k, v in raw_products.items()}
-                    quest_products.append(products)
+
+        quest_data = cactus_quest
+        add_quest_products("CactusQuest", 12)
+        add_quest_products("EchinoQuest", 12)
+        add_quest_products("BigheadQuest", 15)
+        add_quest_products("OpuntiaQuest", 18)
+        add_quest_products("SaguaroQuest", 21)
 
         return quest_products

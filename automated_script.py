@@ -48,6 +48,8 @@ def main():
     water_plants(wurzelBot)
     claim_daily_bonus(wurzelBot)
     process_wimps(wurzelBot)
+    #send_bees(wurzelBot)    <-------------- NEED CHECKING FOR LEVEL REQUIREMENT!
+    #pfand_sammeln(wurzelBot)
     close_connection(wurzelBot)
 
 def remove_weed(bot):
@@ -82,6 +84,14 @@ def water_plants(bot):
     time.sleep(3)
     print(i18n.t('wimpb.watering_all_plants'))
     bot.waterPlantsInAllGardens()
+
+def send_bees(bot):
+    print('Trying to get Bees to work...')
+    bot.sendBienen()
+
+def pfand_sammeln(bot):
+    print('Checking Park...')
+    bot.checkPark()
 
 def claim_daily_bonus(bot):
     # Claim daily bonus

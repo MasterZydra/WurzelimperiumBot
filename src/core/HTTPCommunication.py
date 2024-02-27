@@ -3,22 +3,33 @@
 '''
 Created on 21.03.2017
 
-@author: MrFlamez
+@author: MrFlamez / Reworked: xRuffKez
 '''
 
 from urllib.parse import urlencode
-import json, re, httplib2, yaml, time, logging, math, io, i18n
 from http.cookies import SimpleCookie
-from src.Session import Session
+import json
+import re
+import httplib2
+import yaml
+import time
+import logging
+import math
+import io
+import i18n
+import requests
 import xml.etree.ElementTree as eTree
+from src.Session import Session
 from lxml import html, etree
 
+# Load language files
 i18n.load_path.append('lang')
 
-# Defines
+# HTTP response status codes
 HTTP_STATE_OK = 200
-HTTP_STATE_FOUND = 302 # moved temporarily
+HTTP_STATE_FOUND = 302  # Moved Temporarily
 
+# Server URLs
 SERVER_URLS = {
     'de': '.wurzelimperium.de/',
     'bg': '.bg.molehillempire.com/',
@@ -27,18 +38,19 @@ SERVER_URLS = {
     'ru': '.sadowajaimperija.ru/'
 }
 
-class HTTPConnection(object):
-    """Mit der Klasse HTTPConnection werden alle anfallenden HTTP-Verbindungen verarbeitet."""
+class HTTPConnection:
+    """Class for handling HTTP connections."""
 
     _instance = None
 
-    def __new__(self):
-        if self._instance is None:
-            self._instance = super(HTTPConnection, self).__new__(self)
-            self._instance.__initClass()
-        return self._instance
+    def __new__(cls):
+        if cls._instance is None:
+            cls._instance = super(HTTPConnection, cls).__new__(cls)
+            cls._instance.__initClass()
+        return cls._instance
     
     def __initClass(self):
+        """Initializes class attributes."""
         self.__webclient = httplib2.Http(disable_ssl_certificate_validation=True)
         self.__webclient.follow_redirects = False
         self.__userAgent = 'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36 Vivaldi/2.2.1388.37'
@@ -52,25 +64,28 @@ class HTTPConnection(object):
         self.__portunr = None
 
     def __del__(self):
+        """Deletes class attributes."""
         self.__Session = None
         self.__token = None
         self.__userID = None
         self.__unr = None
         self.__portunr = None
 
-    def sendRequest(self, address: str, method: str = 'GET', body = None, headers: dict = {}):
+    def sendRequest(self, address: str, method: str = 'GET', body=None, headers: dict = {}):
+        """Sends an HTTP request."""
         return self.__sendRequest(address, method, body, headers)
 
-    def __sendRequest(self, address: str, method: str = 'GET', body = None, headers: dict = {}):
+    def __sendRequest(self, address: str, method: str = 'GET', body=None, headers: dict = {}):
+        """Sends an HTTP request and returns the response."""
         uri = self.__getServer() + address
         headers = {**self.__getHeaders(), **headers}
         try:
             return self.__webclient.request(uri, method, body, headers)
-        except:
-            raise
+        except Exception as e:
+            raise e
 
     def __getUserDataFromJSONContent(self, content):
-        """Ermittelt userdaten aus JSON Content."""
+        """Extracts user data from JSON content."""
         return {'bar': str(content['bar']),
                 'bar_unformat': float(content['bar_unformat']),
                 'points': int(content['points']),
@@ -83,59 +98,50 @@ class HTTPConnection(object):
                 'time': int(content['time'])}
 
     def checkIfHTTPStateIsOK(self, response):
+        """Checks if HTTP status is OK."""
         return self.__checkIfHTTPStateIsOK(response)
 
     def __checkIfHTTPStateIsOK(self, response):
-        """Prüft, ob der Status der HTTP Anfrage OK ist."""
+        """Checks if HTTP status is OK."""
         if not (response['status'] == str(HTTP_STATE_OK)):
             self.__logHTTPConn.debug('HTTP State: ' + str(response['status']))
-            raise HTTPStateError('HTTP Status ist nicht OK')
-
+            raise HTTPStateError('HTTP Status is not OK')
 
     def __checkIfHTTPStateIsFOUND(self, response):
-        """Prüft, ob der Status der HTTP Anfrage FOUND ist."""
+        """Checks if HTTP status is FOUND."""
         if not (response['status'] == str(HTTP_STATE_FOUND)):
             self.__logHTTPConn.debug('HTTP State: ' + str(response['status']))
-            raise HTTPStateError('HTTP Status ist nicht FOUND')
-
+            raise HTTPStateError('HTTP Status is not FOUND')
 
     def __generateJSONContentAndCheckForSuccess(self, content):
-        """Aufbereitung und Prüfung der vom Server empfangenen JSON Daten."""
+        """Processes and checks the received JSON data from the server."""
         j_content = json.loads(content)
         if j_content['success'] == 1:
             return j_content
         else:
             raise JSONError()
 
-
     def __generateJSONContentAndCheckForOK(self, content: str):
-        """Aufbereitung und Prüfung der vom Server empfangenen JSON Daten."""
+        """Processes and checks the received JSON data from the server."""
         j_content = json.loads(content)
         if j_content['status'] == 'ok':
             return j_content
         else:
             raise JSONError()
 
-
     def __isFieldWatered(self, jContent, fieldID):
-        """
-        Ermittelt, ob ein Feld fieldID gegossen ist und gibt True/False zurück.
-        Ist das Datum der Bewässerung 0, wurde das Feld noch nie gegossen.
-        Eine Bewässerung hält 24 Stunden an. Liegt die Zeit der letzten Bewässerung
-        also 24 Stunden + 30 Sekunden (Sicherheit) zurück, wurde das Feld zwar bereits gegossen,
-        kann jedoch wieder gegossen werden.
-        """
-        oneDayInSeconds = (24*60*60) + 30
+        """Determines if a field is watered."""
+        oneDayInSeconds = (24 * 60 * 60) + 30
         currentTimeInSeconds = time.time()
-        waterDateInSeconds = int(jContent['water'][fieldID-1][1])
+        waterDateInSeconds = int(jContent['water'][fieldID - 1][1])
 
-        if waterDateInSeconds == '0' or (currentTimeInSeconds - waterDateInSeconds) > oneDayInSeconds:
+        if waterDateInSeconds == 0 or (currentTimeInSeconds - waterDateInSeconds) > oneDayInSeconds:
             return False
         else:
             return True
 
     def __getTokenFromURL(self, url):
-        """Ermittelt aus einer übergebenen URL den security token."""
+        """Extracts the security token from a URL."""
         split = re.search(r'https://.*/logw.php.*token=([a-f0-9]{32})', url)
         iErr = 0
         if split:
@@ -147,259 +153,208 @@ class HTTPConnection(object):
 
         if iErr == 1:
             self.__logHTTPConn.debug(tmpToken)
-            raise JSONError('Fehler bei der Ermittlung des tokens')
+            raise JSONError('Error extracting token')
         else:
             self.__token = tmpToken
 
     def __getTokenFromURLPORT(self, url):
-        """Ermittelt aus einer übergebenen URL den security token."""
+        """Extracts the security token from the given URL."""
         split = re.search(r'.*portal/port_logw.php.*token=([a-f0-9]{32})', url)
-        iErr = 0
         if split:
             tmpToken = split.group(1)
-            if (tmpToken == ''):
+            if not tmpToken:  # Simplified if condition
                 iErr = 1
+            else:
+                self.__token = tmpToken
+                return
         else:
             iErr = 1
 
-        if (iErr == 1):
-            self.__logHTTPConn.debug(tmpToken)
-            raise JSONError(f'Fehler bei der Ermittlung des tokens')
-        else:
-            self.__token = tmpToken
+        # Moved debug logging and error raising outside the if-else block
+        self.__logHTTPConn.debug(tmpToken)
+        raise JSONError('Error determining the token')
 
     def __getunrFromURLPORT(self, url):
-        """Ermittelt aus einer übergebenen URL den security token."""
+        """Extracts the unr (user token) from the given URL."""
         split = re.search(r'.*portal/port_logw.php.*unr=([a-f0-9]+)&port', url)
-        iErr = 0
         if split:
             tmpunr = split.group(1)
-            if (tmpunr == ''):
+            if not tmpunr:
                 iErr = 1
+            else:
+                self.__unr = tmpunr
+                return
         else:
             iErr = 1
 
-        if (iErr == 1):
-            self.__logHTTPConn.debug(tmpunr)
-            raise JSONError(f'Fehler bei der Ermittlung des tokens')
-        else:
-            self.__unr = tmpunr
+        self.__logHTTPConn.debug(tmpunr)
+        raise JSONError('Error determining the token')
 
     def __getportunrFromURLPORT(self, url):
-        """Ermittelt aus einer übergebenen URL den security token."""
+        """Extracts the portunr (port user token) from the given URL."""
         split = re.search(r'.*portal/port_logw.php.*portunr=([a-f0-9]+)&token', url)
-        iErr = 0
         if split:
             tmpportunr = split.group(1)
-            if (tmpportunr == ''):
+            if not tmpportunr:
                 iErr = 1
+            else:
+                self.__portunr = tmpportunr
+                return
         else:
             iErr = 1
 
-        if (iErr == 1):
-            self.__logHTTPConn.debug(tmpportunr)
-            raise JSONError(f'Fehler bei der Ermittlung des tokens')
-        else:
-            self.__portunr = tmpportunr
+        self.__logHTTPConn.debug(tmpportunr)
+        raise JSONError('Error determining the token')
 
     def __getInfoFromJSONContent(self, jContent, info):
         """Looks up certain info in the given JSON object and returns it."""
-        # ToDo: Dumb Style. Needs refactoring
-        success = False
-        result = None
-        if info == 'Username':
-            parsed_string_list = re.findall(r"<td>(.+?)</td>", str(jContent['table'][0]).replace(r'&nbsp;', ''))
-            result = parsed_string_list[1]
-            success = True
-        elif info == 'Gardens':
-            parsed_string_list = re.findall(r"<td>(.+?)</td>", str(jContent['table'][16]).replace(r'&nbsp;', ''))
-            result = int(parsed_string_list[1])
-            success = True
-        elif info == 'CompletedQuests':
-            parsed_string_list = re.findall(r"<td>(.+?)</td>", str(jContent['table'][5]).replace(r'&nbsp;', ''))
-            result = int(parsed_string_list[1])
-            success = True
-        elif info == 'CactusQuest':
-            parsed_string_list = re.findall(r"<td>(.+?)</td>", str(jContent['table'][7]).replace(r'&nbsp;', ''))
-            result = int(parsed_string_list[1])
-            success = True
-        elif info == 'EchinoQuest':
-            parsed_string_list = re.findall(r"<td>(.+?)</td>", str(jContent['table'][8]).replace(r'&nbsp;', ''))
-            result = int(parsed_string_list[1])
-            success = True
-        elif info == 'BigheadQuest':
-            parsed_string_list = re.findall(r"<td>(.+?)</td>", str(jContent['table'][9]).replace(r'&nbsp;', ''))
-            result = int(parsed_string_list[1])
-            success = True
-        elif info == 'OpuntiaQuest':
-            parsed_string_list = re.findall(r"<td>(.+?)</td>", str(jContent['table'][10]).replace(r'&nbsp;', ''))
-            result = int(parsed_string_list[1])
-            success = True
-        elif info == 'SaguaroQuest':
-            parsed_string_list = re.findall(r"<td>(.+?)</td>", str(jContent['table'][11]).replace(r'&nbsp;', ''))
-            result = int(parsed_string_list[1])
-            success = True
-
-        if success:
-            return result
+        # Define mapping of info to table indices
+        info_table_mapping = {
+            'Username': 0,
+            'Gardens': 16,
+            'CompletedQuests': 5,
+            'CactusQuest': 7,
+            'EchinoQuest': 8,
+            'BigheadQuest': 9,
+            'OpuntiaQuest': 10,
+            'SaguaroQuest': 11
+        }
+        
+        # Check if info exists in mapping
+        if info in info_table_mapping:
+            # Extract the table index corresponding to the info
+            table_index = info_table_mapping[info]
+            # Find the desired info in the specified table
+            parsed_string_list = re.findall(r"<td>(.+?)</td>", str(jContent['table'][table_index]).replace(r'&nbsp;', ''))
+            # Ensure parsed_string_list is not empty
+            if parsed_string_list:
+                # Parse and return the result
+                if info == 'Username':
+                    return parsed_string_list[1]
+                else:
+                    return int(parsed_string_list[1])
+            else:
+                # Log table content and raise error if info not found
+                self.__logHTTPConn.debug(jContent['table'])
+                raise JSONError('Info:' + info + " not found.")
         else:
-            self.__logHTTPConn.debug(jContent['table'])
-            raise JSONError('Info:' + info + " not found.")
+            # Raise error if info not found in mapping
+            raise ValueError('Info:' + info + " not supported.")
 
     def __checkIfSessionIsDeleted(self, cookie):
         """Prüft, ob die Session gelöscht wurde."""
-        if not (cookie['PHPSESSID'].value == 'deleted'):
-            self.__logHTTPConn.debug('SessionID: ' + cookie['PHPSESSID'].value)
+        session_id = cookie.get('PHPSESSID', None)
+        if session_id and session_id.value != 'deleted':
+            self.__logHTTPConn.debug('SessionID: ' + session_id.value)
             raise HTTPRequestError('Session wurde nicht gelöscht')
 
-
     def __findPlantsToBeWateredFromJSONContent(self, jContent):
-        """Sucht im JSON Content nach Pflanzen die bewässert werden können und gibt diese inkl. der Pflanzengröße zurück."""
+        """Searches the JSON content for plants that can be watered and returns them along with their plant size."""
         plantsToBeWatered = {'fieldID': [], 'sx': [], 'sy': []}
-        for field in range(0, len(jContent['grow'])):
-            plantedFieldID = jContent['grow'][field][0]
-            plantSize = jContent['garden'][str(plantedFieldID)][9]
-            splittedPlantSize = str(plantSize).split('x')
-            sx = splittedPlantSize[0]
-            sy = splittedPlantSize[1]
+        garden = jContent['garden']
+        for field_info in jContent['grow']:
+            plantedFieldID, _ = field_info[:2]
+            plantSize = garden[str(plantedFieldID)][9]
+            sx, sy = map(int, plantSize.split('x'))
 
             if not self.__isFieldWatered(jContent, plantedFieldID):
-                fieldIDToBeWatered = plantedFieldID
-                plantsToBeWatered['fieldID'].append(fieldIDToBeWatered)
-                plantsToBeWatered['sx'].append(int(sx))
-                plantsToBeWatered['sy'].append(int(sy))
+                plantsToBeWatered['fieldID'].append(plantedFieldID)
+                plantsToBeWatered['sx'].append(sx)
+                plantsToBeWatered['sy'].append(sy)
 
         return plantsToBeWatered
 
     def __findEmptyFieldsFromJSONContent(self, jContent):
-        """Sucht im JSON Content nach Felder die leer sind und gibt diese zurück."""
-        emptyFields = []
-
-        for field in jContent['garden']:
-            if jContent['garden'][field][0] == 0:
-                emptyFields.append(int(field))
-
-        #Sortierung über ein leeres Array ändert Objekttyp zu None
-        if len(emptyFields) > 0:
-            emptyFields.sort(reverse=False)
-
+        """Searches the JSON content for empty fields and returns them."""
+        emptyFields = [int(field) for field, info in jContent['garden'].items() if info[0] == 0]
+        emptyFields.sort()
         return emptyFields
 
     def __findWeedFieldsFromJSONContent(self, jContent):
-        """Sucht im JSON Content nach Felder die mit Unkraut befallen sind und gibt diese zurück."""
-        weedFields = {}
-
-        # 41 Unkraut, 42 Baumstumpf, 43 Stein, 45 Maulwurf
-        for field in jContent['garden']:
-            if jContent['garden'][field][0] in [41, 42, 43, 45]:
-                weedFields[int(field)] = float(jContent['garden'][field][6])
-
-        #Sortierung über ein leeres Array ändert Objekttyp zu None
-        if len(weedFields) > 0:
-            weedFields = {key: value for key, value in sorted(weedFields.items(), key=lambda item: item[1])}
-
+        """Searches the JSON content for fields infested with weeds and returns them."""
+        weedFields = {int(field): float(info[6]) for field, info in jContent['garden'].items() if info[0] in [41, 42, 43, 45]}
+        weedFields = dict(sorted(weedFields.items(), key=lambda item: item[1]))
         return weedFields
 
     def __findGrowingPlantsFromJSONContent(self, jContent):
-        """Returns list of growing plants from JSON content"""
-        growingPlants = []
-        for field in jContent['grow']:
-            growingPlants.append(field[1])
+        """Returns a list of growing plants from the JSON content."""
+        growingPlants = [field_info[1] for field_info in jContent['grow']]
         return growingPlants
 
     def __findWimpsDataFromJSONContent(self, jContent):
         """Returns list of growing plants from JSON content"""
         wimpsData = {}
         for wimp in jContent['wimps']:
-            product_data = {}
-            wimp_id = wimp['sheet']['id']
-            cash = wimp['sheet']['sum']
-            for product in wimp['sheet']['products']:
-                product_data[str(product['pid'])] = int(product['amount'])
-            wimpsData[wimp_id] = [cash, product_data]
+            product_data = {str(product['pid']): int(product['amount']) for product in wimp['sheet']['products']}
+            wimpsData[wimp['sheet']['id']] = [wimp['sheet']['sum'], product_data]
         return wimpsData
 
     def __findEmptyAquaFieldsFromJSONContent(self, jContent):
-        emptyAquaFields = []
-        for field in jContent['garden']:
-            if jContent['garden'][field][0] == 0:
-                emptyAquaFields.append(int(field))
-        # Sortierung über ein leeres Array ändert Objekttyp zu None
-        if len(emptyAquaFields) > 0:
-            emptyAquaFields.sort(reverse=False)
+        emptyAquaFields = [int(field) for field in jContent['garden'] if jContent['garden'][field][0] == 0]
+        if emptyAquaFields:
+            emptyAquaFields.sort()
         return emptyAquaFields
 
     def __generateYAMLContentAndCheckForSuccess(self, content: str):
-        """Aufbereitung und Prüfung der vom Server empfangenen YAML Daten auf Erfolg."""
+        """Processes and checks the YAML data received from the server for success."""
         content = content.replace('\n', ' ')
         content = content.replace('\t', ' ')
-        yContent = yaml.load(content, Loader=yaml.FullLoader)
+        yContent = yaml.safe_load(content)
 
         if yContent['success'] != 1:
             raise YAMLError()
 
-
     def __generateYAMLContentAndCheckStatusForOK(self, content):
-        """Aufbereitung und Prüfung der vom Server empfangenen YAML Daten auf iO Status."""
-        content = content.replace('\n', ' ')
-        content = content.replace('\t', ' ')
-        yContent = yaml.load(content, Loader=yaml.FullLoader)
+        """Processes and checks the YAML data received from the server for status 'ok'."""
+        yContent = yaml.safe_load(content)
 
-        if yContent['status'] != 'ok':
+        if yContent.get('status') != 'ok':
             raise YAMLError()
 
     def _changeGarden(self, gardenID):
-        """Wechselt den Garten."""
+        """Changes the garden."""
         try:
-            address = f'ajax/ajax.php?do=changeGarden&garden={str(gardenID)}&token={self.__token}'
+            address = f'ajax/ajax.php?do=changeGarden&garden={gardenID}&token={self.__token}'
             response, content = self.__sendRequest(address)
             self.__checkIfHTTPStateIsOK(response)
             self.__generateJSONContentAndCheckForOK(content)
-        except:
-            raise
+        except Exception as e:
+            raise e
 
     def __parseNPCPricesFromHtml(self, html_data):
-        """Parsen aller NPC Preise aus dem HTML Skript der Spielehilfe."""
-        #ElementTree benötigt eine Datei zum Parsen.
-        #Mit BytesIO wird eine Datei im Speicher angelegt, nicht auf der Festplatte.
+        """Parses all NPC prices from the HTML script of the game help."""
         my_parser = etree.HTMLParser(recover=True)
-        html_tree = etree.fromstring(str(html_data), parser=my_parser)
+        html_tree = etree.fromstring(html_data, parser=my_parser)
 
-        table = html_tree.find('./body/div[@id="content"]/table')
+        table = html_tree.find('.//body/div[@id="content"]/table')
 
         dictResult = {}
 
         for row in table.iter('tr'):
+            cells = row.findall('td')
+            if len(cells) >= 2:
+                produktname = cells[0].text.strip() if cells[0].text else None
+                npc_preis_text = cells[1].text.strip() if cells[1].text else None
 
-            produktname = row[0].text
-            npc_preis = row[1].text
+                if produktname is not None and npc_preis_text is not None:
+                    # Extract the numerical value from npc_preis_text
+                    npc_preis_text = npc_preis_text.split()[0]
+                    
+                    # Handle '-' case
+                    npc_preis = float(npc_preis_text.replace('.', '').replace(',', '.')) if npc_preis_text.strip() != '-' else None
 
-            #Bei der Tabellenüberschrift ist der Text None
-            if produktname != None and npc_preis != None:
-                # NPC-Preis aufbereiten
-                npc_preis = str(npc_preis)
-                npc_preis = npc_preis[0:len(npc_preis) - 3]
-                npc_preis = npc_preis.replace('.', '')
-                npc_preis = npc_preis.replace(',', '.')
-                npc_preis = npc_preis.replace(' ', '')
-                npc_preis = npc_preis.strip()
-                if len(npc_preis) == 0:
-                    npc_preis = None
-                else:
-                    npc_preis = float(npc_preis)
-
-                dictResult[produktname] = npc_preis
+                    dictResult[produktname] = npc_preis
 
         return dictResult
 
     def __getHeaders(self):
-        headers = {'Cookie': f'PHPSESSID={self.__Session.getSessionID()};wunr={self.__userID}',
-                   'Connection': 'Keep-Alive'}
-        return headers
+        return {'Cookie': f'PHPSESSID={self.__Session.getSessionID()};wunr={self.__userID}',
+                'Connection': 'Keep-Alive'}
 
     def __getServer(self):
         return f'http://s{self.__Session.getServer()}{self.__Session.getServerURL()}'
 
+############################################################################################## ^^^^^^^^^^^^^^^^ OPTIMIZED ^^^^^^^^^^^^^^^^^^^^^^^^
 
     def logIn(self, loginDaten):
         """Führt einen login durch und öffnet eine Session."""
@@ -431,54 +386,65 @@ class HTTPConnection(object):
             self.__cookie = cookie
             self.__userID = cookie['wunr'].value
 
-    def logInPortal(self, loginDaten):
-        """Führt einen login durch und öffnet eine Session."""
-        parameter = urlencode({'portserver': 'server' + str(loginDaten.server),
-                               'portname': loginDaten.user,
-                               'portpass': loginDaten.password,
-                               'portsubmit': 'Einloggen'})
-        serverURL = SERVER_URLS[loginDaten.language]
-        headers = {'Content-type': 'application/x-www-form-urlencoded',
-                   'Connection': 'keep-alive'}
+    def logInPortal(self, loginData):
+        """Performs a login and opens a session."""
+        serverURL = SERVER_URLS[loginData.language]
+        portal_login_url = f'https://www{serverURL}/portal/game2port_login.php'
+        loginAddress = f'https://s{loginData.server}{serverURL}/logw.php'
+
+        # Construct login parameters
+        login_parameters = {
+            'portserver': 'server' + str(loginData.server),
+            'portname': loginData.user,
+            'portpass': loginData.password,
+            'portsubmit': 'Login'
+        }
+
+        headers = {'Content-type': 'application/x-www-form-urlencoded', 'Connection': 'keep-alive'}
 
         try:
-            response, content = self.__webclient.request(f'https://www{serverURL}/portal/game2port_login.php', \
-                                                         'POST', \
-                                                         parameter, \
-                                                         headers)
-            self.__getTokenFromURLPORT(response['location'])
-            self.__getunrFromURLPORT(response['location'])
-            self.__getportunrFromURLPORT(response['location'])
-        except:
-            raise
+            # First login request
+            response, content = self.__webclient.request(portal_login_url, 'POST', urlencode(login_parameters), headers)
+            response.raise_for_status()  # Check for HTTP errors
 
-        headers = {'Content-type': 'application/x-www-form-urlencoded',
-                   'Connection': 'keep-alive',
-                   'Cookie': self.__unr}
+            # Extract necessary tokens from the redirected location
+            self.__getTokenFromURLPORT(response.headers['location'])
+            self.__getunrFromURLPORT(response.headers['location'])
+            self.__getportunrFromURLPORT(response.headers['location'])
+        except Exception as e:
+            raise RuntimeError("Failed to login to portal:", e)
+
+        # Prepare headers for the next request with necessary cookies
+        headers['Cookie'] = f'PHPSESSID={self.__unr}'
 
         try:
-            loginadresse = f'https://s{str(loginDaten.server)}{serverURL}/logw.php?port=1&unr=' + \
-                           f'{self.__unr}&portunr={self.__portunr}&hash={self.__token}&sno={loginDaten.server}'
-            response, content = self.__webclient.request(loginadresse, 'GET', headers=headers)
-            self.__checkIfHTTPStateIsFOUND(response)
-        except:
-            raise
-        else:
+            # Second login request
+            login_params = {
+                'port': '1',
+                'unr': self.__unr,
+                'portunr': self.__portunr,
+                'hash': self.__token,
+                'sno': loginData.server
+            }
+            response, content = self.__webclient.request(f"{loginAddress}?{urlencode(login_params)}", 'GET', headers=headers)
+            response.raise_for_status()
+
+            # Process response
             cookie = SimpleCookie(response['set-cookie'])
             cookie.load(str(response["set-cookie"]).replace("secure, ", "", -1))
-            self.__Session.openSession(cookie['PHPSESSID'].value, str(loginDaten.server), serverURL)
-            self.__cookie = cookie
+            self.__Session.openSession(cookie['PHPSESSID'].value, str(loginData.server), serverURL)
             self.__userID = self.__unr
+        except Exception as e:
+            raise RuntimeError("Failed to complete portal login:", e)
 
     def getUserID(self):
-        """Gibt die wunr als userID zurück die beim Login über das Cookie erhalten wurde."""
+        """Returns the wunr as userID obtained from the cookie during login."""
         return self.__userID
 
-
     def logOut(self):
-        """Logout des Spielers inkl. Löschen der Session."""
-        #TODO: Was passiert beim Logout einer bereits ausgeloggten Session
-        try: #content ist beim Logout leer
+        """Logs out the player including deleting the session."""
+        # TODO: What happens when logging out of an already logged out session
+        try: # Content is empty during logout
             response, content = self.__sendRequest('main.php?page=logout')
             self.__checkIfHTTPStateIsFOUND(response)
             cookie = SimpleCookie(response['set-cookie'])
@@ -488,10 +454,9 @@ class HTTPConnection(object):
         else:
             self.__del__()
 
-
     def getInfoFromStats(self, info):
         """
-        Returns different parameters from user's stats'
+        Returns different parameters from user's stats.
         @param info: available values: 'Username', 'Gardens', 'CompletedQuests'
         @return: parameter value
         """
@@ -507,9 +472,8 @@ class HTTPConnection(object):
         else:
             return result
 
-
     def readUserDataFromServer(self, data_type="UserData"):
-        """Ruft eine Updatefunktion im Spiel auf und verarbeitet die empfangenen userdaten."""
+        """Calls an update function in the game and processes the received user data."""
         try:
             response, content = self.__sendRequest('ajax/menu-update.php')
             self.__checkIfHTTPStateIsOK(response)
@@ -522,11 +486,10 @@ class HTTPConnection(object):
             else:
                 return jContent
 
-
     def getPlantsToWaterInGarden(self, gardenID):
         """
-        Ermittelt alle bepflanzten Felder im Garten mit der Nummer gardenID,
-        die auch gegossen werden können und gibt diese zurück.
+        Retrieves all planted fields in the garden with the number gardenID,
+        which can also be watered, and returns them.
         """
         try:
             address = f'ajax/ajax.php?do=changeGarden&garden={str(gardenID)}&token={str(self.__token)}'
@@ -538,22 +501,20 @@ class HTTPConnection(object):
         else:
             return self.__findPlantsToBeWateredFromJSONContent(jContent)
 
-
-    def waterPlantInGarden(self, iGarten, iField, sFieldsToWater):
-        """Bewässert die Pflanze iField mit der Größe sSize im Garten iGarten."""
+    def waterPlantInGarden(self, garden, field, fieldsToWater):
+        """Waters the plant field with the size fieldsToWater in the garden."""
         try:
-            address =   f'save/wasser.php?feld[]={str(iField)}&felder[]={sFieldsToWater}' \
-                        f'&cid={self.__token}&garden={str(iGarten)}'
+            address =   f'save/wasser.php?feld[]={str(field)}&felder[]={fieldsToWater}' \
+                        f'&cid={self.__token}&garden={str(garden)}'
             response, content = self.__sendRequest(address)
             self.__checkIfHTTPStateIsOK(response)
             self.__generateYAMLContentAndCheckForSuccess(content.decode('UTF-8'))
         except:
             raise
 
-
     def getPlantsToWaterInAquaGarden(self):
         """
-        Ermittelt alle bepflanzten Felder im Wassergartens, die auch gegossen werden können und gibt diese zurück.
+        Retrieves all planted fields in the water garden that can also be watered and returns them.
         """
         try:
             response, content = self.__sendRequest(f'ajax/ajax.php?do=watergardenGetGarden&token={self.__token}')
@@ -563,10 +524,9 @@ class HTTPConnection(object):
         except:
             raise
 
-
-    def waterPlantInAquaGarden(self, iField, sFieldsToWater):
-        """Gießt alle Pflanzen im Wassergarten"""
-        listFieldsToWater = sFieldsToWater.split(',')
+    def waterPlantInAquaGarden(self, field, fieldsToWater):
+        """Waters all plants in the water garden."""
+        listFieldsToWater = fieldsToWater.split(',')
 
         sFields = ''
         for i in listFieldsToWater:
@@ -579,8 +539,8 @@ class HTTPConnection(object):
         except:
             raise
 
-    def isHoneyFarmAvailable(self, iUserLevel):
-        if not (iUserLevel < 10):
+    def isHoneyFarmAvailable(self, userLevel):
+        if not (userLevel < 10):
             try:
                 response, content = self.__sendRequest(f'ajax/ajax.php?do=citymap_init&token={self.__token}')
                 self.__checkIfHTTPStateIsOK(response)
@@ -591,14 +551,13 @@ class HTTPConnection(object):
         else:
             return False
 
-
-    def isAquaGardenAvailable(self, iUserLevel):
+    def isAquaGardenAvailable(self, userLevel):
         """
-        Funktion ermittelt, ob ein Wassergarten verfügbar ist.
-        Dazu muss ein Mindestlevel von 19 erreicht sein und dieser dann freigeschaltet sein.
-        Die Freischaltung wird anhand der Errungenschaften im Spiel geprüft.
+        Function determines whether an Aqua Garden is available.
+        This requires reaching a minimum level of 19 and then unlocking it.
+        Unlocking is checked based on achievements in the game.
         """
-        if not (iUserLevel < 19):
+        if not (userLevel < 19):
             try:
                 response, content = self.__sendRequest(f'ajax/achievements.php?token={self.__token}')
                 self.__checkIfHTTPStateIsOK(response)
@@ -607,19 +566,19 @@ class HTTPConnection(object):
                 raise
             else:
                 result = re.search(r'trophy_54.png\);[^;]*(gray)[^;^class$]*class', jContent['html'])
-                return result == None
+                return result is None
         else:
             return False
 
-    def isBonsaiFarmAvailable(self, iUserLevel):
-        if not (iUserLevel < 10):
+    def isBonsaiFarmAvailable(self, userLevel):
+        if not (userLevel < 10):
             try:
                 response, content = self.__sendRequest(f'ajax/ajax.php?do=citymap_init&token={self.__token}')
                 self.__checkIfHTTPStateIsOK(response)
                 jContent = self.__generateJSONContentAndCheckForOK(content)
                 if 'bonsai' in jContent['data']['location']:
                     if jContent['data']['location']['bonsai']['bought'] == 1:
-                       return True
+                        return True
                     else:
                         return False
                 else:
@@ -629,71 +588,68 @@ class HTTPConnection(object):
         else:
             return False
 
-    def isCityParkAvailable(self, iUserLevel):
-        return iUserLevel >= 5
+    def isCityParkAvailable(self, userLevel):
+        return userLevel >= 5
 
-    #TODO: Was passiert wenn ein Garten hinzukommt (parallele Sitzungen im Browser und Bot)? Globale Aktualisierungsfunktion?
+    # TODO: What happens when a garden is added (parallel sessions in the browser and bot)? Global update function?
 
-    def checkIfEMailAdressIsConfirmed(self):
-        """Prüft, ob die E-Mail Adresse im Profil bestätigt ist."""
+    def checkIfEmailAddressIsConfirmed(self):
+        """Checks if the email address in the profile is confirmed."""
         try:
-            response, content = self.__sendRequest('nutzer/profil.php')
+            response, content = self.__sendRequest('user/profile.php')
             self.__checkIfHTTPStateIsOK(response)
         except:
             raise
         else:
-            result = re.search(r'Unbestätigte Email:', content)
-            if (result == None): return True
-            else: return False
-
+            result = re.search(r'Unconfirmed Email:', content)
+            if result is None:
+                return True
+            else:
+                return False
 
     def createNewMessageAndReturnResult(self):
-        """Erstellt eine neue Nachricht und gibt deren ID zurück, die für das Senden benötigt wird."""
+        """Creates a new message and returns its ID needed for sending."""
         try:
-            response, content = self.__sendRequest('nachrichten/new.php')
+            response, content = self.__sendRequest('messages/new.php')
             self.__checkIfHTTPStateIsOK(response)
             return content
         except:
             raise
-
 
     def sendMessageAndReturnResult(self, msg_id, msg_to, msg_subject, msg_body):
-        """Verschickt eine Nachricht mit den übergebenen Parametern."""
+        """Sends a message with the provided parameters."""
         parameter = urlencode({'hpc': msg_id,
-                               'msg_to': msg_to,
-                               'msg_subject': msg_subject,
-                               'msg_body': msg_body,
-                               'msg_send': 'senden'})
+                            'msg_to': msg_to,
+                            'msg_subject': msg_subject,
+                            'msg_body': msg_body,
+                            'msg_send': 'send'})
         try:
-            response, content = self.__sendRequest('nachrichten/new.php', 'POST', parameter)
+            response, content = self.__sendRequest('messages/new.php', 'POST', parameter)
             self.__checkIfHTTPStateIsOK(response)
             return content
         except:
             raise
 
-
-    def getUsrList(self, iStart, iEnd):
+    def getUsrList(self, start, end):
         """
-        #TODO: finalisieren
+        #TODO: finalize
         """
-        userList = {'Nr':[], 'Gilde':[], 'Name':[], 'Punkte':[]}
-        #iStart darf nicht 0 sein, da sonst beim korrigierten Index -1 übergeben wird
         userList = {'Nr': [], 'Gilde': [], 'Name': [], 'Punkte': []}
-        # iStart darf nicht 0 sein, da sonst beim korrigierten Index -1 übergeben wird
-        if iStart <= 0:
-            iStart = 1
+        # start must not be 0, otherwise -1 will be passed for the corrected index
+        if start <= 0:
+            start = 1
 
-        if iStart == iEnd or iStart > iEnd:
+        if start == end or start > end:
             return False
 
-        iStartCorr = iStart - 1
-        iCalls = int(math.ceil(float(iEnd - iStart) / 100))
+        startCorr = start - 1
+        calls = int(math.ceil(float(end - start) / 100))
 
-        print(iCalls)
-        for i in range(iCalls):
+        print(calls)
+        for i in range(calls):
             print(i)
             try:
-                address =   f'ajax/ajax.php?do=statsGetStats&which=1&start={str(iStartCorr)}' \
+                address =   f'ajax/ajax.php?do=statsGetStats&which=1&start={str(startCorr)}' \
                             f'&showMe=0&additional=0&token={self.__token}'
                 response, content = self.__sendRequest(address)
                 self.__checkIfHTTPStateIsOK(response)
@@ -711,12 +667,12 @@ class HTTPConnection(object):
                 except:
                     raise
 
-            iStartCorr = iStartCorr + 100
+            startCorr = startCorr + 100
 
         return userList
 
     def getEmptyFieldsOfGarden(self, gardenID):
-        """Gibt alle leeren Felder eines Gartens zurück."""
+        """Returns all empty fields of a garden."""
         try:
             address = f'ajax/ajax.php?do=changeGarden&garden={str(gardenID)}&token={self.__token}'
             response, content = self.__sendRequest(address)
@@ -729,7 +685,7 @@ class HTTPConnection(object):
             return emptyFields
 
     def getWeedFieldsOfGarden(self, gardenID):
-        """Gibt alle Unkraut-Felder eines Gartens zurück."""
+        """Returns all weed fields of a garden."""
         try:
             address = f'ajax/ajax.php?do=changeGarden&garden={str(gardenID)}&token={self.__token}'
             response, content = self.__sendRequest(address)

@@ -4,7 +4,7 @@
 import logging
 from src.core.HTTPCommunication import HTTPConnection
 
-class Park():
+class Park:
 
     def __init__(self, httpConnection: HTTPConnection):
         self._httpConn = httpConnection
@@ -13,36 +13,32 @@ class Park():
         self.__setParkData(self._httpConn.initPark())
 
     def __setParkData(self, jContent):
-        """set the relevant park data from the JSON content"""
+        """Set the relevant park data from the JSON content."""
         self._jContentData = jContent['data']
         self._cashpoint = jContent["data"]["data"]["cashpoint"]
+        self._logPark.debug("Park data set.")
 
     def collectCashFromCashpoint(self):
-        """collect rewards from cashpoint if there are any"""
-        if not self._jContentData['data']["cashpoint"]["money"] > 0:
+        """Collect rewards from the cashpoint if there are any."""
+        cashpoint_money = self._jContentData['data']["cashpoint"]["money"]
+        if cashpoint_money <= 0:
             self._logPark.error("The Cashpoint is empty.")
-        else:
-            jContent = self._httpConn.collectCashPointFromPark()
-            self._logPark.info("Collected: {points} points, {money} wT, {parkpoints} parkpoints".format(points = self._cashpoint["points"], money = self._cashpoint["money"], parkpoints=self._cashpoint["parkpoints"]))
-            self.__setParkData(jContent)
+            return
+        jContent = self._httpConn.collectCashPointFromPark()
+        self._logPark.info(f"Collected: {self._cashpoint['points']} points, {self._cashpoint['money']} wT, {self._cashpoint['parkpoints']} parkpoints")
+        self.__setParkData(jContent)
 
     def __getExpiredDekoFromPark(self, parkID=1):
-        """get all expired items"""
+        """Get all expired items."""
         items = self._jContentData["data"]["park"][str(parkID)]["items"]
-        renewableItems = {}
-        for key, value in items.items():
-            if 'parent' in value: 
-                continue
-            if value["remain"] < 0:
-                renewableItems.update({key:value})
-        self._logPark.info("renewable items: {}".format(len(renewableItems)))            
+        renewableItems = {key: value for key, value in items.items() if 'parent' not in value and value["remain"] < 0}
+        self._logPark.info("Renewable items: {}".format(len(renewableItems)))
         return renewableItems
-    
+
     def renewAllItemsInPark(self):
-        """renew all expired items"""
+        """Renew all expired items."""
         renewableItems = self.__getExpiredDekoFromPark()
-        for itemID in renewableItems.keys():
+        for itemID in renewableItems:
             jContent = self._httpConn.renewItemInPark(itemID)
             self.__setParkData(jContent)
-        self._logPark.info("Renewed {} Items.".format(len(renewableItems)))
-            
+        self._logPark.info(f"Renewed {len(renewableItems)} items.")

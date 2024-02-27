@@ -15,12 +15,13 @@ class Garden():
     def __init__(self, httpConnection: HTTPConnection, gardenID):
         self._httpConn = httpConnection
         self._id = gardenID
-        self._logGarden = logging.getLogger('bot.Garden_' + str(gardenID))
+        self._logGarden = logging.getLogger(f'bot.Garden_{gardenID}')
         self._logGarden.setLevel(logging.DEBUG)
 
     def _getAllFieldIDsFromFieldIDAndSizeAsString(self, fieldID, sx, sy):
         """
-        Rechnet anhand der fieldID und Größe der Pflanze (sx, sy) alle IDs aus und gibt diese als String zurück.
+        Calculates all field IDs based on the fieldID and size of the plant (sx, sy) and returns them as a string.
+        xRuffKez: Let's use elif instead of if, to make reading tiles faster ;)
         """
         #BG- Изчислява всички ID-та въз основа на ID-то на полето и размера на растението (sx, sy) и ги връща като низ.
 
@@ -45,31 +46,29 @@ class Garden():
         #BG-                     | o | o |
         #BG-                     +---+---+
 
-        if (sx == 1 and sy == 1): return str(fieldID)
-        if (sx == 2 and sy == 1): return str(fieldID) + ',' + str(fieldID + 1)
-        if (sx == 1 and sy == 2): return str(fieldID) + ',' + str(fieldID + 17)
-        if (sx == 2 and sy == 2): return str(fieldID) + ',' + str(fieldID + 1) + ',' + str(fieldID + 17) + ',' + str(fieldID + 18)
-        self._logGarden.debug(f'Error der plantSize --> sx: {sx} sy: {sy}')
+        if sx == 1 and sy == 1:
+            return str(fieldID)
+        elif sx == 2 and sy == 1:
+            return f"{fieldID},{fieldID + 1}"
+        elif sx == 1 and sy == 2:
+            return f"{fieldID},{fieldID + 17}"
+        elif sx == 2 and sy == 2:
+            return f"{fieldID},{fieldID + 1},{fieldID + 17},{fieldID + 18}"
+        else:
+            self._logGarden.debug(f'Error in plantSize --> sx: {sx} sy: {sy}')
 
     def _getAllFieldIDsFromFieldIDAndSizeAsIntList(self, fieldID, sx, sy):
         """
         Calculates all IDs based on the fieldID and size of the plant (sx, sy) and returns them as an integer list.
         """
-        #BG- Изчислява всички ID-та въз основа на ID-то на полето и размера на растението (sx, sy) и ги връща като списък с цели числа.
         sFields = self._getAllFieldIDsFromFieldIDAndSizeAsString(fieldID, sx, sy)
-        listFields = sFields.split(',') #Stringarray #BG- Масив от низове
-
-        for i in range(0, len(listFields)):
-            listFields[i] = int(listFields[i])
-
-        return listFields
+        return [int(field) for field in sFields.split(',')]
 
     def _isPlantGrowableOnField(self, fieldID, emptyFields, fieldsToPlant, sx):
-        """Prüft anhand mehrerer Kriterien, ob ein Anpflanzen möglich ist."""
-        # Betrachtetes Feld darf nicht besetzt sein
-        #BG- Разглежданото поле не трябва да е заето.
-
-        if not (fieldID in emptyFields): return False
+        """Checks if planting is possible based on multiple criteria."""
+        # The considered field must not be occupied
+        if fieldID not in emptyFields:
+            return False
 
         # Anpflanzen darf nicht außerhalb des Gartens erfolgen
         # Dabei reicht die Betrachtung in x-Richtung, da hier ein
@@ -85,13 +84,13 @@ class Garden():
         #BG- Полетата извън градината (по y-оста) не са празни, защото не съществуват,
         #BG- тъй като те не съществуват.
 
-        if not ((self._MAX_FIELDS - fieldID)%self._LEN_X >= sx - 1): return False
-        fieldsToPlantSet = set(fieldsToPlant)
-        emptyFieldsSet = set(emptyFields)
+        if (self._MAX_FIELDS - fieldID) % self._LEN_X < sx - 1:
+            return False
 
-        # Alle benötigten Felder der Pflanze müssen leer sein
-        #BG- Всички необходими полета на растението трябва да бъдат празни.
-        if not (fieldsToPlantSet.issubset(emptyFieldsSet)): return False
+        # All required fields of the plant must be empty
+        if not set(fieldsToPlant).issubset(set(emptyFields)):
+            return False
+
         return True
 
     def getID(self):
@@ -99,158 +98,137 @@ class Garden():
         #BG- Връща идентификационния номер на градината.
         return self._id
 
-    def waterPlants(self):
-        """Ein Garten mit der gardenID wird komplett bewässert."""
-        #BG- Градината с gardenID се полива напълно.
-        self._logGarden.info(f'Gieße alle Pflanzen im Garten {self._id}.')
-        #BG- self._logGarden.info(f'Полей всички растения в градината. {self._id}.')
-        try:
-            plants = self._httpConn.getPlantsToWaterInGarden(self._id)
-            nPlants = len(plants['fieldID'])
-            for i in range(0, nPlants):
-                sFields = self._getAllFieldIDsFromFieldIDAndSizeAsString(plants['fieldID'][i], plants['sx'][i], plants['sy'][i])
-                self._httpConn.waterPlantInGarden(self._id, plants['fieldID'][i], sFields)
-        except:
-            self._logGarden.error(f'Garten {self._id} konnte nicht bewässert werden.')
-            #BG- self._logGarden.error(f'Градина {self._id} не може да бъде поливана.')
-        else:
-            self._logGarden.info(f'Im Garten {self._id} wurden {nPlants} Pflanzen gegossen.')
-            #BG-self._logGarden.info(f'В градината {self._id} са поляти {nPlants} растения.')
-
-            print(f'Im Garten {self._id} wurden {nPlants} Pflanzen gegossen.')
-            #BG- print(f'В градината {self._id} са поляти {nPlants} растения.')
-
     def getEmptyFields(self):
         """Returns all empty fields in the garden."""
-        #BG- """Връща всички празни полета в градината."""
         try:
             return self._httpConn.getEmptyFieldsOfGarden(self._id)
         except:
-            self._logGarden.error(f'Konnte leere Felder von Garten {self._id} nicht ermitteln.')
-            #BG- self._logGarden.error(f'Неуспешно определение на празни полета в градина {self._id}.')
+            self._logGarden.error(f'Failed to determine empty fields in garden {self._id}.')
+
+    def waterPlants(self):
+        """Water all plants in the garden."""
+        self._logGarden.info(f'Watering all plants in garden {self._id}.')
+        try:
+            plants = self._httpConn.getPlantsToWaterInGarden(self._id)
+            for i, fieldID in enumerate(plants['fieldID']):
+                sFields = self._getAllFieldIDsFromFieldIDAndSizeAsString(fieldID, plants['sx'][i], plants['sy'][i])
+                self._httpConn.waterPlantInGarden(self._id, fieldID, sFields)
+            nPlants = len(plants['fieldID'])
+            self._logGarden.info(f'{nPlants} plants watered in garden {self._id}.')
+            print(f'{nPlants} plants watered in garden {self._id}.')
+        except Exception as e:
+            self._logGarden.error(f'Failed to water plants in garden {self._id}. Error: {e}')
+
 
     def getWeedFields(self):
         """Returns all weed fields in the garden."""
-        #BG- """Връща всички полета с плевели в градината."""
         try:
             return self._httpConn.getWeedFieldsOfGarden(self._id)
         except:
-            self._logGarden.error(f'Konnte Unkraut-Felder von Garten {self._id} nicht ermitteln.')
-            #BG- self._logGarden.error(f'Неуспешно определение на полета с плевели в градина {self._id}.')
+            self._logGarden.error(f'Failed to determine weed fields in garden {self._id}.')
 
     def getGrowingPlants(self):
         """Returns all growing plants in the garden."""
-        #BG- """Връща всички растящи растения в градината."""
-
         try:
             return Counter(self._httpConn.getGrowingPlantsOfGarden(self._id))
         except:
-            self._logGarden.error('Could not determine growing plants of garden ' + str(self._id) + '.')
-            #BG- self._logGarden.error('Неуспешно определение на растящите растения в градина ' + str(self._id) + '.')
+            self._logGarden.error(f'Failed to determine growing plants of garden {self._id}.')
 
     def getNextWaterHarvest(self):
-        """Returns all growing plants in the garden."""
-        #BG- """Връща всички растящи растения в градината."""
-
-        overall_time = []
-        Fields_data = namedtuple("Fields_data", "plant water harvest")
-        max_water_time = 86400
+        """Returns the next water or harvest time in the garden."""
         try:
+            overall_time = []
+            max_water_time = 86400  # Maximum time between watering and harvest
             garden = self._httpConn._changeGarden(self._id).get('garden')
             for field in garden.values():
-                if field[0] in [41, 42, 43, 45]:
+                if field[0] in [41, 42, 43, 45]:  # Skip fields with special plants
                     continue
-                fields_time = Fields_data(field[10], field[4], field[3])
-                if fields_time.harvest - fields_time.water > max_water_time:
-                    overall_time.append(fields_time.water + max_water_time)
-                overall_time.append(fields_time.harvest)
-            return min(overall_time)
+                water_time = field[4]  # Time of last watering
+                harvest_time = field[3]  # Time of next harvest
+                if harvest_time - water_time > max_water_time:
+                    overall_time.append(water_time + max_water_time)
+                overall_time.append(harvest_time)
+            return min(overall_time) if overall_time else None
         except:
-            self._logGarden.error('Could not determine growing plants of garden ' + str(self._id) + '.')
-            #BG- self._logGarden.error('Неуспешно определение на растящите растения в градина ' + str(self._id) + '.')
-
+            self._logGarden.error(f'Failed to determine the next water/harvest time in garden {self._id}.')
 
     def harvest(self):
-        """Harvest everything"""
-        #BG- """Събери всичко."""
-
+        """Harvest all crops in the garden."""
         try:
             self._httpConn.harvestGarden(self._id)
-        except:
-            raise
+        except Exception as e:
+            raise e
+
 
     def growPlant(self, plantID, sx, sy, amount):
-        """Grows a plant of any size."""
-        #BG- """Отглежда растение от всякакъв размер."""
+        """Grow the specified amount of plants with the given ID and size in the garden."""
+        #BG- """Отглежда определено количество растения с даден идентификатор и размер в градината."""
 
         planted = 0
         emptyFields = self.getEmptyFields()
 
         try:
             for field in range(1, self._MAX_FIELDS + 1):
-                if planted == amount: break
+                if planted == amount:
+                    break
 
                 fieldsToPlant = self._getAllFieldIDsFromFieldIDAndSizeAsIntList(field, sx, sy)
 
-                if (self._isPlantGrowableOnField(field, emptyFields, fieldsToPlant, sx)):
+                if self._isPlantGrowableOnField(field, emptyFields, fieldsToPlant, sx):
                     fields = self._getAllFieldIDsFromFieldIDAndSizeAsString(field, sx, sy)
                     self._httpConn.growPlant(field, plantID, self._id, fields)
                     planted += 1
 
-                    #Nach dem Anbau belegte Felder aus der Liste der leeren Felder loeschen
-                    #BG- След отглеждането, изтрийте заетите полета от списъка на празните полета
+                    # Remove planted fields from the list of empty fields
+                    #BG- Премахнете засадените полета от списъка с празни полета
                     fieldsToPlantSet = set(fieldsToPlant)
                     emptyFieldsSet = set(emptyFields)
-                    tmpSet = emptyFieldsSet - fieldsToPlantSet
-                    emptyFields = list(tmpSet)
+                    emptyFields = list(emptyFieldsSet - fieldsToPlantSet)
 
-        except:
-            self._logGarden.error(f'Im Garten {self._id} konnte nicht gepflanzt werden.')
-            #BG- self._logGarden.error(f'В градината {self._id} не може да се засади.')
-
+        except Exception as e:
+            self._logGarden.error(f'Failed to grow plants in garden {self._id}.')
+            #BG- self._logGarden.error(f'Неуспешно отглеждане на растения в градина {self._id}.')
             return 0
+
         else:
-            msg = f'Im Garten {self._id} wurden {planted} Pflanzen gepflanzt.'
-            #BG- msg = f'В градината {self._id} са засадени {planted} растения.'
+            msg = f'{planted} plants were grown in garden {self._id}.'
+            #BG- msg = f'{planted} растения са отгледани в градина {self._id}.'
 
             if emptyFields:
-                msg = msg + f' Im Garten {self._id} sind noch leere Felder vorhanden.'
-                #BG- msg = msg + f' В градината {self._id} все още има празни полета.'
+                msg += f' There are still empty fields in garden {self._id}.'
+                #BG- msg += f' В градина {self._id} все още има празни полета.'
 
             self._logGarden.info(msg)
             print(msg)
             return planted
 
+
     def removeWeed(self):
         """
-        Entfernt alles Unkraut, Steine und Maulwürfe, wenn ausreichend Geld vorhanden ist.
+        Removes all weeds, stones, and moles if enough money is available.
         """
         #BG- Премахва всички плевели, камъни и кърлежи, ако има достатъчно пари.
 
         weedFields = self.getWeedFields()
         freeFields = []
+
         for fieldID in weedFields:
             try:
                 result = self._httpConn.removeWeedOnFieldInGarden(self._id, fieldID)
-            except:
-                self._logGarden.error(f'Feld {fieldID} im Garten {self._id} konnte nicht von Unkraut befreit werden!')
+            except Exception as e:
+                self._logGarden.error(f'Field {fieldID} in garden {self._id} could not be cleared of weeds!')
                 #BG- self._logGarden.error(f'Полето {fieldID} в градината {self._id} не може да бъде освободено от плевели!')
-
             else:
                 if result == 1:
-                    self._logGarden.info(f'Feld {fieldID} im Garten {self._id} wurde von Unkraut befreit!')
+                    self._logGarden.info(f'Field {fieldID} in garden {self._id} was cleared of weeds!')
                     #BG- self._logGarden.info(f'Полето {fieldID} в градината {self._id} беше освободено от плевели!')
-
                     freeFields.append(fieldID)
                 else:
-                    self._logGarden.error(f'Feld {fieldID} im Garten {self._id} konnte nicht von Unkraut befreit werden!')
+                    self._logGarden.error(f'Field {fieldID} in garden {self._id} could not be cleared of weeds!')
                     #BG- self._logGarden.error(f'Полето {fieldID} в градината {self._id} не може да бъде освободено от плевели!')
 
-
-        self._logGarden.info(f'Im Garten {self._id} wurden {len(freeFields)} Felder von Unkraut befreit.')
+        self._logGarden.info(f'{len(freeFields)} fields were cleared of weeds in garden {self._id}.')
         #BG- self._logGarden.info(f'В градината {self._id} бяха освободени от плевели {len(freeFields)} полета.')
-
-
 
 class AquaGarden(Garden):
     def __init__(self, httpConnection):
@@ -259,120 +237,95 @@ class AquaGarden(Garden):
         self.__setOuterFields()
 
     def __setInnerFields(self, distance=2):
-        """defines the fieldID's of the inner watergarden planting area"""
-        #BG- """Задава fieldID-тата на полетата във вътрешната област за засаждане във водната градина."""
-
+        """Defines the fieldIDs of the inner water garden planting area."""
         self._INNER_FIELDS = []
         for i in range(distance, self._LEN_Y-distance):
             self._INNER_FIELDS.extend(range(i * self._LEN_X + distance + 1, (i + 1) * self._LEN_X - distance + 1))
 
     def __setOuterFields(self):
-        """defines the fieldID's of the outer watergarden planting area"""
-        #BG- """Задава fieldID-тата на полетата във външната област за засаждане във водната градина."""
-
+        """Defines the fieldIDs of the outer water garden planting area."""
         temp_fields = list(range(1, self._MAX_FIELDS+1))
         self._OUTER_FIELDS = [x for x in temp_fields if x not in self._INNER_FIELDS]
 
     def _isPlantGrowableOnField(self, fieldID, emptyFields, fieldsToPlant, edge):
-        """Prüft anhand mehrerer Kriterien, ob ein Anpflanzen möglich ist."""
-        #BG- """Проверява чрез няколко критерия дали е възможно засаждане."""
-
+        """Checks multiple criteria to determine if planting is possible."""
         # Betrachtetes Feld darf nicht besetzt sein
-        #BG- Полето, което се разглежда, не трябва да е заето
+        if fieldID not in emptyFields:
+            return False
 
-        if not (fieldID in emptyFields): return False
-
-        #Randpflanze im Wassergarten
-        #BG- # Растение на ръба във водната градина
-
+        # Randpflanze im Wassergarten
         if edge == 1:
-            if not [x for x in fieldsToPlant if x in self._OUTER_FIELDS] == fieldsToPlant: return False
+            if not [x for x in fieldsToPlant if x in self._OUTER_FIELDS] == fieldsToPlant:
+                return False
 
-        #Wasserpflanzen im Wassergarten
-        #BG- Водни растения във водната градина
-
+        # Wasserpflanzen im Wassergarten
         if edge == 0:
-            if not [x for x in fieldsToPlant if x in self._INNER_FIELDS] == fieldsToPlant: return False
+            if not [x for x in fieldsToPlant if x in self._INNER_FIELDS] == fieldsToPlant:
+                return False
 
         fieldsToPlantSet = set(fieldsToPlant)
         emptyFieldsSet = set(emptyFields)
 
         # Alle benötigten Felder der Pflanze müssen leer sein
-        #BG- # Всички необходими полета за растението трябва да бъдат празни
-
-        if not (fieldsToPlantSet.issubset(emptyFieldsSet)): return False
+        if not fieldsToPlantSet.issubset(emptyFieldsSet):
+            return False
         return True
 
     def getEmptyAquaFields(self):
-        """
-        Gibt alle leeren Felder des Gartens zurück.
-        """
-        #BG- Връща всички празни полета на градината.
+        """Returns all empty fields of the garden."""
+        # Gibt alle leeren Felder des Gartens zurück.
 
         try:
-            tmpEmptyAquaFields = self._httpConn.getEmptyFieldsAqua()
+            return self._httpConn.getEmptyFieldsAqua()
         except:
-            self._logGarden.error('Konnte leere Felder von AquaGarten nicht ermitteln.')
-            #BG- self._logGarden.error('Неуспешно определение на празни полета в Аква-градината.')
+            self._logGarden.error('Could not determine empty fields of AquaGarden.')
 
-        else:
-            return tmpEmptyAquaFields
 
     def waterPlants(self):
-        """
-        Alle Pflanzen im Wassergarten werden bewässert.
-        """
-        #BG- Всички растения във водната градина се поливат.
-
+        """Waters all plants in the aqua garden."""
+        self._logGarden.info(f'Watering all plants in the aqua garden {self._id}.')
         try:
             plants = self._httpConn.getPlantsToWaterInAquaGarden()
+            for i, fieldID in enumerate(plants['fieldID']):
+                sFields = self._getAllFieldIDsFromFieldIDAndSizeAsString(fieldID, plants['sx'][i], plants['sy'][i])
+                self._httpConn.waterPlantInAquaGarden(fieldID, sFields)
             nPlants = len(plants['fieldID'])
-            for i in range(0, nPlants):
-                sFields = self._getAllFieldIDsFromFieldIDAndSizeAsString(plants['fieldID'][i], plants['sx'][i], plants['sy'][i])
-                self._httpConn.waterPlantInAquaGarden(plants['fieldID'][i], sFields)
-        except:
-            self._logGarden.error('Wassergarten konnte nicht bewässert werden.')
-            #BG- self._logGarden.error('Водната градина не може да бъде поливан.')
+            self._logGarden.info(f'{nPlants} plants watered in the aqua garden {self._id}.')
+            print(f'{nPlants} plants watered in the aqua garden {self._id}.')
+        except Exception as e:
+            self._logGarden.error(f'Failed to water plants in the aqua garden {self._id}. Error: {e}')
 
-        else:
-            self._logGarden.info(f'Im Wassergarten wurden {nPlants} Pflanzen gegossen.')
-            #BG- self._logGarden.info(f'Във водната градина бяха поляти {nPlants} растения.')
-
-            print(f'Im Wassergarten wurden {nPlants} Pflanzen gegossen.')
-            #BG- print(f'Във водната градина бяха поляти {nPlants} растения.')
 
 
     def harvest(self):
-        """
-        Erntet alles im Wassergarten.
-        """
-        #BG- Събира всичко във водната градина.
+        """Harvests everything in the aqua garden."""
+        # Erntet alles im Wassergarten.
 
         try:
             self._httpConn.harvestAquaGarden()
         except:
             raise
-        else:
-            pass
+
 
     def growPlant(self, plantID, sx, sy, edge, amount):
-        """Grows a watergarden plant of any size and type."""
-        #BG- """Отглежда водно растение във водната градина с всякакъв размер и вид."""
+        """Grows a water garden plant of any size and type."""
+        # Отглежда водно растение във водната градина с всякакъв размер и вид.
 
         planted = 0
         emptyFields = self.getEmptyAquaFields()
         try:
             for field in range(1, self._MAX_FIELDS + 1):
-                if planted == amount: break
+                if planted == amount:
+                    break
 
                 fieldsToPlant = self._getAllFieldIDsFromFieldIDAndSizeAsIntList(field, sx, sy)
 
-                if (self._isPlantGrowableOnField(field, emptyFields, fieldsToPlant, edge)):
+                if self._isPlantGrowableOnField(field, emptyFields, fieldsToPlant, edge):
                     self._httpConn.growAquaPlant(field, plantID)
                     planted += 1
 
-                    # Nach dem Anbau belegte Felder aus der Liste der leeren Felder loeschen
-                    #BG- След отглеждането, изтрийте заетите полета от списъка на празните полета
+                    # After planting, remove occupied fields from the list of empty fields
+                    # След засаждане, премахнете заетите полета от списъка с празни полета
 
                     fieldsToPlantSet = set(fieldsToPlant)
                     emptyFieldsSet = set(emptyFields)
@@ -380,27 +333,21 @@ class AquaGarden(Garden):
                     emptyFields = list(tmpSet)
 
         except:
-            self._logGarden.error(f'Im Wassergarten konnte nicht gepflanzt werden.')
-            #BG- self._logGarden.error(f'Във водната градина не може да се засади.')
-
+            self._logGarden.error('Could not plant in the aqua garden.')
             return 0
         else:
-            msg = f'Im Wassergarten wurden {planted} Pflanzen gepflanzt.'
-            #BG- msg = f'Във водната градина са засадени {planted} растения.'
-
+            msg = f'{planted} plants were planted in the aqua garden.'
             if emptyFields:
-                msg = msg + f' Im Wassergarten sind noch {len(emptyFields)} leere Felder vorhanden.'
-                #BG- msg = msg + f' Във водната градина все още има {len(emptyFields)} празни полета.'
-
+                msg += f' There are still {len(emptyFields)} empty fields in the aqua garden.'
             self._logGarden.info(msg)
             print(msg)
             return planted
 
     def removeWeed(self):
         """
-        Entfernt alles Unkraut, Steine und Maulwürfe, wenn ausreichend Geld vorhanden ist.
+        Removes all weeds, stones, and moles if sufficient money is available.
         """
-        #BG- Премахва всички плевели, камъни и кърлежи, ако има достатъчно пари.
+        # Премахва всички плевели, камъни и кърлежи, ако има достатъчно пари.
 
         weedFieldsAqua = self.getWeedFields()
         freeFields = []
@@ -408,21 +355,13 @@ class AquaGarden(Garden):
             try:
                 result = self._httpConn.removeWeedOnFieldInAquaGarden(self._id, fieldID)
             except:
-                self._logGarden.error(
-                    f'Feld {fieldID} im Auqagarten {self._id} konnte nicht von Unkraut befreit werden!')
-                    #BG- f'Полето {fieldID} в Аква-градината {self._id} не може да бъде освободено от плевели!')
-
+                self._logGarden.error(f'Field {fieldID} in AquaGarden {self._id} could not be cleared of weeds!')
             else:
                 if result == 1:
-                    self._logGarden.info(f'Feld {fieldID} im Auqagarten {self._id} wurde von Unkraut befreit!')
-                    #BG- self._logGarden.info(f'Полето {fieldID} в Аква-градината {self._id} беше освободено от плевели!')
-
+                    self._logGarden.info(f'Field {fieldID} in AquaGarden {self._id} was cleared of weeds!')
                     freeFields.append(fieldID)
                 else:
-                    self._logGarden.error(
-                        f'Feld {fieldID} im Auqagarten {self._id} konnte nicht von Unkraut befreit werden!')
-                        #BG- f'Полето {fieldID} в Аква-градината {self._id} не може да бъде освободено от плевели!')
+                    self._logGarden.error(f'Field {fieldID} in AquaGarden {self._id} could not be cleared of weeds!')
 
+        self._logGarden.info(f'In AquaGarden {self._id}, {len(freeFields)} fields were cleared of weeds.')
 
-        self._logGarden.info(f'Im Auqagarten {self._id} wurden {len(freeFields)} Felder von Unkraut befreit.')
-        #BG- self._logGarden.info(f'В Аква-градината {self._id} бяха освободени от плевели {len(freeFields)} полета.')
