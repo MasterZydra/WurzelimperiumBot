@@ -17,6 +17,7 @@ en:
   exit_wbot_abnormal: "Wurzelbot could not be shutdown normally."
   logout_success: "Logout was successful."
   no_message: "Could not send message."
+  harvest_all_gardens: "Harvesting all Gardens..."
   harvest_successful: "All gardens successfully harvested."
   harvest_not_successful: "Could not harvest gardens."
   w_harvest_successful: "All weeds could be removed from gardens."

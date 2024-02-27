@@ -17,6 +17,7 @@ de:
   exit_wbot_abnormal: "Wurzelbot konnte nicht korrekt beendet werden."
   logout_success: "Logout erfolgreich."
   no_message: "Konnte keine Nachricht verschicken."
+  harvest_all_gardens: "Ernte alle Gärten..."
   harvest_successful: "Alle Gärten konnten geerntet werden."
   harvest_not_successful: "Konnte nicht alle Gärten ernten."
   w_harvest_successful: "Alle Gärten konnten von Unkraut befreit werden."

@@ -17,6 +17,7 @@ ru:
   exit_wbot_abnormal: "Wurzelbot не удалось нормально завершить работу."
   logout_success: "Выход из системы был успешным."
   no_message: "Не удалось отправить сообщение."
+  harvest_all_gardens: "Harvesting all Gardens..."                             # PLEASE TRANSLATE AND DELTE THIS COMMENT!
   harvest_successful: "Во всех садах успешно собран урожай."
   harvest_not_successful: "Не смогли собрать урожай с садов."
   w_harvest_successful: "Все сорняки могут быть удалены из садов."
