@@ -1,45 +1,39 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from src.core.HTTPCommunication import HTTPConnection
+from collections import defaultdict
 
 class Storage():
-    def __init__(self, httpConnection: HTTPConnection):
+    def __init__(self, httpConnection):
         self.__httpConn = httpConnection
-        self.__products = {}
+        self.__products = defaultdict(int)
 
     def __resetNumbersInStock(self):
-        for productID in self.__products.keys():
-            self.__products[productID] = 0
+        self.__products.clear()
 
     def initProductList(self, productList):
-        for productID in productList:
-            self.__products[str(productID)] = 0
+        self.__products.update({str(productID): 0 for productID in productList})
 
     def updateNumberInStock(self):
-        """Aktualisiert den Lagerbestand für alle Produkte."""
-        #BG-Актуализира наличните количества за всички продукти.
-        self.__resetNumbersInStock()
-
-        inventory = self.__httpConn.getInventory()
-        for i in inventory:
-            self.__products[i] = inventory[i]
+        try:
+            inventory = self.__httpConn.getInventory()
+            self.__products.update({str(productID): quantity for productID, quantity in inventory.items()})
+        except Exception as e:
+            print(f"Error updating stock: {e}")
 
     def getStockByProductID(self, productID):
         return self.__products[str(productID)]
 
     def getKeys(self):
-        return self.__products.keys()
+        return list(self.__products.keys())
 
     def getOrderedStockList(self):
-        sortedStock = dict(sorted(self.__products.items(), key=lambda item: item[1]))
-        filteredStock = dict()
-        for productID in sortedStock:
-            if sortedStock[str(productID)] == 0: continue
-            filteredStock[str(productID)] = sortedStock[str(productID)]
-        return filteredStock
+        sortedStock = {k: v for k, v in sorted(self.__products.items(), key=lambda item: item[1]) if v != 0}
+        return sortedStock
 
     def getLowestStockEntry(self):
-        for productID in self.getOrderedStockList().keys():
-            return productID
-        return -1
+        orderedStock = self.getOrderedStockList()
+        if orderedStock:
+            return next(iter(orderedStock))
+        return None
+
