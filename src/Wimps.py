@@ -22,8 +22,13 @@ class Wimps:
     def declineWimp(self, wimp_id):
         return self.__httpConn.declineWimp(wimp_id)
 
-    def productsToString(self, products, productData: ProductData):
-        result = "Price: " + str(products[0]) + " wT"
-        for product, amount in products[1].items():
-            result += "\n" + str(amount) + "x " + productData.getProductByID(product).getName()
+    def products_to_string(self, products, productData: ProductData):
+        price = products[0]
+        product_details = products[1]
+
+        result = f"Price: {price} wT"
+        for product_id, amount in product_details.items():
+            product_name = productData.getProductByID(product_id).getName()
+            result += f"\n{amount}x {product_name}"
+
         return result 

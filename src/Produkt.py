@@ -51,7 +51,7 @@ class Product():
         return self.__isPlantable
 
     def isVegetable(self):
-        return self.__category == "v" and not self.getPriceNPC() is None
+        return self.__category == "v" and self.__priceNPC is not None
 
     def isWaterPlant(self):
         return self.__category == "w"
@@ -63,18 +63,14 @@ class Product():
         self.__priceNPC = price
 
     def printAll(self):
-        # Show nothing instead of None
-        #BG- Не показва нищо вместо липсващите
-        xstr = lambda s: s or ""
-
-        print('ID:', str(self.__id).rjust(3), ' ', \
-              'CAT:', str(self.__category).ljust(5), ' ', \
-              'Name:', str(self.__name).ljust(35), ' ', \
-              'Plantable:', str(self.__isPlantable).ljust(5), ' ', \
-              'NPC:', str(xstr(self.__priceNPC)).rjust(6), ' ', \
-              'Time:', str(str(datetime.timedelta(seconds=self.__timeUntilHarvest))).rjust(8), ' ', \
-              'SX:', str(xstr(self.__sx)), ' ', \
-              'SY:', str(xstr(self.__sy)))
+        print('ID:', str(self.__id).rjust(3), 
+              'CAT:', str(self.__category).ljust(5), 
+              'Name:', str(self.__name).ljust(35), 
+              'Plantable:', str(self.__isPlantable).ljust(5), 
+              'NPC:', str(self.__priceNPC).rjust(6) if self.__priceNPC is not None else "", 
+              'Time:', str(datetime.timedelta(seconds=self.__timeUntilHarvest)).rjust(8), 
+              'SX:', str(self.__sx) if self.__sx is not None else "", 
+              'SY:', str(self.__sy) if self.__sy is not None else "")
 
 """
 Kategorie   category ['z', '', 'd', 'v', 'w', 'u', 'wd', 'honey', None, 'h']
