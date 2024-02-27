@@ -324,7 +324,7 @@ class WurzelBot(object):
         for id, amount in products.items():
             product = self.productData.getProductByID(id)
             min_stock = max(self.note.getMinStock(), self.note.getMinStock(product.getName()), minimal_balance)
-            if stock_list.get(id, 0) < amount + min_stock:
+            if stock_list.get(id, 0) < amount + min_stock or self.spieler.getLevelNr() < 3:
                 return False
         return True
 
