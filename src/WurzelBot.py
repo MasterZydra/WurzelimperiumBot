@@ -295,15 +295,16 @@ class WurzelBot(object):
 
         for wimps in wimps_data:
             for wimp, products in wimps.items():
-                if not self.checkWimpsProfitable(products, minimal_profit):
-                    self.wimparea.declineWimp(wimp)
-                else:
-                    if self.checkWimpsRequiredAmount(minimal_balance, products[1], stock_list):
-                        print("Selling products to wimp: " + wimp)
-                        print(self.wimparea.productsToString(products, self.productData))
-                        new_products_counts = self.wimparea.sellWimpProducts(wimp)
-                        for id, amount in products[1].items():
-                            stock_list[id] -= amount
+                if self.spieler.getLevelNr() >= 3:
+                    if not self.checkWimpsProfitable(products, minimal_profit):
+                        self.wimparea.declineWimp(wimp)
+                    else:
+                        if self.checkWimpsRequiredAmount(minimal_balance, products[1], stock_list):
+                            print("Selling products to wimp: " + wimp)
+                            print(self.wimparea.productsToString(products, self.productData))
+                            new_products_counts = self.wimparea.sellWimpProducts(wimp)
+                            for id, amount in products[1].items():
+                                stock_list[id] -= amount
 
 
     def checkWimpsProfitable(self, products, minimal_profit_in_percent) -> bool:
