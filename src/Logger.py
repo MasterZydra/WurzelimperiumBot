@@ -6,12 +6,18 @@
 
 import logging, os, time
 
-#vars
-#BG- Променливи
 logtime = time.strftime("%d-%m-%y-%H.%M.%S")
-
-if not os.path.exists('logs'):
-    os.makedirs('logs')
+LOG_DIR = 'logs'
+LOG_FILE = os.path.join(LOG_DIR, f'wurzelbot_{logtime}.log')
 
 def logger():
-    logging.basicConfig(handlers=[logging.FileHandler(f'logs/wurzelbot {logtime}.log', 'a', 'utf-8')], level=logging.DEBUG, format='%(asctime)s - %(message)s')
+    os.makedirs(LOG_DIR, exist_ok=True)
+    
+    logging.basicConfig(
+        handlers=[logging.FileHandler(LOG_FILE, 'a', 'utf-8')],
+        level=logging.DEBUG,
+        format='%(asctime)s - %(message)s'
+    )
+
+if __name__ == "__main__":
+    logger()
