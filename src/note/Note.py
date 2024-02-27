@@ -13,33 +13,33 @@ class Note():
         self._httpConn = Http()
 
     def getNote(self):
-      return self._httpConn.getNote()
+        return self._httpConn.getNote()
 
-    def getMinStock(self, plantName = None) -> int:
-      note = self.getNote()
-      note = note.replace('\r\n', '\n')
-      lines = note.split('\n')
+    def getMinStock(self, plantName=None) -> int:
+        note = self.getNote()
+        note = note.replace('\r\n', '\n')
+        lines = note.split('\n')
 
-      isPlantGiven = not plantName is None
-      for line in lines:
-        if line.strip() == '':
-          continue
+        isPlantGiven = plantName is not None
+        for line in lines:
+            line = line.strip()
+            if not line:
+                continue
 
-        if not isPlantGiven and line.startswith('minStock:'):
-          return self.__extractAmount(line, 'minStock:')
+            prefix = f'minStock({plantName}):' if isPlantGiven else 'minStock:'
+            if line.startswith(prefix):
+                return self.__extractAmount(line, prefix)
 
-        if isPlantGiven and line.startswith(f'minStock({plantName}):'):
-          return self.__extractAmount(line, f'minStock({plantName}):')
-
-      # Return default 0 if not found in note
-      #BG- Връща задание 0 ако не е намерена в бележката
-      return 0
+        # Return default 0 if not found in note
+        #BG- Връща задание 0 ако не е намерена в бележката
+        return 0
 
     def __extractAmount(self, line, prefix) -> int:
-      minStockStr = line.replace(prefix, '').strip()
-      minStockInt = 0
-      try:
-        minStockInt = int(minStockStr)
-      except:
-        print(f'Error: "{prefix}" must be an int')
-      return minStockInt
+        _, _, minStockStr = line.partition(prefix)
+        minStockStr = minStockStr.strip()
+        minStockInt = 0
+        try:
+            minStockInt = int(minStockStr)
+        except ValueError:
+            print(f'Error: "{prefix}" must be an int')
+        return minStockInt
