@@ -1,10 +1,11 @@
-[![Python application](https://github.com/MasterZydra/WurzelimperiumBot/actions/workflows/python-app.yml/badge.svg)](https://github.com/MasterZydra/WurzelimperiumBot/actions/workflows/python-app.yml)
+[![WurzelimperiumBot Runner](https://github.com/MasterZydra/WurzelimperiumBot/actions/workflows/python-app.yml/badge.svg)](https://github.com/MasterZydra/WurzelimperiumBot/actions/workflows/python-app.yml)
+[![WurzelimperiumBot Binary Compile and Release](https://github.com/MasterZydra/WurzelimperiumBot/actions/workflows/release2binary.yml/badge.svg)](https://github.com/MasterZydra/WurzelimperiumBot/actions/workflows/release2binary.yml)
 [![Python 3](https://img.shields.io/badge/python-3-blue.svg)](https://www.python.org/)
 ![GitHub](https://img.shields.io/github/license/MasterZydra/WurzelimperiumBot)
 
-Виличка от [MrFlamez/Wurzelimperium-Bot](https://github.com/MrFlamez/Wurzelimperium-Bot)
+A forked from [MrFlamez/Wurzelimperium-Bot](https://github.com/MrFlamez/Wurzelimperium-Bot)
 
-*Прочети на други езици: [Английски](README.md), [Немски](README.de.md).*
+*Read this in other languages: [English](README.md), [German](README.de.md), [Bulgarian](README.bg.md)*
 
 # Wurzelimperium-Bot
 Бот за играта Wurzelimperium на Upjers. Насладете се на безплатни премиум опции благодарение на този бот.
