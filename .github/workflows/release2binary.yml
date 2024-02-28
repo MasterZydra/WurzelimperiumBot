@@ -41,7 +41,9 @@ jobs:
         pip install pyinstaller
       
     - name: Build binary
-      run: pyinstaller --onefile automated_script.py
+      run: |
+        pyinstaller --onefile automated_script.py
+        pyinstaller --onefile console.py
       
     - name: Copy lang folder
       run: Copy-Item -Path "lang" -Destination "dist" -Recurse
