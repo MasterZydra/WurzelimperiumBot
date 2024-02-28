@@ -1,6 +1,7 @@
 [![Python application](https://github.com/MasterZydra/WurzelimperiumBot/actions/workflows/python-app.yml/badge.svg)](https://github.com/MasterZydra/WurzelimperiumBot/actions/workflows/python-app.yml)
 [![Python 3](https://img.shields.io/badge/python-3-blue.svg)](https://www.python.org/)
 ![GitHub](https://img.shields.io/github/license/MasterZydra/WurzelimperiumBot)
+[![WurzelimperiumBot Binary Compile and Release](https://github.com/MasterZydra/WurzelimperiumBot/actions/workflows/release2binary.yml/badge.svg?event=release)](https://github.com/MasterZydra/WurzelimperiumBot/actions/workflows/release2binary.yml)
 
 Виличка от [MrFlamez/Wurzelimperium-Bot](https://github.com/MrFlamez/Wurzelimperium-Bot)
 
