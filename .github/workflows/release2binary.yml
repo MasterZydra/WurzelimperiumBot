@@ -10,7 +10,7 @@ jobs:
     name: Create daily tag
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - uses: fregante/daily-version-action@v2
       name: Create tag if necessary
       id: daily-version
@@ -27,7 +27,7 @@ jobs:
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       
     - name: Set up Python
       uses: actions/setup-python@v2
