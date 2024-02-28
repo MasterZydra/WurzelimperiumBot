@@ -50,7 +50,7 @@ def main():
             print(i18n.t('wimpb.grow_plant_X', plant=lowest))
             planted = wurzelBot.growVegetablesInGardens(lowest)
             if planted == 0:
-                lowestSsingle = wurzelBot.getLowestSingleVegetableStockEntry()
+                lowestSingle = wurzelBot.getLowestSingleVegetableStockEntry()
                 if lowestSingle == 'Your stock is empty':
                     break
                 print(i18n.t('wimpb.grow_plant_X', plant=lowestSingle))
