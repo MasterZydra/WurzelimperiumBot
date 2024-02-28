@@ -1,0 +1,75 @@
+name: WurzelimperiumBot Binary Compile and Release
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "59 23 * * *"
+
+jobs:
+  tag:
+    name: Create daily tag
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: fregante/daily-version-action@v2
+      name: Create tag if necessary
+      id: daily-version
+    outputs: # Shares the action’s outputs to the Next jobs
+      created: ${{ steps.daily-version.outputs.created }}
+      version: ${{ steps.daily-version.outputs.version }}
+
+  build:
+    needs: tag
+    if: needs.tag.outputs.created
+
+    name: Build Windows binary for WurzelimperiumBot
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+      
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.11
+      
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install pyinstaller
+      
+    - name: Build binary
+      run: pyinstaller --onefile automated_script.py
+      
+    - name: Copy lang folder
+      run: Copy-Item -Path "lang" -Destination "dist" -Recurse
+      
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ needs.tag.outputs.version }}
+        release_name: Release ${{ needs.tag.outputs.version }}
+        body: |
+          WurzelimperiumBot Win32 CLI 
+        draft: false
+        prerelease: false
+    
+    - name: Create zip file
+      run: Compress-Archive -Path dist\* -DestinationPath ${{ needs.tag.outputs.version }}.zip
+
+    - name: Upload Release Asset
+      id: upload-release-asset
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./${{ needs.tag.outputs.version }}.zip
+        asset_name: ${{ needs.tag.outputs.version }}.zip
+        asset_content_type: application/octet-stream
+
