@@ -33,9 +33,13 @@ Es gibt auch eine portable Windows Commandline Version ohne Vorraussetzungen. [W
 ## Features
 - Login ohne zusätzliche Verwendung eines Browsers
 - Vollautomatische Bewässerung aller Gärten inkl. Wassergarten
-- Automatisiertes Anpflanzen
 - Abfrage aller aktuellen Marktpreise (Keine Abhängigkeit von Preislistenpflegern und deren Aktualisierungsintervall!)
-- Automatische Abfertigung der Wimps in den Gärten. Der minimale Bestand kann in den Account-Notizen eingestellt werden. z. B. `minStock: 100` oder `minStock(Apfel): 200`
+- Automatisiertes Anpflanzen  
+  Der Fokus kann auf bestimmte Pflanzen in den Account-Notizen begrenzt werden:  
+  z.B. `growOnly: Sonnenblume, Apfel` or `growOnly: Kaffee`
+- Automatische Abfertigung der Wimps in den Gärten.  
+  Der minimale Bestand kann in den Account-Notizen eingestellt werden.  
+  z.B. `minStock: 100` oder `minStock(Apfel): 200`
 - Automatisches claimen des täglichen Login Bonus
 
 ## Installation

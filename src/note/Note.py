@@ -43,3 +43,19 @@ class Note():
       except:
         print(f'Error: "{prefix}" must be an int')
       return minStockInt
+
+    def getGrowOnly(self) -> list[str]:
+      note = self.getNote()
+      note = note.replace('\r\n', '\n')
+      lines = note.split('\n')
+
+      for line in lines:
+        if line.strip() == '':
+          continue
+
+        if not line.startswith('growOnly:'):
+          continue
+
+        line = line.replace('growOnly:', '').strip()
+        return list(map(str.strip, line.split(',')))
+      return []
