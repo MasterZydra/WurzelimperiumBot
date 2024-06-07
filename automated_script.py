@@ -28,38 +28,43 @@ succ = wurzelBot.launchBot(args.server, args.user, args.password, args.lang, arg
 if succ != True:
     exit(-1)
 
-# Remove weed
-print(i18n.t('wimpb.remove_weed_from_all_gardens'))
-wurzelBot.removeWeedInAllGardens()
 
-# Harvest
-wurzelBot.harvestAllGarden()
+wurzelBot.checkHerbGarden()
 
-# Plant plants
-planted = -1
-plantedSingle = -1
-while wurzelBot.hasEmptyFields() and planted != 0 and plantedSingle != 0:
-    lowest = wurzelBot.getLowestVegetableStockEntry()
-    if lowest == 'Your stock is empty': break
-    print(i18n.t('wimpb.grow_plant_X', plant=lowest))
-    planted = wurzelBot.growVegetablesInGardens(lowest)
-    # If no more "lowest plants" can be grown, try to grow single field plants
-    if planted == 0:
-        lowestSingle = wurzelBot.getLowestSingleVegetableStockEntry()
-        if lowestSingle == 'Your stock is empty': break
-        print(i18n.t('wimpb.grow_plant_X', plant=lowestSingle))
-        plantedSingle = wurzelBot.growVegetablesInGardens(lowestSingle)
+# # Remove weed
+# print(i18n.t('wimpb.remove_weed_from_all_gardens'))
+# wurzelBot.removeWeedInAllGardens()
 
-# Water plants
-time.sleep(3)
-print(i18n.t('wimpb.watering_all_plants'))
-wurzelBot.waterPlantsInAllGardens()
-# Claim Daily
-print(i18n.t('wimpb.claim_bonus'))
-wurzelBot.getDailyLoginBonus()
-# Process Wimp Customers in Gardens
-print(i18n.t('wimpb.process_wimps'))
-wurzelBot.sellWimpsProducts(0,0)
+# # Harvest
+# wurzelBot.harvestAllGarden()
+
+# # Plant plants
+# planted = -1
+# plantedSingle = -1
+# while wurzelBot.hasEmptyFields() and planted != 0 and plantedSingle != 0:
+#     lowest = wurzelBot.getLowestVegetableStockEntry()
+#     if lowest == 'Your stock is empty': break
+#     print(i18n.t('wimpb.grow_plant_X', plant=lowest))
+#     planted = wurzelBot.growVegetablesInGardens(lowest)
+#     # If no more "lowest plants" can be grown, try to grow single field plants
+#     if planted == 0:
+#         lowestSingle = wurzelBot.getLowestSingleVegetableStockEntry()
+#         if lowestSingle == 'Your stock is empty': break
+#         print(i18n.t('wimpb.grow_plant_X', plant=lowestSingle))
+#         plantedSingle = wurzelBot.growVegetablesInGardens(lowestSingle)
+
+# # Water plants
+# time.sleep(3)
+# print(i18n.t('wimpb.watering_all_plants'))
+# wurzelBot.waterPlantsInAllGardens()
+# # Claim Daily
+# print(i18n.t('wimpb.claim_bonus'))
+# wurzelBot.getDailyLoginBonus()
+# # Process Wimp Customers in Gardens
+# print(i18n.t('wimpb.process_wimps'))
+# wurzelBot.sellWimpsProducts(0,0)
+
+
 
 # Close connection
 wurzelBot.exitBot()
