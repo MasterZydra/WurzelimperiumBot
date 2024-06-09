@@ -7,11 +7,10 @@ Created on 21.03.2017
 '''
 
 from urllib.parse import urlencode
-import json, re, httplib2, yaml, time, logging, math, io, i18n
+import json, re, httplib2, yaml, time, logging, math, i18n
 from http.cookies import SimpleCookie
 from src.Session import Session
-import xml.etree.ElementTree as eTree
-from lxml import html, etree
+from lxml import etree
 
 i18n.load_path.append('lang')
 
@@ -846,69 +845,6 @@ class HTTPConnection(object):
         content = content.decode('UTF-8').replace('Gärten & Regale', 'Gärten und Regale')
         dictNPCPrices = self.__parseNPCPricesFromHtml(content)
         return dictNPCPrices
-
-
-    def getAllTradeableProductsFromOverview(self):
-        """Gibt eine Liste zurück, welche Produkte handelbar sind."""
-        try:
-            response, content = self.__sendRequest('stadt/markt.php?show=overview')
-            self.__checkIfHTTPStateIsOK(response)
-            tradeableProducts = re.findall(r'markt\.php\?order=p&v=([0-9]{1,3})&filter=1', content)
-        except:
-            pass #TODO: exception definieren
-        else:
-            for i in range(0, len(tradeableProducts)):
-                tradeableProducts[i] = int(tradeableProducts[i])
-
-            return tradeableProducts
-
-
-    def getOffersFromProduct(self, prod_id):
-        """Gibt eine Liste mit allen Angeboten eines Produkts zurück."""
-        nextPage = True
-        iPage = 1
-        listOffers = []
-        while nextPage:
-            nextPage = False
-
-            try:
-                address = f'stadt/markt.php?order=p&v={str(prod_id)}&filter=1&page={str(iPage)}'
-                response, content = self.__sendRequest(address)
-                self.__checkIfHTTPStateIsOK(response)
-            except:
-                pass #TODO: exception definieren
-            else:
-                html_file = io.BytesIO(content)
-                html_tree = html.parse(html_file)
-                root = html_tree.getroot()
-                table = root.findall('./body/div/table/*')
-
-                if table[1][0].text == 'Keine Angebote':
-                    pass
-                else:
-                    #range von 1 bis länge-1, da erste Zeile Überschriften sind und die letzte Weiter/Zurück.
-                    #Falls es mehrere seiten gibt.
-                    for i in range(1, len(table)-1):
-                        anzahl = table[i][0].text
-                        anzahl = anzahl.encode('utf-8')
-                        anzahl = anzahl.replace('.', '')
-
-                        preis = table[i][3].text
-                        preis = preis.encode('utf-8')
-                        preis = preis.replace('\xc2\xa0wT', '')
-                        preis = preis.replace('.', '')
-                        preis = preis.replace(',', '.')
-                        #produkt = table[i][1][0].text
-                        #verkaeufer = table[i][2][0].text
-
-                        listOffers.append([int(anzahl), float(preis)])
-
-                    for element in table[len(table)-1][0]:
-                        if 'weiter' in element.text:
-                            nextPage = True
-                            iPage = iPage + 1
-
-        return listOffers
 
     def removeWeedOnFieldInGarden(self, gardenID, fieldID):
         """Befreit ein Feld im Garten von Unkraut."""

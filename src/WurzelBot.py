@@ -14,7 +14,7 @@ from src.core.HTTPCommunication import HTTPConnection
 from src.Garten import Garden, AquaGarden
 from src.Honig import Honig
 from src.stock.Stock import Stock
-from src.Marktplatz import Marketplace
+from src.marketplace.Marketplace import Marketplace
 from src.Messenger import Messenger
 from src.note.Note import Note
 from src.Produktdaten import ProductData
@@ -47,7 +47,7 @@ class WurzelBot(object):
         self.wassergarten = None
         self.bienenfarm = None
         self.bonsaifarm = None
-        self.marktplatz = Marketplace(self.__HTTPConn)
+        self.marketplace = Marketplace()
         self.wimparea = Wimp()
         self.quest = Quest(self.spieler)
         self.bonus = Bonus()
