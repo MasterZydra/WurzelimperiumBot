@@ -1,23 +1,44 @@
 from logging import log
 import src.Logger as logger
 from src.WurzelBot import WurzelBot
+import argparse
 import i18n
 import shlex
 
 # Login data
-#BG-Данни за вход
+# You can set them here or pass them as CLI arguments
+server = 1
 user = ''
 pw = ''
-server = 17
 lang = 'de' # de, en, bg
 portalacc = False
+
+parser = argparse.ArgumentParser()
+parser.add_argument('--server', type=int, help='Server number')
+parser.add_argument('--user', type=str, help='Username for login')
+parser.add_argument('--password', type=str, help='Password for login')
+parser.add_argument('--lang', type=str, help="Set Language and Region for the Game and Bot")
+parser.add_argument('-p', '--portal', help="If -p or --portal Argument is passed, Portal Account Login will be used.", action='store_true', dest="portalacc")
+parser.add_argument('-l', '--log', help="If -l or --log Argument is passed, logging will be enabled.", action='store_true', dest="logging")
+args = parser.parse_args()
+
+if args.server != None:
+    server = args.server
+if args.user != None:
+    user = args.user
+if args.password != None:
+    pw = args.password
+if args.lang != None:
+    lang = args.lang
+if args.portalacc != None:
+    portalacc = args.portalacc
+
 # Global vars
-#BG-Глобални данни
 wurzelBot: WurzelBot = object
 
-# enable logging? change to True else change it to False
-#BG-Включване на логирането? Промени на True за Да или False за Не
 log = False
+if args.logging != None:
+    log = args.logging
 
 i18n.load_path.append('lang')
 i18n.set('locale', lang)

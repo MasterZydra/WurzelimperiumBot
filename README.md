@@ -48,14 +48,48 @@ There is also a standalone executable file for windows. [Win32-CLI-Standalone](h
 3. Activate virtual environment: `source env/bin/activate`  
 4. Installation of requirements: `pip install -r ./requirements.txt`
 
-**Requirements:** [Python 3](https://www.python.org/download/releases/3.0/)
-1. Installation of requirements:  
-`pip install -r ./requirements.txt`
-2. Provide login data in scripts ([example.py](./example.py) and/or [console.py](./console.py)).  
-   With fully automated script [automated_script.py](./automated_script.py) you need to pass your login credentials by adding them to the script as flag: </br>
-   `python3 ./automated_script.py <server-nr> <username> <password> <lang>` </br>
-   Example: python3 ./automated_script.py 12 FooBar password1337 en
-3. Run the script.
+**Requirements:** [Python 3](https://www.python.org/download/releases/3.0/)  
+Installation of the dependencies: `pip install -r ./requirements.txt`
+
+## Usage
+### [console.py](./console.py)
+You have two options to pass your credentials:  
+1. Pass them as arguments:  
+  e.g. `python3 console.py --server 1 --user MyUserName  --password AVerySecurePassword`
+2. Set them in the file itself:  
+    You can set your credentials in the area `# Login data`
+
+```
+usage: console.py [-h] [--server SERVER] [--user USER] [--password PASSWORD] [--lang LANG] [-p] [-l]
+
+options:
+  -h, --help           show this help message and exit
+  --server SERVER      server number
+  --user USER          username for login
+  --password PASSWORD  password for login
+  --lang LANG          Set Language and Region for the Game and Bot
+  -p, --portal         If -p or --portal Argument is passed, Portal Account Login will be used.
+  -l, --log            If -l or --log Argument is passed, logging will be enabled.
+```
+
+### [automated_script.py](./automated_script.py)
+The fully automated script only allows passing your login credentials as arguments:  
+e.g. `python3 ./automated_script.py 12 FooBar password1337 en`
+
+```
+usage: automated_script.py [-h] [-p] [-l] server user password [lang]
+
+positional arguments:
+  server        server number
+  user          username for login
+  password      password for login
+  lang          Set Language and Region for the Game and Bot
+
+options:
+  -h, --help    show this help message and exit
+  -p, --portal  If -p or --portal Argument is passed, Portal Account Login will be used.
+  -l, --log     If -l or --log Argument is passed, logging will be enabled.
+```
 
 ## Installation script for Linux
 The installation script for linux is located in branch [`unix`](https://github.com/MasterZydra/WurzelimperiumBot/tree/unix).  
