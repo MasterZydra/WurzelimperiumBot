@@ -18,7 +18,7 @@ from src.Marktplatz import Marketplace
 from src.Messenger import Messenger
 from src.note.Note import Note
 from src.Produktdaten import ProductData
-from src.Quests import Quest
+from src.quest.Quest import Quest
 from src.Shop_lists import *
 from src.Spieler import Spieler, Login
 from src.Stadtpark import Park
@@ -49,7 +49,7 @@ class WurzelBot(object):
         self.bonsaifarm = None
         self.marktplatz = Marketplace(self.__HTTPConn)
         self.wimparea = Wimps(self.__HTTPConn)
-        self.quest = Quest(self.__HTTPConn, self.spieler)
+        self.quest = Quest(self.spieler)
         self.bonus = Bonus()
         self.note = Note()
         self.park = None
@@ -328,9 +328,6 @@ class WurzelBot(object):
             if stock_list.get(id, 0) < amount + min_stock or self.spieler.getLevelNr() < 3:
                 return False
         return True
-
-    def getQuestProducts(self, quest_name, quest_number=0):
-        return self.quest.getQuestProducts(quest_name, quest_number)
 
     def getNextRunTime(self):
         garden_time = []

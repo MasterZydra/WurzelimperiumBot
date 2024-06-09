@@ -966,17 +966,6 @@ class HTTPConnection(object):
 
         return listOffers
 
-    def getBigQuestData(self):
-        """Returns Data from Yearly Series of Quests"""
-        try:
-            address = f'ajax/ajax.php?do=bigquest_init&id=3&token={self.__token}'
-            response, content = self.__sendRequest(address)
-            self.__checkIfHTTPStateIsOK(response)
-            jContent = self.__generateJSONContentAndCheckForOK(content)
-            return jContent['data']
-        except:
-            pass
-
     def removeWeedOnFieldInGarden(self, gardenID, fieldID):
         """Befreit ein Feld im Garten von Unkraut."""
         self._changeGarden(gardenID)
