@@ -13,7 +13,7 @@ from src.core.Config import Config
 from src.core.HTTPCommunication import HTTPConnection
 from src.Garten import Garden, AquaGarden
 from src.Honig import Honig
-from src.Lager import Storage
+from src.stock.Stock import Stock
 from src.Marktplatz import Marketplace
 from src.Messenger import Messenger
 from src.note.Note import Note
@@ -42,7 +42,7 @@ class WurzelBot(object):
         self.productData = ProductData(self.__HTTPConn)
         self.spieler = Spieler()
         self.messenger = Messenger(self.__HTTPConn)
-        self.storage = Storage(self.__HTTPConn)
+        self.stock = Stock()
         self.garten = []
         self.wassergarten = None
         self.bienenfarm = None
@@ -196,8 +196,8 @@ class WurzelBot(object):
         self.spieler.accountLogin = loginDaten
         self.spieler.setUserID(self.__HTTPConn.getUserID())
         self.productData.initAllProducts()
-        self.storage.initProductList(self.productData.getListOfAllProductIDs())
-        self.storage.updateNumberInStock()
+        self.stock.init_product_list(self.productData.getListOfAllProductIDs())
+        self.stock.update()
         return True
 
 
@@ -287,7 +287,7 @@ class WurzelBot(object):
         return dict(allWimpsProducts)
 
     def sellWimpsProducts(self, minimal_balance, minimal_profit):
-        stock_list = self.storage.getOrderedStockList()
+        stock_list = self.stock.get_ordered_stock_list()
         wimps_data = []
         for garden in self.garten:
             for k, v in self.wimparea.getWimpsData(garden).items():
@@ -371,7 +371,7 @@ class WurzelBot(object):
                 self.wassergarten.harvest()
                 pass
 
-            self.storage.updateNumberInStock()
+            self.stock.update()
             self.__logBot.info(i18n.t('wimpb.harvest_successful'))
         except:
             self.__logBot.error(i18n.t('wimpb.harvest_not_successful'))
@@ -397,8 +397,8 @@ class WurzelBot(object):
             print(logMsg)
             return -1
 
-        if amount == -1 or amount > self.storage.getStockByProductID(product.getID()):
-            amount = self.storage.getStockByProductID(product.getID())
+        if amount == -1 or amount > self.stock.get_stock_by_product_id(product.getID()):
+            amount = self.stock.get_stock_by_product_id(product.getID())
 
         remainingAmount = amount
         garden: Garden
@@ -406,7 +406,7 @@ class WurzelBot(object):
             planted += garden.growPlant(product.getID(), product.getSX(), product.getSY(), remainingAmount)
             remainingAmount = amount - planted
 
-        self.storage.updateNumberInStock()
+        self.stock.update()
 
         return planted
 
@@ -430,20 +430,20 @@ class WurzelBot(object):
                 print(logMsg)
                 return -1
 
-            if amount == -1 or amount > self.storage.getStockByProductID(product.getID()):
-                amount = self.storage.getStockByProductID(product.getID())
+            if amount == -1 or amount > self.stock.get_stock_by_product_id(product.getID()):
+                amount = self.stock.get_stock_by_product_id(product.getID())
             remainingAmount = amount
             planted += self.wassergarten.growPlant(product.getID(), product.getSX(), product.getSY(), product.getEdge(), remainingAmount)
-            self.storage.updateNumberInStock()
+            self.stock.update()
 
             return planted
 
     def printStock(self):
         isSmthPrinted = False
-        for productID in self.storage.getKeys():
+        for productID in self.stock.get_keys():
             product = self.productData.getProductByID(productID)
 
-            amount = self.storage.getStockByProductID(productID)
+            amount = self.stock.get_stock_by_product_id(productID)
             if amount == 0: continue
 
             print(str(product.getName()).ljust(30) + 'Amount: ' + str(amount).rjust(5))
@@ -452,16 +452,16 @@ class WurzelBot(object):
         if not isSmthPrinted:
             print('Your stock is empty')
 
-    def getLowestStockEntry(self):
-        entryID = self.storage.getLowestStockEntry()
+    def get_lowest_stock_entry(self):
+        entryID = self.stock.get_lowest_stock_entry()
         if entryID == -1: return 'Your stock is empty'
         return self.productData.getProductByID(entryID).getName()
 
-    def getOrderedStockList(self):
+    def get_ordered_stock_list(self):
         orderedList = ''
-        for productID in self.storage.getOrderedStockList():
+        for productID in self.stock.get_ordered_stock_list():
             orderedList += str(self.productData.getProductByID(productID).getName()).ljust(20)
-            orderedList += str(self.storage.getOrderedStockList()[productID]).rjust(5)
+            orderedList += str(self.stock.get_ordered_stock_list()[productID]).rjust(5)
             orderedList += str('\n')
         return orderedList.strip()
 
@@ -469,7 +469,7 @@ class WurzelBot(object):
         # Grow only plants
         plantOnly = self.note.get_grow_only()
         if len(plantOnly) != 0:
-            for productID in self.storage.getOrderedStockList():
+            for productID in self.stock.get_ordered_stock_list():
                 if self.productData.getProductByID(productID).getName() in plantOnly:
                     return self.productData.getProductByID(productID).getName()
 
@@ -478,12 +478,12 @@ class WurzelBot(object):
         # Default behaviour
         lowestStock = -1
         lowestProductId = -1
-        for productID in self.storage.getOrderedStockList():
+        for productID in self.stock.get_ordered_stock_list():
             if not self.productData.getProductByID(productID).isVegetable() or \
                 not self.productData.getProductByID(productID).isPlantable():
                 continue
 
-            currentStock = self.storage.getStockByProductID(productID)
+            currentStock = self.stock.get_stock_by_product_id(productID)
             if lowestStock == -1 or currentStock < lowestStock:
                 lowestStock = currentStock
                 lowestProductId = productID
@@ -495,13 +495,13 @@ class WurzelBot(object):
     def getLowestSingleVegetableStockEntry(self):
         lowestSingleStock = -1
         lowestSingleProductId = -1
-        for productID in self.storage.getOrderedStockList():
+        for productID in self.stock.get_ordered_stock_list():
             if not self.productData.getProductByID(productID).isVegetable() or \
                 not self.productData.getProductByID(productID).isPlantable() or \
                 not self.productData.getProductByID(productID).getName() in self.productData.getListOfSingleFieldVegetables():
                 continue
 
-            currentStock = self.storage.getStockByProductID(productID)
+            currentStock = self.stock.get_stock_by_product_id(productID)
             if lowestSingleStock == -1 or currentStock < lowestSingleStock:
                 lowestSingleStock = currentStock
                 lowestSingleProductId = productID
@@ -513,12 +513,12 @@ class WurzelBot(object):
     def getLowestWaterPlantStockEntry(self):
         lowestStock = -1
         lowestProductId = -1
-        for productID in self.storage.getOrderedStockList():
+        for productID in self.stock.get_ordered_stock_list():
             if not self.productData.getProductByID(productID).isWaterPlant() or \
                 not self.productData.getProductByID(productID).isPlantable():
                 continue
 
-            currentStock = self.storage.getStockByProductID(productID)
+            currentStock = self.stock.get_stock_by_product_id(productID)
             if lowestStock == -1 or currentStock < lowestStock:
                 lowestStock = currentStock
                 lowestProductId = productID
@@ -564,7 +564,7 @@ class WurzelBot(object):
                     product = self.productData.getProductByID(product)
                     #print(f'Pid {product.getID()}')
                     needed = item['amount']
-                    stored = self.storage.getStockByProductID(product.getID())
+                    stored = self.stock.get_stock_by_product_id(product.getID())
                     #print(f'stored {stored}')
                     if needed >= stored:
                         missing = abs(needed - stored) + 10

@@ -181,7 +181,7 @@ def getStock(argStr : str):
     if len(args) == 0:
         wurzelBot.printStock()
     elif args[0] == 'sort':
-        print(wurzelBot.getOrderedStockList())
+        print(wurzelBot.get_ordered_stock_list())
 
 def userData():
     colWidth = 20

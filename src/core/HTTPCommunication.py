@@ -851,17 +851,6 @@ class HTTPConnection(object):
         except:
             raise
 
-    def getInventory(self):
-        """Ermittelt den Lagerbestand und gibt diesen zurück."""
-        try:
-            address = f'ajax/updatelager.php?all=1&sort=1&type=honey&token={self.__token}'
-            response, content = self.__sendRequest(address, 'POST')
-            self.__checkIfHTTPStateIsOK(response)
-            jContent = self.__generateJSONContentAndCheckForOK(content)
-            return jContent['produkte']
-        except:
-            pass
-
     def getWimpsData(self, gardenID):
         """Get wimps data including wimp_id and list of products with amount"""
         try:
