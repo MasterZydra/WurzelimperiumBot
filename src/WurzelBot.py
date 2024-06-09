@@ -324,7 +324,7 @@ class WurzelBot(object):
     def checkWimpsRequiredAmount(self, minimal_balance, products, stock_list):
         for id, amount in products.items():
             product = self.productData.getProductByID(id)
-            min_stock = max(self.note.getMinStock(), self.note.getMinStock(product.getName()), minimal_balance)
+            min_stock = max(self.note.get_min_stock(), self.note.get_min_stock(product.getName()), minimal_balance)
             if stock_list.get(id, 0) < amount + min_stock or self.spieler.getLevelNr() < 3:
                 return False
         return True
@@ -467,7 +467,7 @@ class WurzelBot(object):
 
     def getLowestVegetableStockEntry(self):
         # Grow only plants
-        plantOnly = self.note.getGrowOnly()
+        plantOnly = self.note.get_grow_only()
         if len(plantOnly) != 0:
             for productID in self.storage.getOrderedStockList():
                 if self.productData.getProductByID(productID).getName() in plantOnly:

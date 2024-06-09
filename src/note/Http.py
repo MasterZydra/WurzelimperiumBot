@@ -8,7 +8,7 @@ class Http(object):
     def __init__(self):
         self.__http: HTTPConnection = HTTPConnection()
 
-    def getNote(self) -> str:
+    def get_note(self) -> str:
         """Get the users note"""
         try:
             response, content = self.__http.sendRequest('notiz.php', 'POST')
@@ -18,9 +18,9 @@ class Http(object):
             html_tree = etree.fromstring(content, parser=my_parser)
 
             note = html_tree.find('./body/form/div/textarea[@id="notiztext"]')
-            noteText = note.text
-            if noteText is None:
+            note_text = note.text
+            if note_text is None:
                 return ''
-            return noteText.strip()
+            return note_text.strip()
         except:
             raise

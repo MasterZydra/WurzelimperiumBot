@@ -5,57 +5,49 @@ from src.note.Http import Http
 
 class Note():
     """This class handles reading from the user notes"""
-    #BG- Тази класа данни съдържа цялата важна информация за бележката.
 
-    # TODO Add fn to write into notes
-  
     def __init__(self):
-        self._httpConn = Http()
+        self.__http = Http()
 
-    def getNote(self):
-      return self._httpConn.getNote()
+    def get_note(self):
+        return self.__http.get_note()
 
-    def getMinStock(self, plantName = None) -> int:
-      note = self.getNote()
-      note = note.replace('\r\n', '\n')
-      lines = note.split('\n')
+    def __extract_amount(self, line, prefix) -> int:
+        minStockStr = line.replace(prefix, '').strip()
+        try:
+            return int(minStockStr)
+        except:
+            print(f'Error: "{prefix}" must be an int')
+        return 0
 
-      isPlantGiven = not plantName is None
-      for line in lines:
-        if line.strip() == '':
-          continue
+    def get_min_stock(self, plant_name = None) -> int:
+        note = self.get_note().replace('\r\n', '\n')
+        lines = note.split('\n')
 
-        if not isPlantGiven and line.startswith('minStock:'):
-          return self.__extractAmount(line, 'minStock:')
+        is_plant_given = not plant_name is None
+        for line in lines:
+            if line.strip() == '':
+                continue
 
-        if isPlantGiven and line.startswith(f'minStock({plantName}):'):
-          return self.__extractAmount(line, f'minStock({plantName}):')
+            if not is_plant_given and line.startswith('minStock:'):
+                return self.__extract_amount(line, 'minStock:')
 
-      # Return default 0 if not found in note
-      #BG- Връща задание 0 ако не е намерена в бележката
-      return 0
+            if is_plant_given and line.startswith(f'minStock({plant_name}):'):
+                return self.__extract_amount(line, f'minStock({plant_name}):')
 
-    def __extractAmount(self, line, prefix) -> int:
-      minStockStr = line.replace(prefix, '').strip()
-      minStockInt = 0
-      try:
-        minStockInt = int(minStockStr)
-      except:
-        print(f'Error: "{prefix}" must be an int')
-      return minStockInt
+        # Return default 0 if not found in note
+        return 0
 
-    def getGrowOnly(self) -> list[str]:
-      note = self.getNote()
-      note = note.replace('\r\n', '\n')
-      lines = note.split('\n')
+    def get_grow_only(self) -> list[str]:
+        note = self.get_note().replace('\r\n', '\n')
+        lines = note.split('\n')
 
-      for line in lines:
-        if line.strip() == '':
-          continue
+        for line in lines:
+            if line.strip() == '' or not line.startswith('growOnly:'):
+                continue
 
-        if not line.startswith('growOnly:'):
-          continue
+            line = line.replace('growOnly:', '').strip()
+            return list(map(str.strip, line.split(',')))
 
-        line = line.replace('growOnly:', '').strip()
-        return list(map(str.strip, line.split(',')))
-      return []
+        # Return default [] if not found in note
+        return []
