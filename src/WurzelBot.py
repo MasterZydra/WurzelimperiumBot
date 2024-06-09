@@ -22,7 +22,7 @@ from src.quest.Quest import Quest
 from src.Shop_lists import *
 from src.Spieler import Spieler, Login
 from src.Stadtpark import Park
-from src.Wimps import Wimps
+from src.wimp.Wimp import Wimp
 import logging, i18n, datetime
 
 i18n.load_path.append('lang')
@@ -48,7 +48,7 @@ class WurzelBot(object):
         self.bienenfarm = None
         self.bonsaifarm = None
         self.marktplatz = Marketplace(self.__HTTPConn)
-        self.wimparea = Wimps(self.__HTTPConn)
+        self.wimparea = Wimp()
         self.quest = Quest(self.spieler)
         self.bonus = Bonus()
         self.note = Note()
@@ -280,32 +280,34 @@ class WurzelBot(object):
     def getAllWimpsProducts(self):
         allWimpsProducts = Counter()
         for garden in self.garten:
-            tmpWimpData = self.wimparea.getWimpsData(garden)
+            tmpWimpData = self.wimparea.get_wimps_data(garden)
             for products in tmpWimpData.values():
                 allWimpsProducts.update(products[1])
 
         return dict(allWimpsProducts)
 
     def sellWimpsProducts(self, minimal_balance, minimal_profit):
+        if self.spieler.getLevelNr() < 3:
+            return
+
         stock_list = self.stock.get_ordered_stock_list()
         wimps_data = []
         for garden in self.garten:
-            for k, v in self.wimparea.getWimpsData(garden).items():
+            for k, v in self.wimparea.get_wimps_data(garden).items():
                 wimps_data.append({k: v})
 
         for wimps in wimps_data:
             for wimp, products in wimps.items():
-                if self.spieler.getLevelNr() >= 3:
-                    if not self.checkWimpsProfitable(products, minimal_profit):
-                        self.wimparea.declineWimp(wimp)
-                    else:
-                        if self.checkWimpsRequiredAmount(minimal_balance, products[1], stock_list):
-                            print("Selling products to wimp: " + wimp)
-                            print(self.wimparea.productsToString(products, self.productData))
-                            new_products_counts = self.wimparea.sellWimpProducts(wimp)
-                            for id, amount in products[1].items():
-                                stock_list[id] -= amount
+                if not self.checkWimpsProfitable(products, minimal_profit):
+                    self.wimparea.decline(wimp)
+                    continue
 
+                if self.checkWimpsRequiredAmount(minimal_balance, products[1], stock_list):
+                    print("Selling products to wimp: " + wimp)
+                    print(self.wimparea.products_to_string(products, self.productData))
+                    new_products_counts = self.wimparea.sell(wimp)
+                    for id, amount in products[1].items():
+                        stock_list[id] -= amount
 
     def checkWimpsProfitable(self, products, minimal_profit_in_percent) -> bool:
         # Check if the price the wimp wants to pay is more than the price of buying every product in the shops.

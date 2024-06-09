@@ -312,18 +312,6 @@ class HTTPConnection(object):
             growingPlants.append(field[1])
         return growingPlants
 
-    def __findWimpsDataFromJSONContent(self, jContent):
-        """Returns list of growing plants from JSON content"""
-        wimpsData = {}
-        for wimp in jContent['wimps']:
-            product_data = {}
-            wimp_id = wimp['sheet']['id']
-            cash = wimp['sheet']['sum']
-            for product in wimp['sheet']['products']:
-                product_data[str(product['pid'])] = int(product['amount'])
-            wimpsData[wimp_id] = [cash, product_data]
-        return wimpsData
-
     def __findEmptyAquaFieldsFromJSONContent(self, jContent):
         emptyAquaFields = []
         for field in jContent['garden']:
@@ -850,50 +838,6 @@ class HTTPConnection(object):
             return reProducts.group(1)
         except:
             raise
-
-    def getWimpsData(self, gardenID):
-        """Get wimps data including wimp_id and list of products with amount"""
-        try:
-            self._changeGarden(gardenID)
-
-            response, content = self.__sendRequest(f'ajax/verkaufajax.php?do=getAreaData&token={self.__token}')
-            self.__checkIfHTTPStateIsOK(response)
-
-            jContent = self.__generateJSONContentAndCheckForOK(content)
-            return self.__findWimpsDataFromJSONContent(jContent)
-        except:
-            raise
-
-    def sellWimpProducts(self, wimp_id):
-        """
-        Sell products to wimp with a given id
-        @param wimp_id: str
-        @return: dict of new balance of sold products
-        """
-        try:
-            address = f'ajax/verkaufajax.php?do=accept&id={wimp_id}&token={self.__token}'
-            response, content = self.__sendRequest(address, 'POST')
-            self.__checkIfHTTPStateIsOK(response)
-            jContent = self.__generateJSONContentAndCheckForOK(content)
-            return jContent['newProductCounts']
-        except:
-            pass
-
-
-    def declineWimp(self, wimp_id):
-        """
-        Decline wimp with a given id
-        @param wimp_id: str
-        @return: 'decline'
-        """
-        try:
-            address = f'ajax/verkaufajax.php?do=decline&id={wimp_id}&token={self.__token}'
-            response, content = self.__sendRequest(address)
-            self.__checkIfHTTPStateIsOK(response)
-            jContent = self.__generateJSONContentAndCheckForOK(content)
-            return jContent['action']
-        except:
-            pass
 
     def getNPCPrices(self):
         """Ermittelt aus der Wurzelimperium-Hilfe die NPC Preise aller Produkte."""
