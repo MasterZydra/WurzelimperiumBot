@@ -58,6 +58,9 @@ class HTTPConnection(object):
         self.__unr = None
         self.__portunr = None
 
+    def token(self):
+        return self.__token
+
     def sendRequest(self, address: str, method: str = 'GET', body = None, headers: dict = {}):
         return self.__sendRequest(address, method, body, headers)
 
@@ -107,6 +110,8 @@ class HTTPConnection(object):
         else:
             raise JSONError()
 
+    def generateJSONContentAndCheckForOK(self, content: str):
+        return self.__generateJSONContentAndCheckForOK(content)
 
     def __generateJSONContentAndCheckForOK(self, content: str):
         """Aufbereitung und Prüfung der vom Server empfangenen JSON Daten."""
@@ -980,18 +985,6 @@ class HTTPConnection(object):
             self.__checkIfHTTPStateIsOK(response)
             jContent = self.__generateJSONContentAndCheckForOK(content)
             return jContent['data']
-        except:
-            pass
-
-    def getDailyLoginBonus(self, day):
-        """
-        @param day: string (day of daily bonus)
-        """
-        try:
-            address = f'ajax/ajax.php?do=dailyloginbonus_getreward&day={str(day)}&token={self.__token}'
-            response, content = self.__sendRequest(address)
-            self.__checkIfHTTPStateIsOK(response)
-            return self.__generateJSONContentAndCheckForOK(content)
         except:
             pass
 

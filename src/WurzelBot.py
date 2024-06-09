@@ -8,7 +8,7 @@ Created on 21.03.2017
 
 from collections import Counter
 from src.Bonsai import Bonsai
-from src.Bonus import Bonus
+from src.bonus.Bonus import Bonus
 from src.core.Config import Config
 from src.core.HTTPCommunication import HTTPConnection
 from src.Garten import Garden, AquaGarden
@@ -50,7 +50,7 @@ class WurzelBot(object):
         self.marktplatz = Marketplace(self.__HTTPConn)
         self.wimparea = Wimps(self.__HTTPConn)
         self.quest = Quest(self.__HTTPConn, self.spieler)
-        self.bonus = Bonus(self.__HTTPConn)
+        self.bonus = Bonus()
         self.note = Note()
         self.park = None
 
@@ -548,7 +548,7 @@ class WurzelBot(object):
             self.__logBot.error(i18n.t('wimpb.w_harvest_not_successful'))
 
     def getDailyLoginBonus(self):
-        self.bonus.getDailyLoginBonus()
+        self.bonus.get_daily_login_bonus()
 
     def infinityQuest(self, MINwt):
         #TODO: Mehr Checks bzw Option wieviele Quests/WT man ausgeben mag - da es kein cooldown gibt! (hoher wt verlust)
