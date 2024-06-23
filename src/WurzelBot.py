@@ -12,7 +12,7 @@ from src.bonus.Bonus import Bonus
 from src.core.Config import Config
 from src.core.HTTPCommunication import HTTPConnection
 from src.Garten import Garden, AquaGarden
-from src.Honig import Honig
+from src.honey.Honey import Honey
 from src.stock.Stock import Stock
 from src.marketplace.Marketplace import Marketplace
 from src.Messenger import Messenger
@@ -45,7 +45,7 @@ class WurzelBot(object):
         self.stock = Stock()
         self.garten = []
         self.wassergarten = None
-        self.bienenfarm = None
+        self.honey = None
         self.bonsaifarm = None
         self.marketplace = Marketplace()
         self.wimparea = Wimp()
@@ -69,7 +69,7 @@ class WurzelBot(object):
                 self.wassergarten = AquaGarden(self.__HTTPConn)
 
             if self.spieler.isHoneyFarmAvailable() is True:
-                self.bienenfarm = Honig(self.__HTTPConn)
+                self.honey = Honey()
 
             if self.spieler.isBonsaiFarmAvailable() is True:
                 self.bonsaifarm = Bonsai(self.__HTTPConn)
@@ -615,10 +615,7 @@ class WurzelBot(object):
         """
         #BG-Пробва да изпрати всички пчели за времева опция 1 (без намаляване 2 часа).
         if self.spieler.isHoneyFarmAvailable():
-            hives = self.__HTTPConn.getHoneyFarmInfos()[2]
-            for hive in hives:
-                self.__HTTPConn.sendeBienen(hive)
-                self.bienenfarm.harvest()
+            self.honey.send_bees()
         else:
             logMsg = 'Konnte nicht alle Bienen ernten.'
             print(logMsg)
