@@ -483,8 +483,12 @@ class WurzelBot(object):
 
     def getDailyBoni(self):
         self.bonus.getDailyLoginBonus()
-        self.bonus.collectBonusitemPoints()
-        self.bonus.collectLuckyMole()
+
+        if self.spieler.is_premium_active():
+            self.bonus.collectBonusitemPoints()
+
+        if self.spieler.is_guild_member():
+            self.bonus.collectLuckyMole()
 
     def infinityQuest(self, MINwt):
         #TODO: Mehr Checks bzw Option wieviele Quests/WT man ausgeben mag - da es kein cooldown gibt! (hoher wt verlust)

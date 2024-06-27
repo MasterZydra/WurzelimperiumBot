@@ -74,6 +74,19 @@ class Spieler():
 
     def getBarFormated(self):
         return self.__userData['bar']
+    
+    def is_premium_active(self) -> int:
+        """returns state of premium account
+        Returns:
+            int: 0 = no premium, 1 = premium active
+        """
+        return int(self.__userData['citymap']['premium'])
+    
+    def is_guild_member(self) -> bool:
+        """Returns false if no guild_tag is set, otherwise true"""
+        if self.__userData['g_tag'] == "":
+            return False
+        return True
 
     def setUserNameFromServer(self, http):
         """

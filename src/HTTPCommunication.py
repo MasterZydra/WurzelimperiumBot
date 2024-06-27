@@ -70,7 +70,8 @@ class HTTPConnection(object):
                 'mail': int(content['mail']),
                 'contracts': int(content['contracts']),
                 'g_tag': str(content['g_tag']),
-                'time': int(content['time'])}
+                'time': int(content['time']),
+                'citymap': content['citymap']}
 
 
     def __checkIfHTTPStateIsOK(self, response):
