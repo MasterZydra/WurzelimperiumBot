@@ -13,9 +13,9 @@ class Note():
         return self.__http.get_note()
 
     def __extract_amount(self, line, prefix) -> int:
-        minStockStr = line.replace(prefix, '').strip()
+        min_stock_str = line.replace(prefix, '').strip()
         try:
-            return int(minStockStr)
+            return int(min_stock_str)
         except:
             print(f'Error: "{prefix}" must be an int')
         return 0
