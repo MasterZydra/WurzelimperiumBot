@@ -8,7 +8,7 @@ import logging, os, time
 
 #vars
 #BG- Променливи
-logtime = time.strftime("%d-%m-%y-%H.%M.%S")
+logtime = time.strftime("%y-%m-%d-%H.%M.%S")
 
 if not os.path.exists('logs'):
     os.makedirs('logs')

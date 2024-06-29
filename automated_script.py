@@ -65,7 +65,7 @@ def main():
         # Claim Daily
         # BG-Събиране на дневният бонус
         print(i18n.t('wimpb.claim_bonus'))
-        wurzelBot.getDailyLoginBonus()
+        wurzelBot.get_daily_bonuses()
 
         # Process Wimp Customers in Gardens
         # BG-Изпълни нуждите на Wimps в градините

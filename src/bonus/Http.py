@@ -16,6 +16,36 @@ class Http(object):
             return self.__http.generateJSONContentAndCheckForOK(content)
         except:
             pass
-    
+
     def read_user_data(self):
         return self.__http.readUserDataFromServer(data_type="dailyloginbonus")['dailyloginbonus']
+
+    def init_garden_shed(self):
+        try:
+            response, content = self.__http.sendRequest(f'ajax/ajax.php?do=houseInit&token={self.__http.token()}')
+            self.__http.checkIfHTTPStateIsOK(response)
+            self.__http.generateJSONContentAndCheckForOK(content)
+        except:
+            raise
+
+    def open_trophy_case(self):
+        try:
+            response, content = self.__http.sendRequest('ajax/gettrophies.php?category=giver')
+            self.__http.checkIfHTTPStateIsOK(response)
+            self.__http.generateJSONContentAndCheckForOK(content)
+        except:
+            raise
+
+    def collect_bonus_items(self):
+        try:
+            response, content = self.__http.sendRequest('ajax/presentclick.php', 'POST')
+            self.__http.checkIfHTTPStateIsOK(response)
+            return self.__http.generateJSONContentAndCheckForOK(content)
+        except:
+            raise
+    
+    def init_guild(self):
+        return self.__http.init_guild()
+
+    def collect_lucky_mole(self, guild_id):
+        return self.__http.collect_lucky_mole(guild_id)

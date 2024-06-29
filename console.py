@@ -239,7 +239,7 @@ def removeWeed():
 
 def getDailyLoginBonus():
     print('Claiming daily login bonus...')
-    wurzelBot.getDailyLoginBonus()
+    wurzelBot.get_daily_bonuses()
 
 def processWimp():
     """Process Wimp Customers in Gardens"""

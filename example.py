@@ -53,7 +53,7 @@ wurzelBot.growVegetablesInGardens('Kürbis') # So viele Pflanzen wie möglich #B
 wurzelBot.growPlantsInAquaGardens('Wasserfeder') # So viele Pflanzen wie möglich (außen) #BG-Колкото се може повече растения (външни)
 wurzelBot.growPlantsInAquaGardens('Schwertlilie') # So viele Pflanzen wie möglich (innen) #BG-Колкото се може повече растения (вътрешни)
 wurzelBot.waterPlantsInAllGardens()
-wurzelBot.getDailyLoginBonus()
+wurzelBot.get_daily_bonuses()
 wurzelBot.sellWimpsProducts(0, 0) # Process Wimp Customers in Gardens #BG-Обработка на Wimp клиенти в градините
 
 

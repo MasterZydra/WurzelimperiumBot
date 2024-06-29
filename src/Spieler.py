@@ -55,6 +55,9 @@ class Spieler():
     def isCityParkAvailable(self):
         return self.__cityParkAvailability
 
+    def is_herb_garden_available(self) -> bool:
+        return self.getLevelNr() >= 10
+    
     def isEMailAdressConfirmed(self):
         return self.__eMailAdressConfirmed
 
@@ -81,6 +84,12 @@ class Spieler():
 
     def getBarFormated(self):
         return self.__userData['bar']
+    
+    def is_premium_active(self) -> bool:
+        return int(self.__userData['citymap']['premium']) == 1
+    
+    def is_guild_member(self) -> bool:
+        return self.__userData['g_tag'] != ""
 
     def setUserNameFromServer(self, http):
         """

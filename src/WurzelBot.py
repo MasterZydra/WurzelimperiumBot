@@ -11,7 +11,7 @@ from src.Bonsai import Bonsai
 from src.bonus.Bonus import Bonus
 from src.core.Config import Config
 from src.core.HTTPCommunication import HTTPConnection
-from src.Garten import Garden, AquaGarden
+from src.Garten import Garden, AquaGarden, HerbGarden
 from src.Honig import Honig
 from src.stock.Stock import Stock
 from src.marketplace.Marketplace import Marketplace
@@ -45,6 +45,7 @@ class WurzelBot(object):
         self.stock = Stock()
         self.garten = []
         self.wassergarten = None
+        self.herbgarden = None
         self.bienenfarm = None
         self.bonsaifarm = None
         self.marketplace = Marketplace()
@@ -67,6 +68,9 @@ class WurzelBot(object):
 
             if self.spieler.isAquaGardenAvailable() is True:
                 self.wassergarten = AquaGarden(self.__HTTPConn)
+
+            if self.spieler.is_herb_garden_available() is True:
+                self.herbgarden = HerbGarden(self.__HTTPConn)
 
             if self.spieler.isHoneyFarmAvailable() is True:
                 self.bienenfarm = Honig(self.__HTTPConn)
@@ -546,8 +550,14 @@ class WurzelBot(object):
         except:
             self.__logBot.error(i18n.t('wimpb.w_harvest_not_successful'))
 
-    def getDailyLoginBonus(self):
+    def get_daily_bonuses(self):
         self.bonus.get_daily_login_bonus()
+
+        if self.spieler.is_premium_active():
+            self.bonus.collect_bonus_item_points()
+
+        if self.spieler.is_guild_member():
+            self.bonus.collect_lucky_mole()
 
     def infinityQuest(self, MINwt):
         #TODO: Mehr Checks bzw Option wieviele Quests/WT man ausgeben mag - da es kein cooldown gibt! (hoher wt verlust)
@@ -637,3 +647,12 @@ class WurzelBot(object):
         """automate Park: first collect the cashpoint, then check if any item has to be renewed"""
         self.park.collectCashFromCashpoint()
         self.park.renewAllItemsInPark()
+
+    # Herb garden
+    def check_herb_garden(self):
+        if self.spieler.is_herb_garden_available() is not True:
+            return
+
+        self.herbgarden.remove_weed()
+        self.herbgarden.harvest()
+        self.herbgarden.grow_plant(self)

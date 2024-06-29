@@ -38,9 +38,8 @@ class ProductData():
                 product.setPriceNPC(dNPC[productname])
 
         #Coin manuell setzen, dieser ist in der Tabelle der Hilfe nicht enthalten
-	#BG - Задайте монета ръчно, тази не е включена в таблицата за помощ.
-        # coins = self.getProductByName('Coins')
-        # coins.setPriceNPC((300.0))
+        #BG - Задайте монета ръчно, тази не е включена в таблицата за помощ.
+        self.getProductByID(0).setPriceNPC(300.0)
 
     def getProductByID(self, id):
         product: Product

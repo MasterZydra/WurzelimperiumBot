@@ -82,7 +82,8 @@ class HTTPConnection(object):
                 'mail': int(content['mail']),
                 'contracts': int(content['contracts']),
                 'g_tag': str(content['g_tag']),
-                'time': int(content['time'])}
+                'time': int(content['time']),
+                'citymap': content['citymap']}
 
     def checkIfHTTPStateIsOK(self, response):
         return self.__checkIfHTTPStateIsOK(response)
@@ -1118,6 +1119,62 @@ class HTTPConnection(object):
             self.__checkIfHTTPStateIsOK(response)
         except:
             return ''
+
+    # Guild
+    def init_guild(self):
+        address = f"ajax/ajax.php?do=gildeGetData&&token={self.__token}"
+        try:
+            response, content = self.__sendRequest(address)
+            self.__checkIfHTTPStateIsOK(response)
+            return self.__generateJSONContentAndCheckForOK(content)
+        except:
+            raise
+
+    def collect_lucky_mole(self, guild_id):
+        address = f"ajax/ajax.php?do=gilde&action=luckyWurf&id={guild_id}&token={self.__token}"
+        try:
+            response, content = self.__sendRequest(address)
+            self.__checkIfHTTPStateIsOK(response)
+            return self.__generateJSONContentAndCheckForOK(content)
+        except:
+            raise
+
+    # Herb garden
+    def init_herb_garden(self):
+        address = f"ajax/ajax.php?do=herb&action=getGarden&token={self.__token}"
+        try:
+            response, content = self.__sendRequest(address)
+            self.__checkIfHTTPStateIsOK(response)
+            return self.__generateJSONContentAndCheckForOK(content)
+        except:
+            raise
+
+    def harvest_herb_garden(self):
+        address = f'ajax/ajax.php?do=gardenHarvestAll&token={self.__token}'
+        try:
+            response, content = self.__sendRequest(address)
+            self.__checkIfHTTPStateIsOK(response)
+            return json.loads(content)
+        except:
+            raise
+
+    def remove_weed_in_herb_garden(self):
+        address = f"ajax/ajax.php?do=herb&action=removeHerbWeed&token={self.__token}"
+        try:
+            response, content = self.__sendRequest(address)
+            self.__checkIfHTTPStateIsOK(response)
+            return self.__generateJSONContentAndCheckForOK(content)
+        except:
+            raise
+
+    def exchange_herb(self, plantID):
+        address = f"ajax/ajax.php?do=herbEvent&action=exchange&plantid={plantID}&token={self.__token}"
+        try:
+            response, content = self.__sendRequest(address)
+            self.__checkIfHTTPStateIsOK(response)
+            return self.__generateJSONContentAndCheckForOK(content)
+        except:
+            raise
 
 class HTTPStateError(Exception):
     def __init__(self, value):

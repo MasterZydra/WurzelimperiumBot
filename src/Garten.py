@@ -426,3 +426,128 @@ class AquaGarden(Garden):
 
         self._logGarden.info(f'Im Auqagarten {self._id} wurden {len(freeFields)} Felder von Unkraut befreit.')
         #BG- self._logGarden.info(f'В Аква-градината {self._id} бяха освободени от плевели {len(freeFields)} полета.')
+
+
+class HerbGarden(Garden):
+    def __init__(self, httpConnection):
+        Garden.__init__(self, httpConnection, 201)
+        self.__setValidFields()
+        self.__jContent = self._httpConn.init_herb_garden()
+        self.__exchange = self.__jContent['exchange']
+        self.__setHerbGardenInfo(self.__jContent)
+
+    def __setValidFields(self):
+        self._VALID_FIELDS = {}
+        for x in range(1, 205, 34):
+            for y in range(x, x+7, 2):
+                self._VALID_FIELDS.update({y: self._getAllFieldIDsFromFieldIDAndSizeAsString(y, 2, 2)})
+
+    def __setHerbGardenInfo(self, jContent):
+        self.__jContent = jContent
+        self.__info = self.__jContent['info']
+        self.__weed = self.__jContent['weed']
+
+    def _isPlantGrowableOnField(self, fieldID, emptyFields):
+        """Prüft anhand mehrerer Kriterien, ob ein Anpflanzen möglich ist."""
+        # Betrachtetes Feld darf nicht besetzt sein
+        if not (fieldID in emptyFields): return False
+        return True
+
+    def harvest(self): # TODO: proof if any harvestable
+        jContent = self._httpConn.harvest_herb_garden()
+        if jContent['status'] == 'error':
+            msg = jContent['message']
+        elif jContent['status'] == 'ok':
+            msg = jContent['harvestMsg']
+            self.__setHerbGardenInfo(jContent)
+        print(msg)
+        self._logGarden.info(msg)
+
+    def remove_weed(self): #Abfrage if jContent['weed']
+        # msg = "In deinem Kräutergarten ist kein Unkraut."
+        # if self.__weed:
+        jContent = self._httpConn.remove_weed_in_herb_garden()
+        msg = jContent.get('message', None)
+        self.__setHerbGardenInfo(jContent)
+        self._logGarden.info(msg)
+
+    def getEmptyFields(self):
+        """Sucht im JSON Content nach Felder die leer sind und gibt diese zurück."""
+        emptyFields = []
+        for field in self.__jContent['garden']:
+            if self.__jContent['garden'][field][0] == 0 and int(field) in self._VALID_FIELDS.keys():
+                emptyFields.append(int(field))
+
+        #Sortierung über ein leeres Array ändert Objekttyp zu None
+        if len(emptyFields) > 0:
+            emptyFields.sort(reverse=False)
+
+        return emptyFields
+
+    def grow_plant(self, bot, amount=24):
+        """Grows a plant of any size."""
+        herbID = self.__info.get('herbid')
+        herb_stock = bot.stock.get_stock_by_product_id(herbID)
+
+        if not self.__info.get('canPlant'):
+            return
+        
+        if self.__info.get('send') >= self.__info.get('amount'):
+            return
+
+        while not herb_stock >= amount:
+            self.exchangeHerb(bot)
+            herb_stock = bot.stock.get_stock_by_product_id(herbID)
+        
+        planted = 0
+        emptyFields = self.getEmptyFields()
+
+        try:
+            for field in self._VALID_FIELDS.keys():
+                if planted == amount: 
+                    break
+
+                if (self._isPlantGrowableOnField(int(field), emptyFields)):
+                    fields = self._getAllFieldIDsFromFieldIDAndSizeAsString(field, 2, 2)
+                    self._httpConn.growPlant(field, herbID, self._id, fields)
+                    planted += 1
+
+                    #Nach dem Anbau belegte Felder aus der Liste der leeren Felder loeschen
+                    fieldsToPlantSet = {field}
+                    emptyFieldsSet = set(emptyFields)
+                    tmpSet = emptyFieldsSet - fieldsToPlantSet
+                    emptyFields = list(tmpSet)
+        except:
+            self._logGarden.error(f'Im Garten {self._id} konnte nicht gepflanzt werden.')
+            return 0
+        else:
+            msg = f'Im Garten {self._id} wurden {planted} Pflanzen gepflanzt.'
+            if emptyFields: 
+                msg = msg + f' Im Garten {self._id} sind noch leere Felder vorhanden.'
+            self._logGarden.info(msg)
+            print(msg)
+            return planted
+        
+
+    def exchangeHerb(self, bot):
+        exchange = {}
+        buy_price = {}
+
+        for plant in self.__exchange:
+            pid = plant['plant']
+            amount = plant['amount']
+            exchange.update({pid: amount})
+            total = amount * bot.productData.getProductByID(pid).getPriceNPC()
+            buy_price.update({pid: total})
+
+        sorted_dict = sorted(buy_price.items(), key=lambda x:x[1])
+        cheapest_plant = next(iter(sorted_dict))[0]
+
+        stock = bot.stock.get_stock_by_product_id(cheapest_plant)
+        amount = exchange[cheapest_plant]
+
+        if not stock >= amount:
+            bot.doBuyFromShop(bot.productData.getProductByID(cheapest_plant).getName(), amount)
+        self._httpConn.exchange_herb(cheapest_plant)
+
+        bot.stock.update()
