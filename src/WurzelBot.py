@@ -11,6 +11,8 @@ from src.Bonsai import Bonsai
 from src.bonus.Bonus import Bonus
 from src.core.Config import Config
 from src.core.HTTPCommunication import HTTPConnection
+from src.core.Login import Login
+from src.core.Feature import Feature
 from src.Garten import Garden, AquaGarden, HerbGarden
 from src.honey.Honey import Honey
 from src.stock.Stock import Stock
@@ -20,8 +22,8 @@ from src.note.Note import Note
 from src.Produktdaten import ProductData
 from src.quest.Quest import Quest
 from src.Shop_lists import *
-from src.Spieler import Spieler, Login
 from src.Stadtpark import Park
+from src.core.User import User
 from src.wimp.Wimp import Wimp
 import logging, i18n, datetime
 
@@ -39,8 +41,9 @@ class WurzelBot(object):
         self.__logBot = logging.getLogger("bot")
         self.__logBot.setLevel(logging.DEBUG)
         self.__HTTPConn = HTTPConnection()
+        self.feature = Feature()
         self.productData = ProductData(self.__HTTPConn)
-        self.spieler = Spieler()
+        self.user = User()
         self.messenger = Messenger(self.__HTTPConn)
         self.stock = Stock()
         self.garten = []
@@ -50,7 +53,7 @@ class WurzelBot(object):
         self.bonsaifarm = None
         self.marketplace = Marketplace()
         self.wimparea = Wimp()
-        self.quest = Quest(self.spieler)
+        self.quest = Quest()
         self.bonus = Bonus()
         self.note = Note()
         self.park = None
@@ -61,24 +64,22 @@ class WurzelBot(object):
         #BG-"""Определя броя на градините и ги инициализира всички."""
 
         try:
-            tmpNumberOfGardens = self.__HTTPConn.getInfoFromStats("Gardens")
-            self.spieler.numberOfGardens = tmpNumberOfGardens
-            for i in range(1, tmpNumberOfGardens + 1):
+            for i in range(1, self.user.get_number_of_gardens() + 1):
                 self.garten.append(Garden(self.__HTTPConn, i))
 
-            if self.spieler.isAquaGardenAvailable() is True:
+            if self.feature.is_aqua_garden_available() is True:
                 self.wassergarten = AquaGarden(self.__HTTPConn)
 
-            if self.spieler.is_herb_garden_available() is True:
+            if self.feature.is_herb_garden_available() is True:
                 self.herbgarden = HerbGarden(self.__HTTPConn)
 
-            if self.spieler.isHoneyFarmAvailable() is True:
+            if self.feature.is_honey_farm_available() is True:
                 self.honey = Honey()
 
-            if self.spieler.isBonsaiFarmAvailable() is True:
+            if self.feature.is_bonsai_farm_available() is True:
                 self.bonsaifarm = Bonsai(self.__HTTPConn)
 
-            if self.spieler.isCityParkAvailable() is True:
+            if self.feature.is_city_park_available() is True:
                 self.park = Park(self.__HTTPConn)
 
         except:
@@ -142,51 +143,11 @@ class WurzelBot(object):
                 return False
 
         try:
-            self.spieler.setUserNameFromServer(self.__HTTPConn)
-        except Exception as e:
-            if self.__config.isDevMode:
-                raise e
-            self.__logBot.error(i18n.t('wimpb.username_not_determined'))
-            return False
-
-        try:
-            self.spieler.setUserDataFromServer(self.__HTTPConn)
+            self.user.update()
         except Exception as e:
             if self.__config.isDevMode:
                 raise e
             self.__logBot.error(i18n.t('wimpb.error_refresh_userdata'))
-            return False
-
-        try:
-            self.spieler.setHoneyFarmAvailability(self.__HTTPConn.isHoneyFarmAvailable(self.spieler.getLevelNr()))
-        except Exception as e:
-            if self.__config.isDevMode:
-                raise e
-            self.__logBot.error(i18n.t('wimpb.error_no_beehives'))
-            return False
-
-        try:
-            self.spieler.setAquaGardenAvailability(self.__HTTPConn.isAquaGardenAvailable(self.spieler.getLevelNr()))
-        except Exception as e:
-            if self.__config.isDevMode:
-                raise e
-            self.__logBot.error(i18n.t('wimpb.error_no_water_garden'))
-            return False
-
-        try:
-            self.spieler.setBonsaiFarmAvailability(self.__HTTPConn.isBonsaiFarmAvailable(self.spieler.getLevelNr()))
-        except Exception as e:
-            if self.__config.isDevMode:
-                raise e
-            self.__logBot.error(i18n.t('wimpb.error_no_bonsaifarm'))
-            return False
-
-        try:
-            self.spieler.setCityParkAvailability(self.__HTTPConn.isCityParkAvailable(self.spieler.getLevelNr()))
-        except Exception as e:
-            if self.__config.isDevMode:
-                raise e
-            self.__logBot.error(i18n.t('wimpb.error_no_citypark'))
             return False
 
         try:
@@ -197,8 +158,7 @@ class WurzelBot(object):
             self.__logBot.error(i18n.t('wimpb.error_number_of_gardens'))
             return False
 
-        self.spieler.accountLogin = loginDaten
-        self.spieler.setUserID(self.__HTTPConn.getUserID())
+        self.user.accountLogin = loginDaten
         self.productData.initAllProducts()
         self.stock.init_product_list(self.productData.getListOfAllProductIDs())
         self.stock.update()
@@ -225,7 +185,7 @@ class WurzelBot(object):
         #BG-"""Определя потребителските данни и ги задава в класа на играча."""
 
         try:
-            self.spieler.userData = self.__HTTPConn.readUserDataFromServer()
+            self.user.userData = self.__HTTPConn.readUserDataFromServer()
         except:
             self.__logBot.error(i18n.t('wimpb.error_refresh_userdata'))
 
@@ -238,7 +198,7 @@ class WurzelBot(object):
         for garden in self.garten:
             garden.waterPlants()
 
-        if self.spieler.isAquaGardenAvailable():
+        if self.feature.is_aqua_garden_available():
             self.wassergarten.waterPlants()
 
 
@@ -250,9 +210,9 @@ class WurzelBot(object):
         """
         #BG-Създава ново съобщение, попълва го и го изпраща.Получателите трябва да са в масив! Съобщение може да бъде изпратено само ако електронната поща е потвърдена.
 
-        if (self.spieler.isEMailAdressConfirmed()):
+        if (self.user.is_mail_confirmed()):
             try:
-                self.messenger.writeMessage(self.spieler.getUserName(), recipients, subject, body)
+                self.messenger.writeMessage(self.user.get_username(), recipients, subject, body)
             except:
                 self.__logBot.error(i18n.t('wimpb.no_message'))
 
@@ -291,7 +251,7 @@ class WurzelBot(object):
         return dict(allWimpsProducts)
 
     def sellWimpsProducts(self, minimal_balance, minimal_profit):
-        if self.spieler.getLevelNr() < 3:
+        if self.user.get_level() < 3:
             return
 
         stock_list = self.stock.get_ordered_stock_list()
@@ -331,7 +291,7 @@ class WurzelBot(object):
         for id, amount in products.items():
             product = self.productData.getProductByID(id)
             min_stock = max(self.note.get_min_stock(), self.note.get_min_stock(product.getName()), minimal_balance)
-            if stock_list.get(id, 0) < amount + min_stock or self.spieler.getLevelNr() < 3:
+            if stock_list.get(id, 0) < amount + min_stock or self.user.get_level() < 3:
                 return False
         return True
 
@@ -370,7 +330,7 @@ class WurzelBot(object):
             for garden in self.garten:
                 garden.harvest()
 
-            if self.spieler.isAquaGardenAvailable():
+            if self.feature.is_aqua_garden_available():
                 self.wassergarten.harvest()
                 pass
 
@@ -418,7 +378,7 @@ class WurzelBot(object):
         Pflanzt so viele Pflanzen von einer Sorte wie möglich über alle Gärten hinweg an.
         """
         #BG-Засаждане на възможно най-много растения от определен вид през всички градини.
-        if self.spieler.isAquaGardenAvailable():
+        if self.feature.is_aqua_garden_available():
             planted = 0
             product = self.productData.getProductByName(productName)
             if product is None:
@@ -553,18 +513,18 @@ class WurzelBot(object):
     def get_daily_bonuses(self):
         self.bonus.get_daily_login_bonus()
 
-        if self.spieler.is_premium_active():
+        if self.user.is_premium_active():
             self.bonus.collect_bonus_item_points()
 
-        if self.spieler.is_guild_member():
+        if self.user.is_guild_member():
             self.bonus.collect_lucky_mole()
 
     def infinityQuest(self, MINwt):
         #TODO: Mehr Checks bzw Option wieviele Quests/WT man ausgeben mag - da es kein cooldown gibt! (hoher wt verlust)
-        if self.spieler.getBar() < MINwt:
+        if self.user.get_bar() < MINwt:
             print('Zuwenig WT')
             pass
-        if self.spieler.getLevelNr() > 23 and self.spieler.getBar() > MINwt:
+        if self.user.get_level() > 23 and self.user.get_bar() > MINwt:
             questnr = self.__HTTPConn.initInfinityQuest()['questnr']
             if int(questnr) <= 500:
                 for item in self.__HTTPConn.initInfinityQuest()['questData']['products']:
@@ -624,7 +584,7 @@ class WurzelBot(object):
         Probiert alle Bienen für Zeitoption 1 (ohne Verkürzung 2h) zu senden
         """
         #BG-Пробва да изпрати всички пчели за времева опция 1 (без намаляване 2 часа).
-        if self.spieler.isHoneyFarmAvailable():
+        if self.feature.is_honey_farm_available():
             self.honey.send_bees()
         else:
             logMsg = 'Konnte nicht alle Bienen ernten.'
@@ -647,7 +607,7 @@ class WurzelBot(object):
 
     # Herb garden
     def check_herb_garden(self):
-        if self.spieler.is_herb_garden_available() is not True:
+        if self.feature.is_herb_garden_available() is not True:
             return
 
         self.herbgarden.remove_weed()

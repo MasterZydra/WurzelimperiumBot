@@ -3,13 +3,13 @@
 
 from src.quest.Http import Http
 from src.quest.Missions import Missions
-from src.Spieler import Spieler
+from src.core.User import User
 from collections import Counter
 
 class Quest:
-    def __init__(self, player: Spieler):
+    def __init__(self):
         self.__http = Http()
-        self.__player = player
+        self.__user = User()
 
     def get_quest_products(self, quest_name, quest_number=0):
         """
@@ -46,7 +46,7 @@ class Quest:
 
     def __get_cactus_quest_products(self):
         quest_products = []
-        if int(self.__player.getLevelNr()) >= 12:
+        if self.__user.get_level() >= 12:
             # Initial Cactus quest
             quest_number = self.__http.get_info_from_stats("CactusQuest")
             raw_products = Missions.cactus_quest().get(str(quest_number), {})
@@ -64,7 +64,7 @@ class Quest:
                 return quest_products
 
             # Bighead quests
-            if int(self.__player.getLevelNr()) >= 15:
+            if self.__user.get_level() >= 15:
                 quest_number = self.__http.get_info_from_stats("BigheadQuest") + 1
                 raw_products = Missions.bighead_quest().get(str(quest_number), {})
                 if len(raw_products) > 0:
@@ -73,7 +73,7 @@ class Quest:
                     return quest_products
 
             # Opuntia quests
-            if int(self.__player.getLevelNr()) >= 18:
+            if self.__user.get_level() >= 18:
                 quest_number = self.__http.get_info_from_stats("OpuntiaQuest") + 1
                 raw_products = Missions.opuntia_quest().get(str(quest_number), {})
                 if len(raw_products) > 0:
@@ -82,7 +82,7 @@ class Quest:
                     return quest_products
 
             # Saguaro quests
-            if int(self.__player.getLevelNr()) >= 21:
+            if self.__user.get_level() >= 21:
                 quest_number = self.__http.get_info_from_stats("SaguaroQuest") + 1
                 raw_products = Missions.saguaro_quest().get(str(quest_number), {})
                 if len(raw_products) > 0:

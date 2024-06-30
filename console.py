@@ -206,12 +206,12 @@ def getStock(argStr : str):
 
 def userData():
     colWidth = 20
-    print('User:'.ljust(colWidth) + wurzelBot.spieler.getUserName())
-    print('Anzahl der Gärten:'.ljust(colWidth) + str(wurzelBot.spieler.numberOfGardens))
-    print('Level:'.ljust(colWidth) + str(wurzelBot.spieler.getLevelNr()) + ' (' + wurzelBot.spieler.getLevelName() + ')')
-    print('Bar:'.ljust(colWidth) + wurzelBot.spieler.getBarFormated())
-    print('Points:'.ljust(colWidth) + f'{wurzelBot.spieler.getPoints():,}'.replace(',', '.'))
-    print('Coins:'.ljust(colWidth) + str(wurzelBot.spieler.getCoins()))
+    print('User:'.ljust(colWidth) + wurzelBot.user.get_username())
+    print('Anzahl der Gärten:'.ljust(colWidth) + str(wurzelBot.user.get_number_of_gardens()))
+    print('Level:'.ljust(colWidth) + str(wurzelBot.user.get_level()) + ' (' + wurzelBot.user.get_level_name() + ')')
+    print('Bar:'.ljust(colWidth) + wurzelBot.user.get_bar_formatted())
+    print('Points:'.ljust(colWidth) + f'{wurzelBot.user.get_points():,}'.replace(',', '.'))
+    print('Coins:'.ljust(colWidth) + str(wurzelBot.user.get_coins()))
 
 def water():
     print('Water all plants in all gardens...')

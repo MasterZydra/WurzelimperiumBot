@@ -73,17 +73,20 @@ class HTTPConnection(object):
 
     def __getUserDataFromJSONContent(self, content):
         """Ermittelt userdaten aus JSON Content."""
-        return {'bar': str(content['bar']),
-                'bar_unformat': float(content['bar_unformat']),
-                'points': int(content['points']),
-                'coins': int(content['coins']),
-                'level': str(content['level']),
-                'levelnr': int(content['levelnr']),
-                'mail': int(content['mail']),
-                'contracts': int(content['contracts']),
-                'g_tag': str(content['g_tag']),
-                'time': int(content['time']),
-                'citymap': content['citymap']}
+        return {
+            'uname': str(content['uname']),
+            'bar': str(content['bar']),
+            'bar_unformat': float(content['bar_unformat']),
+            'points': int(content['points']),
+            'coins': int(content['coins']),
+            'level': str(content['level']),
+            'levelnr': int(content['levelnr']),
+            'mail': int(content['mail']),
+            'contracts': int(content['contracts']),
+            'g_tag': str(content['g_tag']),
+            'time': int(content['time']),
+            'citymap': content['citymap'],
+        }
 
     def checkIfHTTPStateIsOK(self, response):
         return self.__checkIfHTTPStateIsOK(response)
@@ -463,7 +466,7 @@ class HTTPConnection(object):
             self.__cookie = cookie
             self.__userID = self.__unr
 
-    def getUserID(self):
+    def get_user_id(self):
         """Gibt die wunr als userID zurück die beim Login über das Cookie erhalten wurde."""
         return self.__userID
 
@@ -572,73 +575,7 @@ class HTTPConnection(object):
         except:
             raise
 
-    def isHoneyFarmAvailable(self, iUserLevel):
-        if not (iUserLevel < 10):
-            try:
-                response, content = self.__sendRequest(f'ajax/ajax.php?do=citymap_init&token={self.__token}')
-                self.__checkIfHTTPStateIsOK(response)
-                jContent = self.__generateJSONContentAndCheckForOK(content)
-                return jContent['data']['location']['bees']['bought'] == 1
-            except:
-                raise
-        else:
-            return False
-
-
-    def isAquaGardenAvailable(self, iUserLevel):
-        """
-        Funktion ermittelt, ob ein Wassergarten verfügbar ist.
-        Dazu muss ein Mindestlevel von 19 erreicht sein und dieser dann freigeschaltet sein.
-        Die Freischaltung wird anhand der Errungenschaften im Spiel geprüft.
-        """
-        if not (iUserLevel < 19):
-            try:
-                response, content = self.__sendRequest(f'ajax/achievements.php?token={self.__token}')
-                self.__checkIfHTTPStateIsOK(response)
-                jContent = self.__generateJSONContentAndCheckForOK(content)
-            except:
-                raise
-            else:
-                result = re.search(r'trophy_54.png\);[^;]*(gray)[^;^class$]*class', jContent['html'])
-                return result == None
-        else:
-            return False
-
-    def isBonsaiFarmAvailable(self, iUserLevel):
-        if not (iUserLevel < 10):
-            try:
-                response, content = self.__sendRequest(f'ajax/ajax.php?do=citymap_init&token={self.__token}')
-                self.__checkIfHTTPStateIsOK(response)
-                jContent = self.__generateJSONContentAndCheckForOK(content)
-                if 'bonsai' in jContent['data']['location']:
-                    if jContent['data']['location']['bonsai']['bought'] == 1:
-                       return True
-                    else:
-                        return False
-                else:
-                    return False
-            except:
-                raise
-        else:
-            return False
-
-    def isCityParkAvailable(self, iUserLevel):
-        return iUserLevel >= 5
-
     #TODO: Was passiert wenn ein Garten hinzukommt (parallele Sitzungen im Browser und Bot)? Globale Aktualisierungsfunktion?
-
-    def checkIfEMailAdressIsConfirmed(self):
-        """Prüft, ob die E-Mail Adresse im Profil bestätigt ist."""
-        try:
-            response, content = self.__sendRequest('nutzer/profil.php')
-            self.__checkIfHTTPStateIsOK(response)
-        except:
-            raise
-        else:
-            result = re.search(r'Unbestätigte Email:', content)
-            if (result == None): return True
-            else: return False
-
 
     def createNewMessageAndReturnResult(self):
         """Erstellt eine neue Nachricht und gibt deren ID zurück, die für das Senden benötigt wird."""
