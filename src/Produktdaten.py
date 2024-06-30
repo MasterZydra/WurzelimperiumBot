@@ -8,17 +8,7 @@ Created on 23.05.2019
 
 import json
 from src.core.HTTPCommunication import HTTPConnection
-from src.Produkt import Product
-
-CATEGORY_DECORATION       = 'd'
-CATEGORY_HERBS            = 'h'
-CATEGORY_HONEY            = 'honey'
-CATEGORY_WATER_PLANTS     = 'w'
-CATEGORY_VEGETABLES       = 'v'
-CATEGORY_WATER_DECORATION = 'wd'
-CATEGORY_COINS            = ''
-CATEGORY_ADORNMENTS       = 'z'
-CATEGORY_OTHER            = 'u'
+from src.product.Product import Product
 
 class ProductData():
     def __init__(self, httpConnection: HTTPConnection):
@@ -33,31 +23,31 @@ class ProductData():
 
         product: Product
         for product in self.__products:
-            productname = product.getName()
+            productname = product.get_name()
             if productname in dNPCKeys:
-                product.setPriceNPC(dNPC[productname])
+                product.set_price_npc(dNPC[productname])
 
         #Coin manuell setzen, dieser ist in der Tabelle der Hilfe nicht enthalten
         #BG - Задайте монета ръчно, тази не е включена в таблицата за помощ.
-        self.getProductByID(0).setPriceNPC(300.0)
+        self.getProductByID(0).set_price_npc(300.0)
 
     def getProductByID(self, id):
         product: Product
         for product in self.__products:
-            if int(id) == int(product.getID()): return product
+            if int(id) == int(product.get_id()): return product
         return None
 
     def getProductByName(self, name : str):
         product: Product
         for product in self.__products:
-            if (name.lower() == product.getName().lower()): return product
+            if (name.lower() == product.get_name().lower()): return product
         return None
 
     def getListOfAllProductIDs(self):
         productIDList = []
         product: Product
         for product in self.__products:
-            id = product.getID()
+            id = product.get_id()
             productIDList.append(id)
 
         return productIDList
@@ -66,11 +56,11 @@ class ProductData():
         singleFieldPlants = []
         product: Product
         for product in self.__products:
-            if product.getSX() != 1 or product.getSY() != 1 \
-            or not product.isVegetable() or not product.isPlantable():
+            if product.get_sx() != 1 or product.get_sy() != 1 \
+            or not product.is_vegetable() or not product.is_plantable():
                 continue
 
-            singleFieldPlants.append(product.getName())
+            singleFieldPlants.append(product.get_name())
 
         return singleFieldPlants
 
@@ -111,24 +101,24 @@ class ProductData():
 
         self.__setAllPricesOfNPC()
 
-    def printAll(self):
-        sortedProducts = sorted(self.__products, key=lambda x:x.getName().lower())
+    def print_all(self):
+        sorted_products = sorted(self.__products, key=lambda x:x.get_name().lower())
         product: Product
-        for product in sortedProducts:
-            product.printAll()
+        for product in sorted_products:
+            product.print_all()
 
-    def printAllVegetables(self):
-        sortedProducts = sorted(self.__products, key=lambda x:x.getName().lower())
+    def print_all_vegetables(self):
+        sorted_products = sorted(self.__products, key=lambda x:x.get_name().lower())
         product: Product
-        for product in sortedProducts:
-            if not product.isVegetable():
+        for product in sorted_products:
+            if not product.is_vegetable():
                 continue
-            product.printAll()
+            product.print_all()
 
-    def printAllWaterPlants(self):
-        sortedProducts = sorted(self.__products, key=lambda x:x.getName().lower())
+    def print_all_water_plants(self):
+        sorted_products = sorted(self.__products, key=lambda x:x.get_name().lower())
         product: Product
-        for product in sortedProducts:
-            if not product.isWaterPlant():
+        for product in sorted_products:
+            if not product.is_water_plant():
                 continue
-            product.printAll()
+            product.print_all()

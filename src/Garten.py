@@ -537,7 +537,7 @@ class HerbGarden(Garden):
             pid = plant['plant']
             amount = plant['amount']
             exchange.update({pid: amount})
-            total = amount * bot.productData.getProductByID(pid).getPriceNPC()
+            total = amount * bot.productData.getProductByID(pid).get_price_npc()
             buy_price.update({pid: total})
 
         sorted_dict = sorted(buy_price.items(), key=lambda x:x[1])
@@ -547,7 +547,7 @@ class HerbGarden(Garden):
         amount = exchange[cheapest_plant]
 
         if not stock >= amount:
-            bot.doBuyFromShop(bot.productData.getProductByID(cheapest_plant).getName(), amount)
+            bot.doBuyFromShop(bot.productData.getProductByID(cheapest_plant).get_name(), amount)
         self._httpConn.exchange_herb(cheapest_plant)
 
         bot.stock.update()
