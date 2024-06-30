@@ -56,6 +56,9 @@ class HTTPConnection(object):
     def token(self):
         return self.__token
 
+    def set_token(self, token):
+        self.__token = token
+
     def sendRequest(self, address: str, method: str = 'GET', body = None, headers: dict = {}):
         uri = self.__get_server() + address
         headers = {**self.__getHeaders(), **headers}

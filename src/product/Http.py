@@ -15,9 +15,11 @@ class Http(object):
             response, content = self.__http.sendRequest('main.php?page=garden')
             content = content.decode('UTF-8')
             self.__http.checkIfHTTPStateIsOK(response)
-            # TODO Is this logic still required?
-            # reToken = re.search(r'ajax\.setToken\(\"(.*)\"\);', content)
-            # self.__token = reToken.group(1) #TODO: except, wenn token nicht aktualisiert werden kann
+
+            # TODO This logic is required - can it be improved?
+            reToken = re.search(r'ajax\.setToken\(\"(.*)\"\);', content)
+            self.__http.set_token(reToken.group(1)) #TODO: except, wenn token nicht aktualisiert werden kann
+
             products = re.search(r'data_products = ({.*}});var', content)
             return products.group(1)
         except:
