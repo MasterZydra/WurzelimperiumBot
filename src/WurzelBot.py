@@ -21,7 +21,7 @@ from src.Messenger import Messenger
 from src.note.Note import Note
 from src.product.ProductData import ProductData
 from src.quest.Quest import Quest
-from src.Shop_lists import *
+from src.shop.ShopProducts import ShopProducts
 from src.citypark.CityPark import CityPark
 from src.core.User import User
 from src.wimp.Wimp import Wimp
@@ -560,7 +560,7 @@ class WurzelBot(object):
         productId = product.get_id()
 
         Shop = None
-        for k, ID in Shops.items():
+        for k, ID in ShopProducts.products.items():
             if productName in k:
                 Shop = ID
                 break
