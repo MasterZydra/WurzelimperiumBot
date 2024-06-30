@@ -354,40 +354,6 @@ class HTTPConnection(object):
         except:
             raise
 
-    def __parseNPCPricesFromHtml(self, html_data):
-        """Parsen aller NPC Preise aus dem HTML Skript der Spielehilfe."""
-        #ElementTree benötigt eine Datei zum Parsen.
-        #Mit BytesIO wird eine Datei im Speicher angelegt, nicht auf der Festplatte.
-        my_parser = etree.HTMLParser(recover=True)
-        html_tree = etree.fromstring(str(html_data), parser=my_parser)
-
-        table = html_tree.find('./body/div[@id="content"]/table')
-
-        dictResult = {}
-
-        for row in table.iter('tr'):
-
-            produktname = row[0].text
-            npc_preis = row[1].text
-
-            #Bei der Tabellenüberschrift ist der Text None
-            if produktname != None and npc_preis != None:
-                # NPC-Preis aufbereiten
-                npc_preis = str(npc_preis)
-                npc_preis = npc_preis[0:len(npc_preis) - 3]
-                npc_preis = npc_preis.replace('.', '')
-                npc_preis = npc_preis.replace(',', '.')
-                npc_preis = npc_preis.replace(' ', '')
-                npc_preis = npc_preis.strip()
-                if len(npc_preis) == 0:
-                    npc_preis = None
-                else:
-                    npc_preis = float(npc_preis)
-
-                dictResult[produktname] = npc_preis
-
-        return dictResult
-
     def __getHeaders(self):
         headers = {'Cookie': f'PHPSESSID={self.__Session.getSessionID()};wunr={self.__userID}',
                    'Connection': 'Keep-Alive'}
@@ -762,27 +728,6 @@ class HTTPConnection(object):
             self.__generateJSONContentAndCheckForOK(content)
         except:
             raise
-
-    def getAllProductInformations(self):
-        """Sammelt alle Produktinformationen und gibt diese zur Weiterverarbeitung zurück."""
-        try:
-            response, content = self.__sendRequest('main.php?page=garden')
-            content = content.decode('UTF-8')
-            self.__checkIfHTTPStateIsOK(response)
-            reToken = re.search(r'ajax\.setToken\(\"(.*)\"\);', content)
-            self.__token = reToken.group(1) #TODO: except, wenn token nicht aktualisiert werden kann
-            reProducts = re.search(r'data_products = ({.*}});var', content)
-            return reProducts.group(1)
-        except:
-            raise
-
-    def getNPCPrices(self):
-        """Ermittelt aus der Wurzelimperium-Hilfe die NPC Preise aller Produkte."""
-        response, content = self.__sendRequest('hilfe.php?item=2')
-        self.__checkIfHTTPStateIsOK(response)
-        content = content.decode('UTF-8').replace('Gärten & Regale', 'Gärten und Regale')
-        dictNPCPrices = self.__parseNPCPricesFromHtml(content)
-        return dictNPCPrices
 
     def removeWeedOnFieldInGarden(self, gardenID, fieldID):
         """Befreit ein Feld im Garten von Unkraut."""

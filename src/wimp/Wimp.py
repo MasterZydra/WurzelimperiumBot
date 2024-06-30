@@ -7,7 +7,7 @@ Created on 21.03.2017
 """
 
 from src.wimp.Http import Http
-from src.Produktdaten import ProductData
+from src.product.ProductData import ProductData
 
 class Wimp:
     def __init__(self):
@@ -22,8 +22,9 @@ class Wimp:
     def decline(self, wimp_id):
         return self.__http.decline_wimp(wimp_id)
 
-    def products_to_string(self, products, productData: ProductData):
+    def products_to_string(self, products):
+        productData = ProductData()
         result = "Price: " + str(products[0]) + " wT"
         for product, amount in products[1].items():
-            result += "\n" + str(amount) + "x " + productData.getProductByID(product).get_name()
+            result += "\n" + str(amount) + "x " + productData.get_product_by_id(product).get_name()
         return result 
