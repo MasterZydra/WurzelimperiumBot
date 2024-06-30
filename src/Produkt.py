@@ -47,6 +47,12 @@ class Product():
     def getPriceNPC(self):
         return self.__priceNPC
 
+    def getGrowingTime(self):
+        return self.__timeUntilHarvest
+
+    def getLevel(self):
+        return self.__level
+
     def isPlantable(self):
         return self.__isPlantable
 
