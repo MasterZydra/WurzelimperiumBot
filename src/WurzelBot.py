@@ -585,7 +585,8 @@ class WurzelBot(object):
         """
         #BG-Пробва да изпрати всички пчели за времева опция 1 (без намаляване 2 часа).
         if self.feature.is_honey_farm_available():
-            self.honey.send_bees()
+            self.honey.start_all_hives()
+            self.honey.fill_honey()
         else:
             logMsg = 'Konnte nicht alle Bienen ernten.'
             print(logMsg)

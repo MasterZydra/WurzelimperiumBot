@@ -350,7 +350,7 @@ class HTTPConnection(object):
             address = f'ajax/ajax.php?do=changeGarden&garden={str(gardenID)}&token={self.__token}'
             response, content = self.__sendRequest(address)
             self.__checkIfHTTPStateIsOK(response)
-            self.__generateJSONContentAndCheckForOK(content)
+            return self.__generateJSONContentAndCheckForOK(content)
         except:
             raise
 
