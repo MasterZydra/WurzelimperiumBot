@@ -9,7 +9,7 @@ Created on 21.03.2017
 from urllib.parse import urlencode
 import json, re, httplib2, yaml, time, logging, math, i18n
 from http.cookies import SimpleCookie
-from src.Session import Session
+from src.core.Session import Session
 from lxml import etree
 
 i18n.load_path.append('lang')
@@ -43,7 +43,7 @@ class HTTPConnection(object):
         self.__userAgent = 'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36 Vivaldi/2.2.1388.37'
         self.__logHTTPConn = logging.getLogger('bot.HTTPConn')
         self.__logHTTPConn.setLevel(logging.DEBUG)
-        self.__Session = Session()
+        self.__session = Session()
         self.__token = None
         self.__userID = None
         self.__cookie = None
@@ -51,7 +51,7 @@ class HTTPConnection(object):
         self.__portunr = None
 
     def __del__(self):
-        self.__Session = None
+        self.__session = None
         self.__token = None
         self.__userID = None
         self.__unr = None
@@ -64,7 +64,7 @@ class HTTPConnection(object):
         return self.__sendRequest(address, method, body, headers)
 
     def __sendRequest(self, address: str, method: str = 'GET', body = None, headers: dict = {}):
-        uri = self.__getServer() + address
+        uri = self.__get_server() + address
         headers = {**self.__getHeaders(), **headers}
         try:
             return self.__webclient.request(uri, method, body, headers)
@@ -355,12 +355,12 @@ class HTTPConnection(object):
             raise
 
     def __getHeaders(self):
-        headers = {'Cookie': f'PHPSESSID={self.__Session.getSessionID()};wunr={self.__userID}',
+        headers = {'Cookie': f'PHPSESSID={self.__session.get_session_id()};wunr={self.__userID}',
                    'Connection': 'Keep-Alive'}
         return headers
 
-    def __getServer(self):
-        return f'http://s{self.__Session.getServer()}{self.__Session.getServerURL()}'
+    def __get_server(self):
+        return f'http://s{self.__session.get_server()}{self.__session.get_server_url()}'
 
 
     def logIn(self, loginDaten):
@@ -389,7 +389,7 @@ class HTTPConnection(object):
         else:
             cookie = SimpleCookie(response['set-cookie'])
             cookie.load(str(response["set-cookie"]).replace("secure, ", "", -1))
-            self.__Session.openSession(cookie['PHPSESSID'].value, str(loginDaten.server), serverURL)
+            self.__session.open(cookie['PHPSESSID'].value, str(loginDaten.server), serverURL)
             self.__cookie = cookie
             self.__userID = cookie['wunr'].value
 
@@ -428,7 +428,7 @@ class HTTPConnection(object):
         else:
             cookie = SimpleCookie(response['set-cookie'])
             cookie.load(str(response["set-cookie"]).replace("secure, ", "", -1))
-            self.__Session.openSession(cookie['PHPSESSID'].value, str(loginDaten.server), serverURL)
+            self.__session.open(cookie['PHPSESSID'].value, str(loginDaten.server), serverURL)
             self.__cookie = cookie
             self.__userID = self.__unr
 
@@ -753,7 +753,7 @@ class HTTPConnection(object):
 
     def initInfinityQuest(self):
         headers = self.__getHeaders()
-        server = self.__getServer()
+        server = self.__get_server()
         adresse = f'{server}ajax/ajax.php?do=infinite_quest_get&token={self.__token}'
         try:
             response, content = self.__webclient.request(adresse, 'GET', headers=headers)
