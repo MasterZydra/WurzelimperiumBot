@@ -22,7 +22,7 @@ from src.note.Note import Note
 from src.Produktdaten import ProductData
 from src.quest.Quest import Quest
 from src.Shop_lists import *
-from src.Stadtpark import Park
+from src.citypark.CityPark import CityPark
 from src.core.User import User
 from src.wimp.Wimp import Wimp
 import logging, i18n, datetime
@@ -80,7 +80,7 @@ class WurzelBot(object):
                 self.bonsaifarm = Bonsai(self.__HTTPConn)
 
             if self.feature.is_city_park_available() is True:
-                self.park = Park(self.__HTTPConn)
+                self.park = CityPark()
 
         except:
             raise
@@ -600,11 +600,11 @@ class WurzelBot(object):
         self.bonsaifarm.checkBonsai()
         self.bonsaifarm.cutAllBonsai()
 
-    # Stadtpark
-    def checkPark(self):
+    # City park
+    def check_park(self):
         """automate Park: first collect the cashpoint, then check if any item has to be renewed"""
-        self.park.collectCashFromCashpoint()
-        self.park.renewAllItemsInPark()
+        self.park.collect_cash_from_cashpoint()
+        self.park.renew_all_items()
 
     # Herb garden
     def check_herb_garden(self):
