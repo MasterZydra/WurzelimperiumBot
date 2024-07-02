@@ -6,7 +6,13 @@ name: Wurzelimperium Bot
 on:
   workflow_dispatch:
   schedule:
-    - cron: "*/59 * * * *"
+    - cron: " 15 2,21 * * 3"
+    - cron: " 15 16 * * 4"
+    - cron: " 15 11 * * 5"
+    - cron: " 15 6 * * 6"
+    - cron: " 15 1,20 * * 0"
+    - cron: " 15 15 * * 1"
+    - cron: " 15 10 * * 2"
 
 jobs:
   build:
