@@ -31,48 +31,46 @@ def main():
     if not succ:
         exit(-1)
 
-    try:
-        wurzelBot.check_herb_garden()
-        
-        # # Remove weed
-        # # BG-Премахване на плевели
-        # print(i18n.t('wimpb.remove_weed_from_all_gardens'))
-        # wurzelBot.removeWeedInAllGardens()
+     try:
+        # Remove weed
+        # BG-Премахване на плевели
+        print(i18n.t('wimpb.remove_weed_from_all_gardens'))
+        wurzelBot.removeWeedInAllGardens()
 
-        # # Harvest
-        # # BG-Жътва
-        # wurzelBot.harvestAllGarden()
+        # Harvest
+        # BG-Жътва
+        wurzelBot.harvestAllGarden()
 
-        # # Plant plants
-        # # BG-Посаждане на растения
-        # while wurzelBot.hasEmptyFields():
-        #     lowest = wurzelBot.getLowestVegetableStockEntry()
-        #     if lowest == 'Your stock is empty':
-        #         break
-        #     print(i18n.t('wimpb.grow_plant_X', plant=lowest))
-        #     planted = wurzelBot.growVegetablesInGardens(lowest)
-        #     if planted == 0:
-        #         lowestSingle = wurzelBot.getLowestSingleVegetableStockEntry()
-        #         if lowestSingle == 'Your stock is empty':
-        #             break
-        #         print(i18n.t('wimpb.grow_plant_X', plant=lowestSingle))
-        #         wurzelBot.growVegetablesInGardens(lowestSingle)
+        # Plant plants
+        # BG-Посаждане на растения
+        while wurzelBot.hasEmptyFields():
+            lowest = wurzelBot.getLowestVegetableStockEntry()
+            if lowest == 'Your stock is empty':
+                break
+            print(i18n.t('wimpb.grow_plant_X', plant=lowest))
+            planted = wurzelBot.growVegetablesInGardens(lowest)
+            if planted == 0:
+                lowestSingle = wurzelBot.getLowestSingleVegetableStockEntry()
+                if lowestSingle == 'Your stock is empty':
+                    break
+                print(i18n.t('wimpb.grow_plant_X', plant=lowestSingle))
+                wurzelBot.growVegetablesInGardens(lowestSingle)
 
-        # # Water plants
-        # # BG-Поливане на растенията
-        # time.sleep(3)
-        # print(i18n.t('wimpb.watering_all_plants'))
-        # wurzelBot.waterPlantsInAllGardens()
+        # Water plants
+        # BG-Поливане на растенията
+        time.sleep(3)
+        print(i18n.t('wimpb.watering_all_plants'))
+        wurzelBot.waterPlantsInAllGardens()
 
-        # # Claim Daily
-        # # BG-Събиране на дневният бонус
-        # print(i18n.t('wimpb.claim_bonus'))
-        # wurzelBot.get_daily_bonuses()
+        # Claim Daily
+        # BG-Събиране на дневният бонус
+        print(i18n.t('wimpb.claim_bonus'))
+        wurzelBot.get_daily_bonuses()
 
-        # # Process Wimp Customers in Gardens
-        # # BG-Изпълни нуждите на Wimps в градините
-        # print(i18n.t('wimpb.process_wimps'))
-        # wurzelBot.sellWimpsProducts(0, 0)
+        # Process Wimp Customers in Gardens
+        # BG-Изпълни нуждите на Wimps в градините
+        print(i18n.t('wimpb.process_wimps'))
+        wurzelBot.sellWimpsProducts(0, 0)
     finally:
         # Close connection
         # BG-Затваряне на връзката

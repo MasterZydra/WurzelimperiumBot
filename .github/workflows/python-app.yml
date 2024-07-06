@@ -6,22 +6,16 @@ name: Wurzelimperium Bot
 on:
   workflow_dispatch:
   schedule:
-    - cron: " 15 2,21 * * 3"
-    - cron: " 15 16 * * 4"
-    - cron: " 15 11 * * 5"
-    - cron: " 15 6 * * 6"
-    - cron: " 15 1,20 * * 0"
-    - cron: " 15 15 * * 1"
-    - cron: " 15 10 * * 2"
+    - cron: "*/59 * * * *"
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3.1.0
+      - uses: actions/checkout@v4
       - name: Set up Python 3.11
-        uses: actions/setup-python@v4.3.0
+        uses: actions/setup-python@v5
         with:
           python-version: "3.11"
       - name: Install dependencies
@@ -30,4 +24,4 @@ jobs:
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
       - name: Run script
         run: |
-          python ./automated_script.py ${{ secrets.SERVER_NR }} ${{ secrets.USERNAME }} ${{ secrets.PASSWORD }} de -p -l
+          python ./automated_script.py ${{ secrets.SERVER_NR }} ${{ secrets.USERNAME }} ${{ secrets.PASSWORD }} de

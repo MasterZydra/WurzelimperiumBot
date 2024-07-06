@@ -407,7 +407,7 @@ class AquaGarden(Garden):
         freeFields = []
         for fieldID in weedFieldsAqua:
             try:
-                result = self._httpConn.removeWeedOnFieldInGarden(self._id, fieldID)
+                result = self._httpConn.removeWeedOnFieldInAquaGarden(self._id, fieldID)
             except:
                 self._logGarden.error(
                     f'Feld {fieldID} im Auqagarten {self._id} konnte nicht von Unkraut befreit werden!')
