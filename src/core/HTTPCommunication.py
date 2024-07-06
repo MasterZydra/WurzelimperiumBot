@@ -242,8 +242,8 @@ class HTTPConnection(object):
         elif info == 'Wimps':
             parsed_string_list_sales = re.findall(r"<td>(.+?)</td>", str(jContent['table'][12]).replace(r'&nbsp;', '').replace('.', ''))
             sales = int(parsed_string_list_sales[1])
-            parsed_string_list_revenue = re.findall(r"<td>(.+?)</td>", str(jContent['table'][13]).replace(r'&nbsp;', '')[:-2])
-            revenue = float(parsed_string_list_revenue[1])
+            parsed_string_list_revenue = re.findall(r"<td>(.+?)</td>", str(jContent['table'][13]).replace(r'&nbsp;', ' '))
+            revenue = parsed_string_list_revenue[1]
             success = True
             return sales, revenue
 

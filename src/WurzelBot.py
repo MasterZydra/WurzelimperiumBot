@@ -241,7 +241,8 @@ class WurzelBot(object):
 
         return dict(growingPlants)
 
-    def getAllWimpsProducts(self):
+    # Wimps
+    def get_all_wimps_products(self) -> dict:
         allWimpsProducts = Counter()
         for garden in self.garten:
             tmpWimpData = self.wimparea.get_wimps_data(garden)
@@ -255,8 +256,8 @@ class WurzelBot(object):
 
         return dict(allWimpsProducts)
 
-    def sellWimpsProducts(self, max_amount=100):
-        self.user.setUserDataFromServer(self.__HTTPConn) #TODO
+    def sell_to_wimps(self, max_amount=100):
+        self.user.load_data()
         points_before = self.user.get_points()
 
         stock_list = self.stock.get_ordered_stock_list()
@@ -279,22 +280,21 @@ class WurzelBot(object):
 
         for wimps in wimps_data:
             for wimp, products in wimps.items():
-                if not self.checkWimpsProfitable(products, max_amount):
+                if not self.check_wimps_profitable(products, max_amount):
                     self.wimparea.decline(wimp)
                     self.__logBot.info(f"Declined wimp: {wimp}")
                 else:
-                    check, stock_list = self.checkWimpsRequiredAmount(products[1], stock_list, minimal_balance = 500)
+                    check, stock_list = self.check_wimps_required_amount(products[1], stock_list, minimal_balance = 500)
                     if check:
                         rewards += products[0]
                         counter += 1
                         self.__logBot.info(f"Selling products to wimp: {wimp}")
-                        # print(self.wimparea.productsToString(products, self.productData))
                         new_products_counts = self.wimparea.sell(wimp)
                         for id, amount in products[1].items():
                             stock_list[id] -= amount
                             npc_price += self.productData.get_product_by_id(id).get_price_npc() * amount
         
-        self.user.setUserDataFromServer(self.__HTTPConn) #TODO
+        self.user.load_data()
         points_after = self.user.get_points()
         points_gained = points_after - points_before
         self.__logBot.info(f"Gained {points_gained} points.")
@@ -307,7 +307,7 @@ class WurzelBot(object):
                            f"-------------------------------------"
                           )
 
-    def checkWimpsProfitable(self, products, max_amount) -> bool:
+    def check_wimps_profitable(self, products, max_amount) -> bool:
         # Check if the price the wimp wants to pay is more than the price of buying every product in the shops.
         #BG-Проверява дали цената, която мамата иска да плати, е по-голяма от цената за закупуване на всеки продукт в магазините.
 
@@ -323,7 +323,7 @@ class WurzelBot(object):
                 return False
         return True
     
-    def checkWimpsRequiredAmount(self, products, stock_list, minimal_balance):
+    def check_wimps_required_amount(self, products, stock_list, minimal_balance):
         for id, amount in products.items():
             product = self.productData.get_product_by_id(id)
             min_stock = max(self.note.get_min_stock(), self.note.get_min_stock(product.get_name()), minimal_balance)
@@ -598,9 +598,9 @@ class WurzelBot(object):
         productId = product.get_id()
 
         Shop = None
-        for k, ID in ShopProducts.products.items():
+        for k, id in ShopProducts.products().items():
             if productName in k:
-                Shop = ID
+                Shop = id
                 break
         if Shop in [1,2,3,4]:
             try:

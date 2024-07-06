@@ -21,7 +21,7 @@ class Http(object):
 
     def get_wimps_data_watergarden(self):
         """Get wimps data including wimp_id and list of products with amount"""
-        address = f'ajax/ajax.php?do=watergardenGetGarden&token={self.__token}'
+        address = f'ajax/ajax.php?do=watergardenGetGarden&token={self.__http.token()}'
         try:
             response, content = self.__http.sendRequest(address)
             self.__http.checkIfHTTPStateIsOK(response)
