@@ -1,3 +1,7 @@
+**Content**
+- [How to contribute](#how-to-contribute)
+- [Coding Guideline](#coding-guideline)
+
 # How to contribute
 
 #### **Did you find a bug?**
@@ -22,3 +26,24 @@ PRs have multiple advantages:
 - The maintainer(s) of the main repository have to review the PR.
 - If changes are requested these have to be fixed, to ensure the quality and stability of the project.
 - The changes must not break the functionality so that the main branch will be defective.
+
+# Coding Guideline
+Please follow the rules below:
+
+- We want to **focus on new features** instead of changing "good enough code".  
+  This way the changes should provide added value.
+
+- **Prioritize readability over cleverness**:  
+  This article is more or less the way I think about it:  
+  https://remarkablemark.org/blog/2022/01/16/readable-versus-clever-code/
+
+- **Keep changes small**:  
+  Refactoring is great and absolutely necessary!  
+  However, if a new feature is added and the same commit includes numerous small changes such as indentation and empty lines, it can be challenging to perform a code review.
+
+- **Coding in English**:  
+  Because the WurzelimperiumBot is now also used for e.g. the Bugarian Wurzelimperium equivalent, it would be more accessible for new contributors if the code is written in English.
+
+- **Python Coding Standard Recommendations**:  
+  There is a coding standard on the official python website. We try to follow it:  
+  https://peps.python.org/pep-0008/#function-and-variable-names

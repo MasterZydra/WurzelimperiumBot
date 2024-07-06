@@ -1,6 +1,6 @@
-httplib2==0.20.4
-lxml==4.9.1
-pyparsing==3.0.9
-PyYAML==6.0
+httplib2==0.22.0
+lxml==5.2.2
+pyparsing==3.1.2
+PyYAML==6.0.1
 python-i18n
 prettytable

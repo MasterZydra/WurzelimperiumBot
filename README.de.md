@@ -1,10 +1,11 @@
-[![Python application](https://github.com/MasterZydra/WurzelimperiumBot/actions/workflows/python-app.yml/badge.svg)](https://github.com/MasterZydra/WurzelimperiumBot/actions/workflows/python-app.yml)
+[![WurzelimperiumBot Runner](https://github.com/MasterZydra/WurzelimperiumBot/actions/workflows/python-app.yml/badge.svg)](https://github.com/MasterZydra/WurzelimperiumBot/actions/workflows/python-app.yml)
+[![WurzelimperiumBot Binary Compile and Release](https://github.com/MasterZydra/WurzelimperiumBot/actions/workflows/release2binary.yml/badge.svg)](https://github.com/MasterZydra/WurzelimperiumBot/actions/workflows/release2binary.yml)
 [![Python 3](https://img.shields.io/badge/python-3-blue.svg)](https://www.python.org/)
 ![GitHub](https://img.shields.io/github/license/MasterZydra/WurzelimperiumBot)
 
 A forked from [MrFlamez/Wurzelimperium-Bot](https://github.com/MrFlamez/Wurzelimperium-Bot)
 
-*Read this in other languages: [English](README.md), [German](README.de.md).*
+*Read this in other languages: [English](README.md), [German](README.de.md), [Bulgarian](README.bg.md)*
 
 # Wurzelimperium-Bot
 Ein Bot für das Browserspiel Wurzelimperium von Upjers. Mit ihm wird es den kostenlosen Spielern ermöglicht die Vorzüge eines Premiumaccounts zu nutzen.
@@ -32,9 +33,13 @@ Es gibt auch eine portable Windows Commandline Version ohne Vorraussetzungen. [W
 ## Features
 - Login ohne zusätzliche Verwendung eines Browsers
 - Vollautomatische Bewässerung aller Gärten inkl. Wassergarten
-- Automatisiertes Anpflanzen
 - Abfrage aller aktuellen Marktpreise (Keine Abhängigkeit von Preislistenpflegern und deren Aktualisierungsintervall!)
-- Automatische Abfertigung der Wimps in den Gärten. Der minimale Bestand kann in den Account-Notizen eingestellt werden. z. B. `minStock: 100` oder `minStock(Apfel): 200`
+- Automatisiertes Anpflanzen  
+  Der Fokus kann auf bestimmte Pflanzen in den Account-Notizen begrenzt werden:  
+  z.B. `growOnly: Sonnenblume, Apfel` or `growOnly: Kaffee`
+- Automatische Abfertigung der Wimps in den Gärten.  
+  Der minimale Bestand kann in den Account-Notizen eingestellt werden.  
+  z.B. `minStock: 100` oder `minStock(Apfel): 200`
 - Automatisches claimen des täglichen Login Bonus
 
 ## Installation
