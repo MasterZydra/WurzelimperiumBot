@@ -1,20 +1,44 @@
 from logging import log
 import src.Logger as logger
 from src.WurzelBot import WurzelBot
+import argparse
 import i18n
 import shlex
 
 # Login data
+# You can set them here or pass them as CLI arguments
+server = 1
 user = ''
 pw = ''
-server = 17
-lang = 'de' # de, en
+lang = 'de' # de, en, bg
 portalacc = False
+
+parser = argparse.ArgumentParser()
+parser.add_argument('--server', type=int, help='Server number')
+parser.add_argument('--user', type=str, help='Username for login')
+parser.add_argument('--password', type=str, help='Password for login')
+parser.add_argument('--lang', type=str, help="Set Language and Region for the Game and Bot")
+parser.add_argument('-p', '--portal', help="If -p or --portal Argument is passed, Portal Account Login will be used.", action='store_true', dest="portalacc")
+parser.add_argument('-l', '--log', help="If -l or --log Argument is passed, logging will be enabled.", action='store_true', dest="logging")
+args = parser.parse_args()
+
+if args.server != None:
+    server = args.server
+if args.user != None:
+    user = args.user
+if args.password != None:
+    pw = args.password
+if args.lang != None:
+    lang = args.lang
+if args.portalacc != None:
+    portalacc = args.portalacc
+
 # Global vars
 wurzelBot: WurzelBot = object
 
-# enable logging? change to True else change it to False
 log = False
+if args.logging != None:
+    log = args.logging
 
 i18n.load_path.append('lang')
 i18n.set('locale', lang)
@@ -24,7 +48,7 @@ def main():
     logo()
     init()
     logging()
-    
+
     while True:
         print('')
         userInput = input('▶ ').strip()
@@ -58,12 +82,12 @@ def logo():
 
 def init():
     print(i18n.t('wimpb.initialize_bot'))
-    
+
     if user == '' or pw == '' or portalacc == '':
         print(i18n.t('wimpb.login_credentials_not_configured'))
         print('')
         exit()
-    
+
     global wurzelBot
     wurzelBot = WurzelBot()
     succ = wurzelBot.launchBot(server, user, pw, lang, portalacc)
@@ -121,12 +145,12 @@ def buy(argStr : str):
 def grow(argStr : str):
     argStr = argStr.replace('grow', '', 1).strip()
     args = shlex.split(argStr)
-    
+
     if len(args) > 2 or len(args) < 1 or args[0] == '' or (len(args) == 2 and not args[1].isnumeric()):
         print('Cannot parse input.')
         print('Expected format: grow [plant name] [opt. amount]')
         return
-    
+
     if len(args) == 1:
         print('Grow ' + args[0] + '...')
         wurzelBot.growVegetablesInGardens(args[0])
@@ -137,12 +161,12 @@ def grow(argStr : str):
 def growWater(argStr : str):
     argStr = argStr.replace('grow-water', '', 1).strip()
     args = shlex.split(argStr)
-    
+
     if len(args) > 2 or len(args) < 1 or args[0] == '' or (len(args) == 2 and not args[1].isnumeric()):
         print('Cannot parse input.')
         print('Expected format: grow-water [plant name] [opt. amount]')
         return
-    
+
     if len(args) == 1:
         print('Grow ' + args[0] + '...')
         wurzelBot.growPlantsInAquaGardens(args[0])
@@ -153,7 +177,7 @@ def growWater(argStr : str):
 def lowest(argStr : str):
     argStr = argStr.replace('lowest', '', 1).strip()
     args = shlex.split(argStr)
-    
+
     if len(args) > 1 or (len(args) == 1 and args[0] not in ['single', 'water'] and args[0] != ''):
         print('Cannot parse input.')
         print('Expected format: lowest [single|water]')
@@ -169,7 +193,7 @@ def lowest(argStr : str):
 def getStock(argStr : str):
     argStr = argStr.replace('stock', '', 1).strip()
     args = shlex.split(argStr)
-    
+
     if len(args) > 1 or (len(args) == 1 and args[0] != 'sort' and args[0] != ''):
         print('Cannot parse input.')
         print('Expected format: stock [sort]')
@@ -178,17 +202,17 @@ def getStock(argStr : str):
     if len(args) == 0:
         wurzelBot.printStock()
     elif args[0] == 'sort':
-        print(wurzelBot.getOrderedStockList())
+        print(wurzelBot.get_ordered_stock_list())
 
 def userData():
     colWidth = 20
-    print('User:'.ljust(colWidth) + wurzelBot.spieler.getUserName())
-    print('Anzahl der Gärten:'.ljust(colWidth) + str(wurzelBot.spieler.numberOfGardens))
-    print('Level:'.ljust(colWidth) + str(wurzelBot.spieler.getLevelNr()) + ' (' + wurzelBot.spieler.getLevelName() + ')')
-    print('Bar:'.ljust(colWidth) + wurzelBot.spieler.getBarFormated())
-    print('Points:'.ljust(colWidth) + f'{wurzelBot.spieler.getPoints():,}'.replace(',', '.'))
-    print('Coins:'.ljust(colWidth) + str(wurzelBot.spieler.getCoins()))
-    
+    print('User:'.ljust(colWidth) + wurzelBot.user.get_username())
+    print('Anzahl der Gärten:'.ljust(colWidth) + str(wurzelBot.user.get_number_of_gardens()))
+    print('Level:'.ljust(colWidth) + str(wurzelBot.user.get_level()) + ' (' + wurzelBot.user.get_level_name() + ')')
+    print('Bar:'.ljust(colWidth) + wurzelBot.user.get_bar_formatted())
+    print('Points:'.ljust(colWidth) + f'{wurzelBot.user.get_points():,}'.replace(',', '.'))
+    print('Coins:'.ljust(colWidth) + str(wurzelBot.user.get_coins()))
+
 def water():
     print('Water all plants in all gardens...')
     wurzelBot.waterPlantsInAllGardens()
@@ -215,8 +239,8 @@ def removeWeed():
 
 def getDailyLoginBonus():
     print('Claiming daily login bonus...')
-    wurzelBot.getDailyLoginBonus()
-    
+    wurzelBot.get_daily_bonuses()
+
 def processWimp():
     """Process Wimp Customers in Gardens"""
     print(i18n.t('wimpb.process_wimps'))

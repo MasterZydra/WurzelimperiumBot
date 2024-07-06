@@ -1,5 +1,5 @@
 ru:
-  login_portal: "???" #TODO
+  login_portal: "Войти"
   close_connection: "Закрываем соединение..."
   grow_plant_X: "Посеем %{plant}..."
   initialize_bot: "Инициализация WurzelBot..."

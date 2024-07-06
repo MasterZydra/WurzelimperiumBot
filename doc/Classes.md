@@ -13,7 +13,7 @@
     class ProductData
     class Quests
     class Session
-    class Spieler
+    class User
     class Wimps
     class WurzelBot
     
@@ -28,7 +28,7 @@
     ProductData *-- HTTPConnection
     ProductData *-- Product
     Quests *-- HTTPConnection
-    Quests *-- Spieler
+    Quests *-- User
     Storage *-- HTTPConnection
     Wimps *-- HTTPConnection
     
@@ -42,7 +42,7 @@
     WurzelBot *-- Note
     WurzelBot *-- ProductData
     WurzelBot *-- Quest
-    WurzelBot *-- Spieler
+    WurzelBot *-- User
     WurzelBot *-- Storage
     WurzelBot *-- Wimps
 ```
