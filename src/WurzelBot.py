@@ -248,52 +248,90 @@ class WurzelBot(object):
             for products in tmpWimpData.values():
                 allWimpsProducts.update(products[1])
 
+        if self.wassergarten:
+            tmpWimpData = self.wimparea.get_wimps_data_watergarden()
+            for products in tmpWimpData.values():
+                allWimpsProducts.update(products[1])
+
         return dict(allWimpsProducts)
 
-    def sellWimpsProducts(self, minimal_balance, minimal_profit):
-        if self.user.get_level() < 3:
-            return
+    def sellWimpsProducts(self, max_amount=100):
+        self.user.setUserDataFromServer(self.__HTTPConn) #TODO
+        points_before = self.user.get_points()
 
         stock_list = self.stock.get_ordered_stock_list()
         wimps_data = []
+        rewards = 0
+        npc_price = 0
+        counter = 0
+
         for garden in self.garten:
             for k, v in self.wimparea.get_wimps_data(garden).items():
                 wimps_data.append({k: v})
 
+        if self.wassergarten:
+            for k, v in self.wimparea.get_wimps_data_watergarden().items():
+                wimps_data.append({k: v})
+
+        if not wimps_data:
+            self.__logBot.info(f"No wimps available!")
+            return -1
+
         for wimps in wimps_data:
             for wimp, products in wimps.items():
-                if not self.checkWimpsProfitable(products, minimal_profit):
+                if not self.checkWimpsProfitable(products, max_amount):
                     self.wimparea.decline(wimp)
-                    continue
+                    self.__logBot.info(f"Declined wimp: {wimp}")
+                else:
+                    check, stock_list = self.checkWimpsRequiredAmount(products[1], stock_list, minimal_balance = 500)
+                    if check:
+                        rewards += products[0]
+                        counter += 1
+                        self.__logBot.info(f"Selling products to wimp: {wimp}")
+                        # print(self.wimparea.productsToString(products, self.productData))
+                        new_products_counts = self.wimparea.sell(wimp)
+                        for id, amount in products[1].items():
+                            stock_list[id] -= amount
+                            npc_price += self.productData.get_product_by_id(id).get_price_npc() * amount
+        
+        self.user.setUserDataFromServer(self.__HTTPConn) #TODO
+        points_after = self.user.get_points()
+        points_gained = points_after - points_before
+        self.__logBot.info(f"Gained {points_gained} points.")
+        self.__logBot.info(f"Sold to {counter} wimps for {rewards:.2f} wT (equals {(rewards/npc_price):.2%} of Shop-price: {npc_price:.2f} wT)")
 
-                if self.checkWimpsRequiredAmount(minimal_balance, products[1], stock_list):
-                    print("Selling products to wimp: " + wimp)
-                    print(self.wimparea.products_to_string(products))
-                    new_products_counts = self.wimparea.sell(wimp)
-                    for id, amount in products[1].items():
-                        stock_list[id] -= amount
+        sales, revenue = self.__HTTPConn.getInfoFromStats('Wimps')
+        self.__logBot.info(f"Stats--------------------------------\n"
+                           f"WIMP-sales  : {sales}\n"
+                           f"WIMP-revenue: {revenue}\n"
+                           f"-------------------------------------"
+                          )
 
-    def checkWimpsProfitable(self, products, minimal_profit_in_percent) -> bool:
+    def checkWimpsProfitable(self, products, max_amount) -> bool:
         # Check if the price the wimp wants to pay is more than the price of buying every product in the shops.
         #BG-Проверява дали цената, която мамата иска да плати, е по-голяма от цената за закупуване на всеки продукт в магазините.
 
         # If the profit in percent is greater or equal to the given value, the return value is True.
         #BG-Ако печалбата в проценти е по-голяма или равна на предоставената стойност, връщаемата стойност е True
-        return True
+
         # TODO How to calculate profitability? It seems that none of the wimps is profitable when using the shop prices.
         #BG-TODO Как да изчислявам печалбата? Изглежда, че нито един от „wimps“ не е печеливш, когато се използват цените от магазините.
-        npc_sum = 0
-        for id, amount in products[1].items():
-            npc_sum += self.productData.get_product_by_id(id).get_price_npc() * amount
-        return (products[0] - npc_sum) / npc_sum * 100 >= minimal_profit_in_percent
 
-    def checkWimpsRequiredAmount(self, minimal_balance, products, stock_list):
+        # this is just my personal choice. When the amount of a product <= 100 you get nearly 2/3 of the WIMP-baseprice --> that's acceptable for me
+        for id, amount in products[1].items():
+            if amount > max_amount:
+                return False
+        return True
+    
+    def checkWimpsRequiredAmount(self, products, stock_list, minimal_balance):
         for id, amount in products.items():
             product = self.productData.get_product_by_id(id)
             min_stock = max(self.note.get_min_stock(), self.note.get_min_stock(product.get_name()), minimal_balance)
             if stock_list.get(id, 0) < amount + min_stock or self.user.get_level() < 3:
-                return False
-        return True
+                if self.doBuyFromShop(int(id), minimal_balance) == -1:
+                    return False, stock_list
+                stock_list[id] += minimal_balance
+            return True, stock_list
 
     def getNextRunTime(self):
         garden_time = []

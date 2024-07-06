@@ -215,6 +215,10 @@ class HTTPConnection(object):
             parsed_string_list = re.findall(r"<td>(.+?)</td>", str(jContent['table'][5]).replace(r'&nbsp;', ''))
             result = int(parsed_string_list[1])
             success = True
+        elif info == 'AquagardenQuest':
+            parsed_string_list = re.findall(r"<td>(.+?)</td>", str(jContent['table'][6]).replace(r'&nbsp;', ''))
+            result = int(parsed_string_list[1])
+            success = True
         elif info == 'CactusQuest':
             parsed_string_list = re.findall(r"<td>(.+?)</td>", str(jContent['table'][7]).replace(r'&nbsp;', ''))
             result = int(parsed_string_list[1])
@@ -235,6 +239,13 @@ class HTTPConnection(object):
             parsed_string_list = re.findall(r"<td>(.+?)</td>", str(jContent['table'][11]).replace(r'&nbsp;', ''))
             result = int(parsed_string_list[1])
             success = True
+        elif info == 'Wimps':
+            parsed_string_list_sales = re.findall(r"<td>(.+?)</td>", str(jContent['table'][12]).replace(r'&nbsp;', '').replace('.', ''))
+            sales = int(parsed_string_list_sales[1])
+            parsed_string_list_revenue = re.findall(r"<td>(.+?)</td>", str(jContent['table'][13]).replace(r'&nbsp;', '')[:-2])
+            revenue = float(parsed_string_list_revenue[1])
+            success = True
+            return sales, revenue
 
         if success:
             return result
