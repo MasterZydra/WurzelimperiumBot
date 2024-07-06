@@ -31,7 +31,7 @@ def main():
     if not succ:
         exit(-1)
 
-    try:
+     try:
         # Remove weed
         # BG-Премахване на плевели
         print(i18n.t('wimpb.remove_weed_from_all_gardens'))
