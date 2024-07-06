@@ -578,19 +578,28 @@ class WurzelBot(object):
 
     # Bienen
     #BG- Пчели
-    def sendBienen(self):
-        #TODO prüfen ob wirklich gesendet wurde, ansonsten Befehl wiederholen
-        """
-        Probiert alle Bienen für Zeitoption 1 (ohne Verkürzung 2h) zu senden
-        """
-        #BG-Пробва да изпрати всички пчели за времева опция 1 (без намаляване 2 часа).
-        if self.feature.is_honey_farm_available():
-            self.honey.start_all_hives()
-            self.honey.fill_honey()
-        else:
-            logMsg = 'Konnte nicht alle Bienen ernten.'
-            print(logMsg)
-            self.__logBot.error(logMsg)
+    def send_bees(self, tour: int):
+        honey_count = {}
+        if self.honey:
+            self.__update_honey_count(honey_count, self.honey.check_pour_honey())
+
+            while self.honey.check_start_hives():
+                self.honey.start_tour(tour)
+                self.__update_honey_count(honey_count, self.honey.check_pour_honey())
+
+            for key, value in honey_count.items():
+                self.__logBot.info(f'Collected {value} {self.productData.get_product_by_id(key).get_name()}.')
+
+    def __update_honey_count(self, honeycount, transfer):
+        for key, value in transfer.items():
+            if key in honeycount:
+                honeycount[key] += value
+            else:
+                honeycount[key] = value
+
+    def change_all_hives_types(self, product_name: str):
+        if self.honey:
+            self.honey.change_all_hives_types(self.productData.get_product_by_name(product_name).get_id())
 
     # Bonsai
     def cutAndRenewBonsais(self):
