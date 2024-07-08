@@ -19,6 +19,17 @@ class Http(object):
         except:
             raise
 
+    def get_wimps_data_watergarden(self):
+        """Get wimps data including wimp_id and list of products with amount"""
+        address = f'ajax/ajax.php?do=watergardenGetGarden&token={self.__http.token()}'
+        try:
+            response, content = self.__http.sendRequest(address)
+            self.__http.checkIfHTTPStateIsOK(response)
+            jContent = self.__http.generateJSONContentAndCheckForOK(content)
+            return self.__find_wimps_data_from_json(jContent)
+        except:
+            raise
+
     def __find_wimps_data_from_json(self, jContent):
         """Returns list of growing plants from JSON content"""
         wimpsData = {}

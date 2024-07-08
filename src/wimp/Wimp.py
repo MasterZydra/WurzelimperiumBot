@@ -16,6 +16,9 @@ class Wimp:
     def get_wimps_data(self, garden):
         return self.__http.get_wimps_data(garden._id)
 
+    def get_wimps_data_watergarden(self):
+        return self.__http.get_wimps_data_watergarden()
+
     def sell(self, wimp_id):
         return self.__http.sell_to_wimp(wimp_id)
 

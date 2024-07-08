@@ -31,6 +31,12 @@ class User():
         except:
             print('Could not load the user data')
 
+    def load_data(self):
+        try:
+            self.__data = self.__http.load_data()
+        except:
+            print('Could not load the user data')
+
     def get_user_id(self) -> str:
         return self.__user_id
 
@@ -50,7 +56,7 @@ class User():
         return self.__data['points']
 
     def get_bar(self) -> float:
-        return self.__userData['bar_unformat']
+        return self.__data['bar_unformat']
 
     def get_bar_formatted(self) -> str:
         return self.__data['bar']
