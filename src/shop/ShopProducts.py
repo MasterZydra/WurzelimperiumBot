@@ -45,6 +45,7 @@ class ShopProducts:
             "Kakao": 2,  #BG-Какао
             "Pilzgeflecht": 2,  #BG-Мрежарка
             "Fliegenpilz": 2,  #BG-Мухоморка
+            "Bohne": 2,
             "Buchsbaumsetzling": 2,  #BG-Фиданка от Чемшир
             "Buchsbaum": 2,  #BG-Чемшир
             "Steinpilz": 2,  #BG-Манатарка
@@ -92,6 +93,12 @@ class ShopProducts:
             "Gemeine Wegwarte": 4,  #BG-Цикория
             "Sibirische Schwertlilie": 4,  #BG-Сибирска перуника
             "Moorlilie": 4,  #BG-Блатна лилия
+            "Heidenelke": 4,
+            "Leberblümchen": 4,
+            "Teufelsabbiss": 4,
+            "Schlüsselblume": 4,
+            "Klatschmohn": 4,
+            "Langblättriger Ehrenpreis": 4,
             "Seerose": 0,  #BG-Водна лилия
             "Scheincalla": 0,  #BG-Блатна Кала
             "gelbe Teichrose": 0,  #BG-Жълта водна лилия
@@ -104,5 +111,6 @@ class ShopProducts:
             "Schwertlilie": 0,  #BG-Перуника
             "Reis": 0,  #BG-Ориз
             "Schilfsetzling": 0,  #BG-Фиданка от Тръстика
-            "Schilf": 0  #BG-Тръстика
+            "Schilf": 0,  #BG-Тръстика
+            "Schwanenblume": 0,
         }

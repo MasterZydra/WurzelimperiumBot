@@ -303,16 +303,6 @@ class HTTPConnection(object):
             growingPlants.append(field[1])
         return growingPlants
 
-    def __findEmptyAquaFieldsFromJSONContent(self, jContent):
-        emptyAquaFields = []
-        for field in jContent['garden']:
-            if jContent['garden'][field][0] == 0:
-                emptyAquaFields.append(int(field))
-        # Sortierung über ein leeres Array ändert Objekttyp zu None
-        if len(emptyAquaFields) > 0:
-            emptyAquaFields.sort(reverse=False)
-        return emptyAquaFields
-
     def __generateYAMLContentAndCheckForSuccess(self, content: str):
         """Aufbereitung und Prüfung der vom Server empfangenen YAML Daten auf Erfolg."""
         content = content.replace('\n', ' ')
@@ -635,7 +625,7 @@ class HTTPConnection(object):
             response, content = self.sendRequest(address)
             self.checkIfHTTPStateIsOK(response)
             jContent = self.generateJSONContentAndCheckForOK(content)
-            emptyAquaFields = self.__findEmptyAquaFieldsFromJSONContent(jContent)
+            emptyAquaFields = self.__findEmptyFieldsFromJSONContent(jContent)
         except:
             raise
         else:
@@ -653,9 +643,8 @@ class HTTPConnection(object):
                 print(jContent['message'])
                 self.__logHTTPConn.info(jContent['message'])
             elif jContent['status'] == 'ok':
-                msg = jContent['harvestMsg'].replace('</div>', '\n').replace('&nbsp;', ' ')
-                msg = re.sub('<div.*>', '', msg)
-                msg = re.sub('x[ \n]*', 'x ', msg)
+                msg = jContent['harvestMsg'].replace('</div>', '').replace('&nbsp;', ' ').replace('<div class="line">', '\n')
+                msg = re.sub('<div.*?>', '', msg)
                 msg = msg.strip()
                 if 'biogas' in jContent:
                     biogas = jContent['biogas']
@@ -679,9 +668,8 @@ class HTTPConnection(object):
                 print(jContent['message'])
                 self.__logHTTPConn.info(jContent['message'])
             elif jContent['status'] == 'ok':
-                msg = jContent['harvestMsg'].replace('</div>', '\n').replace('&nbsp;', ' ')
-                msg = re.sub('<div.*>', '', msg)
-                msg = re.sub('x[ \n]*', 'x ', msg)
+                msg = jContent['harvestMsg'].replace('</div>', '').replace('&nbsp;', ' ').replace('<div class="line">', '\n')
+                msg = re.sub('<div.*?>', '', msg)
                 msg = msg.strip()
                 print(msg)
                 self.__logHTTPConn.info(msg)
@@ -690,11 +678,12 @@ class HTTPConnection(object):
 
     def growPlant(self, field, plant, gardenID, fields):
         """Baut eine Pflanze auf einem Feld an."""
-        address =   f'save/pflanz.php?pflanze[]={str(plant)}&feld[]={str(field)}' \
-                    f'&felder[]={fields}&cid={self.__token}&garden={str(gardenID)}'
+        address =   f'save/pflanz.php?pflanze[]={plant}&feld[]={field}' \
+                    f'&felder[]={fields}&cid={self.__token}&garden={gardenID}'
         try:
             response, content = self.sendRequest(address)
             self.checkIfHTTPStateIsOK(response)
+            return self.__generateJSONContentAndCheckForSuccess(content)
         except:
             raise
 
@@ -709,17 +698,6 @@ class HTTPConnection(object):
             raise
 
     def removeWeedOnFieldInGarden(self, gardenID, fieldID):
-        """Befreit ein Feld im Garten von Unkraut."""
-        self._changeGarden(gardenID)
-        try:
-            response, content = self.sendRequest(f'save/abriss.php?tile={fieldID}', 'POST')
-            self.checkIfHTTPStateIsOK(response)
-            jContent = self.__generateJSONContentAndCheckForSuccess(content)
-            return jContent['success']
-        except:
-            raise
-
-    def removeWeedOnFieldInAquaGarden(self, gardenID, fieldID):
         """Befreit ein Feld im Garten von Unkraut."""
         self._changeGarden(gardenID)
         try:
