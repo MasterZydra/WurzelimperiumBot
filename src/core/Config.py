@@ -6,7 +6,7 @@ class Config(object):
 
     # Is bot running in development environment?
     # This mode will show more details e.g. not hidding exception message
-    isDevMode = False
+    isDevMode = True
 
     _instance = None
 

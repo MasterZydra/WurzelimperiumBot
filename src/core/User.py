@@ -20,6 +20,7 @@ class User():
         self.__number_of_gardens = None
         self.__user_id = None
         self.__is_mail_confirmed = None
+        self.__watering_gnome_helper = None
 
     def update(self):
         """Get user data from server and save in this class"""
@@ -28,6 +29,7 @@ class User():
             self.__number_of_gardens = self.__http.get_info_from_stats("Gardens")
             self.__user_id = self.__http.get_user_id()
             self.__is_mail_confirmed = self.__http.check_mail_confirmed()
+            self.__watering_gnome_helper = self.__http.get_watering_gnome_helper()
         except:
             print('Could not load the user data')
 
@@ -69,3 +71,6 @@ class User():
 
     def is_mail_confirmed(self) -> bool:
         return self.__is_mail_confirmed
+    
+    def get_watering_gnome_helper(self) -> bool:
+        return self.__watering_gnome_helper
