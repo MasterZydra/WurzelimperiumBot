@@ -33,10 +33,7 @@ class Http(object):
             content = content.decode('UTF-8')
             self.__http.checkIfHTTPStateIsOK(response)
             reGnome = re.search(r'wimparea.init.*\"helper\":.*(water).*\"garbage', content)
-
-            if reGnome.group(1) == "water":
-                return True
-            return False
+            return reGnome.group(1) == "water"
         except:
             raise
 

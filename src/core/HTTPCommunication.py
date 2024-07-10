@@ -497,7 +497,7 @@ class HTTPConnection(object):
             address =   f"ajax/ajax.php?do=gardenWaterAll&token={self.__token}"
             response, content = self.sendRequest(address)
             self.checkIfHTTPStateIsOK(response)
-            self.__generateYAMLContentAndCheckForSuccess(content.decode('UTF-8'))
+            jContent = self.generateJSONContentAndCheckForOK(content)
         except:
             raise
 

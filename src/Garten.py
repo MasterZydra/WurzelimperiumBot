@@ -108,8 +108,6 @@ class Garden():
         try:
             plants = self._httpConn.getPlantsToWaterInGarden(self._id)
             nPlants = len(plants['fieldID'])
-            print(nPlants)
-            print(type(nPlants))
             if nPlants and gnome:
                 self._httpConn.water_all_plants_in_garden()
             else:

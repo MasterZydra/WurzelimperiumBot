@@ -161,6 +161,7 @@ class WurzelBot(object):
         self.user.accountLogin = loginDaten
         self.productData.init()
         self.stock.init_product_list(self.productData.get_product_id_list())
+        self.user.set_gnomes()
         self.stock.update()
         return True
 
