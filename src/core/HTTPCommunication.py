@@ -56,8 +56,11 @@ class HTTPConnection(object):
     def token(self):
         return self.__token
 
-    def set_token(self, token):
-        self.__token = token
+    def update_token_from_content(self, content):
+        if not isinstance(content, str):
+            content = content.decode('UTF-8')
+        reToken = re.search(r'ajax\.setToken\(\"(.*)\"\);', content)
+        self.__token = reToken.group(1)
 
     def sendRequest(self, address: str, method: str = 'GET', body = None, headers: dict = {}):
         uri = self.__get_server() + address
