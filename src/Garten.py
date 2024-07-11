@@ -100,7 +100,7 @@ class Garden():
         #BG- Връща идентификационния номер на градината.
         return self._id
 
-    def waterPlants(self):
+    def waterPlants(self, gnome: bool = False):
         """Ein Garten mit der gardenID wird komplett bewässert."""
         #BG- Градината с gardenID се полива напълно.
         self._logGarden.info(f'Gieße alle Pflanzen im Garten {self._id}.')
@@ -108,9 +108,12 @@ class Garden():
         try:
             plants = self._httpConn.getPlantsToWaterInGarden(self._id)
             nPlants = len(plants['fieldID'])
-            for i in range(0, nPlants):
-                sFields = self._getAllFieldIDsFromFieldIDAndSizeAsString(plants['fieldID'][i], plants['sx'][i], plants['sy'][i])
-                self._httpConn.waterPlantInGarden(self._id, plants['fieldID'][i], sFields)
+            if nPlants and gnome:
+                self._httpConn.water_all_plants_in_garden()
+            else:
+                for i in range(0, nPlants):
+                    sFields = self._getAllFieldIDsFromFieldIDAndSizeAsString(plants['fieldID'][i], plants['sx'][i], plants['sy'][i])
+                    self._httpConn.waterPlantInGarden(self._id, plants['fieldID'][i], sFields)
         except:
             self._logGarden.error(f'Garten {self._id} konnte nicht bewässert werden.')
             #BG- self._logGarden.error(f'Градина {self._id} не може да бъде поливана.')
@@ -319,7 +322,7 @@ class AquaGarden(Garden):
         else:
             return tmpEmptyAquaFields
 
-    def waterPlants(self):
+    def waterPlants(self, gnome: bool = False):
         """
         Alle Pflanzen im Wassergarten werden bewässert.
         """
@@ -328,9 +331,12 @@ class AquaGarden(Garden):
         try:
             plants = self._httpConn.getPlantsToWaterInAquaGarden()
             nPlants = len(plants['fieldID'])
-            for i in range(0, nPlants):
-                sFields = self._getAllFieldIDsFromFieldIDAndSizeAsString(plants['fieldID'][i], plants['sx'][i], plants['sy'][i])
-                self._httpConn.waterPlantInAquaGarden(plants['fieldID'][i], sFields)
+            if nPlants and gnome:
+                self._httpConn.water_all_plants_in_garden()
+            else:
+                for i in range(0, nPlants):
+                    sFields = self._getAllFieldIDsFromFieldIDAndSizeAsString(plants['fieldID'][i], plants['sx'][i], plants['sy'][i])
+                    self._httpConn.waterPlantInAquaGarden(plants['fieldID'][i], sFields)
         except:
             self._logGarden.error('Wassergarten konnte nicht bewässert werden.')
             #BG- self._logGarden.error('Водната градина не може да бъде поливан.')

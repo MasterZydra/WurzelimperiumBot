@@ -27,3 +27,13 @@ class Http(object):
         except:
             raise
 
+    def has_watering_gnome_helper(self):
+        try:
+            response, content = self.__http.sendRequest('main.php?page=garden')
+            content = content.decode('UTF-8')
+            self.__http.checkIfHTTPStateIsOK(response)
+            re_gnome = re.search(r'wimparea.init.*\"helper\":.*(water).*\"garbage', content)
+            return re_gnome.group(1) == "water"
+        except:
+            raise
+

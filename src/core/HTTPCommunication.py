@@ -103,7 +103,7 @@ class HTTPConnection(object):
         if j_content['success'] == 1:
             return j_content
         else:
-            raise JSONError()
+            raise JSONError(f"success = {j_content['success']}")
 
     def generateJSONContentAndCheckForOK(self, content: str):
         """Aufbereitung und Prüfung der vom Server empfangenen JSON Daten."""
@@ -111,7 +111,7 @@ class HTTPConnection(object):
         if j_content['status'] == 'ok':
             return j_content
         else:
-            raise JSONError()
+            raise JSONError(f"status = {j_content['status']}")
 
     def __isFieldWatered(self, jContent, fieldID):
         """
@@ -491,6 +491,15 @@ class HTTPConnection(object):
         except:
             raise
 
+    def water_all_plants_in_garden(self):
+        """Use watering gnome to water all plants in a garden (premium feature)."""
+        try:
+            address =   f"ajax/ajax.php?do=gardenWaterAll&token={self.__token}"
+            response, content = self.sendRequest(address)
+            self.checkIfHTTPStateIsOK(response)
+            self.generateJSONContentAndCheckForOK(content)
+        except:
+            raise
 
     def getPlantsToWaterInAquaGarden(self):
         """

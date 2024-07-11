@@ -193,13 +193,13 @@ class WurzelBot(object):
     def waterPlantsInAllGardens(self):
         """Alle Gärten des Spielers werden komplett bewässert."""
         #BG-"""Всички градини на играча се поливат напълно."""
-
+        watering_gnome = self.user.has_watering_gnome_helper()
         garden: Garden
         for garden in self.garten:
-            garden.waterPlants()
+            garden.waterPlants(gnome=watering_gnome)
 
         if self.feature.is_aqua_garden_available():
-            self.wassergarten.waterPlants()
+            self.wassergarten.waterPlants(gnome=watering_gnome)
 
 
     def writeMessagesIfMailIsConfirmed(self, recipients, subject, body):
