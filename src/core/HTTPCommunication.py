@@ -97,10 +97,10 @@ class HTTPConnection(object):
             raise HTTPStateError('HTTP Status ist nicht FOUND')
 
 
-    def __generateJSONContentAndCheckForSuccess(self, content):
+    def generateJSONContentAndCheckForSuccess(self, content):
         """Aufbereitung und Prüfung der vom Server empfangenen JSON Daten."""
         j_content = json.loads(content)
-        if j_content['success'] == 1:
+        if j_content.get('success', 0) == 1 or j_content.get('status', 0) == "SUCCESS":
             return j_content
         else:
             raise JSONError()
@@ -454,7 +454,7 @@ class HTTPConnection(object):
         try:
             response, content = self.sendRequest('ajax/menu-update.php')
             self.checkIfHTTPStateIsOK(response)
-            jContent = self.__generateJSONContentAndCheckForSuccess(content)
+            jContent = self.generateJSONContentAndCheckForSuccess(content)
         except:
             raise
         else:
@@ -714,7 +714,7 @@ class HTTPConnection(object):
         try:
             response, content = self.sendRequest(f'save/abriss.php?tile={fieldID}', 'POST')
             self.checkIfHTTPStateIsOK(response)
-            jContent = self.__generateJSONContentAndCheckForSuccess(content)
+            jContent = self.generateJSONContentAndCheckForSuccess(content)
             return jContent['success']
         except:
             raise
@@ -725,7 +725,7 @@ class HTTPConnection(object):
         try:
             response, content = self.sendRequest(f'save/abriss.php?tile={fieldID}', 'POST')
             self.checkIfHTTPStateIsOK(response)
-            jContent = self.__generateJSONContentAndCheckForSuccess(content)
+            jContent = self.generateJSONContentAndCheckForSuccess(content)
             return jContent['success']
         except:
             raise
