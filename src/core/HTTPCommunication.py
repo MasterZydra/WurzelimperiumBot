@@ -676,10 +676,17 @@ class HTTPConnection(object):
         except:
             raise
 
-    def growPlant(self, field, plant, gardenID, fields):
+    def growPlant(self, to_plant, plant, gardenID):
         """Baut eine Pflanze auf einem Feld an."""
-        address =   f'save/pflanz.php?pflanze[]={plant}&feld[]={field}' \
-                    f'&felder[]={fields}&cid={self.__token}&garden={gardenID}'
+        address =   f"save/pflanz.php?pflanze[]={plant}"
+        for plant in range (to_plant-1):
+            address += f"&pflanze[]={plant}"
+        for plant in range (to_plant):
+            address += f"&feld[]={to_plant.key}" #???
+        for plant in range (to_plant):
+            address += f"&felder[]={to_plant.item}" #???
+        address += f"&cid={self.__token}&garden={gardenID}"
+
         try:
             response, content = self.sendRequest(address)
             self.checkIfHTTPStateIsOK(response)
