@@ -14,6 +14,7 @@ from src.core.HTTPCommunication import HTTPConnection
 from src.core.Login import Login
 from src.core.Feature import Feature
 from src.Garten import Garden, AquaGarden, HerbGarden
+from src.greenhouse.Greenhouse import Greenhouse
 from src.honey.Honey import Honey
 from src.stock.Stock import Stock
 from src.marketplace.Marketplace import Marketplace
@@ -57,6 +58,7 @@ class WurzelBot(object):
         self.bonus = Bonus()
         self.note = Note()
         self.park = None
+        self.greenhouse = None
 
 
     def __initGardens(self):
@@ -81,6 +83,9 @@ class WurzelBot(object):
 
             if self.feature.is_city_park_available() is True:
                 self.park = CityPark()
+
+            if self.feature.is_greenhouse_available() is True:
+                self.greenhouse = Greenhouse()
 
         except:
             raise
@@ -614,3 +619,7 @@ class WurzelBot(object):
         self.herbgarden.remove_weed()
         self.herbgarden.harvest()
         self.herbgarden.grow_plant(self)
+
+    # Greenhouse
+    def check_greenhouse(self):
+        self.greenhouse.do_all_cactus_care()

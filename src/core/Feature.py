@@ -37,3 +37,8 @@ class Feature():
         if self.__user.get_level() < 10:
             return False
         return self.__http.is_honey_farm_available()
+    
+    def is_greenhouse_available(self) -> bool:
+        if self.__user.get_level() < 12:
+            return False
+        return self.__http.is_greenhouse_available()

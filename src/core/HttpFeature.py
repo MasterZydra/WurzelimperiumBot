@@ -42,3 +42,12 @@ class Http(object):
                 return False
         except:
             raise
+
+    def is_greenhouse_available(self):
+        try:
+            cactus_quest = self.__http.getInfoFromStats("CactusQuest")
+            if cactus_quest > 0:
+                return True
+            return False
+        except:
+            raise
