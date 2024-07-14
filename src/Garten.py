@@ -3,6 +3,7 @@
 
 from collections import Counter, namedtuple
 import logging, i18n
+import math
 from src.core.HTTPCommunication import HTTPConnection
 from src.product.ProductData import ProductData
 
@@ -180,36 +181,44 @@ class Garden():
         except:
             raise
 
-    def growPlant(self, plantID, sx, sy, amount, grow_simultaneous=1):
+    def growPlant(self, plantID, sx, sy, amount, grow_simultaneous=6):
         """Grows a plant of any size."""
         #BG- """Отглежда растение от всякакъв размер."""
 
         planted = 0
         emptyFields = self.getEmptyFields()
-        repetitions = amount/grow_simultaneous
+        repetitions = math.ceil(amount/grow_simultaneous)
 
         try:
-            for request in range(repetitions+1): # number of requests
-                to_plant = {}
-                fieldsToPlant = []
-                for field in range(1+request*grow_simultaneous, min((request+1)*grow_simultaneous, self._MAX_FIELDS) + 1): # gather data for plants of a request
-                    if planted == amount: break
-                    fieldsToPlant.append(self._getAllFieldIDsFromFieldIDAndSizeAsIntList(field, sx, sy))
+            # for request in range(repetitions+1): # number of requests
+            #     to_plant = {}
+            #     for field in range(1+request*grow_simultaneous, min((request+1)*grow_simultaneous, self._MAX_FIELDS) + 1): # gather data for plants of a request
+            #         print(f"field{field}")
+            to_plant = {}
+            for field in range(1, self._MAX_FIELDS+1):
+                
+                if planted == amount: break
+                fieldsToPlant = self._getAllFieldIDsFromFieldIDAndSizeAsIntList(field, sx, sy)
 
-                    if (self._isPlantGrowableOnField(field, emptyFields, fieldsToPlant, sx)):
-                        fields = self._getAllFieldIDsFromFieldIDAndSizeAsString(field, sx, sy) # get fields for one plant
-                        to_plant.update({field: fields}) #collect all plants for a request --> give it to growPlant()
-                        
+                if (self._isPlantGrowableOnField(field, emptyFields, fieldsToPlant, sx)):
+                    fields = self._getAllFieldIDsFromFieldIDAndSizeAsString(field, sx, sy) # get fields for one plant
+                    # print(f"fields{fields}")
+                    to_plant.update({field: fields}) #collect all plants for a request --> give it to growPlant()
+                    # print(f"to:{to_plant}")
+                
                 # save/pflanz.php?pflanze[]=9&pflanze[]=9&pflanze[]=9&pflanze[]=9&pflanze[]=9&pflanze[]=9&feld[]=3&feld[]=4&feld[]=5&feld[]=6&feld[]=7&feld[]=8&felder[]=3&felder[]=4&felder[]=5&felder[]=6&felder[]=7&felder[]=8&cid=a9c1eba7b9f59ad111e2c30bcca0435d&garden=1  
-                self._httpConn.growPlant(to_plant, plantID, self._id)
-                planted += len(to_plant)
-
-                #Nach dem Anbau belegte Felder aus der Liste der leeren Felder loeschen
-                #BG- След отглеждането, изтрийте заетите полета от списъка на празните полета
-                fieldsToPlantSet = set(fieldsToPlant)
-                emptyFieldsSet = set(emptyFields)
-                tmpSet = emptyFieldsSet - fieldsToPlantSet
-                emptyFields = list(tmpSet)
+                if len(to_plant) == 6 or field == self._MAX_FIELDS:
+                    # print(f"to_req:{to_plant}")
+                    self._httpConn.growPlant(to_plant, plantID, self._id)
+                    planted += len(to_plant)
+                    to_plant = {}
+                
+                    #Nach dem Anbau belegte Felder aus der Liste der leeren Felder loeschen
+                    #BG- След отглеждането, изтрийте заетите полета от списъка на празните полета
+                    fieldsToPlantSet = set(fieldsToPlant)
+                    emptyFieldsSet = set(emptyFields)
+                    tmpSet = emptyFieldsSet - fieldsToPlantSet
+                    emptyFields = list(tmpSet)
 
         except:
             self._logGarden.error(f'Im Garten {self._id} konnte nicht gepflanzt werden.')

@@ -679,20 +679,20 @@ class HTTPConnection(object):
     def growPlant(self, to_plant, plant, gardenID):
         """Baut eine Pflanze auf einem Feld an."""
         address =   f"save/pflanz.php?pflanze[]={plant}"
-        for plant in range (to_plant-1):
+        for count in range (len(to_plant)-1):
             address += f"&pflanze[]={plant}"
-        for plant in range (to_plant):
-            address += f"&feld[]={to_plant.key}" #???
-        for plant in range (to_plant):
-            address += f"&felder[]={to_plant.item}" #???
+        for field in to_plant.keys():
+            address += f"&feld[]={field}" #???
+        for fields in to_plant.values():
+            address += f"&felder[]={fields}" #???
         address += f"&cid={self.__token}&garden={gardenID}"
-
-        try:
-            response, content = self.sendRequest(address)
-            self.checkIfHTTPStateIsOK(response)
-            return self.__generateJSONContentAndCheckForSuccess(content)
-        except:
-            raise
+        print(address)
+        # try:
+        #     response, content = self.sendRequest(address)
+        #     self.checkIfHTTPStateIsOK(response)
+        #     return self.__generateJSONContentAndCheckForSuccess(content)
+        # except:
+        #     raise
 
     def growAquaPlant(self, plant, field):
         """Baut eine Pflanze im Wassergarten an."""
