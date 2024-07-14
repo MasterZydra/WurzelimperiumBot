@@ -32,7 +32,7 @@ class Stock():
         sortedStock = dict(sorted(self.__products.items(), key=lambda item: item[1]))
         filteredStock = dict()
         for productID in sortedStock:
-            if sortedStock[str(productID)] == 0: continue
+            # if sortedStock[str(productID)] == 0: continue
             filteredStock[str(productID)] = sortedStock[str(productID)]
         return filteredStock
 
