@@ -676,27 +676,33 @@ class HTTPConnection(object):
         except:
             raise
 
-    def growPlant(self, to_plant, plant, gardenID):
+    def growPlant(self, to_plant, plant_id, gardenID):
         """Baut eine Pflanze auf einem Feld an."""
-        address =   f"save/pflanz.php?pflanze[]={plant}"
+        address =   f"save/pflanz.php?pflanze[]={plant_id}"
         for count in range (len(to_plant)-1):
-            address += f"&pflanze[]={plant}"
+            address += f"&pflanze[]={plant_id}"
         for field in to_plant.keys():
             address += f"&feld[]={field}" #???
         for fields in to_plant.values():
             address += f"&felder[]={fields}" #???
         address += f"&cid={self.__token}&garden={gardenID}"
-        print(address)
-        # try:
-        #     response, content = self.sendRequest(address)
-        #     self.checkIfHTTPStateIsOK(response)
-        #     return self.__generateJSONContentAndCheckForSuccess(content)
-        # except:
-        #     raise
+        print(address) #TODO: remove
+        try:
+            response, content = self.sendRequest(address)
+            self.checkIfHTTPStateIsOK(response)
+            return self.__generateJSONContentAndCheckForSuccess(content)
+        except:
+            raise
 
-    def growAquaPlant(self, plant, field):
+    def growAquaPlant(self, to_plant, plant_id):
         """Baut eine Pflanze im Wassergarten an."""
-        address = f'ajax/ajax.php?do=watergardenCache&plant[{plant}]={field}&token={self.__token}'
+        # address = f'ajax/ajax.php?do=watergardenCache&plant[{plant_id}]={field}&token={self.__token}' # TODO:
+        address = f'ajax/ajax.php?do=watergardenCache'
+        for field in to_plant.keys():
+            address += f"&plant[{field}]={plant_id}" #???
+        address += f"&token={self.__token}"
+        print(address) #TODO: remove
+
         try:
             response, content = self.sendRequest(address)
             self.checkIfHTTPStateIsOK(response)
