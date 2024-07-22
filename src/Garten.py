@@ -379,21 +379,20 @@ class AquaGarden(Garden):
                 fieldsToPlant = self._getAllFieldIDsFromFieldIDAndSizeAsIntList(field, sx, sy)
 
                 if (self._isPlantGrowableOnField(field, emptyFields, fieldsToPlant, edge)):
-                    to_plant.update({field}) #collect all plants for a request
-
-                if len(to_plant) == self._PLANT_PER_REQUEST or (field == self._MAX_FIELDS and len(to_plant) > 0):
-                    self._httpConn.growAquaPlant(to_plant, plantID)
-                    planted += len(to_plant)
-                    to_plant = {}
+                    to_plant.update({field: None}) #collect all plants for a request
 
                     # Nach dem Anbau belegte Felder aus der Liste der leeren Felder loeschen
                     #BG- След отглеждането, изтрийте заетите полета от списъка на празните полета
-
                     fieldsToPlantSet = set(fieldsToPlant)
                     emptyFieldsSet = set(emptyFields)
                     tmpSet = emptyFieldsSet - fieldsToPlantSet
                     emptyFields = list(tmpSet)
 
+                if (len(to_plant) == self._PLANT_PER_REQUEST) or (field == self._MAX_FIELDS and len(to_plant) > 0):
+                    self._httpConn.growAquaPlant(to_plant, plantID)
+                    planted += len(to_plant)
+                    to_plant = {}
+                    
         except:
             self._logGarden.error(f'Im Wassergarten konnte nicht gepflanzt werden.')
             #BG- self._logGarden.error(f'Във водната градина не може да се засади.')
@@ -527,16 +526,17 @@ class HerbGarden(Garden):
                     fields = self._getAllFieldIDsFromFieldIDAndSizeAsString(field, 2, 2)
                     to_plant.update({field: fields}) #collect all plants for a request
 
-                if len(to_plant) == self._PLANT_PER_REQUEST or (field == self._MAX_FIELDS and len(to_plant) > 0):
-                    self._httpConn.growPlant(to_plant, herbID, self._id)
-                    planted += len(to_plant)
-                    to_plant = {}
-
                     #Nach dem Anbau belegte Felder aus der Liste der leeren Felder loeschen
                     fieldsToPlantSet = {field}
                     emptyFieldsSet = set(emptyFields)
                     tmpSet = emptyFieldsSet - fieldsToPlantSet
                     emptyFields = list(tmpSet)
+
+                if len(to_plant) == self._PLANT_PER_REQUEST or (field == self._MAX_FIELDS and len(to_plant) > 0):
+                    self._httpConn.growPlant(to_plant, herbID, self._id)
+                    planted += len(to_plant)
+                    to_plant = {}
+                    
         except:
             self._logGarden.error(f'Im Garten {self._id} konnte nicht gepflanzt werden.')
             return 0

@@ -686,7 +686,6 @@ class HTTPConnection(object):
         for fields in to_plant.values():
             address += f"&felder[]={fields}" #???
         address += f"&cid={self.__token}&garden={gardenID}"
-        print(address) #TODO: remove
         try:
             response, content = self.sendRequest(address)
             self.checkIfHTTPStateIsOK(response)
@@ -701,12 +700,11 @@ class HTTPConnection(object):
         for field in to_plant.keys():
             address += f"&plant[{field}]={plant_id}" #???
         address += f"&token={self.__token}"
-        print(address) #TODO: remove
 
         try:
             response, content = self.sendRequest(address)
             self.checkIfHTTPStateIsOK(response)
-            self.generateJSONContentAndCheckForOK(content)
+            return self.generateJSONContentAndCheckForOK(content)
         except:
             raise
 
