@@ -132,6 +132,14 @@ class Garden():
             self._logGarden.error(f'Konnte leere Felder von Garten {self._id} nicht ermitteln.')
             #BG- self._logGarden.error(f'Неуспешно определение на празни полета в градина {self._id}.')
 
+    def get_grown_fields(self):
+        """Returns all grown fields in the garden."""
+        try:
+            return self._httpConn.getEmptyFieldsOfGarden(self._id, param="grown")
+        except:
+            self._logGarden.error(f'Konnte bepflanzte Felder von Garten {self._id} nicht ermitteln.')
+            #BG- self._logGarden.error(f'Неуспешно определение на празни полета в градина {self._id}.')
+
     def getWeedFields(self):
         """Returns all weed fields in the garden."""
         #BG- """Връща всички полета с плевели в градината."""
@@ -182,6 +190,22 @@ class Garden():
         except:
             raise
 
+    def harvest_unfinished(self):
+        """Grows a plant of any size."""
+        #BG- """Отглежда растение от всякакъв размер."""
+
+        grown_fields = self.get_grown_fields()
+        print('➡ src/Garten.py:202 grown_fields:', grown_fields)
+
+        try:
+            for field, plant_id in grown_fields.items():
+                sx = ProductData().get_product_by_id(plant_id).get_sx()
+                sy = ProductData().get_product_by_id(plant_id).get_sy()
+                fields = self._getAllFieldIDsFromFieldIDAndSizeAsString(field, sx, sy)
+                self._httpConn.harvest_unfinished(plant_id, field, fields)
+        except:
+            raise
+
     def growPlant(self, plantID, sx, sy, amount):
         """Grows a plant of any size."""
         #BG- """Отглежда растение от всякакъв размер."""
@@ -199,18 +223,18 @@ class Garden():
                 if (self._isPlantGrowableOnField(field, emptyFields, fieldsToPlant, sx)):
                     fields = self._getAllFieldIDsFromFieldIDAndSizeAsString(field, sx, sy) # get fields for one plant
                     to_plant.update({field: fields}) #collect all plants for a request
-                
-                if len(to_plant) == self._PLANT_PER_REQUEST or (field == self._MAX_FIELDS and len(to_plant) > 0):
-                    self._httpConn.growPlant(to_plant, plantID, self._id)
-                    planted += len(to_plant)
-                    to_plant = {}
-                
+
                     #Nach dem Anbau belegte Felder aus der Liste der leeren Felder loeschen
                     #BG- След отглеждането, изтрийте заетите полета от списъка на празните полета
                     fieldsToPlantSet = set(fieldsToPlant)
                     emptyFieldsSet = set(emptyFields)
                     tmpSet = emptyFieldsSet - fieldsToPlantSet
                     emptyFields = list(tmpSet)
+                
+                if len(to_plant) == self._PLANT_PER_REQUEST or (field == self._MAX_FIELDS and len(to_plant) > 0):
+                    self._httpConn.growPlant(to_plant, plantID, self._id)
+                    planted += len(to_plant)
+                    to_plant = {}
 
         except:
             self._logGarden.error(f'Im Garten {self._id} konnte nicht gepflanzt werden.')

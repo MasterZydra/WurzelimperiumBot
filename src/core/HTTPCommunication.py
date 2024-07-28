@@ -280,6 +280,16 @@ class HTTPConnection(object):
             emptyFields.sort(reverse=False)
 
         return emptyFields
+    
+    def __find_grown_fields(self, jContent):
+        """Sucht im JSON Content nach Felder die bepflanzt sind und gibt diese zurück."""
+        grown_fields = {}
+        for index in jContent['grow']:
+            field = index[0]
+            plant_id = index[1]
+            grown_fields.update({field: plant_id})
+
+        return grown_fields
 
     def __findWeedFieldsFromJSONContent(self, jContent):
         """Sucht im JSON Content nach Felder die mit Unkraut befallen sind und gibt diese zurück."""
@@ -580,14 +590,17 @@ class HTTPConnection(object):
 
         return userList
 
-    def getEmptyFieldsOfGarden(self, gardenID):
+    def getEmptyFieldsOfGarden(self, gardenID, param="empty"):
         """Gibt alle leeren Felder eines Gartens zurück."""
         try:
             address = f'ajax/ajax.php?do=changeGarden&garden={str(gardenID)}&token={self.__token}'
             response, content = self.sendRequest(address)
             self.checkIfHTTPStateIsOK(response)
             jContent = self.generateJSONContentAndCheckForOK(content)
-            emptyFields = self.__findEmptyFieldsFromJSONContent(jContent)
+            if param == "empty":
+                emptyFields = self.__findEmptyFieldsFromJSONContent(jContent)
+            elif param == "grown":
+                emptyFields = self.__find_grown_fields(jContent)
         except:
             raise
         else:
@@ -654,6 +667,13 @@ class HTTPConnection(object):
                     msg = msg + f"\n{eventitems} Eventitems" #TODO check which event is active
                 print(msg)
                 self.__logHTTPConn.info(msg)
+        except:
+            raise
+
+    def harvest_unfinished(self, plant_id, field, fields):
+        try:
+            address = f"save/ernte.php?pflanze[]={plant_id}&feld[]={field}&felder[]={fields}&closepopup=1&ernteJa=ernteJa"
+            response, content = self.sendRequest(address)
         except:
             raise
 
