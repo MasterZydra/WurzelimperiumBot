@@ -54,7 +54,7 @@ wurzelBot.growPlantsInAquaGardens('Wasserfeder') # So viele Pflanzen wie möglic
 wurzelBot.growPlantsInAquaGardens('Schwertlilie') # So viele Pflanzen wie möglich (innen) #BG-Колкото се може повече растения (вътрешни)
 wurzelBot.waterPlantsInAllGardens()
 wurzelBot.get_daily_bonuses()
-wurzelBot.sellWimpsProducts(0, 0) # Process Wimp Customers in Gardens #BG-Обработка на Wimp клиенти в градините
+wurzelBot.sell_to_wimps() # Process Wimp Customers in Gardens #BG-Обработка на Wimp клиенти в градините
 
 
 print(f'Kaufe Salat - im Lager sind: {wurzelBot.stock.get_stock_by_product_id("2")}')

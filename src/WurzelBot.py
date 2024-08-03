@@ -246,59 +246,144 @@ class WurzelBot(object):
 
         return dict(growingPlants)
 
-    def getAllWimpsProducts(self):
+    # Wimps
+    def get_all_wimps_products(self) -> dict:
         allWimpsProducts = Counter()
         for garden in self.garten:
             tmpWimpData = self.wimparea.get_wimps_data(garden)
             for products in tmpWimpData.values():
                 allWimpsProducts.update(products[1])
 
+        if self.wassergarten:
+            tmpWimpData = self.wimparea.get_wimps_data_watergarden()
+            for products in tmpWimpData.values():
+                allWimpsProducts.update(products[1])
+
         return dict(allWimpsProducts)
 
-    def sellWimpsProducts(self, minimal_balance, minimal_profit):
+    def sell_to_wimps(self, buy_from_store: bool = True, minimal_balance: int = 500, 
+        method: str = "loss", max_amount: int = 100, max_loss_in_percent: int = 33
+    ):
         if self.user.get_level() < 3:
             return
 
-        stock_list = self.stock.get_ordered_stock_list()
+        self.user.update(True)
+        points_before = self.user.get_points()
+
+        stock_list = self.stock.get_ordered_stock_list(filter_zero=False)
         wimps_data = []
+        rewards = 0
+        npc_price = 0
+        counter = 0
+
         for garden in self.garten:
             for k, v in self.wimparea.get_wimps_data(garden).items():
                 wimps_data.append({k: v})
 
+        if self.wassergarten:
+            for k, v in self.wimparea.get_wimps_data_watergarden().items():
+                wimps_data.append({k: v})
+
+        if not wimps_data:
+            print("No wimps available!")
+            self.__logBot.info("No wimps available!")
+            return
+
         for wimps in wimps_data:
             for wimp, products in wimps.items():
-                if not self.checkWimpsProfitable(products, minimal_profit):
+                if not self.check_wimps_profitable(products, method, max_amount, max_loss_in_percent):
                     self.wimparea.decline(wimp)
+                    self.__logBot.info(f"Declined wimp: {wimp}")
+                    print(f"Declined wimp: {wimp}")
                     continue
 
-                if self.checkWimpsRequiredAmount(minimal_balance, products[1], stock_list):
-                    print("Selling products to wimp: " + wimp)
-                    print(self.wimparea.products_to_string(products))
-                    new_products_counts = self.wimparea.sell(wimp)
-                    for id, amount in products[1].items():
-                        stock_list[id] -= amount
+                check, stock_list = self.check_wimps_required_amount(products[1], stock_list, minimal_balance, buy_from_store)
+                if not check:
+                    continue
 
-    def checkWimpsProfitable(self, products, minimal_profit_in_percent) -> bool:
-        # Check if the price the wimp wants to pay is more than the price of buying every product in the shops.
-        #BG-Проверява дали цената, която мамата иска да плати, е по-голяма от цената за закупуване на всеки продукт в магазините.
+                rewards += products[0]
+                counter += 1
+                print(f"Selling products to wimp: {wimp}")
+                print(self.wimparea.products_to_string(products))
+                print("")
+                self.__logBot.info(f"Selling products to wimp: {wimp}")
+                self.wimparea.sell(wimp)
+                for id, amount in products[1].items():
+                    stock_list[id] -= amount
+                    npc_price += self.productData.get_product_by_id(id).get_price_npc() * amount
 
-        # If the profit in percent is greater or equal to the given value, the return value is True.
-        #BG-Ако печалбата в проценти е по-голяма или равна на предоставената стойност, връщаемата стойност е True
-        return True
-        # TODO How to calculate profitability? It seems that none of the wimps is profitable when using the shop prices.
-        #BG-TODO Как да изчислявам печалбата? Изглежда, че нито един от „wimps“ не е печеливш, когато се използват цените от магазините.
-        npc_sum = 0
-        for id, amount in products[1].items():
-            npc_sum += self.productData.get_product_by_id(id).get_price_npc() * amount
-        return (products[0] - npc_sum) / npc_sum * 100 >= minimal_profit_in_percent
+        self.user.update(True)
 
-    def checkWimpsRequiredAmount(self, minimal_balance, products, stock_list):
+        if counter > 0:
+            points_after = self.user.get_points()
+            points_gained = points_after - points_before
+
+            print(f"Gained {points_gained} points.")
+            print(f"Sold to {counter} wimps for {rewards:.2f} wT (equals {(rewards/npc_price):.2%} of Shop-price: {npc_price:.2f} wT)")
+            self.__logBot.info(f"Gained {points_gained} points.")
+            self.__logBot.info(f"Sold to {counter} wimps for {rewards:.2f} wT (equals {(rewards/npc_price):.2%} of Shop-price: {npc_price:.2f} wT)")
+
+            sales, revenue = self.__HTTPConn.getInfoFromStats('Wimps')
+
+            statMsg = (
+                f"\n--------------------------------\n"
+                f"Statistics\n"
+                f"--------------------------------\n"
+                f"WIMP-sales  : {sales}\n"
+                f"WIMP-revenue: {revenue}\n"
+                f"-------------------------------------"
+            )
+            print(statMsg)
+            self.__logBot.info(statMsg)
+        else:
+            print(f"Sold to {counter} wimps")
+
+    def check_wimps_profitable(self, products, method: str = "loss", max_amount: int = 0, max_loss_in_percent: int = 33) -> bool:
+        """
+        Supported methods: "all", "amount", "loss"
+        """
+        if method == "all":
+            # Sell to all wimps no matter if it is profitable
+            return True
+
+        if method == "amount":
+            # Prifitable check by Cl0ckm4n:
+            # When the amount of a product <= 100, you get nearly 2/3 of the WIMP-baseprice
+            for id, amount in products[1].items():
+                if amount > max_amount:
+                    return False
+            return True
+
+        if method == "loss":
+            # Check if the price the wimp wants to pay is more then the given max loss in percent when buying every product in the shops.
+            npc_sum = 0
+            for id, amount in products[1].items():
+                npc_sum += self.productData.get_product_by_id(id).get_price_npc() * amount
+            loss = (npc_sum - products[0]) / npc_sum * 100
+            # A negative loss is a profit
+            if loss < 0:
+                return True
+            return loss <= max_loss_in_percent
+
+        return False
+
+    def check_wimps_required_amount(self, products, stock_list, minimal_balance, buy_from_store: bool = True):
+        # At least level 3 is required in order to read the min_stock from the notes
+        if self.user.get_level() < 3:
+            return False
+
         for id, amount in products.items():
             product = self.productData.get_product_by_id(id)
             min_stock = max(self.note.get_min_stock(), self.note.get_min_stock(product.get_name()), minimal_balance)
-            if stock_list.get(id, 0) < amount + min_stock or self.user.get_level() < 3:
-                return False
-        return True
+            if stock_list.get(id, None) < amount + min_stock:
+                if not buy_from_store:
+                    return False, stock_list
+
+                if self.doBuyFromShop(int(id), minimal_balance) == -1:
+                    return False, stock_list
+                stock_list[id] += minimal_balance
+
+        return True, stock_list
 
     def getNextRunTime(self):
         garden_time = []
@@ -565,9 +650,9 @@ class WurzelBot(object):
         productId = product.get_id()
 
         Shop = None
-        for k, ID in ShopProducts.products.items():
+        for k, id in ShopProducts.products().items():
             if productName in k:
-                Shop = ID
+                Shop = id
                 break
         if Shop in [1,2,3,4]:
             try:
