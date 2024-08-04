@@ -63,8 +63,8 @@ wurzelBot.doBuyFromShop(2, 1) #buy plant with id and amount #BG-Купете р�
 wurzelBot.stock.update()
 print(f'neuer Lagerstand: {wurzelBot.stock.get_stock_by_product_id("2")}')
 
-wurzelBot.sendBienen() #probiert die bienen für 2h zu senden - weitere ideen: zeit mitgabe, prüfen ob es gesendet wurde #BG-Опитва се да изпрати пчелите за 2 часа - други идеи: задаване на време, проверка дали е изпратено
-wurzelBot.doCutBonsai() #probiert die äste zu schneiden - weitere ideen: prüfen ob es gesendet wurde #BG-Опитва се да отреже клоните - други идеи: проверка дали е изпратено
+wurzelBot.send_bees(1) # Send bees for 2 hours
+wurzelBot.cutAndRenewBonsais() #probiert die äste zu schneiden - weitere ideen: prüfen ob es gesendet wurde #BG-Опитва се да отреже клоните - други идеи: проверка дали е изпратено
 wurzelBot.infinityQuest() #probiert die infinityquest zulösen und kauft die fehlenden Produkte nach - weitere ideen: wt check #BG-Опитва се да реши Infinity Quest и купува липсващите продукти - други идеи: проверка на WT
 
 #Deinitialisierung des Bots #BG-Деинициализация на бота

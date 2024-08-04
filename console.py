@@ -55,7 +55,7 @@ def main():
         inputLower = userInput.lower()
 
         if inputLower == 'exit': closeConnection()
-        elif inputLower == 'bee': bee()
+        elif inputLower.startswith('bee'): bee(userInput)
         elif inputLower == 'harvest': harvest()
         elif inputLower == '?' or inputLower == 'help': help()
         elif inputLower.startswith('buy'): buy(userInput)
@@ -104,6 +104,7 @@ def help():
     print('Available commands:')
     print('-------------------')
     print('bee          Send bees')
+    print('             Opt. argument: "2h" (default), "8h", "24h"')
     print('bonus        Get the daily login bonus')
     print('details      Show details to the products')
     print('             Opt. argument: "all", "water"')
@@ -126,9 +127,28 @@ def harvest():
     print('Harvest all gardens...')
     wurzelBot.harvestAllGarden()
 
-def bee():
-    print('Sending bees...')
-    wurzelBot.sendBienen()
+def bee(argStr : str):
+    argStr = argStr.replace('bee', '', 1).strip()
+    args = shlex.split(argStr)
+
+    if len(args) > 1 or (len(args) == 1 and args[0] not in ['2h', '8h', '24h'] and args[0] != ''):
+        print('Cannot parse input.')
+        print('Expected format: bee [2h|8h|24h]')
+        return
+
+    tour = 1
+    if len(args) == 0:
+        args.append('2h')
+        tour = 1
+    elif args[0] == '2h':
+        tour = 1
+    elif args[0] == '8h':
+        tour = 2
+    elif args[0] == '24h':
+        tour = 3
+
+    print(f'Sending bees for {args[0]}...')
+    wurzelBot.send_bees(tour)
 
 def buy(argStr : str):
     argStr = argStr.replace('buy', '', 1).strip()
