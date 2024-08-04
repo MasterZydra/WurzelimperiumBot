@@ -17,8 +17,8 @@ class CityPark():
         self.__data = content['data']
         self.__cashpoint = content["data"]["data"]["cashpoint"]
 
-    def collect_cash_from_cashpoint(self):
-        """collect rewards from cashpoint if there are any"""
+    def collect_cash(self):
+        """Collect rewards from cashpoint if there are any"""
         if not self.__data['data']["cashpoint"]["money"] > 0:
             self.__log.error("The Cashpoint is empty.")
         else:

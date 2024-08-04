@@ -10,6 +10,7 @@ from urllib.parse import urlencode
 import json, re, httplib2, yaml, time, logging, math, i18n
 from http.cookies import SimpleCookie
 from http import HTTPStatus
+from src.core.HttpError import HTTPStateError, JSONError, HTTPRequestError, YAMLError
 from src.core.Session import Session
 
 i18n.load_path.append('lang')
@@ -711,7 +712,7 @@ class HTTPConnection(object):
         except:
             raise
 
-    def growPlant(self, field, plant, gardenID, fields):
+    def grow(self, field, plant, gardenID, fields):
         """Baut eine Pflanze auf einem Feld an."""
         address =   f'save/pflanz.php?pflanze[]={str(plant)}&feld[]={str(field)}' \
                     f'&felder[]={fields}&cid={self.__token}&garden={str(gardenID)}'
@@ -854,7 +855,7 @@ class HTTPConnection(object):
             raise
 
     # Shop
-    def buyFromShop(self, shop: int, productId: int, amount: int = 1):
+    def buy_from_shop(self, shop: int, productId: int, amount: int = 1):
         parameter = urlencode({'s': shop,
                                'page': 1,
                                'change_page_only': 0,
@@ -932,31 +933,3 @@ class HTTPConnection(object):
             return self.generateJSONContentAndCheckForOK(content)
         except:
             raise
-
-class HTTPStateError(Exception):
-    def __init__(self, value):
-        self.value = value
-
-    def __str__(self):
-        return repr(self.value)
-
-class JSONError(Exception):
-    def __init__(self, value):
-        self.value = value
-
-    def __str__(self):
-        return repr(self.value)
-
-class HTTPRequestError(Exception):
-    def __init__(self, value):
-        self.value = value
-
-    def __str__(self):
-        return repr(self.value)
-
-class YAMLError(Exception):
-    def __init__(self, value):
-        self.value = value
-
-    def __str__(self):
-        return repr(self.value)
