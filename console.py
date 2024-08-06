@@ -63,7 +63,7 @@ def main():
         elif inputLower.startswith('grow'): grow(user_input)
         elif inputLower.startswith('lowest'): lowest(user_input)
         elif inputLower.startswith('stock'): stock(user_input)
-        elif inputLower == 'user': user()
+        elif inputLower == 'user': user_info()
         elif inputLower == 'water': water()
         elif inputLower == 'weed': remove_weeds()
         elif inputLower == 'bonus': getDailyLoginBonus()
@@ -224,7 +224,7 @@ def stock(arg_str : str):
     elif args[0] == 'sort':
         print(bot.get_ordered_stock_list())
 
-def user():
+def user_info():
     colWidth = 20
     print('User:'.ljust(colWidth) + bot.user.get_username())
     print('Anzahl der Gärten:'.ljust(colWidth) + str(bot.user.get_number_of_gardens()))
