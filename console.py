@@ -34,7 +34,7 @@ if args.portalacc != None:
     portalacc = args.portalacc
 
 # Global vars
-wurzelBot: WurzelBot = object
+bot: WurzelBot = object
 
 log = False
 if args.logging != None:
@@ -51,24 +51,24 @@ def main():
 
     while True:
         print('')
-        userInput = input('▶ ').strip()
-        inputLower = userInput.lower()
+        user_input = input('▶ ').strip()
+        inputLower = user_input.lower()
 
-        if inputLower == 'exit': closeConnection()
-        elif inputLower == 'bee': bee()
+        if inputLower == 'exit': logout()
+        elif inputLower.startswith('bee'): bee(user_input)
         elif inputLower == 'harvest': harvest()
         elif inputLower == '?' or inputLower == 'help': help()
-        elif inputLower.startswith('buy'): buy(userInput)
-        elif inputLower.startswith('grow-water'): growWater(userInput)
-        elif inputLower.startswith('grow'): grow(userInput)
-        elif inputLower.startswith('lowest'): lowest(userInput)
-        elif inputLower.startswith('stock'): getStock(userInput)
-        elif inputLower == 'user': userData()
+        elif inputLower.startswith('buy'): buy(user_input)
+        elif inputLower.startswith('grow-water'): grow_aqua_garden(user_input)
+        elif inputLower.startswith('grow'): grow(user_input)
+        elif inputLower.startswith('lowest'): lowest(user_input)
+        elif inputLower.startswith('stock'): stock(user_input)
+        elif inputLower == 'user': user_info()
         elif inputLower == 'water': water()
-        elif inputLower == 'weed': removeWeed()
+        elif inputLower == 'weed': remove_weeds()
         elif inputLower == 'bonus': getDailyLoginBonus()
-        elif inputLower == 'wimp': processWimp()
-        elif inputLower.startswith('details'): productDetails(userInput)
+        elif inputLower == 'wimp': wimp()
+        elif inputLower.startswith('details'): productDetails(user_input)
         else:
             print('Unknown command type \'help\' or \'?\' to see all available commands')
 
@@ -88,22 +88,23 @@ def init():
         print('')
         exit()
 
-    global wurzelBot
-    wurzelBot = WurzelBot()
-    succ = wurzelBot.launchBot(server, user, pw, lang, portalacc)
+    global bot
+    bot = WurzelBot()
+    succ = bot.login(server, user, pw, lang, portalacc)
     if succ != True:
         exit(-1)
 
-def closeConnection():
+def logout():
     print(i18n.t('wimpb.close_connection'))
     print('')
-    wurzelBot.exitBot()
+    bot.logout()
     exit()
 
 def help():
     print('Available commands:')
     print('-------------------')
     print('bee          Send bees')
+    print('             Opt. argument: "2h" (default), "8h", "24h"')
     print('bonus        Get the daily login bonus')
     print('details      Show details to the products')
     print('             Opt. argument: "all", "water"')
@@ -124,15 +125,34 @@ def help():
 
 def harvest():
     print('Harvest all gardens...')
-    wurzelBot.harvestAllGarden()
+    bot.harvest()
 
-def bee():
-    print('Sending bees...')
-    wurzelBot.sendBienen()
+def bee(arg_str : str):
+    arg_str = arg_str.replace('bee', '', 1).strip()
+    args = shlex.split(arg_str)
 
-def buy(argStr : str):
-    argStr = argStr.replace('buy', '', 1).strip()
-    args = shlex.split(argStr)
+    if len(args) > 1 or (len(args) == 1 and args[0] not in ['2h', '8h', '24h'] and args[0] != ''):
+        print('Cannot parse input.')
+        print('Expected format: bee [2h|8h|24h]')
+        return
+
+    tour = 1
+    if len(args) == 0:
+        args.append('2h')
+        tour = 1
+    elif args[0] == '2h':
+        tour = 1
+    elif args[0] == '8h':
+        tour = 2
+    elif args[0] == '24h':
+        tour = 3
+
+    print(f'Sending bees for {args[0]}...')
+    bot.send_bees(tour)
+
+def buy(arg_str : str):
+    arg_str = arg_str.replace('buy', '', 1).strip()
+    args = shlex.split(arg_str)
 
     if len(args) != 2 or (len(args) == 2 and not args[1].isnumeric()):
         print('Cannot parse input.')
@@ -140,11 +160,11 @@ def buy(argStr : str):
         return
 
     print('Buying ' + args[1] + ' ' + args[0] + '...')
-    wurzelBot.doBuyFromShop(args[0], int(args[1]))
+    bot.buy_from_shop(args[0], int(args[1]))
 
-def grow(argStr : str):
-    argStr = argStr.replace('grow', '', 1).strip()
-    args = shlex.split(argStr)
+def grow(arg_str : str):
+    arg_str = arg_str.replace('grow', '', 1).strip()
+    args = shlex.split(arg_str)
 
     if len(args) > 2 or len(args) < 1 or args[0] == '' or (len(args) == 2 and not args[1].isnumeric()):
         print('Cannot parse input.')
@@ -153,14 +173,14 @@ def grow(argStr : str):
 
     if len(args) == 1:
         print('Grow ' + args[0] + '...')
-        wurzelBot.growVegetablesInGardens(args[0])
+        bot.growVegetablesInGardens(args[0])
     if len(args) == 2:
         print('Grow ' + args[1] + ' ' + args[0] + '...')
-        wurzelBot.growVegetablesInGardens(args[0], int(args[1]))
+        bot.growVegetablesInGardens(args[0], int(args[1]))
 
-def growWater(argStr : str):
-    argStr = argStr.replace('grow-water', '', 1).strip()
-    args = shlex.split(argStr)
+def grow_aqua_garden(arg_str : str):
+    arg_str = arg_str.replace('grow-water', '', 1).strip()
+    args = shlex.split(arg_str)
 
     if len(args) > 2 or len(args) < 1 or args[0] == '' or (len(args) == 2 and not args[1].isnumeric()):
         print('Cannot parse input.')
@@ -169,14 +189,14 @@ def growWater(argStr : str):
 
     if len(args) == 1:
         print('Grow ' + args[0] + '...')
-        wurzelBot.growPlantsInAquaGardens(args[0])
+        bot.growPlantsInAquaGardens(args[0])
     if len(args) == 2:
         print('Grow ' + args[1] + ' ' + args[0] + '...')
-        wurzelBot.growPlantsInAquaGardens(args[0], int(args[1]))
+        bot.growPlantsInAquaGardens(args[0], int(args[1]))
 
-def lowest(argStr : str):
-    argStr = argStr.replace('lowest', '', 1).strip()
-    args = shlex.split(argStr)
+def lowest(arg_str : str):
+    arg_str = arg_str.replace('lowest', '', 1).strip()
+    args = shlex.split(arg_str)
 
     if len(args) > 1 or (len(args) == 1 and args[0] not in ['single', 'water'] and args[0] != ''):
         print('Cannot parse input.')
@@ -184,15 +204,15 @@ def lowest(argStr : str):
         return
 
     if len(args) == 0:
-        print(wurzelBot.getLowestVegetableStockEntry())
+        print(bot.getLowestVegetableStockEntry())
     elif args[0] == 'single':
-        print(wurzelBot.getLowestSingleVegetableStockEntry())
+        print(bot.getLowestSingleVegetableStockEntry())
     elif args[0] == 'water':
-        print(wurzelBot.getLowestWaterPlantStockEntry())
+        print(bot.getLowestWaterPlantStockEntry())
 
-def getStock(argStr : str):
-    argStr = argStr.replace('stock', '', 1).strip()
-    args = shlex.split(argStr)
+def stock(arg_str : str):
+    arg_str = arg_str.replace('stock', '', 1).strip()
+    args = shlex.split(arg_str)
 
     if len(args) > 1 or (len(args) == 1 and args[0] != 'sort' and args[0] != ''):
         print('Cannot parse input.')
@@ -200,26 +220,26 @@ def getStock(argStr : str):
         return
 
     if len(args) == 0:
-        wurzelBot.printStock()
+        bot.printStock()
     elif args[0] == 'sort':
-        print(wurzelBot.get_ordered_stock_list())
+        print(bot.get_ordered_stock_list())
 
-def userData():
+def user_info():
     colWidth = 20
-    print('User:'.ljust(colWidth) + wurzelBot.user.get_username())
-    print('Anzahl der Gärten:'.ljust(colWidth) + str(wurzelBot.user.get_number_of_gardens()))
-    print('Level:'.ljust(colWidth) + str(wurzelBot.user.get_level()) + ' (' + wurzelBot.user.get_level_name() + ')')
-    print('Bar:'.ljust(colWidth) + wurzelBot.user.get_bar_formatted())
-    print('Points:'.ljust(colWidth) + f'{wurzelBot.user.get_points():,}'.replace(',', '.'))
-    print('Coins:'.ljust(colWidth) + str(wurzelBot.user.get_coins()))
+    print('User:'.ljust(colWidth) + bot.user.get_username())
+    print('Anzahl der Gärten:'.ljust(colWidth) + str(bot.user.get_number_of_gardens()))
+    print('Level:'.ljust(colWidth) + str(bot.user.get_level()) + ' (' + bot.user.get_level_name() + ')')
+    print('Bar:'.ljust(colWidth) + bot.user.get_bar_formatted())
+    print('Points:'.ljust(colWidth) + f'{bot.user.get_points():,}'.replace(',', '.'))
+    print('Coins:'.ljust(colWidth) + str(bot.user.get_coins()))
 
 def water():
     print('Water all plants in all gardens...')
-    wurzelBot.waterPlantsInAllGardens()
+    bot.water()
 
-def productDetails(argStr : str):
-    argStr = argStr.replace('details', '', 1).strip()
-    args = shlex.split(argStr)
+def productDetails(arg_str : str):
+    arg_str = arg_str.replace('details', '', 1).strip()
+    args = shlex.split(arg_str)
 
     if len(args) > 1 or (len(args) == 1 and args[0] not in ['all', 'water'] and args[0] != ''):
         print('Cannot parse input.')
@@ -227,24 +247,24 @@ def productDetails(argStr : str):
         return
 
     if len(args) == 0:
-        wurzelBot.printVegetableDetails()
+        bot.printVegetableDetails()
     elif args[0] == 'all':
-        wurzelBot.printProductDetails()
+        bot.printProductDetails()
     elif args[0] == 'water':
-        wurzelBot.printWaterPlantDetails()
+        bot.printWaterPlantDetails()
 
-def removeWeed():
+def remove_weeds():
     print(i18n.t('wimpb.remove_weed_from_all_gardens'))
-    wurzelBot.removeWeedInAllGardens()
+    bot.remove_weeds()
 
 def getDailyLoginBonus():
     print('Claiming daily login bonus...')
-    wurzelBot.get_daily_bonuses()
+    bot.get_daily_bonuses()
 
-def processWimp():
+def wimp():
     """Process Wimp Customers in Gardens"""
     print(i18n.t('wimpb.process_wimps'))
-    wurzelBot.sellWimpsProducts(0, 0)
+    bot.sell_to_wimps(buy_from_shop=False)
 
 def logging():
     if log:

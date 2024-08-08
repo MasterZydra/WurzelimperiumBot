@@ -3,7 +3,7 @@
 
 from collections import Counter, namedtuple
 import logging, i18n
-import math
+from src.core.User import User
 from src.core.HTTPCommunication import HTTPConnection
 from src.product.ProductData import ProductData
 
@@ -17,6 +17,7 @@ class Garden():
 
     def __init__(self, httpConnection: HTTPConnection, gardenID):
         self._httpConn = httpConnection
+        self.__user = User()
         self._id = gardenID
         self._logGarden = logging.getLogger('bot.Garden_' + str(gardenID))
         self._logGarden.setLevel(logging.DEBUG)
@@ -102,17 +103,20 @@ class Garden():
         #BG- Връща идентификационния номер на градината.
         return self._id
 
-    def waterPlants(self):
-        """Ein Garten mit der gardenID wird komplett bewässert."""
+    def water(self):
+        """Water all plants in the garden"""
         #BG- Градината с gardenID се полива напълно.
         self._logGarden.info(f'Gieße alle Pflanzen im Garten {self._id}.')
         #BG- self._logGarden.info(f'Полей всички растения в градината. {self._id}.')
         try:
             plants = self._httpConn.getPlantsToWaterInGarden(self._id)
             nPlants = len(plants['fieldID'])
-            for i in range(0, nPlants):
-                sFields = self._getAllFieldIDsFromFieldIDAndSizeAsString(plants['fieldID'][i], plants['sx'][i], plants['sy'][i])
-                self._httpConn.waterPlantInGarden(self._id, plants['fieldID'][i], sFields)
+            if nPlants and self.__user.has_watering_gnome_helper():
+                self._httpConn.water_all_plants_in_garden()
+            else:
+                for i in range(0, nPlants):
+                    sFields = self._getAllFieldIDsFromFieldIDAndSizeAsString(plants['fieldID'][i], plants['sx'][i], plants['sy'][i])
+                    self._httpConn.waterPlantInGarden(self._id, plants['fieldID'][i], sFields)
         except:
             self._logGarden.error(f'Garten {self._id} konnte nicht bewässert werden.')
             #BG- self._logGarden.error(f'Градина {self._id} не може да бъде поливана.')
@@ -191,11 +195,10 @@ class Garden():
             raise
 
     def harvest_unfinished(self):
-        """Grows a plant of any size."""
         #BG- """Отглежда растение от всякакъв размер."""
 
         grown_fields = self.get_grown_fields()
-        print('➡ src/Garten.py:202 grown_fields:', grown_fields)
+        print('grown_fields:', grown_fields)
 
         try:
             for field, plant_id in grown_fields.items():
@@ -206,7 +209,7 @@ class Garden():
         except:
             raise
 
-    def growPlant(self, plantID, sx, sy, amount):
+    def grow(self, plantID, sx, sy, amount):
         """Grows a plant of any size."""
         #BG- """Отглежда растение от всякакъв размер."""
 
@@ -232,7 +235,7 @@ class Garden():
                     emptyFields = list(tmpSet)
                 
                 if len(to_plant) == self._PLANT_PER_REQUEST or (field == self._MAX_FIELDS and len(to_plant) > 0):
-                    self._httpConn.growPlant(to_plant, plantID, self._id)
+                    self._httpConn.grow(to_plant, plantID, self._id)
                     planted += len(to_plant)
                     to_plant = {}
 
@@ -245,16 +248,15 @@ class Garden():
             msg = f'Im Garten {self._id} wurden {planted} Pflanzen gepflanzt.'
             #BG- msg = f'В градината {self._id} са засадени {planted} растения.'
 
-            if emptyFields: #TODO: test if it shows up after planting the whole field...
+            if emptyFields:
                 msg = msg + f' Im Garten {self._id} sind noch leere Felder vorhanden.'
-                print(emptyFields) #TODO:
                 #BG- msg = msg + f' В градината {self._id} все още има празни полета.'
 
             self._logGarden.info(msg)
             print(msg)
             return planted
 
-    def removeWeed(self):
+    def remove_weeds(self):
         """
         Entfernt alles Unkraut, Steine und Maulwürfe, wenn ausreichend Geld vorhanden ist.
         """
@@ -352,18 +354,16 @@ class AquaGarden(Garden):
         else:
             return tmpEmptyAquaFields
 
-    def waterPlants(self):
-        """
-        Alle Pflanzen im Wassergarten werden bewässert.
-        """
-        #BG- Всички растения във водната градина се поливат.
-
+    def water(self):
         try:
             plants = self._httpConn.getPlantsToWaterInAquaGarden()
             nPlants = len(plants['fieldID'])
-            for i in range(0, nPlants):
-                sFields = self._getAllFieldIDsFromFieldIDAndSizeAsString(plants['fieldID'][i], plants['sx'][i], plants['sy'][i])
-                self._httpConn.waterPlantInAquaGarden(plants['fieldID'][i], sFields)
+            if nPlants and self.__user.has_watering_gnome_helper():
+                self._httpConn.water_all_plants_in_garden()
+            else:
+                for i in range(0, nPlants):
+                    sFields = self._getAllFieldIDsFromFieldIDAndSizeAsString(plants['fieldID'][i], plants['sx'][i], plants['sy'][i])
+                    self._httpConn.waterPlantInAquaGarden(plants['fieldID'][i], sFields)
         except:
             self._logGarden.error('Wassergarten konnte nicht bewässert werden.')
             #BG- self._logGarden.error('Водната градина не може да бъде поливан.')
@@ -389,7 +389,7 @@ class AquaGarden(Garden):
         else:
             pass
 
-    def growPlant(self, plantID, sx, sy, edge, amount):
+    def grow(self, plantID, sx, sy, edge, amount):
         """Grows a watergarden plant of any size and type."""
         #BG- """Отглежда водно растение във водната градина с всякакъв размер и вид."""
 
@@ -434,7 +434,7 @@ class AquaGarden(Garden):
             print(msg)
             return planted
 
-    def removeWeed(self):
+    def remove_weeds(self):
         """
         Entfernt alles Unkraut, Steine und Maulwürfe, wenn ausreichend Geld vorhanden ist.
         """
@@ -501,7 +501,7 @@ class HerbGarden(Garden):
         print(msg)
         self._logGarden.info(msg)
 
-    def remove_weed(self): #Abfrage if jContent['weed']
+    def remove_weeds(self): #Abfrage if jContent['weed']
         # msg = "In deinem Kräutergarten ist kein Unkraut."
         # if self.__weed:
         jContent = self._httpConn.remove_weed_in_herb_garden()
@@ -592,7 +592,7 @@ class HerbGarden(Garden):
         amount = exchange[cheapest_plant]
 
         if not stock >= amount:
-            bot.doBuyFromShop(productData.get_product_by_id(cheapest_plant).get_name(), amount)
+            bot.buy_from_shop(productData.get_product_by_id(cheapest_plant).get_name(), amount)
         self._httpConn.exchange_herb(cheapest_plant)
 
         bot.stock.update()

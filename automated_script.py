@@ -27,7 +27,7 @@ def main():
     # Init connection
     # BG- Създаване на връзка
     wurzelBot = WurzelBot()
-    succ = wurzelBot.launchBot(args.server, args.user, args.password, args.lang, args.portalacc)
+    succ = wurzelBot.login(args.server, args.user, args.password, args.lang, args.portalacc)
     if not succ:
         exit(-1)
 
@@ -35,11 +35,11 @@ def main():
         # Remove weed
         # BG-Премахване на плевели
         print(i18n.t('wimpb.remove_weed_from_all_gardens'))
-        wurzelBot.removeWeedInAllGardens()
+        wurzelBot.remove_weeds()
 
         # Harvest
         # BG-Жътва
-        wurzelBot.harvestAllGarden()
+        wurzelBot.harvest()
 
         # Plant plants
         # BG-Посаждане на растения
@@ -60,7 +60,7 @@ def main():
         # BG-Поливане на растенията
         time.sleep(3)
         print(i18n.t('wimpb.watering_all_plants'))
-        wurzelBot.waterPlantsInAllGardens()
+        wurzelBot.water()
 
         # Claim Daily
         # BG-Събиране на дневният бонус
@@ -70,11 +70,11 @@ def main():
         # Process Wimp Customers in Gardens
         # BG-Изпълни нуждите на Wimps в градините
         print(i18n.t('wimpb.process_wimps'))
-        wurzelBot.sellWimpsProducts(0, 0)
+        wurzelBot.sell_to_wimps(buy_from_shop=False)
     finally:
         # Close connection
         # BG-Затваряне на връзката
-        wurzelBot.exitBot()
+        wurzelBot.logout()
 
 if __name__ == "__main__":
     main()

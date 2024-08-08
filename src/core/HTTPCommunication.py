@@ -10,6 +10,7 @@ from urllib.parse import urlencode
 import json, re, httplib2, yaml, time, logging, math, i18n
 from http.cookies import SimpleCookie
 from http import HTTPStatus
+from src.core.HttpError import HTTPStateError, JSONError, HTTPRequestError, YAMLError
 from src.core.Session import Session
 
 i18n.load_path.append('lang')
@@ -56,8 +57,11 @@ class HTTPConnection(object):
     def token(self):
         return self.__token
 
-    def set_token(self, token):
-        self.__token = token
+    def update_token_from_content(self, content):
+        if not isinstance(content, str):
+            content = content.decode('UTF-8')
+        reToken = re.search(r'ajax\.setToken\(\"(.*)\"\);', content)
+        self.__token = reToken.group(1)
 
     def sendRequest(self, address: str, method: str = 'GET', body = None, headers: dict = {}):
         uri = self.__get_server() + address
@@ -97,13 +101,13 @@ class HTTPConnection(object):
             raise HTTPStateError('HTTP Status ist nicht FOUND')
 
 
-    def __generateJSONContentAndCheckForSuccess(self, content):
+    def generateJSONContentAndCheckForSuccess(self, content):
         """Aufbereitung und Prüfung der vom Server empfangenen JSON Daten."""
         j_content = json.loads(content)
-        if j_content['success'] == 1:
+        if j_content.get('success', 0) == 1 or j_content.get('status', 0) == "SUCCESS":
             return j_content
         else:
-            raise JSONError()
+            raise JSONError(f"success = {j_content['success']}")
 
     def generateJSONContentAndCheckForOK(self, content: str):
         """Aufbereitung und Prüfung der vom Server empfangenen JSON Daten."""
@@ -111,7 +115,7 @@ class HTTPConnection(object):
         if j_content['status'] == 'ok':
             return j_content
         else:
-            raise JSONError()
+            raise JSONError(f"status = {j_content['status']}")
 
     def __isFieldWatered(self, jContent, fieldID):
         """
@@ -215,6 +219,10 @@ class HTTPConnection(object):
             parsed_string_list = re.findall(r"<td>(.+?)</td>", str(jContent['table'][5]).replace(r'&nbsp;', ''))
             result = int(parsed_string_list[1])
             success = True
+        elif info == 'AquagardenQuest':
+            parsed_string_list = re.findall(r"<td>(.+?)</td>", str(jContent['table'][6]).replace(r'&nbsp;', ''))
+            result = int(parsed_string_list[1])
+            success = True
         elif info == 'CactusQuest':
             parsed_string_list = re.findall(r"<td>(.+?)</td>", str(jContent['table'][7]).replace(r'&nbsp;', ''))
             result = int(parsed_string_list[1])
@@ -235,6 +243,13 @@ class HTTPConnection(object):
             parsed_string_list = re.findall(r"<td>(.+?)</td>", str(jContent['table'][11]).replace(r'&nbsp;', ''))
             result = int(parsed_string_list[1])
             success = True
+        elif info == 'Wimps':
+            parsed_string_list_sales = re.findall(r"<td>(.+?)</td>", str(jContent['table'][12]).replace(r'&nbsp;', '').replace('.', ''))
+            sales = int(parsed_string_list_sales[1])
+            parsed_string_list_revenue = re.findall(r"<td>(.+?)</td>", str(jContent['table'][13]).replace(r'&nbsp;', ' '))
+            revenue = parsed_string_list_revenue[1]
+            success = True
+            return sales, revenue
 
         if success:
             return result
@@ -454,7 +469,7 @@ class HTTPConnection(object):
         try:
             response, content = self.sendRequest('ajax/menu-update.php')
             self.checkIfHTTPStateIsOK(response)
-            jContent = self.__generateJSONContentAndCheckForSuccess(content)
+            jContent = self.generateJSONContentAndCheckForSuccess(content)
         except:
             raise
         else:
@@ -491,6 +506,15 @@ class HTTPConnection(object):
         except:
             raise
 
+    def water_all_plants_in_garden(self):
+        """Use watering gnome to water all plants in a garden (premium feature)."""
+        try:
+            address =   f"ajax/ajax.php?do=gardenWaterAll&token={self.__token}"
+            response, content = self.sendRequest(address)
+            self.checkIfHTTPStateIsOK(response)
+            self.generateJSONContentAndCheckForOK(content)
+        except:
+            raise
 
     def getPlantsToWaterInAquaGarden(self):
         """
@@ -696,7 +720,7 @@ class HTTPConnection(object):
         except:
             raise
 
-    def growPlant(self, to_plant, plant_id, gardenID):
+    def grow(self, to_plant, plant_id, gardenID):
         """Baut eine Pflanze auf einem Feld an."""
         address =   f"save/pflanz.php?pflanze[]={plant_id}"
         for count in range (len(to_plant)-1):
@@ -734,7 +758,7 @@ class HTTPConnection(object):
         try:
             response, content = self.sendRequest(f'save/abriss.php?tile={fieldID}', 'POST')
             self.checkIfHTTPStateIsOK(response)
-            jContent = self.__generateJSONContentAndCheckForSuccess(content)
+            jContent = self.generateJSONContentAndCheckForSuccess(content)
             return jContent['success']
         except:
             raise
@@ -840,7 +864,7 @@ class HTTPConnection(object):
             raise
 
     # Shop
-    def buyFromShop(self, shop: int, productId: int, amount: int = 1):
+    def buy_from_shop(self, shop: int, productId: int, amount: int = 1):
         parameter = urlencode({'s': shop,
                                'page': 1,
                                'change_page_only': 0,
@@ -918,31 +942,3 @@ class HTTPConnection(object):
             return self.generateJSONContentAndCheckForOK(content)
         except:
             raise
-
-class HTTPStateError(Exception):
-    def __init__(self, value):
-        self.value = value
-
-    def __str__(self):
-        return repr(self.value)
-
-class JSONError(Exception):
-    def __init__(self, value):
-        self.value = value
-
-    def __str__(self):
-        return repr(self.value)
-
-class HTTPRequestError(Exception):
-    def __init__(self, value):
-        self.value = value
-
-    def __str__(self):
-        return repr(self.value)
-
-class YAMLError(Exception):
-    def __init__(self, value):
-        self.value = value
-
-    def __str__(self):
-        return repr(self.value)
