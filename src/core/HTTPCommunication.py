@@ -516,6 +516,16 @@ class HTTPConnection(object):
         except:
             raise
 
+    def water_all_plants_in_aquagarden(self):
+        """Use watering gnome to water all plants in the aquagarden (premium feature)."""
+        try:
+            address =   f"ajax/ajax.php?do=watergardenWaterAll&token={self.__token}"
+            response, content = self.sendRequest(address)
+            self.checkIfHTTPStateIsOK(response)
+            self.generateJSONContentAndCheckForOK(content)
+        except:
+            raise
+
     def getPlantsToWaterInAquaGarden(self):
         """
         Ermittelt alle bepflanzten Felder im Wassergartens, die auch gegossen werden können und gibt diese zurück.
@@ -733,7 +743,7 @@ class HTTPConnection(object):
         try:
             response, content = self.sendRequest(address)
             self.checkIfHTTPStateIsOK(response)
-            return self.__generateJSONContentAndCheckForSuccess(content)
+            return self.generateJSONContentAndCheckForSuccess(content)
         except:
             raise
 

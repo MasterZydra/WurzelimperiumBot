@@ -17,7 +17,7 @@ class Garden():
 
     def __init__(self, httpConnection: HTTPConnection, gardenID):
         self._httpConn = httpConnection
-        self.__user = User()
+        self._user = User()
         self._id = gardenID
         self._logGarden = logging.getLogger('bot.Garden_' + str(gardenID))
         self._logGarden.setLevel(logging.DEBUG)
@@ -111,7 +111,7 @@ class Garden():
         try:
             plants = self._httpConn.getPlantsToWaterInGarden(self._id)
             nPlants = len(plants['fieldID'])
-            if nPlants and self.__user.has_watering_gnome_helper():
+            if nPlants and self._user.has_watering_gnome_helper():
                 self._httpConn.water_all_plants_in_garden()
             else:
                 for i in range(0, nPlants):
@@ -358,8 +358,8 @@ class AquaGarden(Garden):
         try:
             plants = self._httpConn.getPlantsToWaterInAquaGarden()
             nPlants = len(plants['fieldID'])
-            if nPlants and self.__user.has_watering_gnome_helper():
-                self._httpConn.water_all_plants_in_garden()
+            if nPlants and self._user.has_watering_gnome_helper():
+                self._httpConn.water_all_plants_in_aquagarden()
             else:
                 for i in range(0, nPlants):
                     sFields = self._getAllFieldIDsFromFieldIDAndSizeAsString(plants['fieldID'][i], plants['sx'][i], plants['sy'][i])

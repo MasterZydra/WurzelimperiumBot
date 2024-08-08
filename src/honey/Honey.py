@@ -73,7 +73,7 @@ class Honey():
         for hive in self.__unlocked_hives:
             if hive.get_pid_change_remain() < 0 and hive.get_pid() is not honey_pid:
                 jContent = self.__http.change_hive_type(hive.get_nr(), honey_pid)
-        self.__set_data(jContent)
+                self.__set_data(jContent)
         self.__log.info(f"Changed all hive types to: {honey_pid}")
 
     # Wimps
