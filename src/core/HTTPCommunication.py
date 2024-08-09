@@ -295,6 +295,16 @@ class HTTPConnection(object):
             emptyFields.sort(reverse=False)
 
         return emptyFields
+    
+    def __find_grown_fields(self, jContent):
+        """Sucht im JSON Content nach Felder die bepflanzt sind und gibt diese zurück."""
+        grown_fields = {}
+        for index in jContent['grow']:
+            field = index[0]
+            plant_id = index[1]
+            grown_fields.update({field: plant_id})
+
+        return grown_fields
 
     def __findWeedFieldsFromJSONContent(self, jContent):
         """Sucht im JSON Content nach Felder die mit Unkraut befallen sind und gibt diese zurück."""
@@ -317,16 +327,6 @@ class HTTPConnection(object):
         for field in jContent['grow']:
             growingPlants.append(field[1])
         return growingPlants
-
-    def __findEmptyAquaFieldsFromJSONContent(self, jContent):
-        emptyAquaFields = []
-        for field in jContent['garden']:
-            if jContent['garden'][field][0] == 0:
-                emptyAquaFields.append(int(field))
-        # Sortierung über ein leeres Array ändert Objekttyp zu None
-        if len(emptyAquaFields) > 0:
-            emptyAquaFields.sort(reverse=False)
-        return emptyAquaFields
 
     def __generateYAMLContentAndCheckForSuccess(self, content: str):
         """Aufbereitung und Prüfung der vom Server empfangenen YAML Daten auf Erfolg."""
@@ -516,6 +516,16 @@ class HTTPConnection(object):
         except:
             raise
 
+    def water_all_plants_in_aquagarden(self):
+        """Use watering gnome to water all plants in the aquagarden (premium feature)."""
+        try:
+            address =   f"ajax/ajax.php?do=watergardenWaterAll&token={self.__token}"
+            response, content = self.sendRequest(address)
+            self.checkIfHTTPStateIsOK(response)
+            self.generateJSONContentAndCheckForOK(content)
+        except:
+            raise
+
     def getPlantsToWaterInAquaGarden(self):
         """
         Ermittelt alle bepflanzten Felder im Wassergartens, die auch gegossen werden können und gibt diese zurück.
@@ -614,14 +624,17 @@ class HTTPConnection(object):
 
         return userList
 
-    def getEmptyFieldsOfGarden(self, gardenID):
+    def getEmptyFieldsOfGarden(self, gardenID, param="empty"):
         """Gibt alle leeren Felder eines Gartens zurück."""
         try:
             address = f'ajax/ajax.php?do=changeGarden&garden={str(gardenID)}&token={self.__token}'
             response, content = self.sendRequest(address)
             self.checkIfHTTPStateIsOK(response)
             jContent = self.generateJSONContentAndCheckForOK(content)
-            emptyFields = self.__findEmptyFieldsFromJSONContent(jContent)
+            if param == "empty":
+                emptyFields = self.__findEmptyFieldsFromJSONContent(jContent)
+            elif param == "grown":
+                emptyFields = self.__find_grown_fields(jContent)
         except:
             raise
         else:
@@ -659,7 +672,7 @@ class HTTPConnection(object):
             response, content = self.sendRequest(address)
             self.checkIfHTTPStateIsOK(response)
             jContent = self.generateJSONContentAndCheckForOK(content)
-            emptyAquaFields = self.__findEmptyAquaFieldsFromJSONContent(jContent)
+            emptyAquaFields = self.__findEmptyFieldsFromJSONContent(jContent)
         except:
             raise
         else:
@@ -677,9 +690,8 @@ class HTTPConnection(object):
                 print(jContent['message'])
                 self.__logHTTPConn.info(jContent['message'])
             elif jContent['status'] == 'ok':
-                msg = jContent['harvestMsg'].replace('</div>', '\n').replace('&nbsp;', ' ')
-                msg = re.sub('<div.*>', '', msg)
-                msg = re.sub('x[ \n]*', 'x ', msg)
+                msg = jContent['harvestMsg'].replace('</div>', '').replace('&nbsp;', ' ').replace('<div class="line">', '\n')
+                msg = re.sub('<div.*?>', '', msg)
                 msg = msg.strip()
                 if 'biogas' in jContent:
                     biogas = jContent['biogas']
@@ -689,6 +701,13 @@ class HTTPConnection(object):
                     msg = msg + f"\n{eventitems} Eventitems" #TODO check which event is active
                 print(msg)
                 self.__logHTTPConn.info(msg)
+        except:
+            raise
+
+    def harvest_unfinished(self, plant_id, field, fields):
+        try:
+            address = f"save/ernte.php?pflanze[]={plant_id}&feld[]={field}&felder[]={fields}&closepopup=1&ernteJa=ernteJa"
+            response, content = self.sendRequest(address)
         except:
             raise
 
@@ -703,47 +722,47 @@ class HTTPConnection(object):
                 print(jContent['message'])
                 self.__logHTTPConn.info(jContent['message'])
             elif jContent['status'] == 'ok':
-                msg = jContent['harvestMsg'].replace('</div>', '\n').replace('&nbsp;', ' ')
-                msg = re.sub('<div.*>', '', msg)
-                msg = re.sub('x[ \n]*', 'x ', msg)
+                msg = jContent['harvestMsg'].replace('</div>', '').replace('&nbsp;', ' ').replace('<div class="line">', '\n')
+                msg = re.sub('<div.*?>', '', msg)
                 msg = msg.strip()
                 print(msg)
                 self.__logHTTPConn.info(msg)
         except:
             raise
 
-    def grow(self, field, plant, gardenID, fields):
+    def grow(self, to_plant, plant_id, gardenID):
         """Baut eine Pflanze auf einem Feld an."""
-        address =   f'save/pflanz.php?pflanze[]={str(plant)}&feld[]={str(field)}' \
-                    f'&felder[]={fields}&cid={self.__token}&garden={str(gardenID)}'
+        address =   f"save/pflanz.php?pflanze[]={plant_id}"
+        for count in range (len(to_plant)-1):
+            address += f"&pflanze[]={plant_id}"
+        for field in to_plant.keys():
+            address += f"&feld[]={field}" #???
+        for fields in to_plant.values():
+            address += f"&felder[]={fields}" #???
+        address += f"&cid={self.__token}&garden={gardenID}"
         try:
             response, content = self.sendRequest(address)
             self.checkIfHTTPStateIsOK(response)
+            return self.generateJSONContentAndCheckForSuccess(content)
         except:
             raise
 
-    def growAquaPlant(self, plant, field):
+    def growAquaPlant(self, to_plant, plant_id):
         """Baut eine Pflanze im Wassergarten an."""
-        address = f'ajax/ajax.php?do=watergardenCache&plant[{plant}]={field}&token={self.__token}'
+        # address = f'ajax/ajax.php?do=watergardenCache&plant[{plant_id}]={field}&token={self.__token}' # TODO:
+        address = f'ajax/ajax.php?do=watergardenCache'
+        for field in to_plant.keys():
+            address += f"&plant[{field}]={plant_id}" #???
+        address += f"&token={self.__token}"
+
         try:
             response, content = self.sendRequest(address)
             self.checkIfHTTPStateIsOK(response)
-            self.generateJSONContentAndCheckForOK(content)
+            return self.generateJSONContentAndCheckForOK(content)
         except:
             raise
 
     def removeWeedOnFieldInGarden(self, gardenID, fieldID):
-        """Befreit ein Feld im Garten von Unkraut."""
-        self._changeGarden(gardenID)
-        try:
-            response, content = self.sendRequest(f'save/abriss.php?tile={fieldID}', 'POST')
-            self.checkIfHTTPStateIsOK(response)
-            jContent = self.generateJSONContentAndCheckForSuccess(content)
-            return jContent['success']
-        except:
-            raise
-
-    def removeWeedOnFieldInAquaGarden(self, gardenID, fieldID):
         """Befreit ein Feld im Garten von Unkraut."""
         self._changeGarden(gardenID)
         try:

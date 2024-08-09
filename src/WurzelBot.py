@@ -415,6 +415,14 @@ class WurzelBot(object):
         except:
             self.__logBot.error(i18n.t('wimpb.harvest_not_successful'))
 
+    def harvest_all_unfinished(self):
+        try:
+            garden: Garden
+            for garden in self.garten:
+                garden.harvest_unfinished()
+        except:
+            raise
+
     def growVegetablesInGardens(self, productName, amount=-1):
         """
         Pflanzt so viele Pflanzen von einer Sorte wie möglich über alle Gärten hinweg an.

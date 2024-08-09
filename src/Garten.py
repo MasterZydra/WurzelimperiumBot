@@ -13,10 +13,11 @@ class Garden():
     _LEN_X = 17
     _LEN_Y = 12
     _MAX_FIELDS = _LEN_X * _LEN_Y
+    _PLANT_PER_REQUEST = 6
 
     def __init__(self, httpConnection: HTTPConnection, gardenID):
         self._httpConn = httpConnection
-        self.__user = User()
+        self._user = User()
         self._id = gardenID
         self._logGarden = logging.getLogger('bot.Garden_' + str(gardenID))
         self._logGarden.setLevel(logging.DEBUG)
@@ -110,7 +111,7 @@ class Garden():
         try:
             plants = self._httpConn.getPlantsToWaterInGarden(self._id)
             nPlants = len(plants['fieldID'])
-            if nPlants and self.__user.has_watering_gnome_helper():
+            if nPlants and self._user.has_watering_gnome_helper():
                 self._httpConn.water_all_plants_in_garden()
             else:
                 for i in range(0, nPlants):
@@ -133,6 +134,14 @@ class Garden():
             return self._httpConn.getEmptyFieldsOfGarden(self._id)
         except:
             self._logGarden.error(f'Konnte leere Felder von Garten {self._id} nicht ermitteln.')
+            #BG- self._logGarden.error(f'Неуспешно определение на празни полета в градина {self._id}.')
+
+    def get_grown_fields(self):
+        """Returns all grown fields in the garden."""
+        try:
+            return self._httpConn.getEmptyFieldsOfGarden(self._id, param="grown")
+        except:
+            self._logGarden.error(f'Konnte bepflanzte Felder von Garten {self._id} nicht ermitteln.')
             #BG- self._logGarden.error(f'Неуспешно определение на празни полета в градина {self._id}.')
 
     def getWeedFields(self):
@@ -185,6 +194,21 @@ class Garden():
         except:
             raise
 
+    def harvest_unfinished(self):
+        #BG- """Отглежда растение от всякакъв размер."""
+
+        grown_fields = self.get_grown_fields()
+        print('grown_fields:', grown_fields)
+
+        try:
+            for field, plant_id in grown_fields.items():
+                sx = ProductData().get_product_by_id(plant_id).get_sx()
+                sy = ProductData().get_product_by_id(plant_id).get_sy()
+                fields = self._getAllFieldIDsFromFieldIDAndSizeAsString(field, sx, sy)
+                self._httpConn.harvest_unfinished(plant_id, field, fields)
+        except:
+            raise
+
     def grow(self, plantID, sx, sy, amount):
         """Grows a plant of any size."""
         #BG- """Отглежда растение от всякакъв размер."""
@@ -193,15 +217,15 @@ class Garden():
         emptyFields = self.getEmptyFields()
 
         try:
-            for field in range(1, self._MAX_FIELDS + 1):
+            to_plant = {}
+            for field in range(1, self._MAX_FIELDS+1):
+                
                 if planted == amount: break
-
                 fieldsToPlant = self._getAllFieldIDsFromFieldIDAndSizeAsIntList(field, sx, sy)
 
                 if (self._isPlantGrowableOnField(field, emptyFields, fieldsToPlant, sx)):
-                    fields = self._getAllFieldIDsFromFieldIDAndSizeAsString(field, sx, sy)
-                    self._httpConn.grow(field, plantID, self._id, fields)
-                    planted += 1
+                    fields = self._getAllFieldIDsFromFieldIDAndSizeAsString(field, sx, sy) # get fields for one plant
+                    to_plant.update({field: fields}) #collect all plants for a request
 
                     #Nach dem Anbau belegte Felder aus der Liste der leeren Felder loeschen
                     #BG- След отглеждането, изтрийте заетите полета от списъка на празните полета
@@ -209,6 +233,11 @@ class Garden():
                     emptyFieldsSet = set(emptyFields)
                     tmpSet = emptyFieldsSet - fieldsToPlantSet
                     emptyFields = list(tmpSet)
+                
+                if len(to_plant) == self._PLANT_PER_REQUEST or (field == self._MAX_FIELDS and len(to_plant) > 0):
+                    self._httpConn.grow(to_plant, plantID, self._id)
+                    planted += len(to_plant)
+                    to_plant = {}
 
         except:
             self._logGarden.error(f'Im Garten {self._id} konnte nicht gepflanzt werden.')
@@ -263,6 +292,7 @@ class AquaGarden(Garden):
         Garden.__init__(self, httpConnection, 101)
         self.__setInnerFields()
         self.__setOuterFields()
+        self._PLANT_PER_REQUEST = 11
 
     def __setInnerFields(self, distance=2):
         """defines the fieldID's of the inner watergarden planting area"""
@@ -328,8 +358,8 @@ class AquaGarden(Garden):
         try:
             plants = self._httpConn.getPlantsToWaterInAquaGarden()
             nPlants = len(plants['fieldID'])
-            if nPlants and self.__user.has_watering_gnome_helper():
-                self._httpConn.water_all_plants_in_garden()
+            if nPlants and self._user.has_watering_gnome_helper():
+                self._httpConn.water_all_plants_in_aquagarden()
             else:
                 for i in range(0, nPlants):
                     sFields = self._getAllFieldIDsFromFieldIDAndSizeAsString(plants['fieldID'][i], plants['sx'][i], plants['sy'][i])
@@ -365,6 +395,7 @@ class AquaGarden(Garden):
 
         planted = 0
         emptyFields = self.getEmptyAquaFields()
+        to_plant = {}
         try:
             for field in range(1, self._MAX_FIELDS + 1):
                 if planted == amount: break
@@ -372,17 +403,20 @@ class AquaGarden(Garden):
                 fieldsToPlant = self._getAllFieldIDsFromFieldIDAndSizeAsIntList(field, sx, sy)
 
                 if (self._isPlantGrowableOnField(field, emptyFields, fieldsToPlant, edge)):
-                    self._httpConn.growAquaPlant(field, plantID)
-                    planted += 1
+                    to_plant.update({field: None}) #collect all plants for a request
 
                     # Nach dem Anbau belegte Felder aus der Liste der leeren Felder loeschen
                     #BG- След отглеждането, изтрийте заетите полета от списъка на празните полета
-
                     fieldsToPlantSet = set(fieldsToPlant)
                     emptyFieldsSet = set(emptyFields)
                     tmpSet = emptyFieldsSet - fieldsToPlantSet
                     emptyFields = list(tmpSet)
 
+                if (len(to_plant) == self._PLANT_PER_REQUEST) or (field == self._MAX_FIELDS and len(to_plant) > 0):
+                    self._httpConn.growAquaPlant(to_plant, plantID)
+                    planted += len(to_plant)
+                    to_plant = {}
+                    
         except:
             self._logGarden.error(f'Im Wassergarten konnte nicht gepflanzt werden.')
             #BG- self._logGarden.error(f'Във водната градина не може да се засади.')
@@ -410,7 +444,7 @@ class AquaGarden(Garden):
         freeFields = []
         for fieldID in weedFieldsAqua:
             try:
-                result = self._httpConn.removeWeedOnFieldInAquaGarden(self._id, fieldID)
+                result = self._httpConn.removeWeedOnFieldInGarden(self._id, fieldID)
             except:
                 self._logGarden.error(
                     f'Feld {fieldID} im Auqagarten {self._id} konnte nicht von Unkraut befreit werden!')
@@ -505,6 +539,7 @@ class HerbGarden(Garden):
         
         planted = 0
         emptyFields = self.getEmptyFields()
+        to_plant = {}
 
         try:
             for field in self._VALID_FIELDS.keys():
@@ -513,14 +548,19 @@ class HerbGarden(Garden):
 
                 if (self._isPlantGrowableOnField(int(field), emptyFields)):
                     fields = self._getAllFieldIDsFromFieldIDAndSizeAsString(field, 2, 2)
-                    self._httpConn.grow(field, herbID, self._id, fields)
-                    planted += 1
+                    to_plant.update({field: fields}) #collect all plants for a request
 
                     #Nach dem Anbau belegte Felder aus der Liste der leeren Felder loeschen
                     fieldsToPlantSet = {field}
                     emptyFieldsSet = set(emptyFields)
                     tmpSet = emptyFieldsSet - fieldsToPlantSet
                     emptyFields = list(tmpSet)
+
+                if len(to_plant) == self._PLANT_PER_REQUEST or (field == self._MAX_FIELDS and len(to_plant) > 0):
+                    self._httpConn.growPlant(to_plant, herbID, self._id)
+                    planted += len(to_plant)
+                    to_plant = {}
+                    
         except:
             self._logGarden.error(f'Im Garten {self._id} konnte nicht gepflanzt werden.')
             return 0

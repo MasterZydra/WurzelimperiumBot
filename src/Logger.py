@@ -14,4 +14,7 @@ if not os.path.exists('logs'):
     os.makedirs('logs')
 
 def logger():
-    logging.basicConfig(handlers=[logging.FileHandler(f'logs/wurzelbot {logtime}.log', 'a', 'utf-8')], level=logging.DEBUG, format='%(asctime)s - %(message)s')
+    logging.basicConfig(
+        handlers=[logging.FileHandler(f'logs/wurzelbot {logtime}.log', 'a', 'utf-8'), logging.StreamHandler()], 
+        level=logging.DEBUG, 
+        format='%(asctime)s - %(message)s')

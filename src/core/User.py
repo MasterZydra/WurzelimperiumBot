@@ -61,7 +61,7 @@ class User():
         return self.__data['bar']
 
     def is_premium_active(self) -> bool:
-        return self.__data['citymap']['premium'] == 1
+        return self.__data['citymap']['premium'] == "1"
 
     def is_guild_member(self) -> bool:
         return self.__data['g_tag'] != ""
