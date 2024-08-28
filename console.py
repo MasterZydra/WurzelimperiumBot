@@ -59,6 +59,7 @@ def main():
         elif inputLower == 'harvest': harvest()
         elif inputLower == '?' or inputLower == 'help': help()
         elif inputLower.startswith('buy'): buy(user_input)
+        elif inputLower == 'games': games()
         elif inputLower.startswith('grow-water'): grow_aqua_garden(user_input)
         elif inputLower.startswith('grow'): grow(user_input)
         elif inputLower.startswith('lowest'): lowest(user_input)
@@ -110,6 +111,7 @@ def help():
     print('             Opt. argument: "all", "water"')
     print('buy          Buy a given plant')
     print('exit         Close connection and exit bot')
+    print('games        Play the minigames')
     print('grow         Grow a given plant')
     print('grow-water   Grow a given water plant')
     print('harvest      Harvest all gardens')
@@ -161,6 +163,10 @@ def buy(arg_str : str):
 
     print('Buying ' + args[1] + ' ' + args[0] + '...')
     bot.buy_from_shop(args[0], int(args[1]))
+
+def games():
+    print('Playing minigames...')
+    bot.minigames.play()
 
 def grow(arg_str : str):
     arg_str = arg_str.replace('grow', '', 1).strip()

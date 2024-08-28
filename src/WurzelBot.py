@@ -19,6 +19,7 @@ from src.honey.Honey import Honey
 from src.stock.Stock import Stock
 from src.marketplace.Marketplace import Marketplace
 from src.Messenger import Messenger
+from src.minigames.Minigames import Minigames
 from src.note.Note import Note
 from src.product.ProductData import ProductData
 from src.quest.Quest import Quest
@@ -59,6 +60,7 @@ class WurzelBot(object):
         self.note = Note()
         self.park = None
         self.greenhouse = None
+        self.minigames = Minigames()
 
 
     def __init_gardens(self):

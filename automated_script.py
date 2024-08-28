@@ -71,6 +71,10 @@ def main():
         # BG-Изпълни нуждите на Wimps в градините
         print(i18n.t('wimpb.process_wimps'))
         wurzelBot.sell_to_wimps(buy_from_shop=False)
+
+        # Play minigames
+        print('Playing minigames...')
+        wurzelBot.minigames.play()
     finally:
         # Close connection
         # BG-Затваряне на връзката
