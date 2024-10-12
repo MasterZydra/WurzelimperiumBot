@@ -70,7 +70,7 @@ def main():
         # Process Wimp Customers in Gardens
         # BG-Изпълни нуждите на Wimps в градините
         print(i18n.t('wimpb.process_wimps'))
-        wurzelBot.sell_to_wimps(buy_from_shop=False)
+        wurzelBot.sell_to_wimps()
 
         # Play minigames
         print('Playing minigames...')

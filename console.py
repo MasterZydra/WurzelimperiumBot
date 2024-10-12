@@ -270,7 +270,7 @@ def getDailyLoginBonus():
 def wimp():
     """Process Wimp Customers in Gardens"""
     print(i18n.t('wimpb.process_wimps'))
-    bot.sell_to_wimps(buy_from_shop=False)
+    bot.sell_to_wimps()
 
 def logging():
     if log:

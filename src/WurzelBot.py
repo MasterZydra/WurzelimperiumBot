@@ -248,7 +248,7 @@ class WurzelBot(object):
 
         return dict(allWimpsProducts)
 
-    def sell_to_wimps(self, buy_from_shop: bool = True, minimal_balance: int = 500, 
+    def sell_to_wimps(self, buy_from_shop: bool = False, minimal_balance: int = 500, 
         method: str = "loss", max_amount: int = 100, max_loss_in_percent: int = 33
     ):
         if self.user.get_level() < 3:
@@ -354,7 +354,7 @@ class WurzelBot(object):
 
         return False
 
-    def check_wimps_required_amount(self, products, stock_list, minimal_balance, buy_from_shop: bool = True):
+    def check_wimps_required_amount(self, products, stock_list, minimal_balance, buy_from_shop: bool = False):
         # At least level 3 is required in order to read the min_stock from the notes
         if self.user.get_level() < 3:
             return False
