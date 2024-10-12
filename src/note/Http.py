@@ -16,6 +16,8 @@ class Http(object):
             content = content.decode('UTF-8')
             my_parser = etree.HTMLParser(recover=True)
             html_tree = etree.fromstring(content, parser=my_parser)
+            if html_tree is None:
+                return ''
 
             note = html_tree.find('./body/form/div/textarea[@id="notiztext"]')
             note_text = note.text
