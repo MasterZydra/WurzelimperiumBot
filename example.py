@@ -7,65 +7,80 @@ import i18n
 
 
 """
-Beispieldatei zur Verwendung des Bots.
-Alle Stellen die angepasst werden müssen sind mit TODO gekennzeichnet.
+Example how the bot could be used
 """
-#BG - Примерен файл за използване на бота
-#BG - Всички места, които трябва да бъдат променени, са маркирани с TODO.
+
 
 # Logging? Set to True to enable or False to disable logging.
-#BG - Логиране? Задайте True за активиране или False за деактивиране на логирането.
 log = True
 
-#TODO: Login Daten eintragen
-#BG - Въведете данните за вход
+# Login data
 user = ''
 pw = ''
 server = 46
-lang = 'de' # Define Region of Game and Language of bot (en/de/ru etc) #BG - Определете региона на играта и езика на бота (en/de/ru/bg etc)
+lang = 'de' # e.g. en, de, ru
 portalacc = False
-
-#Minimum WT to keep:
-#BG - Минимален WT за задържане:
-MINwt = 1000000
 
 i18n.load_path.append('lang')
 i18n.set('locale', lang)
 i18n.set('fallback', 'en')
 
 # Init logger
-#BG - Инициализирайте логера
 if log:
     logger.logger()
 
-#Login und Initialisierung des Bots
-#BG - Вход и инициализация на бота
+# Init bot
 wurzelBot = WurzelBot()
 wurzelBot.login(server, user, pw, lang, portalacc)
 
-#TODO: Aktionen definieren
-#BG -  Дефинирайте действия
-#Beispiel: Alles ernten, in allen Gärten Kürbis anbauen und alles gießen
-#BG - Пример: Прибиране на реколтата от всички градини, засаждане на тикви във всички градини и поливане на всичко.
-wurzelBot.harvest()
-wurzelBot.growVegetablesInGardens('Salat', 2) # Nur 2 Pflanzen #BG- Само 2 растения
-wurzelBot.growVegetablesInGardens('Kürbis') # So viele Pflanzen wie möglich #BG-Колкото се може повече растения
-wurzelBot.growPlantsInAquaGardens('Wasserfeder') # So viele Pflanzen wie möglich (außen) #BG-Колкото се може повече растения (външни)
-wurzelBot.growPlantsInAquaGardens('Schwertlilie') # So viele Pflanzen wie möglich (innen) #BG-Колкото се може повече растения (вътрешни)
-wurzelBot.water()
+# Collect daily login bonuses
 wurzelBot.get_daily_bonuses()
-wurzelBot.sell_to_wimps() # Process Wimp Customers in Gardens #BG-Обработка на Wimp клиенти в градините
 
+# Play supported minigames
+wurzelBot.minigames.play()
 
-print(f'Kaufe Salat - im Lager sind: {wurzelBot.stock.get_stock_by_product_id("2")}')
+# Remove all weeds (weeds, stones, etc.) with all the money available
+wurzelBot.remove_weeds()
+
+# Harvest every plant that is ready for harvest in all gardens
+wurzelBot.harvest()
+
+# Grow the plant with the lowest stock
+lowest = wurzelBot.getLowestVegetableStockEntry()
+wurzelBot.growVegetablesInGardens(lowest)
+# Grow the plant with the lowest stock that is 1x1
+lowestSingle = wurzelBot.getLowestSingleVegetableStockEntry()
+wurzelBot.growVegetablesInGardens(lowestSingle)
+# Grow two salads in the garden
+wurzelBot.growVegetablesInGardens('Salat', 2)
+# Grow carrots until the stock is empty or if every field is filled
+wurzelBot.growVegetablesInGardens('Karotte')
+
+# Grow water plants
+wurzelBot.growPlantsInAquaGardens('Wasserfeder')
+
+# Water all plants in all gardens
+wurzelBot.water()
+
+# Sell to wimps
+wurzelBot.sell_to_wimps()
+# Sell to wimps and buy all missing plants from shops
+# Warning: As the wimps pay less than it costs in the shops,
+# this can end up with a financial loss
+# wurzelBot.sell_to_wimps(buy_from_shop=True)
+
+# Buy 1 salad from the shop
 wurzelBot.buy_from_shop('Salat', 1) #buy plant with name and amount #BG-Купете растение по име и количество
-wurzelBot.buy_from_shop(2, 1) #buy plant with id and amount #BG-Купете растение по ID и количество
-wurzelBot.stock.update()
-print(f'neuer Lagerstand: {wurzelBot.stock.get_stock_by_product_id("2")}')
 
+# Send bees for 2 hours
+# 1 = 2h, 2 = 8h, 3 = 24h
 wurzelBot.send_bees(1) # Send bees for 2 hours
-wurzelBot.cut_and_renew_bonsais() #probiert die äste zu schneiden - weitere ideen: prüfen ob es gesendet wurde #BG-Опитва се да отреже клоните - други идеи: проверка дали е изпратено
-wurzelBot.infinityQuest() #probiert die infinityquest zulösen und kauft die fehlenden Produkte nach - weitere ideen: wt check #BG-Опитва се да реши Infinity Quest и купува липсващите продукти - други идеи: проверка на WT
 
-#Deinitialisierung des Bots #BG-Деинициализация на бота
+# Cut and renew bonsais
+wurzelBot.cut_and_renew_bonsais()
+
+# Try to do the next infinity quest
+wurzelBot.infinityQuest()
+
+# Logout
 wurzelBot.logout()
