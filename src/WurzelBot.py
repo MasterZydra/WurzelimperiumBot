@@ -691,6 +691,9 @@ class WurzelBot(object):
     def cut_and_renew_bonsais(self):
         """cut all branches and renew bonsais if lvl 2"""
         #BG-Ако нивото е 2, отрежи всички клони и поднови бонсаите.
+        if self.bonsaifarm is None:
+            return
+
         self.bonsaifarm.cutAllBonsai()
         self.bonsaifarm.checkBonsai()
         self.bonsaifarm.cutAllBonsai()
