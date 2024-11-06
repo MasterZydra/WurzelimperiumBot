@@ -234,7 +234,8 @@ class Garden():
                     tmpSet = emptyFieldsSet - fieldsToPlantSet
                     emptyFields = list(tmpSet)
                 
-                if len(to_plant) == self._PLANT_PER_REQUEST or (field == self._MAX_FIELDS and len(to_plant) > 0):
+                if len(to_plant) == self._PLANT_PER_REQUEST or len(to_plant) == amount \
+                or (field == self._MAX_FIELDS and len(to_plant) > 0):
                     self._httpConn.grow(to_plant, plantID, self._id)
                     planted += len(to_plant)
                     to_plant = {}
