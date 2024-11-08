@@ -51,3 +51,16 @@ class Note():
 
         # Return default [] if not found in note
         return []
+
+    def get_stop_bot(self) -> bool:
+        note = self.get_note().replace("\r\n", "\n")
+        lines = note.split("\n")
+        for line in lines:
+            if line.strip() == "":
+                continue
+
+            if line.startswith("stopWIB"):
+                return True
+
+        # Return default False if not found in note
+        return False

@@ -32,6 +32,13 @@ def main():
         exit(-1)
 
     try:
+        # Check if the bot should be stopped
+        # BG-Проверка дали бота трябва да бъде спрян
+        if wurzelBot.get_stop_bot_note():
+            print(i18n.t('wimpb.stop_wbot'))
+            wurzelBot.logout()
+            return
+
         # Remove weed
         # BG-Премахване на плевели
         print(i18n.t('wimpb.remove_weed_from_all_gardens'))

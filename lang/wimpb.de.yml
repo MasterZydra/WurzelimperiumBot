@@ -23,3 +23,4 @@ de:
   w_harvest_not_successful: "Konnte nicht alle Gärten von Unkraut befreien."
   claim_bonus: "Täglicher Login Bonus abholen..."
   process_wimps: "Bediene Wimps in Gärten..."
+  stop_wbot: "In den Notizen wurde stopWIB gefunden. Wurzelbot wird beendet."
