@@ -42,7 +42,7 @@ Please follow the rules below:
   However, if a new feature is added and the same commit includes numerous small changes such as indentation and empty lines, it can be challenging to perform a code review.
 
 - **Coding in English**:  
-  Because the WurzelimperiumBot is now also used for e.g. the Bugarian Wurzelimperium equivalent, it would be more accessible for new contributors if the code is written in English.
+  Because the WurzelimperiumBot is now also used for e.g. the Bulgarian Wurzelimperium equivalent, it would be more accessible for new contributors if the code is written in English.
 
 - **Python Coding Standard Recommendations**:  
   There is a coding standard on the official python website. We try to follow it:  
