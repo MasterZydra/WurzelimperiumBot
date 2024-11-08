@@ -23,3 +23,4 @@ en:
   w_harvest_not_successful: "Could not free up weeds from garden."
   claim_bonus: "Claiming daily login bonus..."
   process_wimps: "Processing Wimps in Gardens..."
+  stop_wbot: "stopWIB found in notes. Wurzelbot will be shut down."
