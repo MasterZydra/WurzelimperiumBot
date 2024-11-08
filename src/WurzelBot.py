@@ -178,10 +178,6 @@ class WurzelBot(object):
         self.product_data.init()
         self.stock.init_product_list(self.product_data.get_product_id_list())
         self.stock.update()
-        # check notes for stop bot entry
-        if self.note.get_stop_bot():
-            self.__logBot.info(i18n.t("wimpb.stop_wbot"))
-            return False
         return True
 
     def logout(self):
@@ -195,6 +191,10 @@ class WurzelBot(object):
             if self.__config.isDevMode:
                 raise e
             self.__logBot.error(i18n.t("wimpb.exit_wbot_abnormal"))
+
+    def get_stop_bot_note(self) -> bool:
+        """Check notes for stop bot entry"""
+        return self.note.get_stop_bot()
 
     def water(self):
         """Waters all of the player's gardens"""
