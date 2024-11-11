@@ -662,6 +662,8 @@ class WurzelBot(object):
                 self.__HTTPConn.buyFromAquaShop(productId, amount)
             except:
                 pass
+
+        self.stock.update()
         return 0
 
     # Bees
