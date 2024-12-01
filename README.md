@@ -55,6 +55,7 @@ details      Show details to the products
              Opt. argument: "all", "water"
 buy          Buy a given plant
 exit         Close connection and exit bot
+games        Play the minigames
 grow         Grow a given plant
 grow-water   Grow a given water plant
 harvest      Harvest all gardens
