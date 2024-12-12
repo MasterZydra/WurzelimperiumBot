@@ -7,7 +7,7 @@ Created on 21.03.2017
 '''
 
 from collections import Counter
-from src.Bonsai import Bonsai
+from src.bonsai.Bonsai import Bonsai
 from src.bonus.Bonus import Bonus
 from src.core.Config import Config
 from src.core.HTTPCommunication import HTTPConnection
@@ -81,7 +81,7 @@ class WurzelBot(object):
                 self.honey = Honey()
 
             if self.feature.is_bonsai_farm_available() is True:
-                self.bonsaifarm = Bonsai(self.__HTTPConn)
+                self.bonsaifarm = Bonsai()
 
             if self.feature.is_city_park_available() is True:
                 self.park = CityPark()

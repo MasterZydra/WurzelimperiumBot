@@ -2,17 +2,18 @@
 # -*- coding: utf-8 -*-
 
 import logging
-from src.core.HTTPCommunication import HTTPConnection
+from src.bonsai.Http import Http
+from src.bonsai.ShopProduct import *
 
 class Bonsai():
     """Wrapper for the bonsaigarden"""
     #BG - Интерфейс за бонсаевата градина 
 
-    def __init__(self, httpConnection: HTTPConnection):
-        self._httpConn = httpConnection
+    def __init__(self):
+        self.__http = Http()
         self._logBonsai = logging.getLogger('bot.Bonsai')
         self._logBonsai.setLevel(logging.DEBUG)
-        self.__initialiseBonsaiInfo(self._httpConn.bonsaiInit())
+        self.__initialiseBonsaiInfo(self.__http.init())
 
     def __initialiseBonsaiInfo(self, jContent):
         """initialise info from JSON content of the bonsaigarden"""
@@ -75,22 +76,21 @@ class Bonsai():
         sissorID = None
         sissorLoads = None
         for key, value in self.__jContentData['items'].items():
-            if value['item'] == "21":
+            if value['item'] == str(NORMAL_SCISSOR):
                 sissorID = key
                 sissorLoads = value['loads']
                 self._logBonsai.info(f"In storage: {sissorLoads} normal scissors with ID {sissorID}")
         if sissorID is None or int(sissorLoads) < min_scissor_stock:
             self._logBonsai.info("Rebuying 500 normal scissors for 80.000 wT.")
-            jContent = self._httpConn.buyAndPlaceBonsaiItem(21, 4, 0)
+            jContent = self.__http.buyAndPlaceBonsaiItem(NORMAL_SCISSOR, 4, 0)
             self.setBonsaiFarmData(jContent)
 
         for key in self.__slotinfos.keys():
             self._logBonsai.info(f'Bonsai in slot {key}:')
             for branch in self.__slotinfos[key][2]:
-                jContent = self._httpConn.cutBonsaiBranch(key, sissorID, branch)
+                jContent = self.__http.cutBranch(key, sissorID, branch)
                 self.setBonsaiFarmData(jContent)
                 self._logBonsai.info(f'Cut branch {branch}')
-
 
     def checkBonsai(self, finish_level=2) -> None:
         """checks if bonsai is a certain level: finishes bonsai to bonsaigarden and renews it with a Zypresse and a normal pot"""
@@ -99,9 +99,9 @@ class Bonsai():
             level = self.__slotinfos[key][0]
             if level >= finish_level:
                 self._logBonsai.info(f'Finish Bonsai in slot {key} with level {level}')
-                jContent = self._httpConn.finishBonsai(key)
-                jContent = self._httpConn.buyAndPlaceBonsaiItem(11, 1, key)
-                jContent = self._httpConn.buyAndPlaceBonsaiItem(5, 1, key)
+                jContent = self.__http.finishBonsai(key)
+                jContent = self.__http.buyAndPlaceBonsaiItem(SIMPLE_POT, 1, key)
+                jContent = self.__http.buyAndPlaceBonsaiItem(CYPRESS, 1, key)
                 self.setBonsaiFarmData(jContent)
             else:
                 self._logBonsai.info(f'Do nothing: Bonsai in slot {key} is level {level}')
