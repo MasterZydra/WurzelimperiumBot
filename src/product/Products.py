@@ -1,6 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+# Special products
+CASH = -99 # DE: Wurzeltaler
+
 COINS = 0
 CHERRY = 1 # DE: Kirsche
 SALAD = 2  # DE: Salat

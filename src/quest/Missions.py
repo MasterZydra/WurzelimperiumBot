@@ -52,7 +52,7 @@ class Missions:
             '43': {WALNUT: 1111, SUNFLOWER: 555},
             '44': {CAULIFLOWER: 2500, POTATO: 3000, ASPARAGUS: 2000, ONION: 3500},
             '45': {APPLE: 4000},
-            '46': {SIDEWALK_STRAWBERRY: 4},
+            '46': {SIDEWALK_3: 4},
             '47': {PLUM: 3333, WALNUT: 666},
             '48': {PUMPKIN: 1000, POTATO: 2000, SUNFLOWER: 3000},
             '49': {CORNFLOWER: 6000, MARIGOLD: 5000, LILY: 2000},
@@ -74,9 +74,9 @@ class Missions:
             '65': {LAVENDER: 3400, OLIVE: 7500},
             '66': {LAVENDER: 750, CUCUMBER: 1300, CARROT: 4000},
             '67': {SIDEWALK_2: 10},
-            '68': {CARROT: 10000, TOMATO: 5000, SALAD: 20000},
-            '69': {TOMATO: 25000},
-            '70': {TOMATO: 6000, SALAD: 12000, CARROT: 18000},
+            '68': {CARROT: 10_000, TOMATO: 5000, SALAD: 20000},
+            '69': {TOMATO: 25_000},
+            '70': {TOMATO: 6000, SALAD: 12_000, CARROT: 18_000},
             '71': {ZEN_GARDEN: 1},
             '72': {ROSE: 4000, GERBERA: 2500, LAVENDER: 1250},
             '73': {BLUEBERRY: 4700, BLACKBERRY: 2400, PLUM: 900},
@@ -84,7 +84,40 @@ class Missions:
             '75': {LAVENDER: 1100, MARIGOLD: 1100, GARLIC: 900},
             '76': {GERBERA: 4500, LILY: 5300},
             '77': {POTATO: 6000, CAULIFLOWER: 2000, APPLE: 500},
-            '78': {CARROT: 12000, WALNUT: 6000}
+            '78': {CARROT: 12_000, WALNUT: 6000}
+        }
+    
+    @staticmethod
+    def emperor_quest():
+        return {
+            '79': {COFFEE: 33_333},
+            '80': {APPLE: 12_000, PEAR: 12_000, PUMPKIN: 12_000},
+            '81': {CASH: 600_000},
+            '82': {COFFEE: 42_500},
+            '83': {WALNUT: 45_000},
+            '84': {CASH: 1_500_000},
+            '85': {LILY: 125_000, ORCHID: 18_500, ROSE: 225_000},
+            '86': {LAVENDER: 22_500, OLIVE: 22_500},
+            '87': {SLIDE: 1, STONE_CIRCLE: 1, SITTING_AREA: 2, ZEN_GARDEN: 1},
+            '88': {CARROT: 7_000_000},
+            '89': {CASH: 1_000_001},
+            '90': {COFFEE: 72_000},
+            '91': {RED_CABBAGE: 55_555, OLIVE: 12_500, CHERRY: 25_000, PLUM: 15_000},
+            '92': {PUMPKIN: 65_000, ASPARAGUS: 135_000, APPLE: 45_555, CHERRY: 33_333},
+            '93': {CASH: 2_500_000},
+            '94': {SLIDE: 2, SANDPIT: 1},
+            '95': {LAVENDER: 50_000},
+            '96': {PUMPKIN: 7500},
+            '97': {WALNUT: 50_000, PLUM: 44_000, RASPBERRY: 25_000, BLACKBERRY: 25_000},
+            '98': {WALNUT: 11_111},
+            '99': {OLIVE: 120_000},
+            '100': {SPINACH: 1_000_000},
+            '101': {BROCCOLI: 200_000, POTATO: 140_000, GARLIC: 777_777, TOMATO: 420_000},
+            '102': {POTATO: 2_800_000},
+            '103': {SWEET_BELL_PEPPER: 200_000, POTATO: 200_000, APPLE: 200_000, PLUM: 200_000},
+            '104': {APPLE: 1_000_000},
+            '105': {ONION: 500_750},
+            '106': {CARROT: 82_896_475}
         }
 
     @staticmethod
