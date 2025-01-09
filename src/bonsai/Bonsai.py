@@ -91,6 +91,7 @@ class Bonsai():
                 jContent = self.__http.cutBranch(key, sissorID, branch)
                 self.setBonsaiFarmData(jContent)
                 self._logBonsai.info(f'Cut branch {branch}')
+                print(f'Cut branch {branch}')
 
     def checkBonsai(self, finish_level=2) -> None:
         """checks if bonsai is a certain level: finishes bonsai to bonsaigarden and renews it with a Zypresse and a normal pot"""

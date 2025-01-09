@@ -56,6 +56,7 @@ def main():
 
         if inputLower == 'exit': logout()
         elif inputLower.startswith('bee'): bee(user_input)
+        elif inputLower.startswith('bonsai'): bonsai(user_input)
         elif inputLower == 'harvest': harvest()
         elif inputLower == '?' or inputLower == 'help': help()
         elif inputLower.startswith('buy'): buy(user_input)
@@ -106,6 +107,8 @@ def help():
     print('-------------------')
     print('bee          Send bees')
     print('             Opt. argument: "2h" (default), "8h", "24h"')
+    print('bonsai       Cut all branches and renew bonsais')
+    print('             Opt. argument: 2 (default level) - 10')
     print('bonus        Get the daily login bonus')
     print('details      Show details to the products')
     print('             Opt. argument: "all", "water"')
@@ -151,6 +154,24 @@ def bee(arg_str : str):
 
     print(f'Sending bees for {args[0]}...')
     bot.send_bees(tour)
+
+def bonsai(arg_str : str):
+    arg_str = arg_str.replace('bonsai', '', 1).strip()
+    args = shlex.split(arg_str)
+
+    if len(args) > 1 or (len(args) == 1 and args[0] not in ['2', '3', '4', '5', '6', '7', '8', '9', '10'] and args[0] != ''):
+        print('Cannot parse input.')
+        print('Expected format: bonsai [2|3|4|...|10]')
+        return
+
+    finish_level = 2
+    if len(args) == 0:
+        finish_level = 2
+    else:
+        finish_level = int(args[0])
+
+    print(f'Cutting bonsais...')
+    bot.cut_and_renew_bonsais(finish_level)
 
 def buy(arg_str : str):
     arg_str = arg_str.replace('buy', '', 1).strip()

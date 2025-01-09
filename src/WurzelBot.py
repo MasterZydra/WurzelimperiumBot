@@ -694,14 +694,14 @@ class WurzelBot(object):
             self.honey.change_all_hives_types(self.product_data.get_product_by_name(product_name).get_id())
 
     # Bonsai
-    def cut_and_renew_bonsais(self):
+    def cut_and_renew_bonsais(self, finish_level: int = 2) -> None:
         """cut all branches and renew bonsais if lvl 2"""
         #BG-Ако нивото е 2, отрежи всички клони и поднови бонсаите.
         if self.bonsaifarm is None:
             return
 
         self.bonsaifarm.cutAllBonsai()
-        self.bonsaifarm.checkBonsai()
+        self.bonsaifarm.checkBonsai(finish_level)
         self.bonsaifarm.cutAllBonsai()
 
     # City park
