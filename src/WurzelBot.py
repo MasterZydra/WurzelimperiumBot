@@ -18,7 +18,7 @@ from src.greenhouse.Greenhouse import Greenhouse
 from src.honey.Honey import Honey
 from src.stock.Stock import Stock
 from src.marketplace.Marketplace import Marketplace
-from src.Messenger import Messenger
+from src.message.Messenger import Messenger
 from src.minigames.Minigames import Minigames
 from src.note.Note import Note
 from src.product.ProductData import ProductData
@@ -46,7 +46,7 @@ class WurzelBot(object):
         self.feature = Feature()
         self.product_data = ProductData()
         self.user = User()
-        self.messenger = Messenger(self.__HTTPConn)
+        self.messenger = Messenger()
         self.stock = Stock()
         self.gardens = []
         self.aquagarden = None
@@ -198,7 +198,7 @@ class WurzelBot(object):
             self.aquagarden.water()
 
 
-    def writeMessagesIfMailIsConfirmed(self, recipients, subject, body):
+    def writeMessageIfMailIsConfirmed(self, recipients, subject, body):
         """
         Erstellt eine neue Nachricht, füllt diese aus und verschickt sie.
         recipients muss ein Array sein!.
@@ -208,7 +208,7 @@ class WurzelBot(object):
 
         if (self.user.is_mail_confirmed()):
             try:
-                self.messenger.writeMessage(self.user.get_username(), recipients, subject, body)
+                self.messenger.write(recipients, subject, body)
             except:
                 self.__logBot.error(i18n.t('wimpb.no_message'))
 

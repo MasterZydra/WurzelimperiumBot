@@ -556,31 +556,6 @@ class HTTPConnection(object):
 
     #TODO: Was passiert wenn ein Garten hinzukommt (parallele Sitzungen im Browser und Bot)? Globale Aktualisierungsfunktion?
 
-    def createNewMessageAndReturnResult(self):
-        """Erstellt eine neue Nachricht und gibt deren ID zurück, die für das Senden benötigt wird."""
-        try:
-            response, content = self.sendRequest('nachrichten/new.php')
-            self.checkIfHTTPStateIsOK(response)
-            return content
-        except:
-            raise
-
-
-    def sendMessageAndReturnResult(self, msg_id, msg_to, msg_subject, msg_body):
-        """Verschickt eine Nachricht mit den übergebenen Parametern."""
-        parameter = urlencode({'hpc': msg_id,
-                               'msg_to': msg_to,
-                               'msg_subject': msg_subject,
-                               'msg_body': msg_body,
-                               'msg_send': 'senden'})
-        try:
-            response, content = self.sendRequest('nachrichten/new.php', 'POST', parameter)
-            self.checkIfHTTPStateIsOK(response)
-            return content
-        except:
-            raise
-
-
     def getUsrList(self, iStart, iEnd):
         """
         #TODO: finalisieren
