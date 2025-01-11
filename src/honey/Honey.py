@@ -107,6 +107,10 @@ class Honey():
     # Internal helper functions
 
     def __set_data(self, data):
+        if isinstance(data['data'], int) or not 'data' in data['data']:
+            self.update()
+            return
+
         if not 'questnr' in data:
             self.__data['data'] = data['data']
         else:
