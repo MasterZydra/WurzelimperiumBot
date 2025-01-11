@@ -70,7 +70,7 @@ wurzelBot.sell_to_wimps()
 # wurzelBot.sell_to_wimps(buy_from_shop=True)
 
 # Buy 1 salad from the shop
-wurzelBot.buy_from_shop('Salat', 1) #buy plant with name and amount #BG-Купете растение по име и количество
+wurzelBot.shop.buy('Salat', 1) #buy plant with name and amount #BG-Купете растение по име и количество
 
 # Send bees for 2 hours
 # 1 = 2h, 2 = 8h, 3 = 24h

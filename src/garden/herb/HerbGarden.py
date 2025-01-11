@@ -4,6 +4,8 @@
 from src.garden.Garden import Garden
 from src.garden.herb.Http import Http
 from src.product.ProductData import ProductData
+from src.shop.Shop import Shop
+from src.stock.Stock import Stock
 
 class HerbGarden(Garden):
     def __init__(self):
@@ -63,10 +65,10 @@ class HerbGarden(Garden):
 
         return emptyFields
 
-    def grow_plant(self, bot, amount=24):
+    def grow_plant(self, amount=24):
         """Grows a plant of any size."""
         herbID = self.__info.get('herbid')
-        herb_stock = bot.stock.get_stock_by_product_id(herbID)
+        herb_stock = Stock().get_stock_by_product_id(herbID)
 
         if not self.__info.get('canPlant'):
             return
@@ -75,8 +77,8 @@ class HerbGarden(Garden):
             return
 
         while not herb_stock >= amount:
-            self.exchange(bot)
-            herb_stock = bot.stock.get_stock_by_product_id(herbID)
+            self.exchange()
+            herb_stock = Stock().get_stock_by_product_id(herbID)
         
         planted = 0
         emptyFields = self.get_empty_fields()
@@ -115,7 +117,7 @@ class HerbGarden(Garden):
             return planted
         
 
-    def exchange(self, bot):
+    def exchange(self):
         exchange = {}
         buy_price = {}
 
@@ -129,11 +131,11 @@ class HerbGarden(Garden):
         sorted_dict = sorted(buy_price.items(), key=lambda x:x[1])
         cheapest_plant = next(iter(sorted_dict))[0]
 
-        stock = bot.stock.get_stock_by_product_id(cheapest_plant)
+        stock = Stock().get_stock_by_product_id(cheapest_plant)
         amount = exchange[cheapest_plant]
 
         if not stock >= amount:
-            bot.buy_from_shop(ProductData().get_product_by_id(cheapest_plant).get_name(), amount)
+            Shop().buy(ProductData().get_product_by_id(cheapest_plant).get_name(), amount)
         self.__httpHerb.exchange(cheapest_plant)
 
-        bot.stock.update()
+        Stock().update()

@@ -3,6 +3,7 @@
 
 from src.shop.Http import Http
 from src.shop.ShopProducts import ShopProducts
+from src.stock.Stock import Stock
 from src.product.ProductData import ProductData
 
 class Shop:
@@ -36,4 +37,5 @@ class Shop:
             except:
                 pass
 
+        Stock().update()
         return 0

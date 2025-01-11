@@ -184,7 +184,7 @@ def buy(arg_str : str):
         return
 
     print('Buying ' + args[1] + ' ' + args[0] + '...')
-    bot.buy_from_shop(args[0], int(args[1]))
+    bot.shop.buy(args[0], int(args[1]))
 
 def games():
     print('Playing minigames...')

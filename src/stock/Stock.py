@@ -4,7 +4,15 @@
 from src.stock.Http import Http
 
 class Stock():
-    def __init__(self):
+    _instance = None
+
+    def __new__(self):
+        if self._instance is None:
+            self._instance = super(Stock, self).__new__(self)
+            self._instance.__initClass()
+        return self._instance
+    
+    def __initClass(self):
         self.__http = Http()
         self.__products = {}
 
