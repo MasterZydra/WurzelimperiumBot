@@ -18,6 +18,7 @@ from src.garden.aqua.AquaGarden import AquaGarden
 from src.garden.herb.HerbGarden import HerbGarden
 from src.greenhouse.Greenhouse import Greenhouse
 from src.honey.Honey import Honey
+from src.shop.Shop import Shop
 from src.stock.Stock import Stock
 from src.marketplace.Marketplace import Marketplace
 from src.message.Messenger import Messenger
@@ -25,7 +26,6 @@ from src.minigames.Minigames import Minigames
 from src.note.Note import Note
 from src.product.ProductData import ProductData
 from src.quest.Quest import Quest
-from src.shop.ShopProducts import ShopProducts
 from src.citypark.CityPark import CityPark
 from src.core.User import User
 from src.wimp.Wimp import Wimp
@@ -46,10 +46,10 @@ class WurzelBot(object):
         self.__logBot.setLevel(logging.DEBUG)
         self.__HTTPConn = HTTPConnection()
         self.feature = Feature()
-        self.product_data = ProductData()
         self.user = User()
         self.messenger = Messenger()
         self.stock = Stock()
+        self.shop = Shop()
         self.gardens = []
         self.aquagarden = None
         self.herbgarden = None
@@ -168,8 +168,8 @@ class WurzelBot(object):
             return False
 
         self.user.accountLogin = loginDaten
-        self.product_data.init()
-        self.stock.init_product_list(self.product_data.get_product_id_list())
+        ProductData().init()
+        self.stock.init_product_list(ProductData().get_product_id_list())
         self.stock.update()
         return True
 
@@ -303,7 +303,7 @@ class WurzelBot(object):
                 self.wimparea.sell(wimp)
                 for id, amount in products[1].items():
                     stock_list[id] -= amount
-                    npc_price += self.product_data.get_product_by_id(id).get_price_npc() * amount
+                    npc_price += ProductData().get_product_by_id(id).get_price_npc() * amount
 
         self.user.update(True)
 
@@ -351,7 +351,7 @@ class WurzelBot(object):
             # Check if the price the wimp wants to pay is more then the given max loss in percent when buying every product in the shops.
             npc_sum = 0
             for id, amount in products[1].items():
-                npc_sum += self.product_data.get_product_by_id(id).get_price_npc() * amount
+                npc_sum += ProductData().get_product_by_id(id).get_price_npc() * amount
             loss = (npc_sum - products[0]) / npc_sum * 100
             # A negative loss is a profit
             if loss < 0:
@@ -366,7 +366,7 @@ class WurzelBot(object):
             return False
 
         for id, amount in products.items():
-            product = self.product_data.get_product_by_id(id)
+            product = ProductData().get_product_by_id(id)
             min_stock = max(self.note.get_min_stock(), self.note.get_min_stock(product.get_name()), minimal_balance)
             if stock_list.get(id, None) < amount + min_stock:
                 if not buy_from_shop:
@@ -438,7 +438,7 @@ class WurzelBot(object):
         #BG-Засажда колкото е възможно повече растения от определен вид през всички градини.
         planted = 0
 
-        product = self.product_data.get_product_by_name(productName)
+        product = ProductData().get_product_by_name(productName)
 
         if product is None:
             logMsg = f'Plant "{productName}" not found'
@@ -472,7 +472,7 @@ class WurzelBot(object):
         #BG-Засаждане на възможно най-много растения от определен вид през всички градини.
         if self.feature.is_aqua_garden_available():
             planted = 0
-            product = self.product_data.get_product_by_name(productName)
+            product = ProductData().get_product_by_name(productName)
             if product is None:
                 logMsg = f'Plant "{productName}" not found'
                 self.__logBot.error(logMsg)
@@ -496,7 +496,7 @@ class WurzelBot(object):
     def printStock(self, category = None):
         isSmthPrinted = False
         for productID in self.stock.get_keys():
-            product = self.product_data.get_product_by_id(productID)
+            product = ProductData().get_product_by_id(productID)
 
             if category is not None and product.get_category() != category:
                 continue
@@ -513,12 +513,12 @@ class WurzelBot(object):
     def get_lowest_stock_entry(self, category = None):
         entryID = self.stock.get_lowest_stock_entry(category)
         if entryID == -1: return 'Your stock is empty'
-        return self.product_data.get_product_by_id(entryID).get_name()
+        return ProductData().get_product_by_id(entryID).get_name()
 
     def get_ordered_stock_list(self, category = None):
         orderedList = ''
         for productID in self.stock.get_ordered_stock_list(category=category):
-            orderedList += str(self.product_data.get_product_by_id(productID).get_name()).ljust(20)
+            orderedList += str(ProductData().get_product_by_id(productID).get_name()).ljust(20)
             orderedList += str(self.stock.get_ordered_stock_list()[productID]).rjust(5)
             orderedList += str('\n')
         return orderedList.strip()
@@ -528,8 +528,8 @@ class WurzelBot(object):
         plantOnly = self.note.get_grow_only()
         if len(plantOnly) != 0:
             for productID in self.stock.get_ordered_stock_list():
-                if self.product_data.get_product_by_id(productID).get_name() in plantOnly:
-                    return self.product_data.get_product_by_id(productID).get_name()
+                if ProductData().get_product_by_id(productID).get_name() in plantOnly:
+                    return ProductData().get_product_by_id(productID).get_name()
 
             return 'Your stock is empty'
 
@@ -537,8 +537,8 @@ class WurzelBot(object):
         lowestStock = -1
         lowestProductId = -1
         for productID in self.stock.get_ordered_stock_list():
-            if not self.product_data.get_product_by_id(productID).is_vegetable() or \
-                not self.product_data.get_product_by_id(productID).is_plantable():
+            if not ProductData().get_product_by_id(productID).is_vegetable() or \
+                not ProductData().get_product_by_id(productID).is_plantable():
                 continue
 
             currentStock = self.stock.get_stock_by_product_id(productID)
@@ -548,15 +548,15 @@ class WurzelBot(object):
                 continue
 
         if lowestProductId == -1: return 'Your stock is empty'
-        return self.product_data.get_product_by_id(lowestProductId).get_name()
+        return ProductData().get_product_by_id(lowestProductId).get_name()
 
     def getLowestSingleVegetableStockEntry(self):
         lowestSingleStock = -1
         lowestSingleProductId = -1
         for productID in self.stock.get_ordered_stock_list():
-            if not self.product_data.get_product_by_id(productID).is_vegetable() or \
-                not self.product_data.get_product_by_id(productID).is_plantable() or \
-                not self.product_data.get_product_by_id(productID).get_name() in self.product_data.get_single_field_vegetable_list():
+            if not ProductData().get_product_by_id(productID).is_vegetable() or \
+                not ProductData().get_product_by_id(productID).is_plantable() or \
+                not ProductData().get_product_by_id(productID).get_name() in ProductData().get_single_field_vegetable_list():
                 continue
 
             currentStock = self.stock.get_stock_by_product_id(productID)
@@ -566,14 +566,14 @@ class WurzelBot(object):
                 continue
 
         if lowestSingleProductId == -1: return 'Your stock is empty'
-        return self.product_data.get_product_by_id(lowestSingleProductId).get_name()
+        return ProductData().get_product_by_id(lowestSingleProductId).get_name()
 
     def getLowestWaterPlantStockEntry(self):
         lowestStock = -1
         lowestProductId = -1
         for productID in self.stock.get_ordered_stock_list():
-            if not self.product_data.get_product_by_id(productID).is_water_plant() or \
-                not self.product_data.get_product_by_id(productID).is_plantable():
+            if not ProductData().get_product_by_id(productID).is_water_plant() or \
+                not ProductData().get_product_by_id(productID).is_plantable():
                 continue
 
             currentStock = self.stock.get_stock_by_product_id(productID)
@@ -583,16 +583,16 @@ class WurzelBot(object):
                 continue
 
         if lowestProductId == -1: return 'Your stock is empty'
-        return self.product_data.get_product_by_id(lowestProductId).get_name()
+        return ProductData().get_product_by_id(lowestProductId).get_name()
 
     def printProductDetails(self):
-        self.product_data.print_all()
+        ProductData().print_all()
 
     def printVegetableDetails(self):
-        self.product_data.print_all_vegetables()
+        ProductData().print_all_vegetables()
 
     def printWaterPlantDetails(self):
-        self.product_data.print_all_water_plants()
+        ProductData().print_all_water_plants()
 
     def remove_weeds(self):
         """Removes weeds/moles/stones from all gardens"""
@@ -624,7 +624,7 @@ class WurzelBot(object):
                 for item in self.__HTTPConn.initInfinityQuest()['questData']['products']:
                     #print(item)
                     product = item['pid']
-                    product = self.product_data.get_product_by_id(product)
+                    product = ProductData().get_product_by_id(product)
                     #print(f'Pid {product.get_id()}')
                     needed = item['amount']
                     stored = self.stock.get_stock_by_product_id(product.get_id())
@@ -640,36 +640,8 @@ class WurzelBot(object):
 
     # Shops
     def buy_from_shop(self, product_name, amount: int):
-        if type(product_name) is int:
-            product_name = self.product_data.get_product_by_id(product_name).get_name()
-
-        product = self.product_data.get_product_by_name(product_name)
-        if product is None:
-            logMsg = f'Plant "{product_name}" not found'
-            self.__logBot.error(logMsg)
-            print(logMsg)
-            return -1
-
-        productId = product.get_id()
-
-        Shop = None
-        for k, id in ShopProducts.products().items():
-            if product_name in k:
-                Shop = id
-                break
-        if Shop in [1,2,3,4]:
-            try:
-                self.__HTTPConn.buy_from_shop(Shop, productId, amount)
-            except:
-                pass
-        elif Shop == 0:
-            try:
-                self.__HTTPConn.buyFromAquaShop(productId, amount)
-            except:
-                pass
-
+        self.shop.buy_from_shop(product_name, amount)
         self.stock.update()
-        return 0
 
     # Bees
     def send_bees(self, tour: int):
@@ -685,7 +657,7 @@ class WurzelBot(object):
             self.__update_honey_count(honey_count, self.honey.check_pour_honey())
 
         for key, value in honey_count.items():
-            self.__logBot.info(f'Collected {value} {self.product_data.get_product_by_id(key).get_name()}.')
+            self.__logBot.info(f'Collected {value} {ProductData().get_product_by_id(key).get_name()}.')
 
     def __update_honey_count(self, honeycount, transfer):
         for key, value in transfer.items():
@@ -696,7 +668,7 @@ class WurzelBot(object):
 
     def change_all_hives_types(self, product_name: str):
         if self.honey:
-            self.honey.change_all_hives_types(self.product_data.get_product_by_name(product_name).get_id())
+            self.honey.change_all_hives_types(ProductData().get_product_by_name(product_name).get_id())
 
     # Bonsai
     def cut_and_renew_bonsais(self, finish_level: int = 2) -> None:

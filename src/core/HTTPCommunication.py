@@ -453,28 +453,3 @@ class HTTPConnection(object):
             return jContent
         except:
             pass
-
-    # Shop
-    def buy_from_shop(self, shop: int, productId: int, amount: int = 1):
-        parameter = urlencode({
-            's': shop,
-            'page': 1,
-            'change_page_only': 0,
-            'produkt[0]': productId,
-            'anzahl[0]': amount
-        })
-        try:
-            header = {'Content-Type': 'application/x-www-form-urlencoded'}
-            response, content = self.sendRequest(f'stadt/shop.php?s={shop}', 'POST', parameter, header)
-            self.checkIfHTTPStateIsOK(response)
-        except:
-            raise
-
-    def buyFromAquaShop(self, productId: int, amount: int = 1):
-        adresse = f'ajax/ajax.php?products={productId}:{amount}&do=shopBuyProducts&type=aqua&token={self.__token}'
-
-        try:
-            response, content = self.sendRequest(f'{adresse}')
-            self.checkIfHTTPStateIsOK(response)
-        except:
-            return ''
