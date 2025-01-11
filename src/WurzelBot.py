@@ -13,7 +13,9 @@ from src.core.Config import Config
 from src.core.HTTPCommunication import HTTPConnection
 from src.core.Login import Login
 from src.core.Feature import Feature
-from src.Garten import Garden, AquaGarden, HerbGarden
+from src.garden.Garden import Garden
+from src.garden.aqua.AquaGarden import AquaGarden
+from src.garden.herb.HerbGarden import HerbGarden
 from src.greenhouse.Greenhouse import Greenhouse
 from src.honey.Honey import Honey
 from src.stock.Stock import Stock
@@ -69,13 +71,13 @@ class WurzelBot(object):
 
         try:
             for i in range(1, self.user.get_number_of_gardens() + 1):
-                self.gardens.append(Garden(self.__HTTPConn, i))
+                self.gardens.append(Garden(i))
 
             if self.feature.is_aqua_garden_available() is True:
-                self.aquagarden = AquaGarden(self.__HTTPConn)
+                self.aquagarden = AquaGarden()
 
             if self.feature.is_herb_garden_available() is True:
-                self.herbgarden = HerbGarden(self.__HTTPConn)
+                self.herbgarden = HerbGarden()
 
             if self.feature.is_honey_farm_available() is True:
                 self.honey = Honey()
@@ -212,7 +214,7 @@ class WurzelBot(object):
             except:
                 self.__logBot.error(i18n.t('wimpb.no_message'))
 
-    def getEmptyFieldsOfGardens(self):
+    def get_empty_fields(self):
         """
         Gibt alle leeren Felder aller normalen Gärten zurück.
         Kann dazu verwendet werden zu entscheiden, wie viele Pflanzen angebaut werden können.
@@ -222,7 +224,7 @@ class WurzelBot(object):
         emptyFields = []
         try:
             for garden in self.gardens:
-                emptyFields.append(garden.getEmptyFields())
+                emptyFields.append(garden.get_empty_fields())
         except:
             self.__logBot.error(f'Could not determinate empty fields from garden {garden.getID()}.')
         return emptyFields
@@ -387,7 +389,7 @@ class WurzelBot(object):
         return min(garden_time)
 
     def hasEmptyFields(self):
-        emptyFields = self.getEmptyFieldsOfGardens()
+        emptyFields = self.get_empty_fields()
         amount = 0
         for garden in emptyFields:
             amount += len(garden)
@@ -424,7 +426,7 @@ class WurzelBot(object):
     def harvest_all_unfinished(self):
         try:
             garden: Garden
-            for garden in self.garten:
+            for garden in self.gardens:
                 garden.harvest_unfinished()
         except:
             raise

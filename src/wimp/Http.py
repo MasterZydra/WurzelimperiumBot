@@ -2,15 +2,17 @@
 # -*- coding: utf-8 -*-
 
 from src.core.HTTPCommunication import HTTPConnection
+from src.garden.Http import Http as HttpGarden
 
 class Http(object):
     def __init__(self):
         self.__http: HTTPConnection = HTTPConnection()
+        self.__httpGarden = HttpGarden()
 
     def get_wimps_data(self, garden_id):
         """Get wimps data including wimp_id and list of products with amount"""
         try:
-            self.__http._changeGarden(garden_id)
+            self.__httpGarden.change_garden(garden_id)
 
             response, content = self.__http.sendRequest(f'ajax/verkaufajax.php?do=getAreaData&token={self.__http.token()}')
             self.__http.checkIfHTTPStateIsOK(response)
