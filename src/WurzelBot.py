@@ -491,10 +491,13 @@ class WurzelBot(object):
 
             return planted
 
-    def printStock(self):
+    def printStock(self, category = None):
         isSmthPrinted = False
         for productID in self.stock.get_keys():
             product = self.product_data.get_product_by_id(productID)
+
+            if category is not None and product.get_category() != category:
+                continue
 
             amount = self.stock.get_stock_by_product_id(productID)
             if amount == 0: continue
@@ -505,14 +508,14 @@ class WurzelBot(object):
         if not isSmthPrinted:
             print('Your stock is empty')
 
-    def get_lowest_stock_entry(self):
-        entryID = self.stock.get_lowest_stock_entry()
+    def get_lowest_stock_entry(self, category = None):
+        entryID = self.stock.get_lowest_stock_entry(category)
         if entryID == -1: return 'Your stock is empty'
         return self.product_data.get_product_by_id(entryID).get_name()
 
-    def get_ordered_stock_list(self):
+    def get_ordered_stock_list(self, category = None):
         orderedList = ''
-        for productID in self.stock.get_ordered_stock_list():
+        for productID in self.stock.get_ordered_stock_list(category=category):
             orderedList += str(self.product_data.get_product_by_id(productID).get_name()).ljust(20)
             orderedList += str(self.stock.get_ordered_stock_list()[productID]).rjust(5)
             orderedList += str('\n')

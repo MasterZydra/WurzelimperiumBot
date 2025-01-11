@@ -1,6 +1,7 @@
 from logging import log
 import src.Logger as logger
 from src.WurzelBot import WurzelBot
+from src.product.Product import CATEGORY_WATER_PLANTS
 import argparse
 import i18n
 import shlex
@@ -122,7 +123,7 @@ def help():
     print('lowest       Show the plant with the lowest stock (unequal zero)')
     print('             Opt. argument: "single", "water"')
     print('stock        Show all plants in stock')
-    print('             Opt. argument: "sort"')
+    print('             Opt. argument: "sort", "water"')
     print('user         Show details to the current user')
     print('water        Water all plants')
     print('weed         Remove all weed')
@@ -241,13 +242,15 @@ def stock(arg_str : str):
     arg_str = arg_str.replace('stock', '', 1).strip()
     args = shlex.split(arg_str)
 
-    if len(args) > 1 or (len(args) == 1 and args[0] != 'sort' and args[0] != ''):
+    if len(args) > 1 or (len(args) == 1 and args[0] not in ['sort', 'water'] and args[0] != ''):
         print('Cannot parse input.')
-        print('Expected format: stock [sort]')
+        print('Expected format: stock [sort|water]')
         return
 
     if len(args) == 0:
         bot.printStock()
+    elif args[0] == 'water':
+        bot.printStock(CATEGORY_WATER_PLANTS)
     elif args[0] == 'sort':
         print(bot.get_ordered_stock_list())
 
