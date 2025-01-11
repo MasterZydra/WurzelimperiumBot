@@ -456,12 +456,13 @@ class HTTPConnection(object):
 
     # Shop
     def buy_from_shop(self, shop: int, productId: int, amount: int = 1):
-        parameter = urlencode({'s': shop,
-                               'page': 1,
-                               'change_page_only': 0,
-                               'produkt[0]': productId,
-                               'anzahl[0]': amount
-                               })
+        parameter = urlencode({
+            's': shop,
+            'page': 1,
+            'change_page_only': 0,
+            'produkt[0]': productId,
+            'anzahl[0]': amount
+        })
         try:
             header = {'Content-Type': 'application/x-www-form-urlencoded'}
             response, content = self.sendRequest(f'stadt/shop.php?s={shop}', 'POST', parameter, header)
@@ -477,22 +478,3 @@ class HTTPConnection(object):
             self.checkIfHTTPStateIsOK(response)
         except:
             return ''
-
-    # Guild
-    def init_guild(self):
-        address = f"ajax/ajax.php?do=gildeGetData&&token={self.__token}"
-        try:
-            response, content = self.sendRequest(address)
-            self.checkIfHTTPStateIsOK(response)
-            return self.generateJSONContentAndCheckForOK(content)
-        except:
-            raise
-
-    def collect_lucky_mole(self, guild_id):
-        address = f"ajax/ajax.php?do=gilde&action=luckyWurf&id={guild_id}&token={self.__token}"
-        try:
-            response, content = self.sendRequest(address)
-            self.checkIfHTTPStateIsOK(response)
-            return self.generateJSONContentAndCheckForOK(content)
-        except:
-            raise

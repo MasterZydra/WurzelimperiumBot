@@ -1,9 +1,14 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 from src.bonus.Http import Http
+from src.guild.Http import Http as HttpGuild
 import time, logging
 
 class Bonus:
     def __init__(self):
         self.__http = Http()
+        self.__httpGuild = HttpGuild()
         self.__log = logging.getLogger("bot.Bonus")
         self.__log.setLevel(logging.DEBUG)
 
@@ -26,13 +31,13 @@ class Bonus:
         self.__log.info(f"{claim_msg}{already_claimed_msg}")
 
     def collect_lucky_mole(self):
-        content = self.__http.init_guild()
+        content = self.__httpGuild.init_guild()
         guild_id = content['data']['id']
         lucky = content['data']['lucky']
         msg = "Lucky mole not available! Try next day."
 
         if lucky == 1:
-            content = self.__http.collect_lucky_mole(guild_id)
+            content = self.__httpGuild.collect_lucky_mole(guild_id)
             msg = content['message']
 
         self.__log.info(f"{msg}")

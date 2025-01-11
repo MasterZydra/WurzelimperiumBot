@@ -43,9 +43,3 @@ class Http(object):
             return self.__http.generateJSONContentAndCheckForOK(content)
         except:
             raise
-    
-    def init_guild(self):
-        return self.__http.init_guild()
-
-    def collect_lucky_mole(self, guild_id):
-        return self.__http.collect_lucky_mole(guild_id)
