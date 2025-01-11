@@ -6,29 +6,29 @@ Created on 21.03.2017
 @author: MrFlamez
 '''
 
-from collections import Counter
 from src.bonsai.Bonsai import Bonsai
 from src.bonus.Bonus import Bonus
+from src.citypark.CityPark import CityPark
 from src.core.Config import Config
+from src.core.Feature import Feature
 from src.core.HTTPCommunication import HTTPConnection
 from src.core.Login import Login
-from src.core.Feature import Feature
-from src.garden.Garden import Garden
+from src.core.User import User
 from src.garden.aqua.AquaGarden import AquaGarden
+from src.garden.Garden import Garden
 from src.garden.herb.HerbGarden import HerbGarden
 from src.greenhouse.Greenhouse import Greenhouse
 from src.honey.Honey import Honey
-from src.shop.Shop import Shop
-from src.stock.Stock import Stock
 from src.marketplace.Marketplace import Marketplace
 from src.message.Messenger import Messenger
 from src.minigames.Minigames import Minigames
 from src.note.Note import Note
 from src.product.ProductData import ProductData
 from src.quest.Quest import Quest
-from src.citypark.CityPark import CityPark
-from src.core.User import User
+from src.shop.Shop import Shop
+from src.stock.Stock import Stock
 from src.wimp.Wimp import Wimp
+from collections import Counter
 import logging, i18n, datetime
 
 i18n.load_path.append('lang')
@@ -641,7 +641,7 @@ class WurzelBot(object):
 
     # Shops
     def buy_from_shop(self, product_name, amount: int):
-        self.shop.buy_from_shop(product_name, amount)
+        self.shop.buy(product_name, amount)
         self.stock.update()
 
     # Bees

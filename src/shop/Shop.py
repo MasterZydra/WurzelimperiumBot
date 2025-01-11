@@ -9,7 +9,7 @@ class Shop:
     def __init__(self):
         self.__http = Http()
 
-    def buy_from_shop(self, product_name, amount: int):
+    def buy(self, product_name, amount: int):
         if type(product_name) is int:
             product_name = ProductData().get_product_by_id(product_name).get_name()
 
@@ -20,19 +20,19 @@ class Shop:
 
         productId = product.get_id()
 
-        Shop = None
+        shop = None
         for k, id in ShopProducts.products().items():
             if product_name in k:
-                Shop = id
+                shop = id
                 break
-        if Shop in [1,2,3,4]:
+        if shop in [1,2,3,4]:
             try:
-                self.__http.buy_from_shop(Shop, productId, amount)
+                self.__http.buy(shop, productId, amount)
             except:
                 pass
-        elif Shop == 0:
+        elif shop == 0:
             try:
-                self.__http.buy_from_aqua_shop(productId, amount)
+                self.__http.buy_aqua(productId, amount)
             except:
                 pass
 
