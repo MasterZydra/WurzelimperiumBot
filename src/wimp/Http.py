@@ -14,9 +14,9 @@ class Http(object):
         try:
             self.__httpGarden.change_garden(garden_id)
 
-            response, content = self.__http.sendRequest(f'ajax/verkaufajax.php?do=getAreaData&token={self.__http.token()}')
-            self.__http.checkIfHTTPStateIsOK(response)
-            jContent = self.__http.generateJSONContentAndCheckForOK(content)
+            response, content = self.__http.send(f'ajax/verkaufajax.php?do=getAreaData&token={self.__http.token()}')
+            self.__http.check_http_state_ok(response)
+            jContent = self.__http.get_json_and_check_for_ok(content)
             return self.__find_wimps_data_from_json(jContent)
         except:
             raise
@@ -25,9 +25,9 @@ class Http(object):
         """Get wimps data including wimp_id and list of products with amount"""
         address = f'ajax/ajax.php?do=watergardenGetGarden&token={self.__http.token()}'
         try:
-            response, content = self.__http.sendRequest(address)
-            self.__http.checkIfHTTPStateIsOK(response)
-            jContent = self.__http.generateJSONContentAndCheckForOK(content)
+            response, content = self.__http.send(address)
+            self.__http.check_http_state_ok(response)
+            jContent = self.__http.get_json_and_check_for_ok(content)
             return self.__find_wimps_data_from_json(jContent)
         except:
             raise
@@ -52,9 +52,9 @@ class Http(object):
         """
         try:
             address = f'ajax/verkaufajax.php?do=accept&id={wimp_id}&token={self.__http.token()}'
-            response, content = self.__http.sendRequest(address, 'POST')
-            self.__http.checkIfHTTPStateIsOK(response)
-            jContent = self.__http.generateJSONContentAndCheckForOK(content)
+            response, content = self.__http.send(address, 'POST')
+            self.__http.check_http_state_ok(response)
+            jContent = self.__http.get_json_and_check_for_ok(content)
             return jContent['newProductCounts']
         except:
             pass
@@ -67,9 +67,9 @@ class Http(object):
         """
         try:
             address = f'ajax/verkaufajax.php?do=decline&id={wimp_id}&token={self.__http.token()}'
-            response, content = self.__http.sendRequest(address)
-            self.__http.checkIfHTTPStateIsOK(response)
-            jContent = self.__http.generateJSONContentAndCheckForOK(content)
+            response, content = self.__http.send(address)
+            self.__http.check_http_state_ok(response)
+            jContent = self.__http.get_json_and_check_for_ok(content)
             return jContent['action']
         except:
             pass

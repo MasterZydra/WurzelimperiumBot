@@ -316,7 +316,7 @@ class WurzelBot(object):
             self.__logBot.info(f"Gained {points_gained} points.")
             self.__logBot.info(f"Sold to {counter} wimps for {rewards:.2f} wT (equals {(rewards/npc_price):.2%} of Shop-price: {npc_price:.2f} wT)")
 
-            sales, revenue = self.__HTTPConn.getInfoFromStats('Wimps')
+            sales, revenue = User().get_stats('Wimps')
 
             statMsg = (
                 f"\n--------------------------------\n"

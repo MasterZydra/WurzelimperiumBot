@@ -29,14 +29,14 @@ class User():
             if only_data:
                 return
 
-            self.__number_of_gardens = self.__http.get_info_from_stats("Gardens")
-            self.__user_id = self.__http.get_user_id()
+            self.__number_of_gardens = self.get_stats("Gardens")
+            self.__user_id = self.__http.user_id()
             self.__is_mail_confirmed = self.__http.check_mail_confirmed()
             self.__has_watering_gnome_helper = self.__http.has_watering_gnome_helper()
         except:
             print('Could not load the user data')
 
-    def get_user_id(self) -> str:
+    def user_id(self) -> str:
         return self.__user_id
 
     def get_username(self) -> str:
@@ -80,3 +80,6 @@ class User():
 
     def has_watering_gnome_helper(self) -> bool:
         return self.__has_watering_gnome_helper
+
+    def get_stats(self, info):
+        return self.__http.get_info_from_stats(info)

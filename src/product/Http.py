@@ -12,10 +12,10 @@ class Http(object):
     def get_all_product_infos(self):
         """Collect all product infos"""
         try:
-            response, content = self.__http.sendRequest('main.php?page=garden')
+            response, content = self.__http.send('main.php?page=garden')
             content = content.decode('UTF-8')
             self.__http.update_token_from_content(content)
-            self.__http.checkIfHTTPStateIsOK(response)
+            self.__http.check_http_state_ok(response)
 
             products = re.search(r'data_products = ({.*}});var', content)
             return products.group(1)
@@ -24,8 +24,8 @@ class Http(object):
 
     def get_npc_prices(self):
         """Get all NPC prices for all products from the help dialog"""
-        response, content = self.__http.sendRequest('hilfe.php?item=2')
-        self.__http.checkIfHTTPStateIsOK(response)
+        response, content = self.__http.send('hilfe.php?item=2')
+        self.__http.check_http_state_ok(response)
         content = content.decode('UTF-8').replace('Gärten & Regale', 'Gärten und Regale')
         return self.__parse_npc_prices_from_html(content)
 

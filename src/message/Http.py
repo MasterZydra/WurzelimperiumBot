@@ -11,8 +11,8 @@ class Http(object):
     def create_new_message_and_return_result(self):
         """Erstellt eine neue Nachricht und gibt deren ID zurück, die für das Senden benötigt wird."""
         try:
-            response, content = self.__http.sendRequest('nachrichten/new.php')
-            self.__http.checkIfHTTPStateIsOK(response)
+            response, content = self.__http.send('nachrichten/new.php')
+            self.__http.check_http_state_ok(response)
             return content
         except:
             raise
@@ -27,8 +27,8 @@ class Http(object):
             'msg_send': 'senden'
         })
         try:
-            response, content = self.__http.sendRequest('nachrichten/new.php', 'POST', parameter)
-            self.__http.checkIfHTTPStateIsOK(response)
+            response, content = self.__http.send('nachrichten/new.php', 'POST', parameter)
+            self.__http.check_http_state_ok(response)
             return content
         except:
             raise

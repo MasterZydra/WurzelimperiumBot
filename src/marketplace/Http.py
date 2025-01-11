@@ -12,8 +12,8 @@ class Http(object):
     def get_tradeable_products_from_overview(self):
         """"Return list of all tradable products"""
         try:
-            response, content = self.__http.sendRequest('stadt/markt.php?show=overview')
-            self.__http.checkIfHTTPStateIsOK(response)
+            response, content = self.__http.send('stadt/markt.php?show=overview')
+            self.__http.check_http_state_ok(response)
             tradeable_products = re.findall(r'markt\.php\?order=p&v=([0-9]{1,3})&filter=1', content)
         except:
             raise
@@ -32,8 +32,8 @@ class Http(object):
 
             try:
                 address = f'stadt/markt.php?order=p&v={str(product_id)}&filter=1&page={str(page_index)}'
-                response, content = self.__http.sendRequest(address)
-                self.__http.checkIfHTTPStateIsOK(response)
+                response, content = self.__http.send(address)
+                self.__http.check_http_state_ok(response)
             except:
                 raise
             else:

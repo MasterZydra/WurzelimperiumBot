@@ -11,9 +11,9 @@ class Http(object):
         """Determines the plants in stock"""
         try:
             address = f'ajax/updatelager.php?all=1&sort=1&type=honey&token={self.__http.token()}'
-            response, content = self.__http.sendRequest(address, 'POST')
-            self.__http.checkIfHTTPStateIsOK(response)
-            jContent = self.__http.generateJSONContentAndCheckForOK(content)
+            response, content = self.__http.send(address, 'POST')
+            self.__http.check_http_state_ok(response)
+            jContent = self.__http.get_json_and_check_for_ok(content)
             return jContent['produkte']
         except:
             pass

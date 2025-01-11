@@ -11,8 +11,8 @@ class Http(object):
     def get_note(self) -> str:
         """Get the users note"""
         try:
-            response, content = self.__http.sendRequest('notiz.php', 'POST')
-            self.__http.checkIfHTTPStateIsOK(response)
+            response, content = self.__http.send('notiz.php', 'POST')
+            self.__http.check_http_state_ok(response)
             content = content.decode('UTF-8')
             my_parser = etree.HTMLParser(recover=True)
             html_tree = etree.fromstring(content, parser=my_parser)

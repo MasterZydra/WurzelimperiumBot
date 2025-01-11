@@ -11,9 +11,9 @@ class Http(object):
         """Selects bonsaigarden returns JSON content(status, data, init, questnr, questData, quest)"""
         try:
             address = f'ajax/ajax.php?do=bonsai_init&token={self.__http.token()}'
-            response, content = self.__http.sendRequest(address)
-            self.__http.checkIfHTTPStateIsOK(response)
-            jContent = self.__http.generateJSONContentAndCheckForOK(content)
+            response, content = self.__http.send(address)
+            self.__http.check_http_state_ok(response)
+            jContent = self.__http.get_json_and_check_for_ok(content)
             return jContent
         except:
             raise
@@ -35,9 +35,9 @@ class Http(object):
         """
         address = f'ajax/ajax.php?do=bonsai_buy_item&item={item}&pack={pack}&slot={slot}&token={self.__http.token()}'
         try:
-            response, content = self.__http.sendRequest(address)
-            self.__http.checkIfHTTPStateIsOK(response)
-            jContent = self.__http.generateJSONContentAndCheckForOK(content)
+            response, content = self.__http.send(address)
+            self.__http.check_http_state_ok(response)
+            jContent = self.__http.get_json_and_check_for_ok(content)
             return jContent
         except:
             raise
@@ -47,9 +47,9 @@ class Http(object):
         try:
             address = f'ajax/ajax.php?do=bonsai_branch_click&slot={slot}&' \
                 f'scissor={sissor}&cache=%5B{branch}%5D&token={self.__http.token()}'
-            response, content = self.__http.sendRequest(address)
-            self.__http.checkIfHTTPStateIsOK(response)
-            jContent = self.__http.generateJSONContentAndCheckForOK(content)
+            response, content = self.__http.send(address)
+            self.__http.check_http_state_ok(response)
+            jContent = self.__http.get_json_and_check_for_ok(content)
             return jContent
         except:
             raise
@@ -58,9 +58,9 @@ class Http(object):
         """Finishes bonsai to the bonsaigarden and returns JSON content"""
         try:
             address = f'ajax/ajax.php?do=bonsai_finish_breed&slot={slot}&token={self.__http.token()}'
-            response, content = self.__http.sendRequest(address)
-            self.__http.checkIfHTTPStateIsOK(response)
-            jContent = self.__http.generateJSONContentAndCheckForOK(content)
+            response, content = self.__http.send(address)
+            self.__http.check_http_state_ok(response)
+            jContent = self.__http.get_json_and_check_for_ok(content)
             return jContent
         except:
             raise

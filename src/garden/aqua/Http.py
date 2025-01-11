@@ -13,9 +13,9 @@ class Http(object):
     def get_empty_fields(self):
         try:
             address = f'ajax/ajax.php?do=watergardenGetGarden&token={self.__http.token()}'
-            response, content = self.__http.sendRequest(address)
-            self.__http.checkIfHTTPStateIsOK(response)
-            jContent = self.__http.generateJSONContentAndCheckForOK(content)
+            response, content = self.__http.send(address)
+            self.__http.check_http_state_ok(response)
+            jContent = self.__http.get_json_and_check_for_ok(content)
             emptyAquaFields = self.__httpGarden.find_empty_fields_in_json(jContent)
         except:
             raise
@@ -26,9 +26,9 @@ class Http(object):
         """Use watering gnome to water all plants in the aquagarden (premium feature)."""
         try:
             address = f"ajax/ajax.php?do=watergardenWaterAll&token={self.__http.token()}"
-            response, content = self.__http.sendRequest(address)
-            self.__http.checkIfHTTPStateIsOK(response)
-            self.__http.generateJSONContentAndCheckForOK(content)
+            response, content = self.__http.send(address)
+            self.__http.check_http_state_ok(response)
+            self.__http.get_json_and_check_for_ok(content)
         except:
             raise
 
@@ -37,9 +37,9 @@ class Http(object):
         Ermittelt alle bepflanzten Felder im Wassergartens, die auch gegossen werden können und gibt diese zurück.
         """
         try:
-            response, content = self.sendRequest(f'ajax/ajax.php?do=watergardenGetGarden&token={self.__http.token()}')
-            self.__http.checkIfHTTPStateIsOK(response)
-            jContent = self.__http.generateJSONContentAndCheckForOK(content)
+            response, content = self.send(f'ajax/ajax.php?do=watergardenGetGarden&token={self.__http.token()}')
+            self.__http.check_http_state_ok(response)
+            jContent = self.__http.get_json_and_check_for_ok(content)
             return self.__httpGarden.find_plants_to_be_watered_in_json(jContent)
         except:
             raise
@@ -54,8 +54,8 @@ class Http(object):
 
         try:
             address = f'ajax/ajax.php?do=watergardenCache{sFields}&token={self.__http.token()}'
-            response, content = self.__http.sendRequest(address)
-            self.__http.checkIfHTTPStateIsOK(response)
+            response, content = self.__http.send(address)
+            self.__http.check_http_state_ok(response)
         except:
             raise
 
@@ -63,7 +63,7 @@ class Http(object):
         """Erntet alle fertigen Pflanzen im Garten."""
         try:
             address = f'ajax/ajax.php?do=watergardenHarvestAll&token={self.__http.token()}'
-            response, content = self.__http.sendRequest(address)
+            response, content = self.__http.send(address)
             jContent = json.loads(content)
 
             if jContent['status'] == 'error':
@@ -85,8 +85,8 @@ class Http(object):
         address += f"&token={self.__http.token()}"
 
         try:
-            response, content = self.__http.sendRequest(address)
-            self.__http.checkIfHTTPStateIsOK(response)
-            return self.__http.generateJSONContentAndCheckForOK(content)
+            response, content = self.__http.send(address)
+            self.__http.check_http_state_ok(response)
+            return self.__http.get_json_and_check_for_ok(content)
         except:
             raise

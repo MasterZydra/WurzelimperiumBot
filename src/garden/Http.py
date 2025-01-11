@@ -16,9 +16,9 @@ class Http(object):
         """
         try:
             address = f'ajax/ajax.php?do=changeGarden&garden={str(gardenID)}&token={self.__http.token()}'
-            response, content = self.__http.sendRequest(address)
-            self.__http.checkIfHTTPStateIsOK(response)
-            jContent = self.__http.generateJSONContentAndCheckForOK(content)
+            response, content = self.__http.send(address)
+            self.__http.check_http_state_ok(response)
+            jContent = self.__http.get_json_and_check_for_ok(content)
         except:
             raise
         else:
@@ -28,9 +28,9 @@ class Http(object):
         """Use watering gnome to water all plants in a garden (premium feature)."""
         try:
             address = f"ajax/ajax.php?do=gardenWaterAll&token={self.__http.token()}"
-            response, content = self.__http.sendRequest(address)
-            self.__http.checkIfHTTPStateIsOK(response)
-            self.__http.generateJSONContentAndCheckForOK(content)
+            response, content = self.__http.send(address)
+            self.__http.check_http_state_ok(response)
+            self.__http.get_json_and_check_for_ok(content)
         except:
             raise
 
@@ -39,9 +39,9 @@ class Http(object):
         try:
             address =   f'save/wasser.php?feld[]={str(iField)}&felder[]={sFieldsToWater}' \
                         f'&cid={self.__http.token()}&garden={str(iGarten)}'
-            response, content = self.__http.sendRequest(address)
-            self.__http.checkIfHTTPStateIsOK(response)
-            self.__http.generateYAMLContentAndCheckForSuccess(content.decode('UTF-8'))
+            response, content = self.__http.send(address)
+            self.__http.check_http_state_ok(response)
+            self.__http.get_yaml_and_check_for_success(content.decode('UTF-8'))
         except:
             raise
 
@@ -49,9 +49,9 @@ class Http(object):
         """Gibt alle leeren Felder eines Gartens zurück."""
         try:
             address = f'ajax/ajax.php?do=changeGarden&garden={str(gardenID)}&token={self.__http.token()}'
-            response, content = self.__http.sendRequest(address)
-            self.__http.checkIfHTTPStateIsOK(response)
-            jContent = self.__http.generateJSONContentAndCheckForOK(content)
+            response, content = self.__http.send(address)
+            self.__http.check_http_state_ok(response)
+            jContent = self.__http.get_json_and_check_for_ok(content)
             if param == "empty":
                 emptyFields = self.find_empty_fields_in_json(jContent)
             elif param == "grown":
@@ -75,9 +75,9 @@ class Http(object):
         """Gibt alle Unkraut-Felder eines Gartens zurück."""
         try:
             address = f'ajax/ajax.php?do=changeGarden&garden={str(gardenID)}&token={self.__http.token()}'
-            response, content = self.__http.sendRequest(address)
-            self.__http.checkIfHTTPStateIsOK(response)
-            jContent = self.__http.generateJSONContentAndCheckForOK(content)
+            response, content = self.__http.send(address)
+            self.__http.check_http_state_ok(response)
+            jContent = self.__http.get_json_and_check_for_ok(content)
             weedFields = self.__find_weed_fields_in_json(jContent)
         except:
             raise
@@ -102,9 +102,9 @@ class Http(object):
         """Returns all fields with growing plants of a garden."""
         try:
             address = f'ajax/ajax.php?do=changeGarden&garden={str(gardenID)}&token={self.__http.token()}'
-            response, content = self.__http.sendRequest(address)
-            self.__http.checkIfHTTPStateIsOK(response)
-            jContent = self.__http.generateJSONContentAndCheckForOK(content)
+            response, content = self.__http.send(address)
+            self.__http.check_http_state_ok(response)
+            jContent = self.__http.get_json_and_check_for_ok(content)
             growingPlants = self.__find_growing_plants_in_json(jContent)
         except:
             raise
@@ -123,7 +123,7 @@ class Http(object):
         try:
             self.change_garden(gardenID)
             address = f'ajax/ajax.php?do=gardenHarvestAll&token={self.__http.token()}'
-            response, content = self.__http.sendRequest(address)
+            response, content = self.__http.send(address)
             jContent = json.loads(content)
 
             if jContent['status'] == 'error':
@@ -145,7 +145,7 @@ class Http(object):
     def harvest_unfinished(self, plant_id, field, fields):
         try:
             address = f"save/ernte.php?pflanze[]={plant_id}&feld[]={field}&felder[]={fields}&closepopup=1&ernteJa=ernteJa"
-            response, content = self.__http.sendRequest(address)
+            response, content = self.__http.send(address)
         except:
             raise
 
@@ -160,9 +160,9 @@ class Http(object):
             address += f"&felder[]={fields}" #???
         address += f"&cid={self.__http.token()}&garden={gardenID}"
         try:
-            response, content = self.__http.sendRequest(address)
-            self.__http.checkIfHTTPStateIsOK(response)
-            return self.__http.generateJSONContentAndCheckForSuccess(content)
+            response, content = self.__http.send(address)
+            self.__http.check_http_state_ok(response)
+            return self.__http.get_json_and_check_for_success(content)
         except:
             raise
 
@@ -170,9 +170,9 @@ class Http(object):
         """Befreit ein Feld im Garten von Unkraut."""
         self.change_garden(gardenID)
         try:
-            response, content = self.__http.sendRequest(f'save/abriss.php?tile={fieldID}', 'POST')
-            self.__http.checkIfHTTPStateIsOK(response)
-            jContent = self.__http.generateJSONContentAndCheckForSuccess(content)
+            response, content = self.__http.send(f'save/abriss.php?tile={fieldID}', 'POST')
+            self.__http.check_http_state_ok(response)
+            jContent = self.__http.get_json_and_check_for_success(content)
             return jContent['success']
         except:
             raise
@@ -181,9 +181,9 @@ class Http(object):
         """Wechselt den Garten."""
         try:
             address = f'ajax/ajax.php?do=changeGarden&garden={str(gardenID)}&token={self.__http.token()}'
-            response, content = self.__http.sendRequest(address)
-            self.__http.checkIfHTTPStateIsOK(response)
-            return self.__http.generateJSONContentAndCheckForOK(content)
+            response, content = self.__http.send(address)
+            self.__http.check_http_state_ok(response)
+            return self.__http.get_json_and_check_for_ok(content)
         except:
             raise
 
