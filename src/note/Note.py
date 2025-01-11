@@ -9,8 +9,12 @@ class Note():
     def __init__(self):
         self.__http = Http()
 
+    # MARK: Basic functions
+
     def get_note(self):
         return self.__http.get_note()
+
+    # MARK: Extended features
 
     def __extract_amount(self, line, prefix) -> int:
         min_stock_str = line.replace(prefix, '').strip()

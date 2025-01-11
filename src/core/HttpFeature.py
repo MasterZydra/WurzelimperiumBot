@@ -48,8 +48,6 @@ class Http(object):
     def is_greenhouse_available(self):
         try:
             cactus_quest = self.__httpUser.get_info_from_stats("CactusQuest")
-            if cactus_quest > 0:
-                return True
-            return False
+            return cactus_quest > 0
         except:
             raise
