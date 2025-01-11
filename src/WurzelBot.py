@@ -41,11 +41,9 @@ class WurzelBot(object):
 
 
     def __init__(self):
-        self.__config = Config()
         self.__logBot = logging.getLogger("bot")
         self.__logBot.setLevel(logging.DEBUG)
         self.__HTTPConn = HTTPConnection()
-        self.user = User()
         self.messenger = Messenger()
         self.stock = Stock()
         self.shop = Shop()
@@ -69,7 +67,7 @@ class WurzelBot(object):
         #BG-"""Определя броя на градините и ги инициализира всички."""
 
         try:
-            for i in range(1, self.user.get_number_of_gardens() + 1):
+            for i in range(1, User().get_number_of_gardens() + 1):
                 self.gardens.append(Garden(i))
 
             if Feature().is_aqua_garden_available():
@@ -140,7 +138,7 @@ class WurzelBot(object):
             try:
                 self.__HTTPConn.logInPortal(loginDaten)
             except Exception as e:
-                if self.__config.isDevMode:
+                if Config().isDevMode:
                     raise e
                 self.__logBot.error(i18n.t('wimpb.error_starting_wbot'))
                 return False
@@ -148,15 +146,15 @@ class WurzelBot(object):
             try:
                 self.__HTTPConn.logIn(loginDaten)
             except Exception as e:
-                if self.__config.isDevMode:
+                if Config().isDevMode:
                     raise e
                 self.__logBot.error(i18n.t('wimpb.error_starting_wbot'))
                 return False
 
         try:
-            self.user.update()
+            User().update()
         except Exception as e:
-            if self.__config.isDevMode:
+            if Config().isDevMode:
                 raise e
             self.__logBot.error(i18n.t('wimpb.error_refresh_userdata'))
             return False
@@ -164,12 +162,12 @@ class WurzelBot(object):
         try:
             self.__init_gardens()
         except Exception as e:
-            if self.__config.isDevMode:
+            if Config().isDevMode:
                 raise e
             self.__logBot.error(i18n.t('wimpb.error_number_of_gardens'))
             return False
 
-        self.user.accountLogin = loginDaten
+        User().accountLogin = loginDaten
         ProductData().init()
         self.stock.init_product_list(ProductData().get_product_id_list())
         self.stock.update()
@@ -184,7 +182,7 @@ class WurzelBot(object):
             self.__logBot.info(i18n.t('wimpb.logout_success'))
             self.__logBot.info('-------------------------------------------')
         except Exception as e:
-            if self.__config.isDevMode:
+            if Config().isDevMode:
                 raise e
             self.__logBot.error(i18n.t('wimpb.exit_wbot_abnormal'))
 
@@ -212,7 +210,7 @@ class WurzelBot(object):
         """
         #BG-Създава ново съобщение, попълва го и го изпраща.Получателите трябва да са в масив! Съобщение може да бъде изпратено само ако електронната поща е потвърдена.
 
-        if (self.user.is_mail_confirmed()):
+        if (User().is_mail_confirmed()):
             try:
                 self.messenger.write(recipients, subject, body)
             except:
@@ -261,8 +259,8 @@ class WurzelBot(object):
     def sell_to_wimps(self, buy_from_shop: bool = False, minimal_balance: int = 500, 
         method: str = "loss", max_amount: int = 100, max_loss_in_percent: int = 33
     ):
-        self.user.update(True)
-        points_before = self.user.get_points()
+        User().update(True)
+        points_before = User().get_points()
 
         stock_list = self.stock.get_ordered_stock_list(filter_zero=False)
         wimps_data = []
@@ -306,10 +304,10 @@ class WurzelBot(object):
                     stock_list[id] -= amount
                     npc_price += ProductData().get_product_by_id(id).get_price_npc() * amount
 
-        self.user.update(True)
+        User().update(True)
 
         if counter > 0:
-            points_after = self.user.get_points()
+            points_after = User().get_points()
             points_gained = points_after - points_before
 
             print(f"Gained {points_gained} points.")
@@ -384,7 +382,7 @@ class WurzelBot(object):
         for garden in self.gardens:
             garden_time.append(garden.getNextWaterHarvest())
 
-        self.user.update(True)
+        User().update(True)
         human_time = datetime.datetime.fromtimestamp(min(garden_time))
         print(f"Next time water/harvest: {human_time.strftime('%d/%m/%y %H:%M:%S')} ({min(garden_time)})")
         return min(garden_time)
@@ -610,18 +608,18 @@ class WurzelBot(object):
     def get_daily_bonuses(self):
         self.bonus.get_daily_login_bonus()
 
-        if self.user.is_premium_active():
+        if User().is_premium_active():
             self.bonus.collect_bonus_item_points()
 
-        if self.user.is_guild_member():
+        if User().is_guild_member():
             self.bonus.collect_lucky_mole()
 
     def infinityQuest(self, MINwt):
         #TODO: Mehr Checks bzw Option wieviele Quests/WT man ausgeben mag - da es kein cooldown gibt! (hoher wt verlust)
-        if self.user.get_bar() < MINwt:
+        if User().get_bar() < MINwt:
             print('Zuwenig WT')
             pass
-        if self.user.get_level() > 23 and self.user.get_bar() > MINwt:
+        if User().get_level() > 23 and User().get_bar() > MINwt:
             questnr = self.__HTTPConn.initInfinityQuest()['questnr']
             if int(questnr) <= 500:
                 for item in self.__HTTPConn.initInfinityQuest()['questData']['products']:
