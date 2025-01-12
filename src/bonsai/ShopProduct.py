@@ -13,6 +13,18 @@ MAPLE = 8 # DE: Ahorn
 ASH = 9 # DE: Esche
 CHERRY_TREE = 10 # DE: Kirschbaum
 
+TREE_LEVELS = [
+    (3, MANGROVE),
+    (5, MONEY_TREE),
+    (7, SPRUCE_FOREST),
+    (9, CYPRESS),
+    (11, JUNIPER),
+    (13, OAK),
+    (15, MAPLE),
+    (17, ASH),
+    (19, CHERRY_TREE)
+]
+
 # Pots
 SIMPLE_POT = 11 # DE: Einfache Schale
 GOLDEN_POT = 12 # DE: Goldene Schale
