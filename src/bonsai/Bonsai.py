@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import logging
+from src.core.User import User
 from src.bonsai.Http import Http
 from src.bonsai.ShopProduct import *
 
@@ -38,6 +39,14 @@ class Bonsai():
         trees = [MAIDENHAIR_PINE]  # Always available
         trees.extend(tree for lvl, tree in TREE_LEVELS if level >= lvl)
         return trees
+    
+    def get_available_scissor_packs(self, money_to_spend : int = None) -> list:
+        if money_to_spend is None:
+            money_to_spend = User().get_bar()
+
+        packs = []
+        packs.extend(pack for pack, _, price in SCISSOR_PACKS if money_to_spend >= price)
+        return packs
 
     def __getBonsaiQuest(self, jContent):
         """searches for available bonsai quest in the JSON content and returns the questdata"""
@@ -79,7 +88,29 @@ class Bonsai():
 
         return availableBonsais
 
-    def cutAllBonsai(self, min_scissor_stock=50) -> None:
+    def buy_scissors(self, money_to_spend : int = None, pack = None) -> bool:
+        """buys scissors from the shop"""
+        if pack is None:
+            packs = self.get_available_scissor_packs(money_to_spend)
+
+            if len(packs) == 0:
+                self._logBonsai.info("Not enough money to buy scissors")
+                print("Not enough money to buy scissors")
+                return False
+
+            pack = packs[-1]
+
+        amount = SCISSOR_PACKS[pack-1][1]
+        price = SCISSOR_PACKS[pack-1][2]
+        self._logBonsai.info(f'Rebuying {amount} normal scissors for {price} wT.')
+        print(f'Rebuying {amount} normal scissors for {price} wT.')
+
+        jContent = self.__http.buyAndPlaceBonsaiItem(NORMAL_SCISSOR, pack, 0)
+        self.setBonsaiFarmData(jContent)
+
+        return True
+
+    def cutAllBonsai(self, min_scissor_stock=50, money_to_spend : int = None) -> None:
         """cuts every branch of available bonsai and rebuys scissors if necessary"""
 	#BG - Отрязва всички клони на наличните бонсаи и купува нови ножици, ако е необходимо.
         sissorID = None
@@ -89,11 +120,9 @@ class Bonsai():
                 sissorID = key
                 sissorLoads = value['loads']
                 self._logBonsai.info(f"In storage: {sissorLoads} normal scissors with ID {sissorID}")
+
         if sissorID is None or int(sissorLoads) < min_scissor_stock:
-            self._logBonsai.info("Rebuying 500 normal scissors for 80.000 wT.")
-            print("Rebuying 500 normal scissors for 80.000 wT.")
-            jContent = self.__http.buyAndPlaceBonsaiItem(NORMAL_SCISSOR, 4, 0)
-            self.setBonsaiFarmData(jContent)
+            self.buy_scissors(money_to_spend)
 
         for key in self.__slotinfos.keys():
             self._logBonsai.info(f'Bonsai in slot {key}:')

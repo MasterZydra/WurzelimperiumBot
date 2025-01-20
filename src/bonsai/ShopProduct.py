@@ -42,3 +42,11 @@ NORMAL_SCISSOR = 21 # DE: Normale Schere
 POINTS_BOOSTER_SCISSOR = 22 # DE: Punkte-Booster-Schere
 BONSAI_BOOSTER_SCISSOR = 23 # DE: Bonsai-Booster-Schere
 SUPER_SCISSOR = 24 # DE: Super-Schere
+
+# Pack id, charges, price
+SCISSOR_PACKS = [
+    (1, 10, 2000),
+    (2, 240, 9000),
+    (3, 100, 17000),
+    (4, 500, 80000)
+]
