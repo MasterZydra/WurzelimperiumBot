@@ -30,8 +30,8 @@ class Fair():
         self.__http.init_game()
 
         self.craft_tickets()
-        self.play_wetgnome()
         self.play_thimblerig()
+        self.play_wetgnome()
 
     def __set_data(self, data) -> None:
         self.__data = data["data"]
