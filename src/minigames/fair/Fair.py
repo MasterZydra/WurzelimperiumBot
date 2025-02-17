@@ -72,8 +72,6 @@ class Fair():
                 self.__thimblerig_round = self.__thimblerig.select()
 
             self._logFair.info(f"Thimblerig: {self.__thimblerig.get_points()}/300 balloons.")
-
-            return
         else:
             self._logFair.error("No tickets for playing!")
 
@@ -100,8 +98,6 @@ class Fair():
                 self.__wetgnome_round = self.__wetgnome.select(game_id)
 
             self._logFair.info(f"Reached: {self.__wetgnome.get_points()}/300 airsnakes.")
-
-            return
         else:
             self._logFair.error("No tickets for playing!")
 
