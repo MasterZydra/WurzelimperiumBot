@@ -3,6 +3,7 @@
 
 from src.minigames.adventCalendar.AdventCalendar import AdventCalendar
 from src.minigames.birthdayCalendar.BirthdayCalendar import BirthdayCalendar
+from src.minigames.fair.Fair import Fair
 from src.minigames.pumpkinDigging.PumpkinDigging import PumpkinDigging
 
 class Minigames():
@@ -11,6 +12,7 @@ class Minigames():
         # TODO Enhancement: Check for games only if the current date matches the seasons the games are available.
         self.__adventCalendar = AdventCalendar()
         self.__birthdayCalendar = BirthdayCalendar()
+        self.__fair = Fair()
         self.__pumpkinDigging = PumpkinDigging()
 
     def play(self):
@@ -21,6 +23,10 @@ class Minigames():
         if self.__birthdayCalendar.is_available():
             print('Opening birthday calendar...')
             self.__birthdayCalendar.play()
+
+        if self.__fair.is_available():
+            print('Playing fair...')
+            self.__fair.play()
 
         if self.__pumpkinDigging.is_available():
             print('Playing pumkin digging game...')
