@@ -55,6 +55,9 @@ class Honey():
 
     def check_pour_honey(self):
         stock = self.__data['data']['stock']
+        if type(stock) is list:
+            return {}
+
         for key, value in stock.items():
             stock.update({key: int(value)})
 
