@@ -1,6 +1,7 @@
 from logging import log
 import src.Logger as logger
 from src.WurzelBot import WurzelBot
+from src.core.User import User
 from src.product.Product import CATEGORY_WATER_PLANTS
 import argparse
 import i18n
@@ -256,12 +257,12 @@ def stock(arg_str : str):
 
 def user_info():
     colWidth = 20
-    print('User:'.ljust(colWidth) + bot.user.get_username())
-    print('Anzahl der Gärten:'.ljust(colWidth) + str(bot.user.get_number_of_gardens()))
-    print('Level:'.ljust(colWidth) + str(bot.user.get_level()) + ' (' + bot.user.get_level_name() + ')')
-    print('Bar:'.ljust(colWidth) + bot.user.get_bar_formatted())
-    print('Points:'.ljust(colWidth) + f'{bot.user.get_points():,}'.replace(',', '.'))
-    print('Coins:'.ljust(colWidth) + str(bot.user.get_coins()))
+    print('User:'.ljust(colWidth) + User().get_username())
+    print('Anzahl der Gärten:'.ljust(colWidth) + str(User().get_number_of_gardens()))
+    print('Level:'.ljust(colWidth) + str(User().get_level()) + ' (' + User().get_level_name() + ')')
+    print('Bar:'.ljust(colWidth) + User().get_bar_formatted())
+    print('Points:'.ljust(colWidth) + f'{User().get_points():,}'.replace(',', '.'))
+    print('Coins:'.ljust(colWidth) + str(User().get_coins()))
 
 def water():
     print('Water all plants in all gardens...')
