@@ -82,6 +82,10 @@ def main():
         # Play minigames
         print('Playing minigames...')
         wurzelBot.minigames.play()
+
+        # Cut bonsais
+        print('Cutting bonsais...')
+        wurzelBot.cut_and_renew_bonsais(2)
     finally:
         # Close connection
         # BG-Затваряне на връзката
