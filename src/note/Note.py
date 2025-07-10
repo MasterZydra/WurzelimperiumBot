@@ -20,7 +20,7 @@ class Note:
         min_stock_str = line.replace(prefix, '').strip()
         try:
             return int(min_stock_str)
-        except:
+        except Exception:
             print(f'Error: "{prefix}" must be an int')
         return 0
 

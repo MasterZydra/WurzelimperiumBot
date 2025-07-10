@@ -212,7 +212,7 @@ class WurzelBot:
         if (User().is_mail_confirmed()):
             try:
                 self.messenger.write(recipients, subject, body)
-            except:
+            except Exception:
                 self.__logBot.error(i18n.t('wimpb.no_message'))
 
     def get_empty_fields(self):
@@ -226,7 +226,7 @@ class WurzelBot:
         try:
             for garden in self.gardens:
                 emptyFields.append(garden.get_empty_fields())
-        except:
+        except Exception:
             self.__logBot.error(f'Could not determinate empty fields from garden {garden.getID()}.')
         return emptyFields
 
@@ -235,7 +235,7 @@ class WurzelBot:
         try:
             for garden in self.gardens:
                 growingPlants.update(garden.getGrowingPlants())
-        except:
+        except Exception:
             self.__logBot.error('Could not determine growing plants of garden ' + str(garden.getID()) + '.')
 
         return dict(growingPlants)
@@ -401,7 +401,7 @@ class WurzelBot:
         try:
             for garden in self.gardens:
                 weedFields.append(garden.getWeedFields())
-        except:
+        except Exception:
             self.__logBot.error(f'Could not determinate weeds on fields of garden {garden.getID()}.')
 
         return weedFields
@@ -601,7 +601,7 @@ class WurzelBot:
             for garden in self.gardens:
                 garden.remove_weeds()
             self.__logBot.info(i18n.t('wimpb.w_harvest_successful'))
-        except:
+        except Exception:
             self.__logBot.error(i18n.t('wimpb.w_harvest_not_successful'))
 
     def get_daily_bonuses(self):
@@ -635,7 +635,7 @@ class WurzelBot:
                         self.shop.buy(product.get_id(),missing)
                     try:
                         self.__HTTPConn.sendInfinityQuest(questnr, product.get_id(), needed)
-                    except:
+                    except Exception:
                         pass
 
     # Bees

@@ -14,7 +14,7 @@ class Http:
             response, content = self.__http.send(address)
             self.__http.check_http_state_ok(response)
             return json.loads(content)
-        except:
+        except Exception:
             raise
 
     def load_data(self):
@@ -23,7 +23,7 @@ class Http:
             response, content = self.__http.send(address)
             self.__http.check_http_state_ok(response)
             return self.__http.get_json_and_check_for_ok(content)
-        except:
+        except Exception:
             raise
 
     def remove_weed(self):
@@ -32,7 +32,7 @@ class Http:
             response, content = self.__http.send(address)
             self.__http.check_http_state_ok(response)
             return self.__http.get_json_and_check_for_ok(content)
-        except:
+        except Exception:
             raise
 
     def exchange(self, plantID):
@@ -41,5 +41,5 @@ class Http:
             response, content = self.__http.send(address)
             self.__http.check_http_state_ok(response)
             return self.__http.get_json_and_check_for_ok(content)
-        except:
+        except Exception:
             raise

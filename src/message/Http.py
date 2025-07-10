@@ -14,7 +14,7 @@ class Http:
             response, content = self.__http.send('nachrichten/new.php')
             self.__http.check_http_state_ok(response)
             return content
-        except:
+        except Exception:
             raise
 
     def send_message_and_return_result(self, msg_id, msg_to, msg_subject, msg_body):
@@ -30,5 +30,5 @@ class Http:
             response, content = self.__http.send('nachrichten/new.php', 'POST', parameter)
             self.__http.check_http_state_ok(response)
             return content
-        except:
+        except Exception:
             raise

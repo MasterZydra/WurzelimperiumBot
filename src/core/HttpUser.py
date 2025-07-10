@@ -16,7 +16,7 @@ class Http:
             response, content = self.__http.send('ajax/menu-update.php')
             self.__http.check_http_state_ok(response)
             content = self.__http.get_json_and_check_for_success(content)
-        except:
+        except Exception:
             raise
         else:
             if data_type == "UserData":
@@ -50,7 +50,7 @@ class Http:
             self.__http.check_http_state_ok(response)
             jContent = self.__http.get_json_and_check_for_ok(content.decode('UTF-8'))
             result = self.__get_info_from_json(jContent, info)
-        except:
+        except Exception:
             raise
         else:
             return result
@@ -120,7 +120,7 @@ class Http:
             self.__http.check_http_state_ok(response)
             result = re.search('Unbestätigte Email:', html.unescape(str(content)))
             return result == None
-        except:
+        except Exception:
             raise
 
     def has_watering_gnome_helper(self):
@@ -131,6 +131,6 @@ class Http:
             self.__http.check_http_state_ok(response)
             re_gnome = re.search(r'wimparea.init.*\"helper\":.*(water).*\"garbage', content)
             return re_gnome is not None and re_gnome.group(1) == "water"
-        except:
+        except Exception:
             raise
 

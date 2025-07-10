@@ -29,12 +29,12 @@ class Shop:
         if shop in [1,2,3,4]:
             try:
                 self.__http.buy(shop, productId, amount)
-            except:
+            except Exception:
                 pass
         elif shop == 0:
             try:
                 self.__http.buy_aqua(productId, amount)
-            except:
+            except Exception:
                 pass
 
         Stock().update()

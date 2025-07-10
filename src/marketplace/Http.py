@@ -15,7 +15,7 @@ class Http:
             response, content = self.__http.send('stadt/markt.php?show=overview')
             self.__http.check_http_state_ok(response)
             tradeable_products = re.findall(r'markt\.php\?order=p&v=([0-9]{1,3})&filter=1', content)
-        except:
+        except Exception:
             raise
         else:
             for i in range(0, len(tradeable_products)):
@@ -34,7 +34,7 @@ class Http:
                 address = f'stadt/markt.php?order=p&v={str(product_id)}&filter=1&page={str(page_index)}'
                 response, content = self.__http.send(address)
                 self.__http.check_http_state_ok(response)
-            except:
+            except Exception:
                 raise
             else:
                 html_file = io.BytesIO(content)

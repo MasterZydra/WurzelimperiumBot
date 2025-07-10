@@ -67,7 +67,7 @@ class HTTPConnection:
         headers = {**defaultHeaders, **headers}
         try:
             return self.__webclient.request(uri, method, body, headers)
-        except:
+        except Exception:
             raise
 
     def check_http_state_ok(self, response):

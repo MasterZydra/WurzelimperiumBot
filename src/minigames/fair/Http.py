@@ -14,7 +14,7 @@ class Http:
             self.__http.update_token_from_content(content)
             self.__http.check_http_state_ok(response)
             return 'id="fair"' in content
-        except:
+        except Exception:
             raise
 
     def init_game(self):
@@ -23,7 +23,7 @@ class Http:
             response, content = self.__http.send(address)
             self.__http.check_http_state_ok(response)
             return self.__http.get_json_and_check_for_ok(content)
-        except:
+        except Exception:
             raise
 
     def craft_ticket(self):
@@ -32,7 +32,7 @@ class Http:
             response, content = self.__http.send(address)
             self.__http.check_http_state_ok(response)
             return self.__http.get_json_and_check_for_ok(content)
-        except:
+        except Exception:
             raise
     
     def pay_ticket(self, type):
@@ -44,5 +44,5 @@ class Http:
             response, content = self.__http.send(address)
             self.__http.check_http_state_ok(response)
             return self.__http.get_json_and_check_for_ok(content)
-        except:
+        except Exception:
             raise

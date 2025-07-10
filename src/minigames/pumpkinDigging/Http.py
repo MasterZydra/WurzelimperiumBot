@@ -14,7 +14,7 @@ class Http:
             self.__http.update_token_from_content(content)
             self.__http.check_http_state_ok(response)
             return 'id="diggame_bar_img" class="autumn"' in content
-        except:
+        except Exception:
             raise
 
     def init_game(self):
@@ -22,7 +22,7 @@ class Http:
             response, content = self.__http.send(f'ajax/ajax.php?do=diggame_init&token={self.__http.token()}')
             self.__http.check_http_state_ok(response)
             return self.__http.get_json_and_check_for_ok(content)
-        except:
+        except Exception:
             raise
 
     def hit(self, zone: int):
@@ -30,7 +30,7 @@ class Http:
             response, content = self.__http.send(f'ajax/ajax.php?do=diggame_map_hit&zone={zone}&token={self.__http.token()}')
             self.__http.check_http_state_ok(response)
             return self.__http.get_json_and_check_for_ok(content)
-        except:
+        except Exception:
             raise
 
     def finish_game(self):
@@ -38,5 +38,5 @@ class Http:
             response, content = self.__http.send(f'ajax/ajax.php?do=diggame_map_finish&option=1&token={self.__http.token()}')
             self.__http.check_http_state_ok(response)
             return self.__http.get_json_and_check_for_ok(content)
-        except:
+        except Exception:
             raise

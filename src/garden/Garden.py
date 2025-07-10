@@ -117,7 +117,7 @@ class Garden:
                 for i in range(0, nPlants):
                     sFields = self._getAllFieldIDsFromFieldIDAndSizeAsString(plants['fieldID'][i], plants['sx'][i], plants['sy'][i])
                     self.__http.water_plant(self._id, plants['fieldID'][i], sFields)
-        except:
+        except Exception:
             self._logGarden.error(f'Garten {self._id} konnte nicht bewässert werden.')
             #BG- self._logGarden.error(f'Градина {self._id} не може да бъде поливана.')
         else:
@@ -132,7 +132,7 @@ class Garden:
         #BG- """Връща всички празни полета в градината."""
         try:
             return self.__http.get_empty_fields(self._id)
-        except:
+        except Exception:
             self._logGarden.error(f'Konnte leere Felder von Garten {self._id} nicht ermitteln.')
             #BG- self._logGarden.error(f'Неуспешно определение на празни полета в градина {self._id}.')
 
@@ -140,7 +140,7 @@ class Garden:
         """Returns all grown fields in the garden."""
         try:
             return self.__http.get_empty_fields(self._id, param="grown")
-        except:
+        except Exception:
             self._logGarden.error(f'Konnte bepflanzte Felder von Garten {self._id} nicht ermitteln.')
             #BG- self._logGarden.error(f'Неуспешно определение на празни полета в градина {self._id}.')
 
@@ -149,7 +149,7 @@ class Garden:
         #BG- """Връща всички полета с плевели в градината."""
         try:
             return self.__http.get_weed_fields(self._id)
-        except:
+        except Exception:
             self._logGarden.error(f'Konnte Unkraut-Felder von Garten {self._id} nicht ermitteln.')
             #BG- self._logGarden.error(f'Неуспешно определение на полета с плевели в градина {self._id}.')
 
@@ -159,7 +159,7 @@ class Garden:
 
         try:
             return Counter(self.__http.get_growing_plants(self._id))
-        except:
+        except Exception:
             self._logGarden.error('Could not determine growing plants of garden ' + str(self._id) + '.')
             #BG- self._logGarden.error('Неуспешно определение на растящите растения в градина ' + str(self._id) + '.')
 
@@ -180,7 +180,7 @@ class Garden:
                     overall_time.append(fields_time.water + max_water_time)
                 overall_time.append(fields_time.harvest)
             return min(overall_time)
-        except:
+        except Exception:
             self._logGarden.error('Could not determine growing plants of garden ' + str(self._id) + '.')
             #BG- self._logGarden.error('Неуспешно определение на растящите растения в градина ' + str(self._id) + '.')
 
@@ -190,7 +190,7 @@ class Garden:
 
         try:
             self.__http.harvest(self._id)
-        except:
+        except Exception:
             raise
 
     def harvest_unfinished(self):
@@ -205,7 +205,7 @@ class Garden:
                 sy = ProductData().get_product_by_id(plant_id).get_sy()
                 fields = self._getAllFieldIDsFromFieldIDAndSizeAsString(field, sx, sy)
                 self.__http.harvest_unfinished(plant_id, field, fields)
-        except:
+        except Exception:
             raise
 
     def grow(self, plantID, sx, sy, amount):
@@ -239,7 +239,7 @@ class Garden:
                     planted += len(to_plant)
                     to_plant = {}
 
-        except:
+        except Exception:
             self._logGarden.error(f'Im Garten {self._id} konnte nicht gepflanzt werden.')
             #BG- self._logGarden.error(f'В градината {self._id} не може да се засади.')
 
@@ -267,7 +267,7 @@ class Garden:
         for fieldID in weedFields:
             try:
                 result = self.__http.remove_weed_on_field(self._id, fieldID)
-            except:
+            except Exception:
                 self._logGarden.error(f'Feld {fieldID} im Garten {self._id} konnte nicht von Unkraut befreit werden!')
                 #BG- self._logGarden.error(f'Полето {fieldID} в градината {self._id} не може да бъде освободено от плевели!')
 

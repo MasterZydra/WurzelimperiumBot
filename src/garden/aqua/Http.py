@@ -17,7 +17,7 @@ class Http:
             self.__http.check_http_state_ok(response)
             jContent = self.__http.get_json_and_check_for_ok(content)
             emptyAquaFields = self.__httpGarden.find_empty_fields_in_json(jContent)
-        except:
+        except Exception:
             raise
         else:
             return emptyAquaFields
@@ -29,7 +29,7 @@ class Http:
             response, content = self.__http.send(address)
             self.__http.check_http_state_ok(response)
             self.__http.get_json_and_check_for_ok(content)
-        except:
+        except Exception:
             raise
 
     def get_plants_to_water(self):
@@ -41,7 +41,7 @@ class Http:
             self.__http.check_http_state_ok(response)
             jContent = self.__http.get_json_and_check_for_ok(content)
             return self.__httpGarden.find_plants_to_be_watered_in_json(jContent)
-        except:
+        except Exception:
             raise
 
     def water_plants(self, sFieldsToWater):
@@ -56,7 +56,7 @@ class Http:
             address = f'ajax/ajax.php?do=watergardenCache{sFields}&token={self.__http.token()}'
             response, content = self.__http.send(address)
             self.__http.check_http_state_ok(response)
-        except:
+        except Exception:
             raise
 
     def harvest(self):
@@ -73,7 +73,7 @@ class Http:
                 msg = re.sub('<div.*?>', '', msg)
                 msg = msg.strip()
                 print(msg)
-        except:
+        except Exception:
             raise
 
     def grow(self, to_plant, plant_id):
@@ -88,5 +88,5 @@ class Http:
             response, content = self.__http.send(address)
             self.__http.check_http_state_ok(response)
             return self.__http.get_json_and_check_for_ok(content)
-        except:
+        except Exception:
             raise
