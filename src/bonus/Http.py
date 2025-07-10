@@ -3,6 +3,7 @@
 
 from src.core.HTTPCommunication import HTTPConnection
 from src.core.HttpUser import Http as HttpUser
+from src.logger.Logger import Logger
 
 class Http:
     def __init__(self):
@@ -17,26 +18,31 @@ class Http:
             self.__http.check_http_state_ok(response)
             return self.__http.get_json_and_check_for_ok(content)
         except Exception:
-            pass
+            Logger().exception("Failed to get dialy login bonus")
+            return None
 
     def read_user_data(self):
         return self.__httpUser.load_data("dailyloginbonus")['dailyloginbonus']
 
-    def init_garden_shed(self):
+    def init_garden_shed(self) -> bool:
         try:
             response, content = self.__http.send(f'ajax/ajax.php?do=houseInit&token={self.__http.token()}')
             self.__http.check_http_state_ok(response)
             self.__http.get_json_and_check_for_ok(content)
+            return True
         except Exception:
-            raise
+            Logger().exception("Failed to init garden shed")
+            return False
 
-    def open_trophy_case(self):
+    def open_trophy_case(self) -> bool:
         try:
             response, content = self.__http.send('ajax/gettrophies.php?category=giver')
             self.__http.check_http_state_ok(response)
             self.__http.get_json_and_check_for_ok(content)
+            return True
         except Exception:
-            raise
+            Logger().exception("Failed to open trophy case")
+            return False
 
     def collect_bonus_items(self):
         try:
@@ -44,4 +50,5 @@ class Http:
             self.__http.check_http_state_ok(response)
             return self.__http.get_json_and_check_for_ok(content)
         except Exception:
-            raise
+            Logger().exception("Failed to collect bonus items")
+            return None

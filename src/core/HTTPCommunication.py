@@ -13,6 +13,7 @@ from http import HTTPStatus
 from src.core.HttpError import HTTPStateError, JSONError, HTTPRequestError, YAMLError
 from src.core.ServerUrls import SERVER_URLS
 from src.core.Session import Session
+from src.logger.Logger import Logger
 
 i18n.load_path.append('lang')
 
@@ -153,7 +154,7 @@ class HTTPConnection:
         self.__logHTTPConn.debug(tmpportunr)
         raise JSONError(f'Fehler bei der Ermittlung des tokens')
 
-    def logIn(self, loginDaten):
+    def logIn(self, loginDaten) -> bool:
         """Führt einen login durch und öffnet eine Session."""
         serverURL = SERVER_URLS[loginDaten.language]
         parameter = urlencode({
@@ -168,62 +169,76 @@ class HTTPConnection:
         }
 
         try:
-            response, content = self.__webclient.request(f'https://www{serverURL}dispatch.php',
-                                                         'POST',
-                                                         parameter,
-                                                         headers)
+            response, content = self.__webclient.request(
+                f'https://www{serverURL}dispatch.php',
+                'POST',
+                parameter,
+                headers
+            )
             self.check_http_state_ok(response)
             jContent = self.get_json_and_check_for_ok(content)
             self.__get_token_from_url(jContent['url'])
             response, content = self.__webclient.request(jContent['url'], 'GET', headers=headers)
             self.check_http_state_found(response)
-        except:
-            raise
-        else:
             cookie = SimpleCookie(response['set-cookie'])
-            cookie.load(str(response["set-cookie"]).replace("secure, ", "", -1))
+            cookie.load(str(response['set-cookie']).replace('secure, ', '', -1))
             self.__session.open(cookie['PHPSESSID'].value, str(loginDaten.server), serverURL)
             self.__userID = cookie['wunr'].value
+            return True
+        except Exception:
+            Logger().exception('Login failed')
+            return False
 
-    def logInPortal(self, loginDaten):
+    def logInPortal(self, loginDaten) -> bool:
         """Führt einen login durch und öffnet eine Session."""
-        parameter = urlencode({'portserver': 'server' + str(loginDaten.server),
-                               'portname': loginDaten.user,
-                               'portpass': loginDaten.password,
-                               'portsubmit': 'Einloggen'})
+        parameter = urlencode({
+            'portserver': 'server' + str(loginDaten.server),
+            'portname': loginDaten.user,
+            'portpass': loginDaten.password,
+            'portsubmit': 'Einloggen'
+        })
         serverURL = SERVER_URLS[loginDaten.language]
-        headers = {'Content-type': 'application/x-www-form-urlencoded',
-                   'Connection': 'keep-alive'}
+        headers = {
+            'Content-type': 'application/x-www-form-urlencoded',
+            'Connection': 'keep-alive'
+        }
 
         try:
-            response, content = self.__webclient.request(f'https://www{serverURL}/portal/game2port_login.php', \
-                                                         'POST', \
-                                                         parameter, \
-                                                         headers)
+            response, content = self.__webclient.request(
+                f'https://www{serverURL}/portal/game2port_login.php', \
+                'POST', \
+                parameter, \
+                headers
+            )
             self.__get_token_from_url_portal(response['location'])
             self.__get_unr_from_url_portal(response['location'])
             self.__get_port_unr_from_url_portal(response['location'])
-        except:
-            raise
+        except Exception:
+            Logger().exception("Portal login failed")
+            return False
 
-        headers = {'Content-type': 'application/x-www-form-urlencoded',
-                   'Connection': 'keep-alive',
-                   'Cookie': self.__unr}
+        headers = {
+            'Content-type': 'application/x-www-form-urlencoded',
+            'Connection': 'keep-alive',
+            'Cookie': self.__unr
+        }
 
         try:
             loginadresse = f'https://s{str(loginDaten.server)}{serverURL}/logw.php?port=1&unr=' + \
                            f'{self.__unr}&portunr={self.__portunr}&hash={self.__token}&sno={loginDaten.server}'
             response, content = self.__webclient.request(loginadresse, 'GET', headers=headers)
             self.check_http_state_found(response)
-        except:
-            raise
-        else:
             cookie = SimpleCookie(response['set-cookie'])
             cookie.load(str(response["set-cookie"]).replace("secure, ", "", -1))
             self.__session.open(cookie['PHPSESSID'].value, str(loginDaten.server), serverURL)
             self.__userID = self.__unr
 
-    def logOut(self):
+            return True
+        except Exception:
+            Logger().exception("Portal login failed")
+            return False
+
+    def logOut(self) -> bool:
         """Logout des Spielers inkl. Löschen der Session."""
         #TODO: Was passiert beim Logout einer bereits ausgeloggten Session
         try: #content ist beim Logout leer
@@ -237,10 +252,12 @@ class HTTPConnection:
                 raise HTTPRequestError('Session wurde nicht gelöscht')
             
             self.__session.close()
-        except:
-            raise
-        else:
             self.__del__()
+
+            return True
+        except Exception:
+            Logger().exception("Failed to log out")
+            return False
 
     def initInfinityQuest(self):
         adresse = f'ajax/ajax.php?do=infinite_quest_get&token={self.__token}'
@@ -249,8 +266,9 @@ class HTTPConnection:
             self.check_http_state_ok(response)
             jContent = self.get_json_and_check_for_ok(content)
             return jContent
-        except:
-            pass
+        except Exception:
+            Logger().exception("Failed to init infinity quest")
+            return None
 
     def sendInfinityQuest(self, questnr, product, amount):
         try:
@@ -260,5 +278,6 @@ class HTTPConnection:
             self.check_http_state_ok(response)
             jContent = self.get_json_and_check_for_ok(content)
             return jContent
-        except:
-            pass
+        except Exception:
+            Logger().exception('Failed to send infinity quest')
+            return None
