@@ -19,7 +19,7 @@ class Http:
             response, content = self.__http.send(address)
             self.__http.check_http_state_ok(response)
             jContent = self.__http.get_json_and_check_for_ok(content)
-        except:
+        except Exception:
             raise
         else:
             return self.find_plants_to_be_watered_in_json(jContent)
@@ -31,7 +31,7 @@ class Http:
             response, content = self.__http.send(address)
             self.__http.check_http_state_ok(response)
             self.__http.get_json_and_check_for_ok(content)
-        except:
+        except Exception:
             raise
 
     def water_plant(self, iGarten, iField, sFieldsToWater):
@@ -42,7 +42,7 @@ class Http:
             response, content = self.__http.send(address)
             self.__http.check_http_state_ok(response)
             self.__http.get_yaml_and_check_for_success(content.decode('UTF-8'))
-        except:
+        except Exception:
             raise
 
     def get_empty_fields(self, gardenID, param="empty"):
@@ -56,7 +56,7 @@ class Http:
                 emptyFields = self.find_empty_fields_in_json(jContent)
             elif param == "grown":
                 emptyFields = self.__find_grown_fields(jContent)
-        except:
+        except Exception:
             raise
         else:
             return emptyFields
@@ -79,7 +79,7 @@ class Http:
             self.__http.check_http_state_ok(response)
             jContent = self.__http.get_json_and_check_for_ok(content)
             weedFields = self.__find_weed_fields_in_json(jContent)
-        except:
+        except Exception:
             raise
         else:
             return weedFields
@@ -106,7 +106,7 @@ class Http:
             self.__http.check_http_state_ok(response)
             jContent = self.__http.get_json_and_check_for_ok(content)
             growingPlants = self.__find_growing_plants_in_json(jContent)
-        except:
+        except Exception:
             raise
         else:
             return growingPlants
@@ -139,14 +139,14 @@ class Http:
                     eventitems = jContent['collectevent']
                     msg = msg + f"\n{eventitems} Eventitems" #TODO check which event is active
                 print(msg)
-        except:
+        except Exception:
             raise
 
     def harvest_unfinished(self, plant_id, field, fields):
         try:
             address = f"save/ernte.php?pflanze[]={plant_id}&feld[]={field}&felder[]={fields}&closepopup=1&ernteJa=ernteJa"
             response, content = self.__http.send(address)
-        except:
+        except Exception:
             raise
 
     def grow(self, to_plant, plant_id, gardenID):
@@ -163,7 +163,7 @@ class Http:
             response, content = self.__http.send(address)
             self.__http.check_http_state_ok(response)
             return self.__http.get_json_and_check_for_success(content)
-        except:
+        except Exception:
             raise
 
     def remove_weed_on_field(self, gardenID, fieldID):
@@ -174,7 +174,7 @@ class Http:
             self.__http.check_http_state_ok(response)
             jContent = self.__http.get_json_and_check_for_success(content)
             return jContent['success']
-        except:
+        except Exception:
             raise
 
     def change_garden(self, gardenID):
@@ -184,7 +184,7 @@ class Http:
             response, content = self.__http.send(address)
             self.__http.check_http_state_ok(response)
             return self.__http.get_json_and_check_for_ok(content)
-        except:
+        except Exception:
             raise
 
     def find_plants_to_be_watered_in_json(self, jContent):

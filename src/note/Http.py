@@ -24,5 +24,5 @@ class Http:
             if note_text is None:
                 return ''
             return note_text.strip()
-        except:
+        except Exception:
             raise

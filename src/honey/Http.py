@@ -12,7 +12,7 @@ class Http:
             response, content = self.__http.send(f'ajax/ajax.php?do=bees_init&token={self.__http.token()}')
             self.__http.check_http_state_ok(response)
             return self.__http.get_json_and_check_for_ok(content)
-        except:
+        except Exception:
             raise
         
     def pour_honey(self):
@@ -20,7 +20,7 @@ class Http:
             response, content = self.__http.send(f'ajax/ajax.php?do=bees_fill&token={self.__http.token()}')
             self.__http.check_http_state_ok(response)
             return self.__http.get_json_and_check_for_ok(content)
-        except:
+        except Exception:
             raise 
 
     def change_hive_type(self, hive, pid): 
@@ -30,7 +30,7 @@ class Http:
             response, content = self.__http.send(address)
             self.__http.check_http_state_ok(response)
             return self.__http.get_json_and_check_for_ok(content)
-        except:
+        except Exception:
             raise
 
             self.__http.check_http_state_ok(response)
@@ -42,7 +42,7 @@ class Http:
             response, content = self.__http.send(address)
             self.__http.check_http_state_ok(response)
             return self.__http.get_json_and_check_for_ok(content)
-        except:
+        except Exception:
             raise
 
     def send_hive(self, tour, hive):
@@ -52,7 +52,7 @@ class Http:
             response, content = self.__http.send(address)
             self.__http.check_http_state_ok(response)
             return self.__http.get_json_and_check_for_ok(content)
-        except:
+        except Exception:
             raise
 
     def get_honey_quests(self, content):

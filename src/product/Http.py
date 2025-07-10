@@ -19,7 +19,7 @@ class Http:
 
             products = re.search(r'data_products = ({.*}});var', content)
             return products.group(1)
-        except:
+        except Exception:
             raise
 
     def get_npc_prices(self):

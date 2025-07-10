@@ -20,7 +20,7 @@ class Http:
             header = {'Content-Type': 'application/x-www-form-urlencoded'}
             response, content = self.__http.send(f'stadt/shop.php?s={shop}', 'POST', parameter, header)
             self.__http.check_http_state_ok(response)
-        except:
+        except Exception:
             raise
 
     def buy_aqua(self, productId: int, amount: int = 1):
@@ -28,5 +28,5 @@ class Http:
         try:
             response, content = self.__http.send(adresse)
             self.__http.check_http_state_ok(response)
-        except:
+        except Exception:
             return ''

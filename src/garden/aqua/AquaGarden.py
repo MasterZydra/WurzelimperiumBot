@@ -66,7 +66,7 @@ class AquaGarden(Garden):
 
         try:
             tmpEmptyAquaFields = self.__httpAqua.get_empty_fields()
-        except:
+        except Exception:
             self._logGarden.error('Konnte leere Felder von AquaGarten nicht ermitteln.')
             #BG- self._logGarden.error('Неуспешно определение на празни полета в Аква-градината.')
 
@@ -83,7 +83,7 @@ class AquaGarden(Garden):
                 for i in range(0, nPlants):
                     sFields = self._getAllFieldIDsFromFieldIDAndSizeAsString(plants['fieldID'][i], plants['sx'][i], plants['sy'][i])
                     self.__httpAqua.water_plants(sFields)
-        except:
+        except Exception:
             self._logGarden.error('Wassergarten konnte nicht bewässert werden.')
             #BG- self._logGarden.error('Водната градина не може да бъде поливан.')
 
@@ -102,7 +102,7 @@ class AquaGarden(Garden):
 
         try:
             self.__httpAqua.harvest()
-        except:
+        except Exception:
             raise
         else:
             pass
@@ -136,7 +136,7 @@ class AquaGarden(Garden):
                     planted += len(to_plant)
                     to_plant = {}
                     
-        except:
+        except Exception:
             self._logGarden.error(f'Im Wassergarten konnte nicht gepflanzt werden.')
             #BG- self._logGarden.error(f'Във водната градина не може да се засади.')
 
@@ -164,7 +164,7 @@ class AquaGarden(Garden):
         for fieldID in weedFieldsAqua:
             try:
                 result = self.__http.remove_weed_on_field(self._id, fieldID)
-            except:
+            except Exception:
                 self._logGarden.error(
                     f'Feld {fieldID} im Auqagarten {self._id} konnte nicht von Unkraut befreit werden!')
                     #BG- f'Полето {fieldID} в Аква-градината {self._id} не може да бъде освободено от плевели!')

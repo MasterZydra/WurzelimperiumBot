@@ -18,7 +18,7 @@ class Http:
             self.__http.check_http_state_ok(response)
             jContent = self.__http.get_json_and_check_for_ok(content)
             return self.__find_wimps_data_from_json(jContent)
-        except:
+        except Exception:
             raise
 
     def get_wimps_data_watergarden(self):
@@ -29,7 +29,7 @@ class Http:
             self.__http.check_http_state_ok(response)
             jContent = self.__http.get_json_and_check_for_ok(content)
             return self.__find_wimps_data_from_json(jContent)
-        except:
+        except Exception:
             raise
 
     def __find_wimps_data_from_json(self, jContent):
@@ -56,7 +56,7 @@ class Http:
             self.__http.check_http_state_ok(response)
             jContent = self.__http.get_json_and_check_for_ok(content)
             return jContent['newProductCounts']
-        except:
+        except Exception:
             pass
 
     def decline_wimp(self, wimp_id):
@@ -71,5 +71,5 @@ class Http:
             self.__http.check_http_state_ok(response)
             jContent = self.__http.get_json_and_check_for_ok(content)
             return jContent['action']
-        except:
+        except Exception:
             pass

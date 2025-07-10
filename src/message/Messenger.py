@@ -112,7 +112,7 @@ class Messenger:
         try:
             result = self.__http.create_new_message_and_return_result()
             return self.__get_message_id_from_new_message_result(result)
-        except:
+        except Exception:
             raise
 
     def clear_sent_list(self):
@@ -167,7 +167,7 @@ class Messenger:
                 messageDeliveryState = self.__get_message_delivery_state(resultOfSentMessage)
                 tmp_Msg = Message(self.__user.get_username(), recipient, subject, body, messageDeliveryState)
                 self.__sent.append(tmp_Msg)
-            except:
+            except Exception:
                 print(f'Exception {recipient}')
                 raise
             else:

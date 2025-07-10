@@ -105,7 +105,7 @@ class HerbGarden(Garden):
                     planted += len(to_plant)
                     to_plant = {}
                     
-        except:
+        except Exception:
             self._logGarden.error(f'Im Garten {self._id} konnte nicht gepflanzt werden.')
             return 0
         else:

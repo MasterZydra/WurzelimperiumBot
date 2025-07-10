@@ -13,7 +13,7 @@ class Http:
             response, content = self.__http.send(f'ajax/ajax.php?do=park_init&token={self.__http.token()}')
             self.__http.check_http_state_ok(response)
             return self.__http.get_json_and_check_for_ok(content)
-        except:
+        except Exception:
             raise
 
     def collect_cash_point(self):
@@ -22,7 +22,7 @@ class Http:
             response, content = self.__http.send(f'ajax/ajax.php?do=park_clearcashpoint&token={self.__http.token()}')
             self.__http.check_http_state_ok(response)
             return self.__http.get_json_and_check_for_ok(content)
-        except:
+        except Exception:
             raise
 
     def renew_item(self, tile, park_id=1):
@@ -31,5 +31,5 @@ class Http:
             response, content = self.__http.send(f'ajax/ajax.php?do=park_renewitem&parkid={park_id}&tile={tile}&token={self.__http.token()}')
             self.__http.check_http_state_ok(response)
             return self.__http.get_json_and_check_for_ok(content)
-        except:
+        except Exception:
             raise

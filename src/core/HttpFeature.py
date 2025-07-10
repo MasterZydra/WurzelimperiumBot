@@ -18,7 +18,7 @@ class Http:
             content = self.__http.get_json_and_check_for_ok(content)
             result = re.search(r'trophy_54.png\);[^;]*(gray)[^;^class$]*class', content['html'])
             return result == None
-        except:
+        except Exception:
             raise
 
     def is_bonsai_farm_available(self):
@@ -30,7 +30,7 @@ class Http:
                 return content['data']['location']['bonsai']['bought'] == 1
             else:
                 return False
-        except:
+        except Exception:
             raise
 
     def is_honey_farm_available(self):
@@ -42,12 +42,12 @@ class Http:
                 return content['data']['location']['bees']['bought'] == 1
             else:
                 return False
-        except:
+        except Exception:
             raise
 
     def is_greenhouse_available(self):
         try:
             cactus_quest = self.__httpUser.get_info_from_stats("CactusQuest")
             return cactus_quest > 0
-        except:
+        except Exception:
             raise

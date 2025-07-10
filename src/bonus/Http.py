@@ -16,7 +16,7 @@ class Http:
             response, content = self.__http.send(address)
             self.__http.check_http_state_ok(response)
             return self.__http.get_json_and_check_for_ok(content)
-        except:
+        except Exception:
             pass
 
     def read_user_data(self):
@@ -27,7 +27,7 @@ class Http:
             response, content = self.__http.send(f'ajax/ajax.php?do=houseInit&token={self.__http.token()}')
             self.__http.check_http_state_ok(response)
             self.__http.get_json_and_check_for_ok(content)
-        except:
+        except Exception:
             raise
 
     def open_trophy_case(self):
@@ -35,7 +35,7 @@ class Http:
             response, content = self.__http.send('ajax/gettrophies.php?category=giver')
             self.__http.check_http_state_ok(response)
             self.__http.get_json_and_check_for_ok(content)
-        except:
+        except Exception:
             raise
 
     def collect_bonus_items(self):
@@ -43,5 +43,5 @@ class Http:
             response, content = self.__http.send('ajax/presentclick.php', 'POST')
             self.__http.check_http_state_ok(response)
             return self.__http.get_json_and_check_for_ok(content)
-        except:
+        except Exception:
             raise

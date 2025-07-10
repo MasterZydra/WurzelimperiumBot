@@ -15,7 +15,7 @@ class Http:
             self.__http.check_http_state_ok(response)
             jContent = self.__http.get_json_and_check_for_ok(content)
             return jContent
-        except:
+        except Exception:
             raise
 
     def buyAndPlaceBonsaiItem(self, item, pack, slot):
@@ -39,7 +39,7 @@ class Http:
             self.__http.check_http_state_ok(response)
             jContent = self.__http.get_json_and_check_for_ok(content)
             return jContent
-        except:
+        except Exception:
             raise
 
     def cutBranch(self, slot, sissor, branch):
@@ -51,7 +51,7 @@ class Http:
             self.__http.check_http_state_ok(response)
             jContent = self.__http.get_json_and_check_for_ok(content)
             return jContent
-        except:
+        except Exception:
             raise
 
     def finishBonsai(self, slot):
@@ -62,5 +62,5 @@ class Http:
             self.__http.check_http_state_ok(response)
             jContent = self.__http.get_json_and_check_for_ok(content)
             return jContent
-        except:
+        except Exception:
             raise
