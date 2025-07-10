@@ -22,13 +22,18 @@ class Bonus:
                 self.__http.get_daily_login_bonus(day)
                 time.sleep(3)
 
-    def collect_bonus_item_points(self):
-        self.__http.init_garden_shed()
-        self.__http.open_trophy_case()
+    def collect_bonus_item_points(self) -> bool:
+        if not self.__http.init_garden_shed():
+            return False
+        if not self.__http.open_trophy_case():
+            return False
         content = self.__http.collect_bonus_items()
+        if content is None:
+            return False
         claim_msg = content['msg'].replace('<br>', '')
         already_claimed_msg = content['message']
         self.__log.info(f"{claim_msg}{already_claimed_msg}")
+        return True
 
     def collect_lucky_mole(self):
         content = self.__httpGuild.init_guild()

@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from src.core.HttpUser import Http
+from src.logger.Logger import Logger
 import html
 
 class User:
@@ -22,19 +23,22 @@ class User:
         self.__is_mail_confirmed = None
         self.__has_watering_gnome_helper = None
 
-    def update(self, only_data = False):
+    def update(self, only_data = False) -> bool:
         """Get user data from server and save in this class"""
         try:
             self.__data = self.__http.load_data()
             if only_data:
-                return
+                return True
 
             self.__number_of_gardens = self.get_stats("Gardens")
             self.__user_id = self.__http.user_id()
             self.__is_mail_confirmed = self.__http.check_mail_confirmed()
             self.__has_watering_gnome_helper = self.is_premium_active() and self.__http.has_watering_gnome_helper()
-        except:
-            print('Could not load the user data')
+
+            return True
+        except Exception:
+            Logger().exception("Failed to update user data")
+            return False
 
     def user_id(self) -> str:
         return self.__user_id

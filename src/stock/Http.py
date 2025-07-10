@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from src.core.HTTPCommunication import HTTPConnection
+from src.logger.Logger import Logger
 
 class Http:
     def __init__(self):
@@ -16,4 +17,5 @@ class Http:
             jContent = self.__http.get_json_and_check_for_ok(content)
             return jContent['produkte']
         except Exception:
-            pass
+            Logger().exception("Failed to get stock inventory")
+            return None

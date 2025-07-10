@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from src.logger.Logger import Logger
 from src.shop.Http import Http
 from src.shop.ShopProducts import ShopProducts
 from src.stock.Stock import Stock
@@ -27,15 +28,11 @@ class Shop:
                 shop = id
                 break
         if shop in [1,2,3,4]:
-            try:
-                self.__http.buy(shop, productId, amount)
-            except Exception:
-                pass
+            if not self.__http.buy(shop, productId, amount):
+                return -1
         elif shop == 0:
-            try:
-                self.__http.buy_aqua(productId, amount)
-            except Exception:
-                pass
+            if not self.__http.buy_aqua(productId, amount):
+                return -1
 
         Stock().update()
         return 0

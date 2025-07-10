@@ -19,6 +19,7 @@ from src.garden.Garden import Garden
 from src.garden.herb.HerbGarden import HerbGarden
 from src.greenhouse.Greenhouse import Greenhouse
 from src.honey.Honey import Honey
+from src.logger.Logger import Logger
 from src.marketplace.Marketplace import Marketplace
 from src.message.Messenger import Messenger
 from src.minigames.Minigames import Minigames
@@ -61,7 +62,7 @@ class WurzelBot:
         self.minigames = Minigames()
 
 
-    def __init_gardens(self):
+    def __init_gardens(self) -> bool:
         """Ermittelt die Anzahl der Gärten und initialisiert alle."""
         #BG-"""Определя броя на градините и ги инициализира всички."""
 
@@ -90,8 +91,11 @@ class WurzelBot:
             if Feature().is_note_available():
                 self.note = Note()
 
-        except:
-            raise
+            return True
+
+        except Exception:
+            Logger().exception('Failed to init gardens')
+            return False
 
 
     def __getAllFieldIDsFromFieldIDAndSizeAsString(self, fieldID, sx, sy):
@@ -134,36 +138,16 @@ class WurzelBot:
         loginDaten = Login(server=server, user=user, password=pw, language=lang)
 
         if portalacc == True:
-            try:
-                self.__HTTPConn.logInPortal(loginDaten)
-            except Exception as e:
-                if Config().isDevMode:
-                    raise e
-                self.__logBot.error(i18n.t('wimpb.error_starting_wbot'))
+            if not self.__HTTPConn.logInPortal(loginDaten):
                 return False
         else:
-            try:
-                self.__HTTPConn.logIn(loginDaten)
-            except Exception as e:
-                if Config().isDevMode:
-                    raise e
-                self.__logBot.error(i18n.t('wimpb.error_starting_wbot'))
+            if not self.__HTTPConn.logIn(loginDaten):
                 return False
 
-        try:
-            User().update()
-        except Exception as e:
-            if Config().isDevMode:
-                raise e
-            self.__logBot.error(i18n.t('wimpb.error_refresh_userdata'))
+        if not User().update():
             return False
 
-        try:
-            self.__init_gardens()
-        except Exception as e:
-            if Config().isDevMode:
-                raise e
-            self.__logBot.error(i18n.t('wimpb.error_number_of_gardens'))
+        if not self.__init_gardens():
             return False
 
         User().accountLogin = loginDaten
@@ -176,14 +160,10 @@ class WurzelBot:
     def logout(self):
         """Exit the bot cleanly with login and reset the data"""
         self.__logBot.info(i18n.t('wimpb.exit_wbot'))
-        try:
-            self.__HTTPConn.logOut()
+
+        if self.__HTTPConn.logOut():
             self.__logBot.info(i18n.t('wimpb.logout_success'))
             self.__logBot.info('-------------------------------------------')
-        except Exception as e:
-            if Config().isDevMode:
-                raise e
-            self.__logBot.error(i18n.t('wimpb.exit_wbot_abnormal'))
 
     def get_stop_bot_note(self) -> bool:
         """Check notes for stop bot entry"""
@@ -406,7 +386,7 @@ class WurzelBot:
 
         return weedFields
 
-    def harvest(self):
+    def harvest(self) -> bool:
         """Harvest all gardens"""
         try:
             for garden in self.gardens:
@@ -417,16 +397,20 @@ class WurzelBot:
 
             Stock().update()
             self.__logBot.info(i18n.t('wimpb.harvest_successful'))
-        except:
-            self.__logBot.error(i18n.t('wimpb.harvest_not_successful'))
+            return True
+        except Exception:
+            Logger().exception("Failed to harvest all gardens")
+            return False
 
-    def harvest_all_unfinished(self):
+    def harvest_all_unfinished(self) -> bool:
         try:
             garden: Garden
             for garden in self.gardens:
                 garden.harvest_unfinished()
-        except:
-            raise
+            return True
+        except Exception:
+            Logger().exception("Failed to harvest all unfinished plants")
+            return False
 
     def growVegetablesInGardens(self, productName, amount=-1):
         """
@@ -633,10 +617,8 @@ class WurzelBot:
                         missing = abs(needed - stored) + 10
                         #print(f'missing {missing}')
                         self.shop.buy(product.get_id(),missing)
-                    try:
-                        self.__HTTPConn.sendInfinityQuest(questnr, product.get_id(), needed)
-                    except Exception:
-                        pass
+
+                    self.__HTTPConn.sendInfinityQuest(questnr, product.get_id(), needed)
 
     # Bees
     def send_bees(self, tour: int):
