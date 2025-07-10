@@ -10,7 +10,7 @@ import time, logging, i18n
 
 i18n.load_path.append('lang')
 
-class Session(object):
+class Session:
     """Session represents a PHP session"""
     # Session is valid for 2 h (7200 s)
     __lifetime         = 7200

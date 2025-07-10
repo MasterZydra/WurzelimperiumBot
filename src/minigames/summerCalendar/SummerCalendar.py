@@ -4,8 +4,7 @@
 from src.minigames.summerCalendar.Http import Http
 from datetime import date
 
-class SummerCalendar():
-
+class SummerCalendar:
     def __init__(self):
         self.__http = Http()
 

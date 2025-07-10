@@ -3,7 +3,7 @@
 
 from src.core.HTTPCommunication import HTTPConnection
 
-class HttpThimblerig(object):
+class HttpThimblerig:
     def __init__(self):
         self.__http: HTTPConnection = HTTPConnection()
 

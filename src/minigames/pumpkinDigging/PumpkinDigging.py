@@ -4,8 +4,7 @@
 import random
 from src.minigames.pumpkinDigging.Http import Http
 
-class PumpkinDigging():
-
+class PumpkinDigging:
     def __init__(self):
         self.__http = Http()
 

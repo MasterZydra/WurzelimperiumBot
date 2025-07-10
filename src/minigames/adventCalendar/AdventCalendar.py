@@ -4,8 +4,7 @@
 from src.minigames.adventCalendar.Http import Http
 from datetime import date
 
-class AdventCalendar():
-
+class AdventCalendar:
     def __init__(self):
         self.__http = Http()
 

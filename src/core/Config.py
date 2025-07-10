@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-class Config(object):
+class Config:
     """Store the configuration for the WurzelBot environment"""
 
     # Is bot running in development environment?

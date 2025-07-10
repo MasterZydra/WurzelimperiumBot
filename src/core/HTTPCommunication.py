@@ -16,7 +16,7 @@ from src.core.Session import Session
 
 i18n.load_path.append('lang')
 
-class HTTPConnection(object):
+class HTTPConnection:
     """Mit der Klasse HTTPConnection werden alle anfallenden HTTP-Verbindungen verarbeitet."""
 
     _instance = None

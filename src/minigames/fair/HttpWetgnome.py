@@ -3,7 +3,7 @@
 
 from src.core.HTTPCommunication import HTTPConnection
 
-class HttpWetgnome(object):
+class HttpWetgnome:
     def __init__(self):
         self.__http: HTTPConnection = HTTPConnection()
 

@@ -5,7 +5,7 @@ from src.core.HTTPCommunication import HTTPConnection
 from src.garden.Http import Http as HttpGarden
 import json, re
 
-class Http(object):
+class Http:
     def __init__(self):
         self.__http: HTTPConnection = HTTPConnection()
         self.__httpGarden = HttpGarden()

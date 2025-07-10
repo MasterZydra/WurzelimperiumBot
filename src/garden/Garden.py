@@ -9,7 +9,7 @@ from collections import Counter, namedtuple
 
 i18n.load_path.append('lang')
 
-class Garden():
+class Garden:
     _LEN_X = 17
     _LEN_Y = 12
     _MAX_FIELDS = _LEN_X * _LEN_Y

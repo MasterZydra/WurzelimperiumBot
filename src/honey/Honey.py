@@ -7,7 +7,7 @@ from src.core.User import User
 from src.honey.Hive import Hive
 from src.honey.Http import Http
 
-class Honey():
+class Honey:
     """All important informations for the honey garden"""
 
     def __init__(self):

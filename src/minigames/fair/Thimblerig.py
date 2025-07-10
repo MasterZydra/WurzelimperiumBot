@@ -3,8 +3,7 @@
 
 from src.minigames.fair.HttpThimblerig import HttpThimblerig
 
-class Thimblerig():
-
+class Thimblerig:
     def __init__(self, data):
         self.__http = HttpThimblerig()
         self.round = 0

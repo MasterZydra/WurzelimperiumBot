@@ -4,7 +4,7 @@
 import logging
 from src.greenhouse.Http import Http
 
-class Greenhouse():
+class Greenhouse:
     """All important information for the greenhouse"""
 
     def __init__(self):

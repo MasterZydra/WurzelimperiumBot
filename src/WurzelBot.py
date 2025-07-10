@@ -33,7 +33,7 @@ import logging, i18n, datetime
 
 i18n.load_path.append('lang')
 
-class WurzelBot(object):
+class WurzelBot:
     """
     Die Klasse WurzelBot übernimmt jegliche Koordination aller anstehenden Aufgaben.
     """

@@ -4,7 +4,7 @@
 from src.core.HttpFeature import Http
 from src.core.User import User
 
-class Feature():
+class Feature:
     _instance = None
 
     def __new__(self):

@@ -6,7 +6,7 @@ from src.core.User import User
 from src.bonsai.Http import Http
 from src.bonsai.ShopProduct import *
 
-class Bonsai():
+class Bonsai:
     """Wrapper for the bonsaigarden"""
     #BG - Интерфейс за бонсаевата градина 
 

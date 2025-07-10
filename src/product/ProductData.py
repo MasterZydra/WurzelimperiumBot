@@ -10,7 +10,7 @@ import json
 from src.product.Http import Http
 from src.product.Product import Product
 
-class ProductData():
+class ProductData:
     _instance = None
 
     def __new__(self):

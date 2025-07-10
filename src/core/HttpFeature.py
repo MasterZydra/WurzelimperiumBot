@@ -5,7 +5,7 @@ import re
 from src.core.HTTPCommunication import HTTPConnection
 from src.core.HttpUser import Http as HttpUser
 
-class Http(object):
+class Http:
     def __init__(self):
         self.__http: HTTPConnection = HTTPConnection()
         self.__httpUser = HttpUser()

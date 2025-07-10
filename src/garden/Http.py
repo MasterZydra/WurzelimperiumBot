@@ -5,7 +5,7 @@ from src.core.HTTPCommunication import HTTPConnection
 from src.product.Products import WEEDS, TREE_STUMP, STONE, MOLE
 import json, re, time
 
-class Http(object):
+class Http:
     def __init__(self):
         self.__http: HTTPConnection = HTTPConnection()
 

@@ -4,7 +4,7 @@
 from src.core.HTTPCommunication import HTTPConnection
 import json
 
-class Http(object):
+class Http:
     def __init__(self):
         self.__http: HTTPConnection = HTTPConnection()
 

@@ -4,8 +4,7 @@
 import logging
 from src.citypark.Http import Http
 
-class CityPark():
-
+class CityPark:
     def __init__(self):
         self.__http = Http()
         self.__log = logging.getLogger('bot.Park')

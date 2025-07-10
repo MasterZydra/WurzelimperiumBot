@@ -3,7 +3,7 @@
 
 from src.core.HTTPCommunication import HTTPConnection
 
-class Http(object):
+class Http:
     def __init__(self):
         self.__http: HTTPConnection = HTTPConnection()
 

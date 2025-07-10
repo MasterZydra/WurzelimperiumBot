@@ -7,8 +7,7 @@ from src.minigames.summerCalendar.SummerCalendar import SummerCalendar
 from src.minigames.fair.Fair import Fair
 from src.minigames.pumpkinDigging.PumpkinDigging import PumpkinDigging
 
-class Minigames():
-
+class Minigames:
     def play(self):
         # TODO Enhancement: Check for games only if the current date matches the seasons the games are available.
 

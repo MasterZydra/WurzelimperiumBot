@@ -9,8 +9,7 @@ Created on 15.05.2019
 
 from src.marketplace.Http import Http
 
-class Marketplace():
-
+class Marketplace:
     def __init__(self):
         self.__http = Http()
         self.__tradeable_product_ids = None

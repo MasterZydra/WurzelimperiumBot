@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-class Hive():
+class Hive:
     def __init__(self, nr, attributes):
         self.__nr = nr
         self.__level = attributes.get('level')

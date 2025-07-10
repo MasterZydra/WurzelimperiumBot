@@ -9,8 +9,7 @@ from src.minigames.fair.Wetgnome import Wetgnome
 
 REWARD_MAX = 300
 
-class Fair():
-
+class Fair:
     def __init__(self):
         self.__http = Http()
 

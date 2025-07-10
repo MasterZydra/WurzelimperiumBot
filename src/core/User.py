@@ -4,7 +4,7 @@
 from src.core.HttpUser import Http
 import html
 
-class User():
+class User:
     _instance = None
 
     def __new__(self):

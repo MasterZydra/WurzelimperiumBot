@@ -19,7 +19,7 @@ CATEGORY_COINS            = ''
 CATEGORY_ADORNMENTS       = 'z'
 CATEGORY_OTHER            = 'u'
 
-class Product():
+class Product:
     def __init__(self, id, cat, sx, sy, name, lvl, crop, plantable, time, edge):
         self.__id = id
         self.__category = cat

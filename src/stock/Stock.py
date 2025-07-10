@@ -3,7 +3,7 @@
 
 from src.stock.Http import Http
 
-class Stock():
+class Stock:
     _instance = None
 
     def __new__(self):

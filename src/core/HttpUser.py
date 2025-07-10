@@ -6,7 +6,7 @@ from src.core.HTTPCommunication import HTTPConnection
 from src.core.HttpError import JSONError
 
 
-class Http(object):
+class Http:
     def __init__(self):
         self.__http: HTTPConnection = HTTPConnection()
 

@@ -3,7 +3,7 @@
 
 from src.note.Http import Http
 
-class Note():
+class Note:
     """This class handles reading from the user notes"""
 
     def __init__(self):

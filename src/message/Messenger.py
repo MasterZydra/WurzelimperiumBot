@@ -24,7 +24,7 @@ MSG_STATE_SENT_ERR_RECIPIENT_DOESNT_EXIST = 64
 
 Message = namedtuple('Message', ['sender', 'to', 'subject', 'text', 'state'])
 
-class Messenger():
+class Messenger:
     __inbox = []
     __outbox = []
     __system = []

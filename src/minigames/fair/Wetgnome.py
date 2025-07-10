@@ -4,8 +4,7 @@
 import random
 from src.minigames.fair.HttpWetgnome import HttpWetgnome
 
-class Wetgnome():
-
+class Wetgnome:
     def __init__(self, data):
         self.__http = HttpWetgnome()
         self.round = 0
