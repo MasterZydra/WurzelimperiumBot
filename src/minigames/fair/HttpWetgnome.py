@@ -15,7 +15,7 @@ class HttpWetgnome:
             self.__http.check_http_state_ok(response)
             return self.__http.get_json_and_check_for_ok(content)
         except Exception:
-            Logger().exception('Failed to start wet gnome game')
+            Logger().print_exception('Failed to start wet gnome game')
             return None
 
     def select(self, x, y):
@@ -28,5 +28,5 @@ class HttpWetgnome:
             self.__http.check_http_state_ok(response)
             return self.__http.get_json_and_check_for_ok(content)
         except Exception:
-            Logger().exception('Failed to select in wet gnome game')
+            Logger().print_exception('Failed to select in wet gnome game')
             return None

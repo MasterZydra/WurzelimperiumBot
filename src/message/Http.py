@@ -16,7 +16,7 @@ class Http:
             self.__http.check_http_state_ok(response)
             return content
         except Exception:
-            Logger().exception('Failed to create new massge and return result')
+            Logger().print_exception('Failed to create new massge and return result')
             return None
 
     def send_message_and_return_result(self, msg_id, msg_to, msg_subject, msg_body):
@@ -33,5 +33,5 @@ class Http:
             self.__http.check_http_state_ok(response)
             return content
         except Exception:
-            Logger().exception('Failed to send message and return result')
+            Logger().print_exception('Failed to send message and return result')
             return None

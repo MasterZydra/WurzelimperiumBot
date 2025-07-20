@@ -15,7 +15,7 @@ class Http:
             self.__http.check_http_state_ok(response)
             return self.__http.get_json_and_check_for_ok(content)
         except Exception:
-            Logger().exception('Failed to init guild')
+            Logger().print_exception('Failed to init guild')
             return None
 
     def collect_lucky_mole(self, guild_id):
@@ -25,5 +25,5 @@ class Http:
             self.__http.check_http_state_ok(response)
             return self.__http.get_json_and_check_for_ok(content)
         except Exception:
-            Logger().exception('Failed to collect lucky mole')
+            Logger().print_exception('Failed to collect lucky mole')
             return None

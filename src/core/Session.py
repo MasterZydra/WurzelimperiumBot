@@ -47,8 +47,7 @@ class Session:
 
         self.__start_time = time.time()
         self.__end_time = self.__start_time + (self.__lifetime - self.__lifetime_reserve)
-
-        Logger().info(f'Session (ID: {str(self.__session_id)}) geöffnet')
+        Logger().debug(f'Session (ID: {str(self.__session_id)}) started')
 
     def close(self):
         """Reset all informations"""
@@ -57,7 +56,7 @@ class Session:
         self.__server = None
         self.__start_time = None
         self.__end_time = None
-        Logger().info(f'Session (ID: {session_id}) closed')
+        Logger().debug(f'Session (ID: {session_id}) closed')
 
     def get_remaining_time(self):
         """Get remaining time unit the session expires"""

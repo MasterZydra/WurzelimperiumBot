@@ -116,7 +116,7 @@ class Messenger:
                 return None
             return self.__get_message_id_from_new_message_result(result)
         except Exception:
-            Logger().exception("Failed to get new message id")
+            Logger().print_exception("Failed to get new message id")
             return None
 
     def clear_sent_list(self):
@@ -177,7 +177,7 @@ class Messenger:
                 i += 1
                 print(f'{i} von {n}')
             except Exception:
-                Logger().exception('Failed to write message')
+                Logger().print_exception('Failed to write message')
                 print(f'Exception {recipient}')
                 return False
 

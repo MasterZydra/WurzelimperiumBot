@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from src.logger.Logger import Logger
 from src.minigames.adventCalendar.AdventCalendar import AdventCalendar
 from src.minigames.birthdayCalendar.BirthdayCalendar import BirthdayCalendar
 from src.minigames.summerCalendar.SummerCalendar import SummerCalendar
@@ -13,25 +14,25 @@ class Minigames:
 
         self.__adventCalendar = AdventCalendar()
         if self.__adventCalendar.is_available():
-            print('Opening advent calendar...')
+            Logger().print('Opening advent calendar...')
             self.__adventCalendar.play()
 
         self.__birthdayCalendar = BirthdayCalendar()
         if self.__birthdayCalendar.is_available():
-            print('Opening birthday calendar...')
+            Logger().print('Opening birthday calendar...')
             self.__birthdayCalendar.play()
 
         self.__summerCalendar = SummerCalendar()
         if self.__summerCalendar.is_available():
-            print('Opening summer calendar...')
+            Logger().print('Opening summer calendar...')
             self.__summerCalendar.play()
 
         self.__fair = Fair()
         if self.__fair.is_available():
-            print('Playing fair...')
+            Logger().print('Playing fair...')
             self.__fair.play()
 
         self.__pumpkinDigging = PumpkinDigging()
         if self.__pumpkinDigging.is_available():
-            print('Playing pumkin digging game...')
+            Logger().print('Playing pumkin digging game...')
             self.__pumpkinDigging.play()

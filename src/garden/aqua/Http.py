@@ -19,7 +19,7 @@ class Http:
             jContent = self.__http.get_json_and_check_for_ok(content)
             return self.__httpGarden.find_empty_fields_in_json(jContent)
         except Exception:
-            Logger().exception('Failed to get empty fields in water garden')
+            Logger().print_exception('Failed to get empty fields in water garden')
             return None
 
     def water_all_plants(self) -> bool:
@@ -31,7 +31,7 @@ class Http:
             self.__http.get_json_and_check_for_ok(content)
             return True
         except Exception:
-            Logger().exception('Failed to water all plants in water garden')
+            Logger().print_exception('Failed to water all plants in water garden')
             return False
 
     def get_plants_to_water(self):
@@ -44,7 +44,7 @@ class Http:
             jContent = self.__http.get_json_and_check_for_ok(content)
             return self.__httpGarden.find_plants_to_be_watered_in_json(jContent)
         except Exception:
-            Logger().exception('Failed to get plants to water in water garden')
+            Logger().print_exception('Failed to get plants to water in water garden')
             return None
 
     def water_plants(self, sFieldsToWater) -> bool:
@@ -61,7 +61,7 @@ class Http:
             self.__http.check_http_state_ok(response)
             return True
         except Exception:
-            Logger().exception('Failed to water plants in water garden')
+            Logger().print_exception('Failed to water plants in water garden')
             return False
 
     def harvest(self) -> bool:
@@ -72,15 +72,15 @@ class Http:
             jContent = json.loads(content)
 
             if jContent['status'] == 'error':
-                print(jContent['message'])
+                Logger().print(jContent['message'])
             elif jContent['status'] == 'ok':
                 msg = jContent['harvestMsg'].replace('</div>', '').replace('&nbsp;', ' ').replace('<div class="line">', '\n')
                 msg = re.sub('<div.*?>', '', msg)
                 msg = msg.strip()
-                print(msg)
+                Logger().print(msg)
             return True
         except Exception:
-            Logger().exception('Failed to harvest in water garden')
+            Logger().print_exception('Failed to harvest in water garden')
             return False
 
     def grow(self, to_plant, plant_id):
@@ -96,5 +96,5 @@ class Http:
             self.__http.check_http_state_ok(response)
             return self.__http.get_json_and_check_for_ok(content)
         except Exception:
-            Logger().exception('Failed to grow in water garden')
+            Logger().print_exception('Failed to grow in water garden')
             return None

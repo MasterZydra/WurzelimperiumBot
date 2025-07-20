@@ -20,7 +20,7 @@ class Http:
             result = re.search(r'trophy_54.png\);[^;]*(gray)[^;^class$]*class', content['html'])
             return result == None
         except Exception:
-            Logger().exception('Failed to check if aqua garden is available')
+            Logger().print_exception('Failed to check if aqua garden is available')
             return False
 
     def is_bonsai_farm_available(self) -> bool:
@@ -33,7 +33,7 @@ class Http:
             else:
                 return False
         except Exception:
-            Logger().exception('Failed to check if bonsai farm is available')
+            Logger().print_exception('Failed to check if bonsai farm is available')
             return False
 
     def is_honey_farm_available(self) -> bool:
@@ -46,7 +46,7 @@ class Http:
             else:
                 return False
         except Exception:
-            Logger().exception('Failed to check if honey farm is available')
+            Logger().print_exception('Failed to check if honey farm is available')
             return False
 
     def is_greenhouse_available(self) -> bool:
@@ -56,5 +56,5 @@ class Http:
                 return False
             return cactus_quest > 0
         except Exception:
-            Logger().exception('Failed to check if greenhouse is available')
+            Logger().print_exception('Failed to check if greenhouse is available')
             return False

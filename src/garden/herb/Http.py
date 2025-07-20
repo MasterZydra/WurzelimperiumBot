@@ -16,7 +16,7 @@ class Http:
             self.__http.check_http_state_ok(response)
             return json.loads(content)
         except Exception:
-            Logger().exception('Failed to init herb garden')
+            Logger().print_exception('Failed to init herb garden')
             return None
 
     def load_data(self):
@@ -26,7 +26,7 @@ class Http:
             self.__http.check_http_state_ok(response)
             return self.__http.get_json_and_check_for_ok(content)
         except Exception:
-            Logger().exception('Failed to load data of herb garden')
+            Logger().print_exception('Failed to load data of herb garden')
             return None
 
     def remove_weed(self):
@@ -36,7 +36,7 @@ class Http:
             self.__http.check_http_state_ok(response)
             return self.__http.get_json_and_check_for_ok(content)
         except Exception:
-            Logger().exception('Failed to remove weed in herb garden')
+            Logger().print_exception('Failed to remove weed in herb garden')
             return None
 
     def exchange(self, plantID):
@@ -46,5 +46,5 @@ class Http:
             self.__http.check_http_state_ok(response)
             return self.__http.get_json_and_check_for_ok(content)
         except Exception:
-            Logger().exception('Failed to exchange in herb garden')
+            Logger().print_exception('Failed to exchange in herb garden')
             return None

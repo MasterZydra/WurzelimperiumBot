@@ -50,7 +50,7 @@ class User:
 
             return True
         except Exception:
-            Logger().exception("Failed to update user data")
+            Logger().print_exception("Failed to update user data")
             return False
 
     def user_id(self) -> str:

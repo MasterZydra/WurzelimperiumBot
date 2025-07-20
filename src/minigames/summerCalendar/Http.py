@@ -16,7 +16,7 @@ class Http:
             self.__http.check_http_state_ok(response)
             return 'id="calendar" class="summer short"' in content
         except Exception:
-            Logger().exception('Failed to check if summer calendar is available')
+            Logger().print_exception('Failed to check if summer calendar is available')
             return False
 
     def init_game(self):
@@ -25,7 +25,7 @@ class Http:
             self.__http.check_http_state_ok(response)
             return self.__http.get_json_and_check_for_ok(content)
         except Exception:
-            Logger().exception('Failed to init summer calendar')
+            Logger().print_exception('Failed to init summer calendar')
             return None
 
     def open(self, field: int):
@@ -34,5 +34,5 @@ class Http:
             self.__http.check_http_state_ok(response)
             return self.__http.get_json_and_check_for_ok(content)
         except Exception:
-            Logger().exception('Failed to open summer calendar')
+            Logger().print_exception('Failed to open summer calendar')
             return None

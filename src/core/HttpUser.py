@@ -35,7 +35,7 @@ class Http:
             else:
                 return content
         except Exception:
-            Logger().exception('Failed to load user data')
+            Logger().print_exception('Failed to load user data')
             return None
 
     def get_info_from_stats(self, info):
@@ -52,7 +52,7 @@ class Http:
             jContent = self.__http.get_json_and_check_for_ok(content.decode('UTF-8'))
             return self.__get_info_from_json(jContent, info)
         except Exception:
-            Logger().exception('Failed to get info from stats')
+            Logger().print_exception('Failed to get info from stats')
             return None
 
     def __get_info_from_json(self, jContent, info):
@@ -107,7 +107,7 @@ class Http:
         if success:
             return result
         else:
-            print(jContent['table'])
+            Logger().info(jContent['table'])
             raise JSONError('Info:' + info + " not found.")
 
     def user_id(self):
@@ -121,7 +121,7 @@ class Http:
             result = re.search('Unbestätigte Email:', html.unescape(str(content)))
             return result == None
         except Exception:
-            Logger().exception('Failed to check if mail is confirmed')
+            Logger().print_exception('Failed to check if mail is confirmed')
             return None
 
     def has_watering_gnome_helper(self):
@@ -133,6 +133,6 @@ class Http:
             re_gnome = re.search(r'wimparea.init.*\"helper\":.*(water).*\"garbage', content)
             return re_gnome is not None and re_gnome.group(1) == "water"
         except Exception:
-            Logger().exception('Failed to check is user has watering gnome')
+            Logger().print_exception('Failed to check is user has watering gnome')
             return None
 

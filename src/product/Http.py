@@ -21,7 +21,7 @@ class Http:
             products = re.search(r'data_products = ({.*}});var', content)
             return products.group(1)
         except Exception:
-            Logger().exception('FAiled to get all product infos')
+            Logger().print_exception('FAiled to get all product infos')
             return None
 
     def get_npc_prices(self):

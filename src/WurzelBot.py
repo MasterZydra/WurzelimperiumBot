@@ -91,7 +91,7 @@ class WurzelBot:
             return True
 
         except Exception:
-            Logger().exception('Failed to init gardens')
+            Logger().print_exception('Failed to init gardens')
             return False
 
 
@@ -102,7 +102,6 @@ class WurzelBot:
         """
         #BG-Този метод стартира и инициализира Wurzelbot. За целта се извършва вход с предоставените данни за влизане и се инициализира всичко необходимо.
 
-        Logger().info('-------------------------------------------')
         Logger().info(f'Starting Wurzelbot for User {user} on Server No. {server}')
         loginDaten = Login(server=server, user=user, password=pw, language=lang)
 
@@ -134,7 +133,6 @@ class WurzelBot:
 
         if self.__HTTPConn.logOut():
             Logger().print(i18n.t('wimpb.logout_success'))
-            Logger().info('-------------------------------------------')
 
     def get_stop_bot_note(self) -> bool:
         """Check notes for stop bot entry"""
@@ -336,7 +334,7 @@ class WurzelBot:
             return None
 
         human_time = datetime.datetime.fromtimestamp(min(garden_time))
-        print(f"Next time water/harvest: {human_time.strftime('%d/%m/%y %H:%M:%S')} ({min(garden_time)})")
+        Logger().print(f"Next time water/harvest: {human_time.strftime('%d/%m/%y %H:%M:%S')} ({min(garden_time)})")
         return min(garden_time)
 
     def hasEmptyFields(self):
@@ -455,11 +453,11 @@ class WurzelBot:
             amount = Stock().get_stock_by_product_id(productID)
             if amount == 0: continue
 
-            print(str(product.get_name()).ljust(30) + 'Amount: ' + str(amount).rjust(5))
+            Logger().print(str(product.get_name()).ljust(30) + 'Amount: ' + str(amount).rjust(5))
             isSmthPrinted = True
 
         if not isSmthPrinted:
-            print('Your stock is empty')
+            Logger().print('Your stock is empty')
 
     def get_lowest_stock_entry(self):
         entryID = Stock().get_lowest_stock_entry()
@@ -571,7 +569,7 @@ class WurzelBot:
     def infinityQuest(self, MINwt):
         #TODO: Mehr Checks bzw Option wieviele Quests/WT man ausgeben mag - da es kein cooldown gibt! (hoher wt verlust)
         if User().get_bar() < MINwt:
-            print('Zu wenig WT')
+            Logger().print('Zu wenig WT')
             return
 
         if User().get_level() > 23 and User().get_bar() > MINwt:

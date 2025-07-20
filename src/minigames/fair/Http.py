@@ -16,7 +16,7 @@ class Http:
             self.__http.check_http_state_ok(response)
             return 'id="fair"' in content
         except Exception:
-            Logger().exception('Failed to check if fair is available')
+            Logger().print_exception('Failed to check if fair is available')
             return False
 
     def init_game(self):
@@ -26,7 +26,7 @@ class Http:
             self.__http.check_http_state_ok(response)
             return self.__http.get_json_and_check_for_ok(content)
         except Exception:
-            Logger().exception('Failed to init fair game')
+            Logger().print_exception('Failed to init fair game')
             return None
 
     def craft_ticket(self):
@@ -36,7 +36,7 @@ class Http:
             self.__http.check_http_state_ok(response)
             return self.__http.get_json_and_check_for_ok(content)
         except Exception:
-            Logger().exception('Failed to craft tickets for fair game')
+            Logger().print_exception('Failed to craft tickets for fair game')
             return None
     
     def pay_ticket(self, type):
@@ -49,5 +49,5 @@ class Http:
             self.__http.check_http_state_ok(response)
             return self.__http.get_json_and_check_for_ok(content)
         except Exception:
-            Logger().exception('Failed to pay tickets for fair game')
+            Logger().print_exception('Failed to pay tickets for fair game')
             return None

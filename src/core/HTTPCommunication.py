@@ -181,7 +181,7 @@ class HTTPConnection:
             self.__userID = cookie['wunr'].value
             return True
         except Exception:
-            Logger().exception('Login failed')
+            Logger().print_exception('Login failed')
             return False
 
     def logInPortal(self, loginDaten) -> bool:
@@ -209,7 +209,7 @@ class HTTPConnection:
             self.__get_unr_from_url_portal(response['location'])
             self.__get_port_unr_from_url_portal(response['location'])
         except Exception:
-            Logger().exception("Portal login failed")
+            Logger().print_exception("Portal login failed")
             return False
 
         headers = {
@@ -230,7 +230,7 @@ class HTTPConnection:
 
             return True
         except Exception:
-            Logger().exception("Portal login failed")
+            Logger().print_exception("Portal login failed")
             return False
 
     def logOut(self) -> bool:
@@ -251,7 +251,7 @@ class HTTPConnection:
 
             return True
         except Exception:
-            Logger().exception("Failed to log out")
+            Logger().print_exception("Failed to log out")
             return False
 
     def initInfinityQuest(self):
@@ -262,7 +262,7 @@ class HTTPConnection:
             jContent = self.get_json_and_check_for_ok(content)
             return jContent
         except Exception:
-            Logger().exception("Failed to init infinity quest")
+            Logger().print_exception("Failed to init infinity quest")
             return None
 
     def sendInfinityQuest(self, questnr, product, amount):
@@ -274,5 +274,5 @@ class HTTPConnection:
             jContent = self.get_json_and_check_for_ok(content)
             return jContent
         except Exception:
-            Logger().exception('Failed to send infinity quest')
+            Logger().print_exception('Failed to send infinity quest')
             return None

@@ -41,11 +41,13 @@ def main():
 
         # Remove weed
         # BG-Премахване на плевели
+        print('')
         print(i18n.t('wimpb.remove_weed_from_all_gardens'))
         wurzelBot.remove_weeds()
 
         # Harvest
         # BG-Жътва
+        print('')
         wurzelBot.harvest()
 
         # Plant plants
@@ -66,29 +68,35 @@ def main():
         # Water plants
         # BG-Поливане на растенията
         time.sleep(3)
+        print('')
         print(i18n.t('wimpb.watering_all_plants'))
         wurzelBot.water()
 
         # Claim Daily
         # BG-Събиране на дневният бонус
+        print('')
         print(i18n.t('wimpb.claim_bonus'))
         wurzelBot.get_daily_bonuses()
 
         # Process Wimp Customers in Gardens
         # BG-Изпълни нуждите на Wimps в градините
+        print('')
         print(i18n.t('wimpb.process_wimps'))
         wurzelBot.sell_to_wimps()
 
         # Play minigames
+        print('')
         print('Playing minigames...')
         wurzelBot.minigames.play()
 
         # Cut bonsais
+        print('')
         print('Cutting bonsais...')
         wurzelBot.cut_and_renew_bonsais(2)
     finally:
         # Close connection
         # BG-Затваряне на връзката
+        print('')
         wurzelBot.logout()
 
 if __name__ == "__main__":

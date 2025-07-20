@@ -16,7 +16,7 @@ class Http:
             response, content = self.__http.send(address)
             self.__http.check_http_state_ok(response)
         except Exception:
-            Logger().exception('Failed to init greenhouse')
+            Logger().print_exception('Failed to init greenhouse')
             return None
 
         address = f"ajax/greenhouse_ajax.php?op=showhelp"
@@ -25,7 +25,7 @@ class Http:
             self.__http.check_http_state_ok(response)
             self.__http.get_json_and_check_for_success(content)
         except Exception:
-            Logger().exception('Failed to init greenhouse')
+            Logger().print_exception('Failed to init greenhouse')
             return None
 
         address = f"ajax/greenhouse_ajax.php?op=getrack"
@@ -34,7 +34,7 @@ class Http:
             self.__http.check_http_state_ok(response)
             self.__http.get_json_and_check_for_success(content)
         except Exception:
-            Logger().exception('Failed to init greenhouse')
+            Logger().print_exception('Failed to init greenhouse')
             return None
 
         address = f"ajax/greenhouse_ajax.php?op=getfields"
@@ -43,7 +43,7 @@ class Http:
             self.__http.check_http_state_ok(response)
             fields = self.__http.get_json_and_check_for_success(content)
         except Exception:
-            Logger().exception('Failed to init greenhouse')
+            Logger().print_exception('Failed to init greenhouse')
             return None
 
         address = f"ajax/greenhouse_ajax.php?op=getmenu"
@@ -52,7 +52,7 @@ class Http:
             self.__http.check_http_state_ok(response)
             self.__http.get_json_and_check_for_success(content)
         except Exception:
-            Logger().exception('Failed to init greenhouse')
+            Logger().print_exception('Failed to init greenhouse')
             return None
 
         address = f"ajax/greenhouse_ajax.php?op=gettimedata"
@@ -61,7 +61,7 @@ class Http:
             self.__http.check_http_state_ok(response)
             self.__http.get_json_and_check_for_success(content)
         except Exception:
-            Logger().exception('Failed to init greenhouse')
+            Logger().print_exception('Failed to init greenhouse')
             return None
 
         return fields
@@ -73,5 +73,5 @@ class Http:
             self.__http.check_http_state_ok(response)
             return json.loads(content)
         except Exception:
-            Logger().exception('Failed to do cactus care in greenhouse')
+            Logger().print_exception('Failed to do cactus care in greenhouse')
             return None

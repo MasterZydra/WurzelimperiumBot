@@ -26,5 +26,5 @@ class Http:
                 return ''
             return note_text.strip()
         except Exception:
-            Logger().exception('Failed to get note')
+            Logger().print_exception('Failed to get note')
             return None

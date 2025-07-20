@@ -21,7 +21,7 @@ class Http:
             jContent = self.__http.get_json_and_check_for_ok(content)
             return self.__find_wimps_data_from_json(jContent)
         except Exception:
-            Logger().exception("Failed to get wimps data")
+            Logger().print_exception("Failed to get wimps data")
             return None
 
     def get_wimps_data_watergarden(self):
@@ -33,7 +33,7 @@ class Http:
             jContent = self.__http.get_json_and_check_for_ok(content)
             return self.__find_wimps_data_from_json(jContent)
         except Exception:
-            Logger().exception("Failed to get watergarden wimps data")
+            Logger().print_exception("Failed to get watergarden wimps data")
             return None
 
     def __find_wimps_data_from_json(self, jContent):
@@ -61,7 +61,7 @@ class Http:
             jContent = self.__http.get_json_and_check_for_ok(content)
             return jContent['newProductCounts']
         except Exception:
-            Logger().exception("Failed to sell to wimp")
+            Logger().print_exception("Failed to sell to wimp")
             return None
 
     def decline_wimp(self, wimp_id):
@@ -77,5 +77,5 @@ class Http:
             jContent = self.__http.get_json_and_check_for_ok(content)
             return jContent['action']
         except Exception:
-            Logger().exception("Failed to decline wimp")
+            Logger().print_exception("Failed to decline wimp")
             return None

@@ -257,7 +257,7 @@ class Garden:
             cost_for_removal = cost_map.get(weed_type)
 
             if cost_for_removal > money:
-                Logger().print('Not enough money to remove the weeds')
+                Logger().debug('Not enough money to remove the weeds')
                 all_weeds_removed = False
                 continue
 

@@ -18,7 +18,7 @@ class Http:
             self.__http.check_http_state_ok(response)
             return self.__http.get_json_and_check_for_ok(content)
         except Exception:
-            Logger().exception("Failed to get dialy login bonus")
+            Logger().print_exception("Failed to get dialy login bonus")
             return None
 
     def read_user_data(self):
@@ -31,7 +31,7 @@ class Http:
             self.__http.get_json_and_check_for_ok(content)
             return True
         except Exception:
-            Logger().exception("Failed to init garden shed")
+            Logger().print_exception("Failed to init garden shed")
             return False
 
     def open_trophy_case(self) -> bool:
@@ -41,7 +41,7 @@ class Http:
             self.__http.get_json_and_check_for_ok(content)
             return True
         except Exception:
-            Logger().exception("Failed to open trophy case")
+            Logger().print_exception("Failed to open trophy case")
             return False
 
     def collect_bonus_items(self):
@@ -50,5 +50,5 @@ class Http:
             self.__http.check_http_state_ok(response)
             return self.__http.get_json_and_check_for_ok(content)
         except Exception:
-            Logger().exception("Failed to collect bonus items")
+            Logger().print_exception("Failed to collect bonus items")
             return None

@@ -17,7 +17,7 @@ class Shop:
 
         product = ProductData().get_product_by_name(product_name)
         if product is None:
-            print(f'Plant "{product_name}" not found')
+            Logger().print_error(f'Plant "{product_name}" not found')
             return False
 
         productId = product.get_id()

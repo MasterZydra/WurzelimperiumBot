@@ -16,7 +16,7 @@ class Http:
             self.__http.check_http_state_ok(response)
             return 'id="calendar" class="birthday long"' in content
         except Exception:
-            Logger().exception('Failed to check if birthday calendar is available')
+            Logger().print_exception('Failed to check if birthday calendar is available')
             return False
 
     def init_game(self):
@@ -25,7 +25,7 @@ class Http:
             self.__http.check_http_state_ok(response)
             return self.__http.get_json_and_check_for_ok(content)
         except Exception:
-            Logger().exception('Faild to ... birthday calendar')
+            Logger().print_exception('Faild to ... birthday calendar')
             return None
 
     def open(self, field: int):
@@ -34,5 +34,5 @@ class Http:
             self.__http.check_http_state_ok(response)
             return self.__http.get_json_and_check_for_ok(content)
         except Exception:
-            Logger().exception('Faild to ... birthday calendar')
+            Logger().print_exception('Faild to ... birthday calendar')
             return None

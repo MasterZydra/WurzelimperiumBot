@@ -22,7 +22,7 @@ class Http:
             jContent = self.__http.get_json_and_check_for_ok(content)
             return self.find_plants_to_be_watered_in_json(jContent)
         except Exception:
-            Logger().exception('Failed to get plants to water in garden')
+            Logger().print_exception('Failed to get plants to water in garden')
             return None
 
     def water_all_plants(self) -> bool:
@@ -34,7 +34,7 @@ class Http:
             self.__http.get_json_and_check_for_ok(content)
             return True
         except Exception:
-            Logger().exception('Failed to water plants in garden')
+            Logger().print_exception('Failed to water plants in garden')
             return False
 
     def water_plant(self, iGarten, iField, sFieldsToWater) -> bool:
@@ -47,7 +47,7 @@ class Http:
             self.__http.get_yaml_and_check_for_success(content.decode('UTF-8'))
             return True
         except Exception:
-            Logger().exception('Failed to water plant in garden')
+            Logger().print_exception('Failed to water plant in garden')
             return False
 
     def get_empty_fields(self, gardenID, param="empty"):
@@ -63,7 +63,7 @@ class Http:
                 emptyFields = self.__find_grown_fields(jContent)
             return emptyFields
         except Exception:
-            Logger().exception('Failed to get empty fields in garden')
+            Logger().print_exception('Failed to get empty fields in garden')
             return None
 
     def __find_grown_fields(self, jContent):
@@ -85,7 +85,7 @@ class Http:
             jContent = self.__http.get_json_and_check_for_ok(content)
             return self.__find_weed_fields_in_json(jContent)
         except Exception:
-            Logger().exception('Failed to get weed fields in garden')
+            Logger().print_exception('Failed to get weed fields in garden')
             return None
 
     def __find_weed_fields_in_json(self, jContent):
@@ -111,7 +111,7 @@ class Http:
             jContent = self.__http.get_json_and_check_for_ok(content)
             return self.__find_growing_plants_in_json(jContent)
         except Exception:
-            Logger().exception('Failed to get growing plants in garden')
+            Logger().print_exception('Failed to get growing plants in garden')
             return None
 
     def __find_growing_plants_in_json(self, jContent):
@@ -145,7 +145,7 @@ class Http:
                 Logger().print(msg)
             return True
         except Exception:
-            Logger().exception(f'Failed to harvest in garden {gardenID}')
+            Logger().print_exception(f'Failed to harvest in garden {gardenID}')
             return False
 
     def harvest_unfinished(self, plant_id, field, fields) -> bool:
@@ -154,7 +154,7 @@ class Http:
             self.__http.send(address)
             return True
         except Exception:
-            Logger().exception('Failed to harvest unfinished plants')
+            Logger().print_exception('Failed to harvest unfinished plants')
             return False
 
     def grow(self, to_plant, plant_id, gardenID):
@@ -172,7 +172,7 @@ class Http:
             self.__http.check_http_state_ok(response)
             return self.__http.get_json_and_check_for_success(content)
         except Exception:
-            Logger().exception(f'Failed to grow plant {plant_id} in garden {gardenID}')
+            Logger().print_exception(f'Failed to grow plant {plant_id} in garden {gardenID}')
             return None
 
     def remove_weed_on_field(self, gardenID, fieldID):
@@ -186,7 +186,7 @@ class Http:
             jContent = self.__http.get_json_and_check_for_success(content)
             return jContent['success']
         except Exception:
-            Logger().exception(f'Failed to remove weed from field {fieldID} in garden {gardenID}')
+            Logger().print_exception(f'Failed to remove weed from field {fieldID} in garden {gardenID}')
             return None
 
     def change_garden(self, gardenID):
@@ -197,7 +197,7 @@ class Http:
             self.__http.check_http_state_ok(response)
             return self.__http.get_json_and_check_for_ok(content)
         except Exception:
-            Logger().exception(f'Failed to change to garden {gardenID}')
+            Logger().print_exception(f'Failed to change to garden {gardenID}')
             return None
 
     def find_plants_to_be_watered_in_json(self, jContent):

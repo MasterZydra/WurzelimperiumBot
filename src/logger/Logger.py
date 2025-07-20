@@ -23,9 +23,18 @@ class Logger:
             self.logger.addHandler(logging.StreamHandler())
         self.logger.setLevel(logging.INFO)
 
+    def print_exception(self, message: str):
+        """Print and log as exception"""
+        self.exception(message)
+        if not Config().log_to_stdout:
+            print(message)
+
     def exception(self, message):
         """Logs the given message followed by the stack trace of the raised exception"""
         self.logger.exception(message)
+
+    def debug(self, message):
+        self.logger.debug(message)
 
     def info(self, message):
         self.logger.info(message)

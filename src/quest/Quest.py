@@ -22,7 +22,7 @@ class Quest:
             return self.__get_big_quest_products()
         if quest_name == "CactusQuest":
             return self.__get_cactus_quest_products()
-        Logger().exception(f'Quest {quest_name} is not implemented')
+        Logger().print_exception(f'Quest {quest_name} is not implemented')
         return None
 
     def __get_big_quest_products(self):

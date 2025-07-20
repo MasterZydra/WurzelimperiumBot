@@ -17,5 +17,5 @@ class Http:
             jContent = self.__http.get_json_and_check_for_ok(content)
             return jContent['produkte']
         except Exception:
-            Logger().exception("Failed to get stock inventory")
+            Logger().print_exception("Failed to get stock inventory")
             return None

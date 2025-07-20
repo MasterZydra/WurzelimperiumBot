@@ -23,7 +23,7 @@ class Http:
             self.__http.check_http_state_ok(response)
             return True
         except Exception:
-            Logger().exception(f"Failed to buy product {productId} {amount} times")
+            Logger().print_exception(f"Failed to buy product {productId} {amount} times")
             return False
 
     def buy_aqua(self, productId: int, amount: int = 1) -> bool:
@@ -33,5 +33,5 @@ class Http:
             self.__http.check_http_state_ok(response)
             return True
         except Exception:
-            Logger().exception(f"Failed to buy aqua product {productId} {amount} times")
+            Logger().print_exception(f"Failed to buy aqua product {productId} {amount} times")
             return False

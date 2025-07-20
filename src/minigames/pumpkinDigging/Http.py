@@ -16,7 +16,7 @@ class Http:
             self.__http.check_http_state_ok(response)
             return 'id="diggame_bar_img" class="autumn"' in content
         except Exception:
-            Logger().exception('Failed to check if pumpkin digging is available')
+            Logger().print_exception('Failed to check if pumpkin digging is available')
             return False
 
     def init_game(self):
@@ -25,7 +25,7 @@ class Http:
             self.__http.check_http_state_ok(response)
             return self.__http.get_json_and_check_for_ok(content)
         except Exception:
-            Logger().exception('Failed to init pumpkin digging')
+            Logger().print_exception('Failed to init pumpkin digging')
             return None
 
     def hit(self, zone: int):
@@ -34,7 +34,7 @@ class Http:
             self.__http.check_http_state_ok(response)
             return self.__http.get_json_and_check_for_ok(content)
         except Exception:
-            Logger().exception('Failed to hit zone in pumpkin digging')
+            Logger().print_exception('Failed to hit zone in pumpkin digging')
             return None
 
     def finish_game(self):
@@ -43,5 +43,5 @@ class Http:
             self.__http.check_http_state_ok(response)
             return self.__http.get_json_and_check_for_ok(content)
         except Exception:
-            Logger().exception('Failed to finish pumpkin digging')
+            Logger().print_exception('Failed to finish pumpkin digging')
             return None

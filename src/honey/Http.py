@@ -14,7 +14,7 @@ class Http:
             self.__http.check_http_state_ok(response)
             return self.__http.get_json_and_check_for_ok(content)
         except Exception:
-            Logger().exception('Failed to get honey farm info')
+            Logger().print_exception('Failed to get honey farm info')
             return None
         
     def pour_honey(self):
@@ -23,7 +23,7 @@ class Http:
             self.__http.check_http_state_ok(response)
             return self.__http.get_json_and_check_for_ok(content)
         except Exception:
-            Logger().exception('Failed to pour honey')
+            Logger().print_exception('Failed to pour honey')
             return None
 
     def change_hive_type(self, hive, pid): 
@@ -34,7 +34,7 @@ class Http:
             self.__http.check_http_state_ok(response)
             return self.__http.get_json_and_check_for_ok(content)
         except Exception:
-            Logger().exception('Failed to change hive type')
+            Logger().print_exception('Failed to change hive type')
             return None
 
     def send_all_hives(self, tour):
@@ -45,7 +45,7 @@ class Http:
             self.__http.check_http_state_ok(response)
             return self.__http.get_json_and_check_for_ok(content)
         except Exception:
-            Logger().exception('Failed to send all hives')
+            Logger().print_exception('Failed to send all hives')
             return None
 
     def send_hive(self, tour, hive):
@@ -56,7 +56,7 @@ class Http:
             self.__http.check_http_state_ok(response)
             return self.__http.get_json_and_check_for_ok(content)
         except Exception:
-            Logger().exception(f'Failed to send hive {hive}')
+            Logger().print_exception(f'Failed to send hive {hive}')
             return None
 
     def get_honey_quests(self, content):

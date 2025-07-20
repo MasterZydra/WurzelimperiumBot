@@ -20,7 +20,7 @@ class Http:
                 tradeable_products[i] = int(tradeable_products[i])
             return tradeable_products
         except Exception:
-            Logger().exception('Failed to get tradeable products from marketplace overview')
+            Logger().print_exception('Failed to get tradeable products from marketplace overview')
             return None
 
     def get_offers_for_product(self, product_id):
@@ -55,7 +55,7 @@ class Http:
                         next_page = True
                         page_index += 1
             except Exception:
-                Logger().exception('Failed to get offers for products from marketplace')
+                Logger().print_exception('Failed to get offers for products from marketplace')
                 return None
 
         return offers
