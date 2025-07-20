@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -
 
 import logging
+from pathlib import Path
 from src.core.Config import Config
 
 class Logger:
@@ -14,6 +15,7 @@ class Logger:
         return self._instance
 
     def __initClass(self):
+        Path('logs').mkdir(parents=True, exist_ok=True)
         self.logger = logging.getLogger('Bot')
         handler = logging.FileHandler('logs/wurzelbot.log', 'a', 'utf-8')
         formatter = logging.Formatter('%(asctime)s - %(message)s')
