@@ -509,14 +509,14 @@ class WurzelBot:
         if not isSmthPrinted:
             print('Your stock is empty')
 
-    def get_lowest_stock_entry(self, category = None):
-        entryID = Stock().get_lowest_stock_entry(category)
+    def get_lowest_stock_entry(self):
+        entryID = Stock().get_lowest_stock_entry()
         if entryID == -1: return 'Your stock is empty'
         return ProductData().get_product_by_id(entryID).get_name()
 
-    def get_ordered_stock_list(self, category = None):
+    def get_ordered_stock_list(self):
         orderedList = ''
-        for productID in Stock().get_ordered_stock_list(category=category):
+        for productID in Stock().get_ordered_stock_list():
             orderedList += str(ProductData().get_product_by_id(productID).get_name()).ljust(20)
             orderedList += str(Stock().get_ordered_stock_list()[productID]).rjust(5)
             orderedList += str('\n')
