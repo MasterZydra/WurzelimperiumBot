@@ -102,7 +102,7 @@ class WurzelBot:
         """
         #BG-Този метод стартира и инициализира Wurzelbot. За целта се извършва вход с предоставените данни за влизане и се инициализира всичко необходимо.
 
-        Logger().info(f'Starting Wurzelbot for User {user} on Server No. {server}')
+        Logger().debug(f'Starting Wurzelbot for User {user} on Server No. {server}')
         loginDaten = Login(server=server, user=user, password=pw, language=lang)
 
         if portalacc == True:
