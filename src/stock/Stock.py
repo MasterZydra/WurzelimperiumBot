@@ -20,15 +20,18 @@ class Stock:
         for product_id in product_list:
             self.__products[str(product_id)] = 0
 
-    def update(self):
+    def update(self) -> bool:
         """Updates the stock for all products"""
         # Reset before updating
         for product_id in self.__products.keys():
             self.__products[product_id] = 0
 
         inventory = self.__http.get_inventory()
+        if inventory is None:
+            return False
         for i in inventory:
             self.__products[i] = inventory[i]
+        return True
 
     def get_stock_by_product_id(self, product_id):
         return self.__products[str(product_id)]

@@ -20,20 +20,29 @@ class Honey:
         self.__honey_types = None
         self.update()
 
-    def update(self):
-        self.__set_data(self.__http.get_honey_farm_info())
+    def update(self) -> bool:
+        info = self.__http.get_honey_farm_info()
+        if info is None:
+            return False
 
-    def start_tour(self, tour: int):
+        return self.__set_data(info)
+
+    def start_tour(self, tour: int) -> bool:
         """@param tour: 1 = 2h, 2 = 8h, 3 = 24h"""
         if self.__user.is_premium_active():
-            self.__set_data(self.__http.send_all_hives(tour))
+            data = self.__http.send_all_hives(tour)
+            if data is None:
+                return False
+            self.__set_data(data)
         else:
             hives = self.get_available_hives()
             if hives is False:
                 return
             hive: Hive
             for hive in hives:
-                self.__set_data(self.__http.send_hive(tour, hive.get_nr()))
+                if self.__set_data(self.__http.send_hive(tour, hive.get_nr())) is None:
+                    return False
+        return True
 
     def get_available_hives(self):
         available_products = self.__data['data']['garden']
@@ -64,11 +73,13 @@ class Honey:
         transfer_stock = {}
         if {key: value for key, value in stock.items() if value >= 100000}:
             content = self.__http.pour_honey()
+            if content is None:
+                return None
             self.__set_data(content)
             transfer_stock = self.__data['data']['transfer_stock'] #honey-pid, and count
         return transfer_stock
 
-    def change_all_hives_types(self, product_ID):
+    def change_all_hives_types(self, product_ID) -> bool:
         pid = product_ID
         honey_pid = self.__honey_types[f'{pid}']
 
@@ -76,8 +87,11 @@ class Honey:
         for hive in self.__unlocked_hives:
             if hive.get_pid_change_remain() < 0 and hive.get_pid() is not honey_pid:
                 jContent = self.__http.change_hive_type(hive.get_nr(), honey_pid)
+                if jContent is None:
+                    return False
                 self.__set_data(jContent)
         self.__log.info(f"Changed all hive types to: {honey_pid}")
+        return True
 
     # Wimps
 
@@ -109,10 +123,9 @@ class Honey:
 
     # Internal helper functions
 
-    def __set_data(self, data):
+    def __set_data(self, data) -> bool:
         if isinstance(data['data'], int) or not 'data' in data['data']:
-            self.update()
-            return
+            return self.update()
 
         if not 'questnr' in data:
             self.__data['data'] = data['data']
@@ -121,6 +134,8 @@ class Honey:
 
         self.__unlocked_hives = self.__get_hives_unlocked()
         self.__honey_types = self.__get_dict_product_for_honey_pid()
+
+        return True
 
     def __get_hives_unlocked(self):
         """Returns a list with the unlocked hives as objects"""

@@ -21,6 +21,8 @@ class Wetgnome:
     def start(self, round):
         if 1 <= round <= 3:
             content = self.__http.start()
+            if content is None:
+                return None, None
             self.__set_data(content["data"])
         return self.round, self.game
 
@@ -34,6 +36,8 @@ class Wetgnome:
         y = y + int(game_id[0])
 
         content = self.__http.select(x, y)
+        if content is None:
+            return None
         self.__set_data(content["data"])
         return self.round
     

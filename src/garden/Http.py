@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from src.core.HTTPCommunication import HTTPConnection
+from src.logger.Logger import Logger
 from src.product.Products import WEEDS, TREE_STUMP, STONE, MOLE
 import json, re, time
 
@@ -19,22 +20,24 @@ class Http:
             response, content = self.__http.send(address)
             self.__http.check_http_state_ok(response)
             jContent = self.__http.get_json_and_check_for_ok(content)
-        except Exception:
-            raise
-        else:
             return self.find_plants_to_be_watered_in_json(jContent)
+        except Exception:
+            Logger().exception('Failed to get plants to water in garden')
+            return None
 
-    def water_all_plants(self):
+    def water_all_plants(self) -> bool:
         """Use watering gnome to water all plants in a garden (premium feature)."""
         try:
             address = f"ajax/ajax.php?do=gardenWaterAll&token={self.__http.token()}"
             response, content = self.__http.send(address)
             self.__http.check_http_state_ok(response)
             self.__http.get_json_and_check_for_ok(content)
+            return True
         except Exception:
-            raise
+            Logger().exception('Failed to water plants in garden')
+            return False
 
-    def water_plant(self, iGarten, iField, sFieldsToWater):
+    def water_plant(self, iGarten, iField, sFieldsToWater) -> bool:
         """Bewässert die Pflanze iField mit der Größe sSize im Garten iGarten."""
         try:
             address =   f'save/wasser.php?feld[]={str(iField)}&felder[]={sFieldsToWater}' \
@@ -42,8 +45,10 @@ class Http:
             response, content = self.__http.send(address)
             self.__http.check_http_state_ok(response)
             self.__http.get_yaml_and_check_for_success(content.decode('UTF-8'))
+            return True
         except Exception:
-            raise
+            Logger().exception('Failed to water plant in garden')
+            return False
 
     def get_empty_fields(self, gardenID, param="empty"):
         """Gibt alle leeren Felder eines Gartens zurück."""
@@ -56,10 +61,10 @@ class Http:
                 emptyFields = self.find_empty_fields_in_json(jContent)
             elif param == "grown":
                 emptyFields = self.__find_grown_fields(jContent)
-        except Exception:
-            raise
-        else:
             return emptyFields
+        except Exception:
+            Logger().exception('Failed to get empty fields in garden')
+            return None
 
     def __find_grown_fields(self, jContent):
         """Sucht im JSON Content nach Felder die bepflanzt sind und gibt diese zurück."""
@@ -78,11 +83,10 @@ class Http:
             response, content = self.__http.send(address)
             self.__http.check_http_state_ok(response)
             jContent = self.__http.get_json_and_check_for_ok(content)
-            weedFields = self.__find_weed_fields_in_json(jContent)
+            return self.__find_weed_fields_in_json(jContent)
         except Exception:
-            raise
-        else:
-            return weedFields
+            Logger().exception('Failed to get weed fields in garden')
+            return None
 
     def __find_weed_fields_in_json(self, jContent):
         """Sucht im JSON Content nach Felder die mit Unkraut befallen sind und gibt diese zurück."""
@@ -105,11 +109,10 @@ class Http:
             response, content = self.__http.send(address)
             self.__http.check_http_state_ok(response)
             jContent = self.__http.get_json_and_check_for_ok(content)
-            growingPlants = self.__find_growing_plants_in_json(jContent)
+            return self.__find_growing_plants_in_json(jContent)
         except Exception:
-            raise
-        else:
-            return growingPlants
+            Logger().exception('Failed to get growing plants in garden')
+            return None
 
     def __find_growing_plants_in_json(self, jContent):
         """Returns list of growing plants from JSON content"""
@@ -118,10 +121,11 @@ class Http:
             growingPlants.append(field[1])
         return growingPlants
 
-    def harvest(self, gardenID):
+    def harvest(self, gardenID) -> bool:
         """Erntet alle fertigen Pflanzen im Garten."""
         try:
-            self.change_garden(gardenID)
+            if self.change_garden(gardenID) is None:
+                return False
             address = f'ajax/ajax.php?do=gardenHarvestAll&token={self.__http.token()}'
             response, content = self.__http.send(address)
             jContent = json.loads(content)
@@ -139,15 +143,19 @@ class Http:
                     eventitems = jContent['collectevent']
                     msg = msg + f"\n{eventitems} Eventitems" #TODO check which event is active
                 print(msg)
+            return True
         except Exception:
-            raise
+            Logger().exception(f'Failed to harvest in garden {gardenID}')
+            return False
 
-    def harvest_unfinished(self, plant_id, field, fields):
+    def harvest_unfinished(self, plant_id, field, fields) -> bool:
         try:
             address = f"save/ernte.php?pflanze[]={plant_id}&feld[]={field}&felder[]={fields}&closepopup=1&ernteJa=ernteJa"
-            response, content = self.__http.send(address)
+            self.__http.send(address)
+            return True
         except Exception:
-            raise
+            Logger().exception('Failed to harvest unfinished plants')
+            return False
 
     def grow(self, to_plant, plant_id, gardenID):
         """Baut eine Pflanze auf einem Feld an."""
@@ -164,18 +172,22 @@ class Http:
             self.__http.check_http_state_ok(response)
             return self.__http.get_json_and_check_for_success(content)
         except Exception:
-            raise
+            Logger().exception(f'Failed to grow plant {plant_id} in garden {gardenID}')
+            return None
 
     def remove_weed_on_field(self, gardenID, fieldID):
         """Befreit ein Feld im Garten von Unkraut."""
-        self.change_garden(gardenID)
+        if self.change_garden(gardenID) is None:
+            return None
+
         try:
             response, content = self.__http.send(f'save/abriss.php?tile={fieldID}', 'POST')
             self.__http.check_http_state_ok(response)
             jContent = self.__http.get_json_and_check_for_success(content)
             return jContent['success']
         except Exception:
-            raise
+            Logger().exception(f'Failed to remove weed from field {fieldID} in garden {gardenID}')
+            return None
 
     def change_garden(self, gardenID):
         """Wechselt den Garten."""
@@ -185,7 +197,8 @@ class Http:
             self.__http.check_http_state_ok(response)
             return self.__http.get_json_and_check_for_ok(content)
         except Exception:
-            raise
+            Logger().exception(f'Failed to change to garden {gardenID}')
+            return None
 
     def find_plants_to_be_watered_in_json(self, jContent):
         """Sucht im JSON Content nach Pflanzen die bewässert werden können und gibt diese inkl. der Pflanzengröße zurück."""

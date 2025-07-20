@@ -3,6 +3,7 @@
 
 import re
 from src.core.HTTPCommunication import HTTPConnection
+from src.logger.Logger import Logger
 from lxml import etree
 
 class Http:
@@ -20,7 +21,8 @@ class Http:
             products = re.search(r'data_products = ({.*}});var', content)
             return products.group(1)
         except Exception:
-            raise
+            Logger().exception('FAiled to get all product infos')
+            return None
 
     def get_npc_prices(self):
         """Get all NPC prices for all products from the help dialog"""

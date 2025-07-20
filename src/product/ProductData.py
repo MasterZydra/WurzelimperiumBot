@@ -69,9 +69,12 @@ class ProductData:
 
         return plants
 
-    def init(self):
+    def init(self) -> bool:
         """Initialize all products"""
-        products = dict(json.loads(self.__http.get_all_product_infos()))
+        infos = self.__http.get_all_product_infos()
+        if infos is None:
+            return False
+        products = dict(json.loads(infos))
         keys = sorted(products.keys())
 
         # Unused attributes: img, imgPhase, fileext, clear, edge, pieces, speedup_cooldown in Kategorie z
@@ -102,6 +105,7 @@ class ProductData:
             ))
 
         self.__set_all_prices()
+        return True
 
     def print_all(self):
         sorted_products = sorted(self.__products, key=lambda x:x.get_name().lower())

@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from src.core.HTTPCommunication import HTTPConnection
+from src.logger.Logger import Logger
 
 class Http:
     def __init__(self):
@@ -15,7 +16,8 @@ class Http:
             self.__http.check_http_state_ok(response)
             return 'id="calendar" class="xmas long"' in content
         except Exception:
-            raise
+            Logger().exception('Failed to check if advent calendar is available')
+            return False
 
     def init_game(self):
         try:
@@ -23,7 +25,8 @@ class Http:
             self.__http.check_http_state_ok(response)
             return self.__http.get_json_and_check_for_ok(content)
         except Exception:
-            raise
+            Logger().exception('Failed to init advent calender')
+            return None
 
     def open(self, field: int):
         try:
@@ -31,4 +34,5 @@ class Http:
             self.__http.check_http_state_ok(response)
             return self.__http.get_json_and_check_for_ok(content)
         except Exception:
-            raise
+            Logger().exception('Failed to open advent calender')
+            return None

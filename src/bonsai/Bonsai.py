@@ -16,14 +16,18 @@ class Bonsai:
         self._logBonsai.setLevel(logging.DEBUG)
         self.__initialiseBonsaiInfo(self.__http.init())
 
-    def __initialiseBonsaiInfo(self, jContent):
+    def __initialiseBonsaiInfo(self, jContent) -> bool:
         """initialise info from JSON content of the bonsaigarden"""
-	#BG - Инициализиране на информация от JSON съдържанието на бонсаевата градина
+        #BG - Инициализиране на информация от JSON съдържанието на бонсаевата градина
+        if jContent is None:
+            return False
+
         self.__jContentData = jContent['data']
         self.__bonsaiquestnr = jContent['questnr']
         self.__bonsaiquest = self.__getBonsaiQuest(jContent)
         self.__bonsaiavailable = self.__getAvailableBonsaiSlots(jContent)
         self.__slotinfos = self.__getBonsaiSlotInfos(jContent)
+        return True
 
     def setBonsaiFarmData(self, jContent):
         """function to update the bonsaigarden data"""
@@ -106,11 +110,12 @@ class Bonsai:
         print(f'Rebuying {amount} normal scissors for {price} wT.')
 
         jContent = self.__http.buyAndPlaceBonsaiItem(NORMAL_SCISSOR, pack, 0)
+        if jContent is None:
+            return False
         self.setBonsaiFarmData(jContent)
-
         return True
 
-    def cutAllBonsai(self, min_scissor_stock=50, money_to_spend : int = None) -> None:
+    def cutAllBonsai(self, min_scissor_stock=50, money_to_spend : int = None) -> bool:
         """cuts every branch of available bonsai and rebuys scissors if necessary"""
 	#BG - Отрязва всички клони на наличните бонсаи и купува нови ножици, ако е необходимо.
         sissorID = None
@@ -133,11 +138,15 @@ class Bonsai:
 
             for branch in self.__slotinfos[key][2]:
                 jContent = self.__http.cutBranch(key, sissorID, branch)
+                if jContent is None:
+                    return False
                 self.setBonsaiFarmData(jContent)
                 self._logBonsai.info(f'Cut branch {branch}')
                 print(f'Cut branch {branch}')
 
-    def checkBonsai(self, finish_level=2, bonsai=None) -> None:
+        return True
+
+    def checkBonsai(self, finish_level=2, bonsai=None) -> bool:
         """Checks if bonsai is a given level: finishes bonsai to bonsaigarden, renews it with highest available bonsai and a normal pot"""
         if bonsai is None:
             bonsai = self.get_available_trees()[-1]
@@ -146,10 +155,20 @@ class Bonsai:
             level = self.__slotinfos[key][0]
             if level is None or level >= finish_level:
                 self._logBonsai.info(f'Finish Bonsai in slot {key} with level {level}')
+
                 if level is not None:
-                    jContent = self.__http.finishBonsai(key)
-                jContent = self.__http.buyAndPlaceBonsaiItem(SIMPLE_POT, 1, key)
+                    if self.__http.finishBonsai(key) is None:
+                        return False
+
+                if self.__http.buyAndPlaceBonsaiItem(SIMPLE_POT, 1, key) is None:
+                    return False
+
                 jContent = self.__http.buyAndPlaceBonsaiItem(bonsai, 1, key)
+                if jContent is None:
+                    return False
+
                 self.setBonsaiFarmData(jContent)
             else:
                 self._logBonsai.info(f'Do nothing: Bonsai in slot {key} is level {level}')
+
+        return True

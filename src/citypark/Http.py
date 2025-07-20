@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from src.core.HTTPCommunication import HTTPConnection
+from src.logger.Logger import Logger
 
 class Http:
     def __init__(self):
@@ -14,7 +15,8 @@ class Http:
             self.__http.check_http_state_ok(response)
             return self.__http.get_json_and_check_for_ok(content)
         except Exception:
-            raise
+            Logger.exception('Failed to init park')
+            return None
 
     def collect_cash_point(self):
         """collect the rewards from the cashpoint and return JSON content(status, data, clearcashpoint, updateMenu)"""
@@ -23,7 +25,8 @@ class Http:
             self.__http.check_http_state_ok(response)
             return self.__http.get_json_and_check_for_ok(content)
         except Exception:
-            raise
+            Logger.exception('Failed to collect city park cash point')
+            return None
 
     def renew_item(self, tile, park_id=1):
         """renew an item on the given tile in the park and return JSON content(status, data, renewitem, updateMenu)"""
@@ -32,4 +35,5 @@ class Http:
             self.__http.check_http_state_ok(response)
             return self.__http.get_json_and_check_for_ok(content)
         except Exception:
-            raise
+            Logger.exception('Failed to renew city park item')
+            return None

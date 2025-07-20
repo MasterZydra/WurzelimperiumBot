@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from src.core.HTTPCommunication import HTTPConnection
+from src.logger.Logger import Logger
 from urllib.parse import urlencode
 
 class Http:
@@ -15,7 +16,8 @@ class Http:
             self.__http.check_http_state_ok(response)
             return content
         except Exception:
-            raise
+            Logger().exception('Failed to create new massge and return result')
+            return None
 
     def send_message_and_return_result(self, msg_id, msg_to, msg_subject, msg_body):
         """Verschickt eine Nachricht mit den übergebenen Parametern."""
@@ -31,4 +33,5 @@ class Http:
             self.__http.check_http_state_ok(response)
             return content
         except Exception:
-            raise
+            Logger().exception('Failed to send message and return result')
+            return None

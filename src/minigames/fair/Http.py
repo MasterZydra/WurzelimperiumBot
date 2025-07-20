@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from src.core.HTTPCommunication import HTTPConnection
+from src.logger.Logger import Logger
 
 class Http:
     def __init__(self):
@@ -15,7 +16,8 @@ class Http:
             self.__http.check_http_state_ok(response)
             return 'id="fair"' in content
         except Exception:
-            raise
+            Logger().exception('Failed to check if fair is available')
+            return False
 
     def init_game(self):
         address = f"ajax/ajax.php?do=fair_init&init=1&token={self.__http.token()}"
@@ -24,7 +26,8 @@ class Http:
             self.__http.check_http_state_ok(response)
             return self.__http.get_json_and_check_for_ok(content)
         except Exception:
-            raise
+            Logger().exception('Failed to init fair game')
+            return None
 
     def craft_ticket(self):
         address = f"ajax/ajax.php?do=fair_craftticket&token={self.__http.token()}"
@@ -33,7 +36,8 @@ class Http:
             self.__http.check_http_state_ok(response)
             return self.__http.get_json_and_check_for_ok(content)
         except Exception:
-            raise
+            Logger().exception('Failed to craft tickets for fair game')
+            return None
     
     def pay_ticket(self, type):
         """
@@ -45,4 +49,5 @@ class Http:
             self.__http.check_http_state_ok(response)
             return self.__http.get_json_and_check_for_ok(content)
         except Exception:
-            raise
+            Logger().exception('Failed to pay tickets for fair game')
+            return None

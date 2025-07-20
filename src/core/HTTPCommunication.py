@@ -66,10 +66,7 @@ class HTTPConnection:
             'Connection': 'Keep-Alive'
         }
         headers = {**defaultHeaders, **headers}
-        try:
-            return self.__webclient.request(uri, method, body, headers)
-        except Exception:
-            raise
+        return self.__webclient.request(uri, method, body, headers)
 
     def check_http_state_ok(self, response):
         """Prüft, ob der Status der HTTP Anfrage OK ist."""
