@@ -12,9 +12,10 @@ class Http:
 
     def get_wimps_data(self, garden_id):
         """Get wimps data including wimp_id and list of products with amount"""
-        try:
-            self.__httpGarden.change_garden(garden_id)
+        if self.__httpGarden.change_garden(garden_id) is None:
+            return None
 
+        try:
             response, content = self.__http.send(f'ajax/verkaufajax.php?do=getAreaData&token={self.__http.token()}')
             self.__http.check_http_state_ok(response)
             jContent = self.__http.get_json_and_check_for_ok(content)

@@ -20,12 +20,16 @@ class Thimblerig:
     def start(self, round):
         if 1 <= round <= 3:
             content = self.__http.start()
+            if content is None:
+                return None
             self.__set_data(content["data"])
         return self.round
 
     def select(self):
         if 1 <= self.mug <= 3:
             content = self.__http.select(self.mug)
+            if content is None:
+                return None
             self.__set_data(content["data"])
         return self.round
     

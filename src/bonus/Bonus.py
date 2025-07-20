@@ -35,15 +35,20 @@ class Bonus:
         self.__log.info(f"{claim_msg}{already_claimed_msg}")
         return True
 
-    def collect_lucky_mole(self):
+    def collect_lucky_mole(self) -> bool:
         content = self.__httpGuild.init_guild()
+        if content is None:
+            return False
         guild_id = content['data']['id']
         lucky = content['data']['lucky']
         msg = "Lucky mole not available! Try next day."
 
         if lucky == 1:
             content = self.__httpGuild.collect_lucky_mole(guild_id)
+            if content is None:
+                return False
             msg = content['message']
 
         self.__log.info(f"{msg}")
+        return True
 

@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from src.core.HTTPCommunication import HTTPConnection
+from src.logger.Logger import Logger
 
 class Http:
     def __init__(self):
@@ -13,7 +14,8 @@ class Http:
             self.__http.check_http_state_ok(response)
             return self.__http.get_json_and_check_for_ok(content)
         except Exception:
-            raise
+            Logger().exception('Failed to get honey farm info')
+            return None
         
     def pour_honey(self):
         try:
@@ -21,7 +23,8 @@ class Http:
             self.__http.check_http_state_ok(response)
             return self.__http.get_json_and_check_for_ok(content)
         except Exception:
-            raise 
+            Logger().exception('Failed to pour honey')
+            return None
 
     def change_hive_type(self, hive, pid): 
         address = f'ajax/ajax.php?do=bees_changehiveproduct&id={hive}' \
@@ -31,9 +34,8 @@ class Http:
             self.__http.check_http_state_ok(response)
             return self.__http.get_json_and_check_for_ok(content)
         except Exception:
-            raise
-
-            self.__http.check_http_state_ok(response)
+            Logger().exception('Failed to change hive type')
+            return None
 
     def send_all_hives(self, tour):
         """parameters: tour: 1 = 2h, 2 = 8h, 3 = 24h"""
@@ -43,7 +45,8 @@ class Http:
             self.__http.check_http_state_ok(response)
             return self.__http.get_json_and_check_for_ok(content)
         except Exception:
-            raise
+            Logger().exception('Failed to send all hives')
+            return None
 
     def send_hive(self, tour, hive):
         """parameters: tour: 1 = 2h, 2 = 8h, 3 = 24h"""
@@ -53,7 +56,8 @@ class Http:
             self.__http.check_http_state_ok(response)
             return self.__http.get_json_and_check_for_ok(content)
         except Exception:
-            raise
+            Logger().exception(f'Failed to send hive {hive}')
+            return None
 
     def get_honey_quests(self, content):
         """Search JSON content for available bee quests"""

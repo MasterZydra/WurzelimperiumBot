@@ -11,8 +11,8 @@ class Note:
 
     # MARK: Basic functions
 
-    def get_note(self):
-        return self.__http.get_note()
+    def get_note(self) -> str:
+        return self.__http.get_note() or ''
 
     # MARK: Extended features
 

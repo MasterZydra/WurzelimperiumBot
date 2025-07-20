@@ -9,6 +9,7 @@ from collections import namedtuple
 import re, i18n
 from src.message.Http import Http
 from src.core.User import User
+from src.logger.Logger import Logger
 
 i18n.load_path.append('lang')
 
@@ -111,9 +112,12 @@ class Messenger:
         #BG-Изисква ново съобщение чрез HTTP връзка и определя ID за по-късно изпращане.
         try:
             result = self.__http.create_new_message_and_return_result()
+            if result is None:
+                return None
             return self.__get_message_id_from_new_message_result(result)
         except Exception:
-            raise
+            Logger().exception("Failed to get new message id")
+            return None
 
     def clear_sent_list(self):
         """Löscht die Liste der gesendeten Nachrichten."""
@@ -151,7 +155,7 @@ class Messenger:
 
         return summary
 
-    def write(self, recipients, subject, body):
+    def write(self, recipients, subject, body) -> bool:
         """Verschickt eine Nachricht und fügt diese der Liste der gesendeten Nachrichten hinzu."""
         #BG-Изпраща съобщение и го добавя към списъка с изпратени съобщения.
         if not type(recipients) is list:
@@ -160,19 +164,24 @@ class Messenger:
         n = len(recipients)
         i = 0
         for recipient in recipients:
-
             try:
                 newMessageID = self.__get_new_message_id()
+                if newMessageID is None:
+                    return False
                 resultOfSentMessage = self.__http.send_message_and_return_result(newMessageID, recipient, subject, body)
+                if resultOfSentMessage is None:
+                    return False
                 messageDeliveryState = self.__get_message_delivery_state(resultOfSentMessage)
                 tmp_Msg = Message(self.__user.get_username(), recipient, subject, body, messageDeliveryState)
                 self.__sent.append(tmp_Msg)
-            except Exception:
-                print(f'Exception {recipient}')
-                raise
-            else:
                 i += 1
                 print(f'{i} von {n}')
+            except Exception:
+                Logger().exception('Failed to write message')
+                print(f'Exception {recipient}')
+                return False
+
+        return True
 
 
 class MessengerError(Exception):

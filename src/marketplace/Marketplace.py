@@ -16,11 +16,13 @@ class Marketplace:
 
     def get_all_tradable_products(self):
         """Returns the IDs of all tradable products"""
-        self.update_tradable_products()
+        if not self.update_tradable_products():
+            return None
         return self.__tradeable_product_ids
 
-    def update_tradable_products(self):
+    def update_tradable_products(self) -> bool:
         self.__tradeable_product_ids = self.__http.get_tradeable_products_from_overview()
+        return self.__tradeable_product_ids is not None
 
     def get_cheapest_offer(self, id):
         """Determine the cheapest offer for a product"""
@@ -34,7 +36,8 @@ class Marketplace:
 
     def get_offers_for_product(self, id):
         """Determine all offers for a product"""
-        self.update_tradable_products()
+        if not self.update_tradable_products():
+            return None
 
         if self.__tradeable_product_ids != None and id in self.__tradeable_product_ids:
             return self.__http.get_offers_for_product(id)

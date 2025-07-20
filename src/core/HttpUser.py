@@ -4,6 +4,7 @@
 import html, re
 from src.core.HTTPCommunication import HTTPConnection
 from src.core.HttpError import JSONError
+from src.logger.Logger import Logger
 
 
 class Http:
@@ -16,9 +17,6 @@ class Http:
             response, content = self.__http.send('ajax/menu-update.php')
             self.__http.check_http_state_ok(response)
             content = self.__http.get_json_and_check_for_success(content)
-        except Exception:
-            raise
-        else:
             if data_type == "UserData":
                 return {
                     'uname': str(content['uname']),
@@ -36,6 +34,9 @@ class Http:
                 }
             else:
                 return content
+        except Exception:
+            Logger().exception('Failed to load user data')
+            return None
 
     def get_info_from_stats(self, info):
         """
@@ -49,11 +50,10 @@ class Http:
             response, content = self.__http.send(address)
             self.__http.check_http_state_ok(response)
             jContent = self.__http.get_json_and_check_for_ok(content.decode('UTF-8'))
-            result = self.__get_info_from_json(jContent, info)
+            return self.__get_info_from_json(jContent, info)
         except Exception:
-            raise
-        else:
-            return result
+            Logger().exception('Failed to get info from stats')
+            return None
 
     def __get_info_from_json(self, jContent, info):
         """Looks up certain info in the given JSON object and returns it."""
@@ -121,7 +121,8 @@ class Http:
             result = re.search('Unbestätigte Email:', html.unescape(str(content)))
             return result == None
         except Exception:
-            raise
+            Logger().exception('Failed to check if mail is confirmed')
+            return None
 
     def has_watering_gnome_helper(self):
         try:
@@ -132,5 +133,6 @@ class Http:
             re_gnome = re.search(r'wimparea.init.*\"helper\":.*(water).*\"garbage', content)
             return re_gnome is not None and re_gnome.group(1) == "water"
         except Exception:
-            raise
+            Logger.exception('Failed to check is user has watering gnome')
+            return None
 

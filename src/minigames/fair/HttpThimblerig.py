@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from src.core.HTTPCommunication import HTTPConnection
+from src.logger.Logger import Logger
 
 class HttpThimblerig:
     def __init__(self):
@@ -14,7 +15,8 @@ class HttpThimblerig:
             self.__http.check_http_state_ok(response)
             return self.__http.get_json_and_check_for_ok(content)
         except Exception:
-            raise
+            Logger().exception('Failed to start thimblerig game')
+            return None
     
     def select(self, mug: int):
         """
@@ -26,4 +28,5 @@ class HttpThimblerig:
             self.__http.check_http_state_ok(response)
             return self.__http.get_json_and_check_for_ok(content)
         except Exception:
-            raise
+            Logger().exception('Failed to select in thimblerig game')
+            return None

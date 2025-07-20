@@ -23,10 +23,13 @@ class HerbGarden(Garden):
             for y in range(x, x+7, 2):
                 self._VALID_FIELDS.update({y: self._getAllFieldIDsFromFieldIDAndSizeAsString(y, 2, 2)})
 
-    def __setHerbGardenInfo(self, jContent):
+    def __setHerbGardenInfo(self, jContent) -> bool:
+        if jContent is None:
+            return False
         self.__jContent = jContent
         self.__info = self.__jContent['info']
         self.__weed = self.__jContent['weed']
+        return True
 
     def _isPlantGrowableOnField(self, fieldID, emptyFields):
         """Prüft anhand mehrerer Kriterien, ob ein Anpflanzen möglich ist."""
@@ -34,8 +37,11 @@ class HerbGarden(Garden):
         if not (fieldID in emptyFields): return False
         return True
 
-    def harvest(self): # TODO: proof if any harvestable
+    def harvest(self) -> bool:
+        # TODO: proof if any harvestable
         jContent = self.__httpHerb.harvest()
+        if jContent is None:
+            return False
         if jContent['status'] == 'error':
             msg = jContent['message']
         elif jContent['status'] == 'ok':
@@ -43,14 +49,19 @@ class HerbGarden(Garden):
             self.__setHerbGardenInfo(jContent)
         print(msg)
         self._logGarden.info(msg)
+        return True
 
-    def remove_weeds(self): #Abfrage if jContent['weed']
+    def remove_weeds(self) -> bool:
+        #Abfrage if jContent['weed']
         # msg = "In deinem Kräutergarten ist kein Unkraut."
         # if self.__weed:
         jContent = self.__httpHerb.remove_weed()
+        if jContent is None:
+            return False
         msg = jContent.get('message', None)
         self.__setHerbGardenInfo(jContent)
         self._logGarden.info(msg)
+        return True
 
     def get_empty_fields(self):
         """Sucht im JSON Content nach Felder die leer sind und gibt diese zurück."""
@@ -71,10 +82,10 @@ class HerbGarden(Garden):
         herb_stock = Stock().get_stock_by_product_id(herbID)
 
         if not self.__info.get('canPlant'):
-            return
+            return 0
         
         if self.__info.get('send') >= self.__info.get('amount'):
-            return
+            return 0
 
         while not herb_stock >= amount:
             self.exchange()
@@ -107,7 +118,7 @@ class HerbGarden(Garden):
                     
         except Exception:
             self._logGarden.error(f'Im Garten {self._id} konnte nicht gepflanzt werden.')
-            return 0
+            return None
         else:
             msg = f'Im Garten {self._id} wurden {planted} Pflanzen gepflanzt.'
             if emptyFields: 
@@ -115,9 +126,8 @@ class HerbGarden(Garden):
             self._logGarden.info(msg)
             print(msg)
             return planted
-        
 
-    def exchange(self):
+    def exchange(self) -> bool:
         exchange = {}
         buy_price = {}
 
@@ -135,7 +145,10 @@ class HerbGarden(Garden):
         amount = exchange[cheapest_plant]
 
         if not stock >= amount:
-            Shop().buy(ProductData().get_product_by_id(cheapest_plant).get_name(), amount)
-        self.__httpHerb.exchange(cheapest_plant)
+            if not Shop().buy(ProductData().get_product_by_id(cheapest_plant).get_name(), amount):
+                return False
 
-        Stock().update()
+        if not self.__httpHerb.exchange(cheapest_plant):
+            return False
+
+        return Stock().update()

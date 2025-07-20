@@ -3,6 +3,7 @@
 
 from src.core.HTTPCommunication import HTTPConnection
 from src.garden.Http import Http as HttpGarden
+from src.logger.Logger import Logger
 import json, re
 
 class Http:
@@ -16,21 +17,22 @@ class Http:
             response, content = self.__http.send(address)
             self.__http.check_http_state_ok(response)
             jContent = self.__http.get_json_and_check_for_ok(content)
-            emptyAquaFields = self.__httpGarden.find_empty_fields_in_json(jContent)
+            return self.__httpGarden.find_empty_fields_in_json(jContent)
         except Exception:
-            raise
-        else:
-            return emptyAquaFields
+            Logger().exception('Failed to get empty fields in water garden')
+            return None
 
-    def water_all_plants(self):
+    def water_all_plants(self) -> bool:
         """Use watering gnome to water all plants in the aquagarden (premium feature)."""
         try:
             address = f"ajax/ajax.php?do=watergardenWaterAll&token={self.__http.token()}"
             response, content = self.__http.send(address)
             self.__http.check_http_state_ok(response)
             self.__http.get_json_and_check_for_ok(content)
+            return True
         except Exception:
-            raise
+            Logger().exception('Failed to water all plants in water garden')
+            return False
 
     def get_plants_to_water(self):
         """
@@ -42,9 +44,10 @@ class Http:
             jContent = self.__http.get_json_and_check_for_ok(content)
             return self.__httpGarden.find_plants_to_be_watered_in_json(jContent)
         except Exception:
-            raise
+            Logger().exception('Failed to get plants to water in water garden')
+            return None
 
-    def water_plants(self, sFieldsToWater):
+    def water_plants(self, sFieldsToWater) -> bool:
         """Gießt alle Pflanzen im Wassergarten"""
         listFieldsToWater = sFieldsToWater.split(',')
 
@@ -56,10 +59,12 @@ class Http:
             address = f'ajax/ajax.php?do=watergardenCache{sFields}&token={self.__http.token()}'
             response, content = self.__http.send(address)
             self.__http.check_http_state_ok(response)
+            return True
         except Exception:
-            raise
+            Logger().exception('Failed to water plants in water garden')
+            return False
 
-    def harvest(self):
+    def harvest(self) -> bool:
         """Erntet alle fertigen Pflanzen im Garten."""
         try:
             address = f'ajax/ajax.php?do=watergardenHarvestAll&token={self.__http.token()}'
@@ -73,8 +78,10 @@ class Http:
                 msg = re.sub('<div.*?>', '', msg)
                 msg = msg.strip()
                 print(msg)
+            return True
         except Exception:
-            raise
+            Logger().exception('Failed to harvest in water garden')
+            return False
 
     def grow(self, to_plant, plant_id):
         """Baut eine Pflanze im Wassergarten an."""
@@ -89,4 +96,5 @@ class Http:
             self.__http.check_http_state_ok(response)
             return self.__http.get_json_and_check_for_ok(content)
         except Exception:
-            raise
+            Logger().exception('Failed to grow in water garden')
+            return None

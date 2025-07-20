@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from src.core.HTTPCommunication import HTTPConnection
+from src.logger.Logger import Logger
 from lxml import html
 import io, re
 
@@ -15,12 +16,12 @@ class Http:
             response, content = self.__http.send('stadt/markt.php?show=overview')
             self.__http.check_http_state_ok(response)
             tradeable_products = re.findall(r'markt\.php\?order=p&v=([0-9]{1,3})&filter=1', content)
-        except Exception:
-            raise
-        else:
             for i in range(0, len(tradeable_products)):
                 tradeable_products[i] = int(tradeable_products[i])
             return tradeable_products
+        except Exception:
+            Logger().exception('Failed to get tradeable products from marketplace overview')
+            return None
 
     def get_offers_for_product(self, product_id):
         """Determine all offers for a product"""
@@ -34,9 +35,6 @@ class Http:
                 address = f'stadt/markt.php?order=p&v={str(product_id)}&filter=1&page={str(page_index)}'
                 response, content = self.__http.send(address)
                 self.__http.check_http_state_ok(response)
-            except Exception:
-                raise
-            else:
                 html_file = io.BytesIO(content)
                 html_tree = html.parse(html_file)
                 root = html_tree.getroot()
@@ -56,5 +54,8 @@ class Http:
                     if 'weiter' in element.text:
                         next_page = True
                         page_index += 1
+            except Exception:
+                Logger().exception('Failed to get offers for products from marketplace')
+                return None
 
         return offers

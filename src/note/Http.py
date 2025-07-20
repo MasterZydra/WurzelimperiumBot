@@ -2,13 +2,14 @@
 # -*- coding: utf-8 -*-
 
 from src.core.HTTPCommunication import HTTPConnection
+from src.logger.Logger import Logger
 from lxml import etree
 
 class Http:
     def __init__(self):
         self.__http: HTTPConnection = HTTPConnection()
 
-    def get_note(self) -> str:
+    def get_note(self) -> (str | None):
         """Get the users note"""
         try:
             response, content = self.__http.send('notiz.php', 'POST')
@@ -25,4 +26,5 @@ class Http:
                 return ''
             return note_text.strip()
         except Exception:
-            raise
+            Logger().exception('Failed to get note')
+            return None

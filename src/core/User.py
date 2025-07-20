@@ -27,13 +27,26 @@ class User:
         """Get user data from server and save in this class"""
         try:
             self.__data = self.__http.load_data()
+            if self.__data is None:
+                return False
+
             if only_data:
                 return True
 
             self.__number_of_gardens = self.get_stats("Gardens")
+            if self.__number_of_gardens is None:
+                return False
+
             self.__user_id = self.__http.user_id()
+
             self.__is_mail_confirmed = self.__http.check_mail_confirmed()
-            self.__has_watering_gnome_helper = self.is_premium_active() and self.__http.has_watering_gnome_helper()
+            if self.__is_mail_confirmed is None:
+                return False
+
+            has_watering_gnome_helper = self.__http.has_watering_gnome_helper()
+            if has_watering_gnome_helper is None:
+                return False
+            self.__has_watering_gnome_helper = self.is_premium_active() and has_watering_gnome_helper
 
             return True
         except Exception:

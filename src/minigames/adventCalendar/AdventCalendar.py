@@ -17,11 +17,14 @@ class AdventCalendar:
 
         # Check if current day is already opened
         content = self.__http.init_game()
+        if content is None:
+            return False
         return 'days' in content['data']['data'] and str(self.__getFieldId()) not in content['data']['data']['days']
 
-    def play(self):
-        self.__http.init_game()
-        self.__http.open(self.__getFieldId())
+    def play(self) -> bool:
+        if self.__http.init_game() is None:
+            return False
+        return self.__http.open(self.__getFieldId()) is not None
 
     def __getFieldId(self) -> int:
         today = date.today()

@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from src.core.HTTPCommunication import HTTPConnection
+from src.logger.Logger import Logger
 
 class Http:
     def __init__(self):
@@ -13,10 +14,10 @@ class Http:
             address = f'ajax/ajax.php?do=bonsai_init&token={self.__http.token()}'
             response, content = self.__http.send(address)
             self.__http.check_http_state_ok(response)
-            jContent = self.__http.get_json_and_check_for_ok(content)
-            return jContent
+            return self.__http.get_json_and_check_for_ok(content)
         except Exception:
-            raise
+            Logger.exception('Failed to init bonsai')
+            return None
 
     def buyAndPlaceBonsaiItem(self, item, pack, slot):
         """
@@ -37,10 +38,10 @@ class Http:
         try:
             response, content = self.__http.send(address)
             self.__http.check_http_state_ok(response)
-            jContent = self.__http.get_json_and_check_for_ok(content)
-            return jContent
+            return self.__http.get_json_and_check_for_ok(content)
         except Exception:
-            raise
+            Logger.exception('Failed to buy and place bonsai item')
+            return None
 
     def cutBranch(self, slot, sissor, branch):
         """Cuts the branch from the bonsai and returns JSON content(status, data, branchclick, updateMenu)"""
@@ -49,10 +50,10 @@ class Http:
                 f'scissor={sissor}&cache=%5B{branch}%5D&token={self.__http.token()}'
             response, content = self.__http.send(address)
             self.__http.check_http_state_ok(response)
-            jContent = self.__http.get_json_and_check_for_ok(content)
-            return jContent
+            return self.__http.get_json_and_check_for_ok(content)
         except Exception:
-            raise
+            Logger.exception('Failed to cut bonsai branch')
+            return None
 
     def finishBonsai(self, slot):
         """Finishes bonsai to the bonsaigarden and returns JSON content"""
@@ -60,7 +61,7 @@ class Http:
             address = f'ajax/ajax.php?do=bonsai_finish_breed&slot={slot}&token={self.__http.token()}'
             response, content = self.__http.send(address)
             self.__http.check_http_state_ok(response)
-            jContent = self.__http.get_json_and_check_for_ok(content)
-            return jContent
+            return self.__http.get_json_and_check_for_ok(content)
         except Exception:
-            raise
+            Logger.exception('Failed to finish bonsai')
+            return None
