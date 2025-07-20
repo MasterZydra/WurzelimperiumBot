@@ -4,9 +4,8 @@
 class Config:
     """Store the configuration for the WurzelBot environment"""
 
-    # Is bot running in development environment?
-    # This mode will show more details e.g. not hidding exception message
-    isDevMode = False
+    # Write log also into std out
+    log_to_stdout = False
 
     _instance = None
 

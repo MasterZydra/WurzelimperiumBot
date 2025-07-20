@@ -5,6 +5,7 @@ import argparse
 import time
 import i18n
 import src.Logger as logger
+from src.core.Config import Config
 from src.WurzelBot import WurzelBot
 
 def main():
@@ -22,6 +23,7 @@ def main():
     i18n.set('fallback', 'en')
 
     if args.log:
+        Config().log_to_stdout = True
         logger.logger()
 
     # Init connection

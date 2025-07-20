@@ -1,6 +1,7 @@
 from logging import log
 import src.Logger as logger
 from src.WurzelBot import WurzelBot
+from src.core.Config import Config
 from src.core.User import User
 from src.product.Product import CATEGORY_WATER_PLANTS
 import argparse
@@ -39,7 +40,9 @@ if args.portalacc != None:
 bot: WurzelBot = object
 
 log = False
-if args.logging != None:
+if args.logging:
+    print(args.logging)
+    Config().log_to_stdout = True
     log = args.logging
 
 i18n.load_path.append('lang')

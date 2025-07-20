@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -
 
 import logging
+from src.core.Config import Config
 
 class Logger:
     _instance = None
@@ -14,12 +15,12 @@ class Logger:
 
     def __initClass(self):
         self.logger = logging.getLogger('Bot')
-        # TODO Add option print output for runs in pipeline without persistent storage
-        # handler = logging.StreamHandler()
         handler = logging.FileHandler('logs/wurzelbot.log', 'a', 'utf-8')
         formatter = logging.Formatter('%(asctime)s - %(message)s')
         handler.setFormatter(formatter)
         self.logger.addHandler(handler)
+        if Config().log_to_stdout:
+            self.logger.addHandler(logging.StreamHandler())
         self.logger.setLevel(logging.INFO)
 
     def exception(self, message):
