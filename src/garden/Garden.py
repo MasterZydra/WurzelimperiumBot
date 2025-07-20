@@ -5,6 +5,7 @@ from src.core.User import User
 from src.garden.Http import Http
 from src.logger.Logger import Logger
 from src.product.ProductData import ProductData
+from src.product.Products import WEEDS, TREE_STUMP, STONE, MOLE
 import i18n, logging
 from collections import Counter, namedtuple
 
@@ -162,7 +163,7 @@ class Garden:
             return None
         garden = garden.get('garden')
         for field in garden.values():
-            if field[0] in [41, 42, 43, 45]:
+            if field[0] in [WEEDS, TREE_STUMP, STONE, MOLE]:
                 continue
             fields_time = Fields_data(field[10], field[4], field[3])
             if fields_time.harvest - fields_time.water > max_water_time:
@@ -246,9 +247,31 @@ class Garden:
         """
         #BG- Премахва всички плевели, камъни и кърлежи, ако има достатъчно пари.
 
+        # Load details for all fields of this garden
+        garden = self.__http.change_garden(self._id)
+        if garden is None:
+            return False
+        garden = garden.get('garden')
+
+        money = User().get_bar()
         weedFields = self.get_weed_fields()
         freeFields = []
+        all_weeds_removed = True
         for fieldID in weedFields:
+            # Check if user has enough money to pay for the removal
+            field_info = garden[str(fieldID)]
+            weed_type = field_info[0]
+            cost_map = {WEEDS: 2.5, STONE: 50, TREE_STUMP: 250, MOLE: 500}
+            cost_for_removal = cost_map.get(weed_type)
+
+            if cost_for_removal > money:
+                print('Not enough money to remove the weeds')
+                all_weeds_removed = False
+                continue
+
+            money -= cost_for_removal
+
+            # Remove weed on field
             result = self.__http.remove_weed_on_field(self._id, fieldID)
             if result is None:
                 self._logGarden.error(f'Feld {fieldID} im Garten {self._id} konnte nicht von Unkraut befreit werden!')
@@ -263,7 +286,8 @@ class Garden:
             else:
                 self._logGarden.error(f'Feld {fieldID} im Garten {self._id} konnte nicht von Unkraut befreit werden!')
                 #BG- self._logGarden.error(f'Полето {fieldID} в градината {self._id} не може да бъде освободено от плевели!')
+        if all_weeds_removed:
+            self._logGarden.info(f'Im Garten {self._id} wurden {len(freeFields)} Felder von Unkraut befreit.')
+            #BG- self._logGarden.info(f'В градината {self._id} бяха освободени от плевели {len(freeFields)} полета.')
 
-        self._logGarden.info(f'Im Garten {self._id} wurden {len(freeFields)} Felder von Unkraut befreit.')
-        #BG- self._logGarden.info(f'В градината {self._id} бяха освободени от плевели {len(freeFields)} полета.')
         return True
