@@ -1,5 +1,3 @@
-from logging import log
-import src.Logger as logger
 from src.WurzelBot import WurzelBot
 from src.core.Config import Config
 from src.core.User import User
@@ -39,11 +37,8 @@ if args.portalacc != None:
 # Global vars
 bot: WurzelBot = object
 
-log = False
 if args.logging:
-    print(args.logging)
     Config().log_to_stdout = True
-    log = args.logging
 
 i18n.load_path.append('lang')
 i18n.set('locale', lang)
@@ -52,7 +47,6 @@ i18n.set('fallback', 'en')
 def main():
     logo()
     init()
-    logging()
 
     while True:
         print('')
@@ -299,10 +293,6 @@ def wimp():
     """Process Wimp Customers in Gardens"""
     print(i18n.t('wimpb.process_wimps'))
     bot.sell_to_wimps()
-
-def logging():
-    if log:
-        logger.logger()
 
 if __name__ == "__main__":
     main()

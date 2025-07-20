@@ -6,7 +6,7 @@ from src.garden.Http import Http
 from src.logger.Logger import Logger
 from src.product.ProductData import ProductData
 from src.product.Products import WEEDS, TREE_STUMP, STONE, MOLE
-import i18n, logging
+import i18n
 from collections import Counter, namedtuple
 
 i18n.load_path.append('lang')
@@ -21,8 +21,6 @@ class Garden:
         self._id = gardenID
         self.__http = Http()
         self._user = User()
-        self._logGarden = logging.getLogger('bot.Garden_' + str(gardenID))
-        self._logGarden.setLevel(logging.DEBUG)
 
     def _getAllFieldIDsFromFieldIDAndSizeAsString(self, fieldID, sx, sy):
         """
@@ -55,7 +53,7 @@ class Garden:
         if (sx == 2 and sy == 1): return str(fieldID) + ',' + str(fieldID + 1)
         if (sx == 1 and sy == 2): return str(fieldID) + ',' + str(fieldID + 17)
         if (sx == 2 and sy == 2): return str(fieldID) + ',' + str(fieldID + 1) + ',' + str(fieldID + 17) + ',' + str(fieldID + 18)
-        self._logGarden.debug(f'Error der plantSize --> sx: {sx} sy: {sy}')
+        Logger().error(f'Unhandled plant size --> sx: {sx}, sy: {sy}')
         return None
 
     def _getAllFieldIDsFromFieldIDAndSizeAsIntList(self, fieldID, sx, sy):
@@ -109,8 +107,8 @@ class Garden:
     def water(self) -> bool:
         """Water all plants in the garden"""
         #BG- Градината с gardenID се полива напълно.
-        self._logGarden.info(f'Gieße alle Pflanzen im Garten {self._id}.')
-        #BG- self._logGarden.info(f'Полей всички растения в градината. {self._id}.')
+        Logger().info(f'Gieße alle Pflanzen im Garten {self._id}.')
+        #BG- Полей всички растения в градината. {self._id}.
 
         plants = self.__http.get_plants_to_water(self._id)
         if plants is None:
@@ -125,11 +123,8 @@ class Garden:
                 if not self.__http.water_plant(self._id, plants['fieldID'][i], sFields):
                     return False
 
-        self._logGarden.info(f'Im Garten {self._id} wurden {nPlants} Pflanzen gegossen.')
-        #BG-self._logGarden.info(f'В градината {self._id} са поляти {nPlants} растения.')
-
-        print(f'Im Garten {self._id} wurden {nPlants} Pflanzen gegossen.')
-        #BG- print(f'В градината {self._id} са поляти {nPlants} растения.')
+        Logger().print(f'Im Garten {self._id} wurden {nPlants} Pflanzen gegossen.')
+        #BG- В градината {self._id} са поляти {nPlants} растения.
         return True
 
     def get_empty_fields(self):
@@ -230,15 +225,12 @@ class Garden:
                 planted += len(to_plant)
                 to_plant = {}
 
-        msg = f'Im Garten {self._id} wurden {planted} Pflanzen gepflanzt.'
+        Logger().print(f'Im Garten {self._id} wurden {planted} Pflanzen gepflanzt.')
         #BG- msg = f'В градината {self._id} са засадени {planted} растения.'
-
         if emptyFields:
-            msg = msg + f' Im Garten {self._id} sind noch leere Felder vorhanden.'
+            Logger().print(f'Im Garten {self._id} sind noch leere Felder vorhanden.')
             #BG- msg = msg + f' В градината {self._id} все още има празни полета.'
 
-        self._logGarden.info(msg)
-        print(msg)
         return planted
 
     def remove_weeds(self) -> bool:
@@ -265,7 +257,7 @@ class Garden:
             cost_for_removal = cost_map.get(weed_type)
 
             if cost_for_removal > money:
-                print('Not enough money to remove the weeds')
+                Logger().print('Not enough money to remove the weeds')
                 all_weeds_removed = False
                 continue
 
@@ -274,20 +266,20 @@ class Garden:
             # Remove weed on field
             result = self.__http.remove_weed_on_field(self._id, fieldID)
             if result is None:
-                self._logGarden.error(f'Feld {fieldID} im Garten {self._id} konnte nicht von Unkraut befreit werden!')
-                #BG- self._logGarden.error(f'Полето {fieldID} в градината {self._id} не може да бъде освободено от плевели!')
+                Logger().print_error(f'Feld {fieldID} im Garten {self._id} konnte nicht von Unkraut befreit werden!')
+                #BG- Полето {fieldID} в градината {self._id} не може да бъде освободено от плевели!
                 return False
 
             if result == 1:
-                self._logGarden.info(f'Feld {fieldID} im Garten {self._id} wurde von Unkraut befreit!')
-                #BG- self._logGarden.info(f'Полето {fieldID} в градината {self._id} беше освободено от плевели!')
+                Logger().print(f'Feld {fieldID} im Garten {self._id} wurde von Unkraut befreit!')
+                #BG- Полето {fieldID} в градината {self._id} беше освободено от плевели!
 
                 freeFields.append(fieldID)
             else:
-                self._logGarden.error(f'Feld {fieldID} im Garten {self._id} konnte nicht von Unkraut befreit werden!')
-                #BG- self._logGarden.error(f'Полето {fieldID} в градината {self._id} не може да бъде освободено от плевели!')
+                Logger().print_error(f'Feld {fieldID} im Garten {self._id} konnte nicht von Unkraut befreit werden!')
+                #BG- Полето {fieldID} в градината {self._id} не може да бъде освободено от плевели!
         if all_weeds_removed:
-            self._logGarden.info(f'Im Garten {self._id} wurden {len(freeFields)} Felder von Unkraut befreit.')
-            #BG- self._logGarden.info(f'В градината {self._id} бяха освободени от плевели {len(freeFields)} полета.')
+            Logger().print(f'Im Garten {self._id} wurden {len(freeFields)} Felder von Unkraut befreit.')
+            #BG- В градината {self._id} бяха освободени от плевели {len(freeFields)} полета.
 
         return True

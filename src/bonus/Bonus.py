@@ -3,14 +3,13 @@
 
 from src.bonus.Http import Http
 from src.guild.Http import Http as HttpGuild
-import time, logging
+from src.logger.Logger import Logger
+import time
 
 class Bonus:
     def __init__(self):
         self.__http = Http()
         self.__httpGuild = HttpGuild()
-        self.__log = logging.getLogger("bot.Bonus")
-        self.__log.setLevel(logging.DEBUG)
 
     def get_daily_login_bonus(self):
         bonus_data = self.__http.read_user_data()
@@ -32,7 +31,7 @@ class Bonus:
             return False
         claim_msg = content['msg'].replace('<br>', '')
         already_claimed_msg = content['message']
-        self.__log.info(f"{claim_msg}{already_claimed_msg}")
+        Logger().print(f"{claim_msg}{already_claimed_msg}")
         return True
 
     def collect_lucky_mole(self) -> bool:
@@ -49,6 +48,6 @@ class Bonus:
                 return False
             msg = content['message']
 
-        self.__log.info(f"{msg}")
+        Logger().print(f"{msg}")
         return True
 

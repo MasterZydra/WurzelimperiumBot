@@ -7,7 +7,7 @@ Created on 21.03.2017
 '''
 
 from urllib.parse import urlencode
-import json, re, httplib2, yaml, logging, i18n
+import json, re, httplib2, yaml, i18n
 from http.cookies import SimpleCookie
 from http import HTTPStatus
 from src.core.HttpError import HTTPStateError, JSONError, HTTPRequestError, YAMLError
@@ -31,8 +31,6 @@ class HTTPConnection:
     def __initClass(self):
         self.__webclient = httplib2.Http(disable_ssl_certificate_validation=True)
         self.__webclient.follow_redirects = False
-        self.__logHTTPConn = logging.getLogger('bot.HTTPConn')
-        self.__logHTTPConn.setLevel(logging.DEBUG)
         self.__session = Session()
         self.__token = None
         self.__userID = None
@@ -71,13 +69,13 @@ class HTTPConnection:
     def check_http_state_ok(self, response):
         """Prüft, ob der Status der HTTP Anfrage OK ist."""
         if not (response['status'] == str(HTTPStatus.OK.value)):
-            self.__logHTTPConn.debug('HTTP State: ' + str(response['status']))
+            Logger().info('HTTP State: ' + str(response['status']))
             raise HTTPStateError('HTTP Status ist nicht OK')
 
     def check_http_state_found(self, response):
         """Prüft, ob der Status der HTTP Anfrage FOUND ist."""
         if not (response['status'] == str(HTTPStatus.FOUND.value)):
-            self.__logHTTPConn.debug('HTTP State: ' + str(response['status']))
+            Logger().info('HTTP State: ' + str(response['status']))
             raise HTTPStateError('HTTP Status ist nicht FOUND')
 
     def get_json_and_check_for_success(self, content):
@@ -136,7 +134,7 @@ class HTTPConnection:
                 self.__unr = tmpunr
                 return
 
-        self.__logHTTPConn.debug(tmpunr)
+        Logger().info(tmpunr)
         raise JSONError(f'Fehler bei der Ermittlung des tokens')
 
     def __get_port_unr_from_url_portal(self, url):
@@ -148,7 +146,7 @@ class HTTPConnection:
                 self.__portunr = tmpportunr
                 return
 
-        self.__logHTTPConn.debug(tmpportunr)
+        Logger().info(tmpportunr)
         raise JSONError(f'Fehler bei der Ermittlung des tokens')
 
     def logIn(self, loginDaten) -> bool:
@@ -245,7 +243,7 @@ class HTTPConnection:
             # Check if session was deleted
             cookie = SimpleCookie(response['set-cookie'])
             if not (cookie['PHPSESSID'].value == 'deleted'):
-                self.__logHTTPConn.debug('SessionID: ' + cookie['PHPSESSID'].value)
+                Logger().info('SessionID: ' + cookie['PHPSESSID'].value)
                 raise HTTPRequestError('Session wurde nicht gelöscht')
             
             self.__session.close()

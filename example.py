@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import src.Logger as logger
+from src.core.Config import Config
 from src.WurzelBot import WurzelBot
 import i18n
 
@@ -27,7 +27,7 @@ i18n.set('fallback', 'en')
 
 # Init logger
 if log:
-    logger.logger()
+    Config().log_to_stdout = True
 
 # Init bot
 wurzelBot = WurzelBot()

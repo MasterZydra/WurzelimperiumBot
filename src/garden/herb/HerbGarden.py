@@ -3,6 +3,7 @@
 
 from src.garden.Garden import Garden
 from src.garden.herb.Http import Http
+from src.logger.Logger import Logger
 from src.product.ProductData import ProductData
 from src.shop.Shop import Shop
 from src.stock.Stock import Stock
@@ -47,8 +48,7 @@ class HerbGarden(Garden):
         elif jContent['status'] == 'ok':
             msg = jContent['harvestMsg']
             self.__setHerbGardenInfo(jContent)
-        print(msg)
-        self._logGarden.info(msg)
+        Logger().print(msg)
         return True
 
     def remove_weeds(self) -> bool:
@@ -60,7 +60,7 @@ class HerbGarden(Garden):
             return False
         msg = jContent.get('message', None)
         self.__setHerbGardenInfo(jContent)
-        self._logGarden.info(msg)
+        Logger().print(msg)
         return True
 
     def get_empty_fields(self):
@@ -116,16 +116,13 @@ class HerbGarden(Garden):
                     planted += len(to_plant)
                     to_plant = {}
                     
-        except Exception:
-            self._logGarden.error(f'Im Garten {self._id} konnte nicht gepflanzt werden.')
-            return None
-        else:
-            msg = f'Im Garten {self._id} wurden {planted} Pflanzen gepflanzt.'
+            Logger().print(f'Im Garten {self._id} wurden {planted} Pflanzen gepflanzt.')
             if emptyFields: 
-                msg = msg + f' Im Garten {self._id} sind noch leere Felder vorhanden.'
-            self._logGarden.info(msg)
-            print(msg)
+                Logger().print(f'Im Garten {self._id} sind noch leere Felder vorhanden.')
             return planted
+        except Exception:
+            Logger().print_error(f'Im Garten {self._id} konnte nicht gepflanzt werden.')
+            return None
 
     def exchange(self) -> bool:
         exchange = {}

@@ -133,6 +133,6 @@ class Http:
             re_gnome = re.search(r'wimparea.init.*\"helper\":.*(water).*\"garbage', content)
             return re_gnome is not None and re_gnome.group(1) == "water"
         except Exception:
-            Logger.exception('Failed to check is user has watering gnome')
+            Logger().exception('Failed to check is user has watering gnome')
             return None
 

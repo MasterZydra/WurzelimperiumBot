@@ -131,7 +131,7 @@ class Http:
             jContent = json.loads(content)
 
             if jContent['status'] == 'error':
-                print(jContent['message'])
+                Logger().print(jContent['message'])
             elif jContent['status'] == 'ok':
                 msg = jContent['harvestMsg'].replace('</div>', '').replace('&nbsp;', ' ').replace('<div class="line">', '\n')
                 msg = re.sub('<div.*?>', '', msg)
@@ -142,7 +142,7 @@ class Http:
                 if 'eventitems' in jContent:
                     eventitems = jContent['collectevent']
                     msg = msg + f"\n{eventitems} Eventitems" #TODO check which event is active
-                print(msg)
+                Logger().print(msg)
             return True
         except Exception:
             Logger().exception(f'Failed to harvest in garden {gardenID}')

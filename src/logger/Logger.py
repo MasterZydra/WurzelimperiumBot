@@ -30,8 +30,20 @@ class Logger:
     def info(self, message):
         self.logger.info(message)
 
+    def print(self, message: str):
+        """Print and log as info"""
+        self.info(message)
+        if not Config().log_to_stdout:
+            print(message)
+
     def warning(self, message):
         self.logger.warning(message)
 
     def error(self, message):
         self.logger.error(message)
+
+    def print_error(self, message: str):
+        """Print and log as error"""
+        self.error(message)
+        if not Config().log_to_stdout:
+            print(message)

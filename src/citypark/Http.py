@@ -15,7 +15,7 @@ class Http:
             self.__http.check_http_state_ok(response)
             return self.__http.get_json_and_check_for_ok(content)
         except Exception:
-            Logger.exception('Failed to init park')
+            Logger().exception('Failed to init park')
             return None
 
     def collect_cash_point(self):
@@ -25,7 +25,7 @@ class Http:
             self.__http.check_http_state_ok(response)
             return self.__http.get_json_and_check_for_ok(content)
         except Exception:
-            Logger.exception('Failed to collect city park cash point')
+            Logger().exception('Failed to collect city park cash point')
             return None
 
     def renew_item(self, tile, park_id=1):
@@ -35,5 +35,5 @@ class Http:
             self.__http.check_http_state_ok(response)
             return self.__http.get_json_and_check_for_ok(content)
         except Exception:
-            Logger.exception('Failed to renew city park item')
+            Logger().exception('Failed to renew city park item')
             return None

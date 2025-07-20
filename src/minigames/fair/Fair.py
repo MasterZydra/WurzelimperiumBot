@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import logging
 import time
+from src.logger.Logger import Logger
 from src.minigames.fair.Http import Http
 from src.minigames.fair.Thimblerig import Thimblerig
 from src.minigames.fair.Wetgnome import Wetgnome
@@ -14,8 +14,6 @@ class Fair:
         self.__http = Http()
 
     def __init_game(self):
-        self._logFair = logging.getLogger('bot.Fair')
-        self._logFair.setLevel(logging.DEBUG)
         data = self.__http.init_game()
         self.__set_data(data)
         self.__thimblerig = Thimblerig(data)
@@ -47,22 +45,21 @@ class Fair:
         self.__wetgnome_maxrounds = self.__data['wetgnome']['config']['maxrounds']
 
     def craft_tickets(self) -> bool:
-        msg = f"{self.__points} points available. A ticket costs {self.__ticketcost} points."
+        Logger().print(f"{self.__points} points available. A ticket costs {self.__ticketcost} points.")
         if self.__points >= self.__ticketcost:
             data = self.__http.craft_ticket()
             if data is None:
                 return False
             self.__set_data(data)
-            msg = f"Crafted {int(self.__points/self.__ticketcost)} tickets."
-        msg += f"\nYou have {self.__tickets}x tickets in stock."
-        self._logFair.info(msg)
+            Logger().print(f"Crafted {int(self.__points/self.__ticketcost)} tickets.")
+        Logger().print(f"You have {self.__tickets}x tickets in stock.")
         return True
 
     def play_thimblerig(self) -> bool:
-        self._logFair.info(f"Thimblerig: {self.__thimblerig.get_points()}/300 balloons.")
+        Logger().print(f"Thimblerig: {self.__thimblerig.get_points()}/300 balloons.")
         while self.__tickets > 0:
             if self.__thimblerig_points >= REWARD_MAX:
-                self._logFair.info("Thimblerig already finished!")
+                Logger().print("Thimblerig already finished!")
                 return
 
             if not self.__data["thimblerig"]["data"].get("wait", 0):
@@ -80,9 +77,9 @@ class Fair:
                 if self.__thimblerig_round is None:
                     return False
 
-            self._logFair.info(f"Thimblerig: {self.__thimblerig.get_points()}/300 balloons.")
+            Logger().print(f"Thimblerig: {self.__thimblerig.get_points()}/300 balloons.")
         else:
-            self._logFair.error("No tickets for playing!")
+            Logger().print_error("No tickets for playing!")
         return True
 
     def __pay_ticket_thimblerig(self) -> bool:
@@ -94,10 +91,10 @@ class Fair:
         return True
 
     def play_wetgnome(self) -> bool:
-        self._logFair.info(f"Reached: {self.__wetgnome.get_points()}/300 airsnakes.")
+        Logger().print(f"Wetgnome: {self.__wetgnome.get_points()}/300 airsnakes.")
         while self.__tickets > 0:
             if self.__wetgnome_points >= REWARD_MAX:
-                self._logFair.info("Wetgnome already finished!")
+                Logger().print("Wetgnome already finished!")
                 return True
 
             if not self.__data["wetgnome"]["data"].get("wait", 0):
@@ -115,9 +112,9 @@ class Fair:
                 if self.__wetgnome_round is None:
                     return False
 
-            self._logFair.info(f"Reached: {self.__wetgnome.get_points()}/300 airsnakes.")
+            Logger().print(f"Wetgnome: {self.__wetgnome.get_points()}/300 airsnakes.")
         else:
-            self._logFair.error("No tickets for playing!")
+            Logger().print_error("No tickets for playing!")
         return True
 
     def __pay_ticket_wetgnome(self) -> bool:

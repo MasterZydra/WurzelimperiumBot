@@ -6,7 +6,8 @@ Created on 21.01.2017
 @author: MrFlamez
 '''
 
-import time, logging, i18n
+from src.logger.Logger import Logger
+import time, i18n
 
 i18n.load_path.append('lang')
 
@@ -19,7 +20,6 @@ class Session:
 
     def __init__(self):
         """Initialization of all attributes with a default value"""
-        self.__log = logging.getLogger('bot.Session')
         self.__session_id = None
         self.__server_url = None
         self.__server = None
@@ -48,7 +48,7 @@ class Session:
         self.__start_time = time.time()
         self.__end_time = self.__start_time + (self.__lifetime - self.__lifetime_reserve)
 
-        self.__log.info(f'Session (ID: {str(self.__session_id)}) geöffnet')
+        Logger().info(f'Session (ID: {str(self.__session_id)}) geöffnet')
 
     def close(self):
         """Reset all informations"""
@@ -57,7 +57,7 @@ class Session:
         self.__server = None
         self.__start_time = None
         self.__end_time = None
-        self.__log.info(f'Session (ID: {session_id}) closed')
+        Logger().info(f'Session (ID: {session_id}) closed')
 
     def get_remaining_time(self):
         """Get remaining time unit the session expires"""

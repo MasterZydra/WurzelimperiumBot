@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import logging
 from collections import Counter
 from src.core.User import User
 from src.honey.Hive import Hive
 from src.honey.Http import Http
+from src.logger.Logger import Logger
 
 class Honey:
     """All important informations for the honey garden"""
@@ -13,8 +13,6 @@ class Honey:
     def __init__(self):
         self.__http = Http()
         self.__user = User()
-        self.__log = logging.getLogger('bot.Honig')
-        self.__log.setLevel(logging.DEBUG)
         self.__data = None
         self.__unlocked_hives = None
         self.__honey_types = None
@@ -90,7 +88,7 @@ class Honey:
                 if jContent is None:
                     return False
                 self.__set_data(jContent)
-        self.__log.info(f"Changed all hive types to: {honey_pid}")
+        Logger().info(f"Changed all hive types to: {honey_pid}")
         return True
 
     # Wimps

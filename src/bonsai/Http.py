@@ -16,7 +16,7 @@ class Http:
             self.__http.check_http_state_ok(response)
             return self.__http.get_json_and_check_for_ok(content)
         except Exception:
-            Logger.exception('Failed to init bonsai')
+            Logger().exception('Failed to init bonsai')
             return None
 
     def buyAndPlaceBonsaiItem(self, item, pack, slot):
@@ -40,7 +40,7 @@ class Http:
             self.__http.check_http_state_ok(response)
             return self.__http.get_json_and_check_for_ok(content)
         except Exception:
-            Logger.exception('Failed to buy and place bonsai item')
+            Logger().exception('Failed to buy and place bonsai item')
             return None
 
     def cutBranch(self, slot, sissor, branch):
@@ -52,7 +52,7 @@ class Http:
             self.__http.check_http_state_ok(response)
             return self.__http.get_json_and_check_for_ok(content)
         except Exception:
-            Logger.exception('Failed to cut bonsai branch')
+            Logger().exception('Failed to cut bonsai branch')
             return None
 
     def finishBonsai(self, slot):
@@ -63,5 +63,5 @@ class Http:
             self.__http.check_http_state_ok(response)
             return self.__http.get_json_and_check_for_ok(content)
         except Exception:
-            Logger.exception('Failed to finish bonsai')
+            Logger().exception('Failed to finish bonsai')
             return None

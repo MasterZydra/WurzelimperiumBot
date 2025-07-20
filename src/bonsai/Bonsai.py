@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import logging
 from src.core.User import User
 from src.bonsai.Http import Http
 from src.bonsai.ShopProduct import *
+from src.logger.Logger import Logger
 
 class Bonsai:
     """Wrapper for the bonsaigarden"""
@@ -12,8 +12,6 @@ class Bonsai:
 
     def __init__(self):
         self.__http = Http()
-        self._logBonsai = logging.getLogger('bot.Bonsai')
-        self._logBonsai.setLevel(logging.DEBUG)
         self.__initialiseBonsaiInfo(self.__http.init())
 
     def __initialiseBonsaiInfo(self, jContent) -> bool:
@@ -98,16 +96,14 @@ class Bonsai:
             packs = self.get_available_scissor_packs(money_to_spend)
 
             if len(packs) == 0:
-                self._logBonsai.info("Not enough money to buy scissors")
-                print("Not enough money to buy scissors")
+                Logger().print('Not enough money to buy scissors')
                 return False
 
             pack = packs[-1]
 
         amount = SCISSOR_PACKS[pack-1][1]
         price = SCISSOR_PACKS[pack-1][2]
-        self._logBonsai.info(f'Rebuying {amount} normal scissors for {price} wT.')
-        print(f'Rebuying {amount} normal scissors for {price} wT.')
+        Logger().print(f'Rebuying {amount} normal scissors for {price} wT.')
 
         jContent = self.__http.buyAndPlaceBonsaiItem(NORMAL_SCISSOR, pack, 0)
         if jContent is None:
@@ -124,13 +120,13 @@ class Bonsai:
             if value['item'] == str(NORMAL_SCISSOR):
                 sissorID = key
                 sissorLoads = value['loads']
-                self._logBonsai.info(f"In storage: {sissorLoads} normal scissors with ID {sissorID}")
+                Logger().info(f"In storage: {sissorLoads} normal scissors with ID {sissorID}")
 
         if sissorID is None or int(sissorLoads) < min_scissor_stock:
             self.buy_scissors(money_to_spend)
 
         for key in self.__slotinfos.keys():
-            self._logBonsai.info(f'Bonsai in slot {key}:')
+            Logger().info(f'Bonsai in slot {key}:')
 
             if self.__slotinfos[key][2] is None:
                 # No tree in slot
@@ -141,8 +137,7 @@ class Bonsai:
                 if jContent is None:
                     return False
                 self.setBonsaiFarmData(jContent)
-                self._logBonsai.info(f'Cut branch {branch}')
-                print(f'Cut branch {branch}')
+                Logger().print(f'Cut branch {branch}')
 
         return True
 
@@ -154,7 +149,7 @@ class Bonsai:
         for key in self.__slotinfos.keys():
             level = self.__slotinfos[key][0]
             if level is None or level >= finish_level:
-                self._logBonsai.info(f'Finish Bonsai in slot {key} with level {level}')
+                Logger().print(f'Finish Bonsai in slot {key} with level {level}')
 
                 if level is not None:
                     if self.__http.finishBonsai(key) is None:
@@ -169,6 +164,6 @@ class Bonsai:
 
                 self.setBonsaiFarmData(jContent)
             else:
-                self._logBonsai.info(f'Do nothing: Bonsai in slot {key} is level {level}')
+                Logger().print(f'Do nothing: Bonsai in slot {key} is level {level}')
 
         return True

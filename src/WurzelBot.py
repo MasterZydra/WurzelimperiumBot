@@ -9,7 +9,6 @@ Created on 21.03.2017
 from src.bonsai.Bonsai import Bonsai
 from src.bonus.Bonus import Bonus
 from src.citypark.CityPark import CityPark
-from src.core.Config import Config
 from src.core.Feature import Feature
 from src.core.HTTPCommunication import HTTPConnection
 from src.core.Login import Login
@@ -30,7 +29,7 @@ from src.shop.Shop import Shop
 from src.stock.Stock import Stock
 from src.wimp.Wimp import Wimp
 from collections import Counter
-import logging, i18n, datetime
+import i18n, datetime
 
 i18n.load_path.append('lang')
 
@@ -42,8 +41,6 @@ class WurzelBot:
 
 
     def __init__(self):
-        self.__logBot = logging.getLogger("bot")
-        self.__logBot.setLevel(logging.DEBUG)
         self.__HTTPConn = HTTPConnection()
         self.messenger = Messenger()
         self.shop = Shop()
@@ -98,34 +95,6 @@ class WurzelBot:
             return False
 
 
-    def __getAllFieldIDsFromFieldIDAndSizeAsString(self, fieldID, sx, sy):
-        """
-        Rechnet anhand der fieldID und Größe der Pflanze (sx, sy) alle IDs aus und gibt diese als String zurück.
-        """
-        #BG-Изчислява всички идентификационни номера чрез fieldID и размера на растението (sx, sy) и ги връща като низ.
-
-        if (sx == '1' and sy == '1'): return str(fieldID)
-        if (sx == '2' and sy == '1'): return str(fieldID) + ',' + str(fieldID + 1)
-        if (sx == '1' and sy == '2'): return str(fieldID) + ',' + str(fieldID + 17)
-        if (sx == '2' and sy == '2'): return str(fieldID) + ',' + str(fieldID + 1) + ',' + str(fieldID + 17) + ',' + str(fieldID + 18)
-        self.__logBot.debug(f'Error der plantSize --> sx: {sx} sy: {sy}')
-
-
-    def __getAllFieldIDsFromFieldIDAndSizeAsIntList(self, fieldID, sx, sy):
-        """
-        Rechnet anhand der fieldID und Größe der Pflanze (sx, sy) alle IDs aus und gibt diese als Integer-Liste zurück.
-        """
-        #BG-Изчислява всички идентификационни номера чрез fieldID и размера на растението (sx, sy) и ги връща като списък от цели числа.
-
-        sFields = self.__getAllFieldIDsFromFieldIDAndSizeAsString(fieldID, sx, sy)
-        listFields = sFields.split(',') #Stringarray
-
-        for i in range(0, len(listFields)):
-            listFields[i] = int(listFields[i])
-
-        return listFields
-
-
     def login(self, server, user, pw, lang, portalacc) -> bool:
         """
         Diese Methode startet und initialisiert den Wurzelbot. Dazu wird ein Login mit den
@@ -133,8 +102,8 @@ class WurzelBot:
         """
         #BG-Този метод стартира и инициализира Wurzelbot. За целта се извършва вход с предоставените данни за влизане и се инициализира всичко необходимо.
 
-        self.__logBot.info('-------------------------------------------')
-        self.__logBot.info(f'Starting Wurzelbot for User {user} on Server No. {server}')
+        Logger().info('-------------------------------------------')
+        Logger().info(f'Starting Wurzelbot for User {user} on Server No. {server}')
         loginDaten = Login(server=server, user=user, password=pw, language=lang)
 
         if portalacc == True:
@@ -161,11 +130,11 @@ class WurzelBot:
 
     def logout(self):
         """Exit the bot cleanly with login and reset the data"""
-        self.__logBot.info(i18n.t('wimpb.exit_wbot'))
+        Logger().print(i18n.t('wimpb.exit_wbot'))
 
         if self.__HTTPConn.logOut():
-            self.__logBot.info(i18n.t('wimpb.logout_success'))
-            self.__logBot.info('-------------------------------------------')
+            Logger().print(i18n.t('wimpb.logout_success'))
+            Logger().info('-------------------------------------------')
 
     def get_stop_bot_note(self) -> bool:
         """Check notes for stop bot entry"""
@@ -195,11 +164,9 @@ class WurzelBot:
         """
         #BG-Създава ново съобщение, попълва го и го изпраща.Получателите трябва да са в масив! Съобщение може да бъде изпратено само ако електронната поща е потвърдена.
 
-        if (User().is_mail_confirmed()):
-            try:
-                self.messenger.write(recipients, subject, body)
-            except Exception:
-                self.__logBot.error(i18n.t('wimpb.no_message'))
+        if User().is_mail_confirmed():
+            if not self.messenger.write(recipients, subject, body):
+                Logger().print_error(i18n.t('wimpb.no_message'))
 
     def get_empty_fields(self):
         """
@@ -213,7 +180,7 @@ class WurzelBot:
             for garden in self.gardens:
                 emptyFields.append(garden.get_empty_fields())
         except Exception:
-            self.__logBot.error(f'Could not determinate empty fields from garden {garden.getID()}.')
+            Logger().print_error(f'Could not determinate empty fields from garden {garden.getID()}.')
         return emptyFields
 
     def getGrowingPlantsInGardens(self):
@@ -222,7 +189,7 @@ class WurzelBot:
             for garden in self.gardens:
                 growingPlants.update(garden.getGrowingPlants())
         except Exception:
-            self.__logBot.error('Could not determine growing plants of garden ' + str(garden.getID()) + '.')
+            Logger().print_error('Could not determine growing plants of garden ' + str(garden.getID()) + '.')
 
         return dict(growingPlants)
 
@@ -263,16 +230,14 @@ class WurzelBot:
                 wimps_data.append({k: v})
 
         if not wimps_data:
-            print("No wimps available!")
-            self.__logBot.info("No wimps available!")
+            Logger().print("No wimps available!")
             return False
 
         for wimps in wimps_data:
             for wimp, products in wimps.items():
                 if not self.check_wimps_profitable(products, method, max_amount, max_loss_in_percent):
                     self.wimparea.decline(wimp)
-                    self.__logBot.info(f"Declined wimp: {wimp}")
-                    print(f"Declined wimp: {wimp}")
+                    Logger().print(f"Declined wimp: {wimp}")
                     continue
 
                 check, stock_list = self.check_wimps_required_amount(products[1], stock_list, minimal_balance, buy_from_shop)
@@ -281,10 +246,9 @@ class WurzelBot:
 
                 rewards += products[0]
                 counter += 1
-                print(f"Selling products to wimp: {wimp}")
-                print(self.wimparea.products_to_string(products))
+                Logger().print(f"Selling products to wimp: {wimp}")
+                Logger().print(self.wimparea.products_to_string(products))
                 print("")
-                self.__logBot.info(f"Selling products to wimp: {wimp}")
                 self.wimparea.sell(wimp)
                 for id, amount in products[1].items():
                     stock_list[id] -= amount
@@ -297,14 +261,12 @@ class WurzelBot:
             points_after = User().get_points()
             points_gained = points_after - points_before
 
-            print(f"Gained {points_gained} points.")
-            print(f"Sold to {counter} wimps for {rewards:.2f} wT (equals {(rewards/npc_price):.2%} of Shop-price: {npc_price:.2f} wT)")
-            self.__logBot.info(f"Gained {points_gained} points.")
-            self.__logBot.info(f"Sold to {counter} wimps for {rewards:.2f} wT (equals {(rewards/npc_price):.2%} of Shop-price: {npc_price:.2f} wT)")
+            Logger().print(f"Gained {points_gained} points.")
+            Logger().print(f"Sold to {counter} wimps for {rewards:.2f} wT (equals {(rewards/npc_price):.2%} of Shop-price: {npc_price:.2f} wT)")
 
             sales, revenue = User().get_stats('Wimps')
 
-            statMsg = (
+            Logger().print(
                 f"\n--------------------------------\n"
                 f"Statistics\n"
                 f"--------------------------------\n"
@@ -312,10 +274,8 @@ class WurzelBot:
                 f"WIMP-revenue: {revenue}\n"
                 f"-------------------------------------"
             )
-            print(statMsg)
-            self.__logBot.info(statMsg)
         else:
-            print(f"Sold to {counter} wimps")
+            Logger().print(f"Sold to {counter} wimps")
 
         return True
 
@@ -395,7 +355,7 @@ class WurzelBot:
             for garden in self.gardens:
                 weedFields.append(garden.get_weed_fields())
         except Exception:
-            self.__logBot.error(f'Could not determinate weeds on fields of garden {garden.getID()}.')
+            Logger().print_error(f'Could not determinate weeds on fields of garden {garden.getID()}.')
 
         return weedFields
 
@@ -410,7 +370,7 @@ class WurzelBot:
             if not self.aquagarden.harvest():
                 return False
 
-        self.__logBot.info(i18n.t('wimpb.harvest_successful'))
+        Logger().print(i18n.t('wimpb.harvest_successful'))
         return Stock().update()
 
     def harvest_all_unfinished(self) -> bool:
@@ -430,15 +390,11 @@ class WurzelBot:
         product = ProductData().get_product_by_name(productName)
 
         if product is None:
-            logMsg = f'Plant "{productName}" not found'
-            self.__logBot.error(logMsg)
-            print(logMsg)
+            Logger().print_error(f'Plant "{productName}" not found')
             return None
 
         if not product.is_vegetable() or not product.is_plantable():
-            logMsg = f'"{productName}" could not be planted'
-            self.__logBot.error(logMsg)
-            print(logMsg)
+            Logger().print_error(f'"{productName}" could not be planted')
             return None
 
         if amount == -1 or amount > Stock().get_stock_by_product_id(product.get_id()):
@@ -469,15 +425,11 @@ class WurzelBot:
         planted = 0
         product = ProductData().get_product_by_name(productName)
         if product is None:
-            logMsg = f'Plant "{productName}" not found'
-            self.__logBot.error(logMsg)
-            print(logMsg)
+            Logger().print_error(f'Plant "{productName}" not found')
             return None
 
         if not product.is_water_plant() or not product.is_plantable():
-            logMsg = f'"{productName}" could not be planted'
-            self.__logBot.error(logMsg)
-            print(logMsg)
+            Logger().print_error(f'"{productName}" could not be planted')
             return None
 
         if amount == -1 or amount > Stock().get_stock_by_product_id(product.get_id()):
@@ -600,9 +552,9 @@ class WurzelBot:
         garden: Garden
         for garden in self.gardens:
             if not garden.remove_weeds():
-                self.__logBot.error(i18n.t('wimpb.w_harvest_not_successful'))
+                Logger().print_error(i18n.t('wimpb.w_harvest_not_successful'))
                 return False
-        self.__logBot.info(i18n.t('wimpb.w_harvest_successful'))
+        Logger().print(i18n.t('wimpb.w_harvest_successful'))
 
     def get_daily_bonuses(self) -> bool:
         self.bonus.get_daily_login_bonus()
@@ -657,7 +609,7 @@ class WurzelBot:
                 return False
 
         for key, value in honey_count.items():
-            self.__logBot.info(f'Collected {value} {ProductData().get_product_by_id(key).get_name()}.')
+            Logger().print(f'Collected {value} {ProductData().get_product_by_id(key).get_name()}.')
 
         return True
 

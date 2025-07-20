@@ -3,6 +3,7 @@
 
 from src.garden.Garden import Garden
 from src.garden.aqua.Http import Http
+from src.logger.Logger import Logger
 
 class AquaGarden(Garden):
     def __init__(self):
@@ -80,11 +81,8 @@ class AquaGarden(Garden):
                     return False
             return True
         finally:
-            self._logGarden.info(f'Im Wassergarten wurden {nPlants} Pflanzen gegossen.')
-            #BG- self._logGarden.info(f'Във водната градина бяха поляти {nPlants} растения.')
-
-            print(f'Im Wassergarten wurden {nPlants} Pflanzen gegossen.')
-            #BG- print(f'Във водната градина бяха поляти {nPlants} растения.')
+            Logger().info(f'Im Wassergarten wurden {nPlants} Pflanzen gegossen.')
+            #BG- Във водната градина бяха поляти {nPlants} растения.
 
     def harvest(self) -> bool:
         """Erntet alles im Wassergarten."""
@@ -125,15 +123,11 @@ class AquaGarden(Garden):
                     to_plant = {}
             return planted
         finally:
-            msg = f'Im Wassergarten wurden {planted} Pflanzen gepflanzt.'
-            #BG- msg = f'Във водната градина са засадени {planted} растения.'
-
+            Logger().print(f'Im Wassergarten wurden {planted} Pflanzen gepflanzt.')
+            #BG- Във водната градина са засадени {planted} растения.
             if emptyFields:
-                msg = msg + f' Im Wassergarten sind noch {len(emptyFields)} leere Felder vorhanden.'
-                #BG- msg = msg + f' Във водната градина все още има {len(emptyFields)} празни полета.'
-
-            self._logGarden.info(msg)
-            print(msg)
+                Logger().print(f'Im Wassergarten sind noch {len(emptyFields)} leere Felder vorhanden.')
+                #BG- Във водната градина все още има {len(emptyFields)} празни полета.
 
     def remove_weeds(self) -> bool:
         """
@@ -146,21 +140,19 @@ class AquaGarden(Garden):
         for fieldID in weedFieldsAqua:
             result = self.__http.remove_weed_on_field(self._id, fieldID)
             if result is None:
-                self._logGarden.error(f'Feld {fieldID} im Auqagarten {self._id} konnte nicht von Unkraut befreit werden!')
+                Logger().print_error(f'Feld {fieldID} im Aquagarten {self._id} konnte nicht von Unkraut befreit werden!')
                 #BG- f'Полето {fieldID} в Аква-градината {self._id} не може да бъде освободено от плевели!')
                 return False
 
             if result == 1:
-                self._logGarden.info(f'Feld {fieldID} im Auqagarten {self._id} wurde von Unkraut befreit!')
-                #BG- self._logGarden.info(f'Полето {fieldID} в Аква-градината {self._id} беше освободено от плевели!')
-
+                Logger().info(f'Feld {fieldID} im Aquagarten {self._id} wurde von Unkraut befreit!')
+                #BG- Полето {fieldID} в Аква-градината {self._id} беше освободено от плевели!
                 freeFields.append(fieldID)
             else:
-                self._logGarden.error(
-                    f'Feld {fieldID} im Auqagarten {self._id} konnte nicht von Unkraut befreit werden!')
-                    #BG- f'Полето {fieldID} в Аква-градината {self._id} не може да бъде освободено от плевели!')
+                Logger().print_error(f'Feld {fieldID} im Aquagarten {self._id} konnte nicht von Unkraut befreit werden!')
+                    #BG- Полето {fieldID} в Аква-градината {self._id} не може да бъде освободено от плевели!
 
-        self._logGarden.info(f'Im Auqagarten {self._id} wurden {len(freeFields)} Felder von Unkraut befreit.')
-        #BG- self._logGarden.info(f'В Аква-градината {self._id} бяха освободени от плевели {len(freeFields)} полета.')
+        Logger().print(f'Im Aquagarten {self._id} wurden {len(freeFields)} Felder von Unkraut befreit.')
+        #BG- В Аква-градината {self._id} бяха освободени от плевели {len(freeFields)} полета.
 
         return True

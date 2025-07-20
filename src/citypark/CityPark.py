@@ -1,14 +1,12 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import logging
 from src.citypark.Http import Http
+from src.logger.Logger import Logger
 
 class CityPark:
     def __init__(self):
         self.__http = Http()
-        self.__log = logging.getLogger('bot.Park')
-        self.__log.setLevel(logging.DEBUG)
         self.__set_park_data(self.__http.init_park())
 
     def __set_park_data(self, content) -> bool:
@@ -22,12 +20,12 @@ class CityPark:
     def collect_cash(self) -> bool:
         """Collect rewards from cashpoint if there are any"""
         if not self.__data['data']["cashpoint"]["money"] > 0:
-            self.__log.error("The Cashpoint is empty.")
+            Logger().print_error("The Cashpoint is empty.")
         else:
             content = self.__http.collect_cash_point()
             if content is None:
                 return False
-            self.__log.info("Collected: {points} points, {money} wT, {parkpoints} parkpoints".format(points = self.__cashpoint["points"], money = self.__cashpoint["money"], parkpoints=self.__cashpoint["parkpoints"]))
+            Logger().print("Collected: {points} points, {money} wT, {parkpoints} parkpoints".format(points = self.__cashpoint["points"], money = self.__cashpoint["money"], parkpoints=self.__cashpoint["parkpoints"]))
             self.__set_park_data(content)
         return True
 
@@ -40,7 +38,7 @@ class CityPark:
                 continue
             if value["remain"] < 0:
                 renewable_items.update({key:value})
-        self.__log.info("renewable items: {}".format(len(renewable_items)))            
+        Logger().info("renewable items: {}".format(len(renewable_items)))            
         return renewable_items
     
     def renew_all_items(self) -> bool:
@@ -51,5 +49,5 @@ class CityPark:
             if content is None:
                 return False
             self.__set_park_data(content)
-        self.__log.info("Renewed {} Items.".format(len(renewable_items)))
+        Logger().print("Renewed {} Items.".format(len(renewable_items)))
         return True
