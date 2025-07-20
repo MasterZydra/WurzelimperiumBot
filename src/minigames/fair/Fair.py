@@ -13,17 +13,22 @@ class Fair:
     def __init__(self):
         self.__http = Http()
 
-    def __init_game(self):
+    def __init_game(self) -> bool:
         data = self.__http.init_game()
-        self.__set_data(data)
+        if data is None:
+            return False
+        if not self.__set_data(data):
+            return False
         self.__thimblerig = Thimblerig(data)
         self.__wetgnome = Wetgnome(data)
+        return True
 
     def is_available(self) -> bool:
         return self.__http.game_available()
 
     def play(self) -> bool:
-        self.__init_game()
+        if not self.__init_game():
+            return False
         if self.__http.init_game() is None:
             return False
         if not self.craft_tickets():
@@ -32,7 +37,9 @@ class Fair:
             return False
         return self.play_wetgnome()
 
-    def __set_data(self, data):
+    def __set_data(self, data) -> bool:
+        if data is None:
+            return False
         self.__data = data["data"]
         self.__points = self.__data['data']['points']
         self.__tickets = self.__data['data']['tickets']
@@ -43,6 +50,7 @@ class Fair:
         self.__wetgnome_round = self.__data['wetgnome']['data']['round']
         self.__wetgnome_points = self.__data['wetgnome']['data']['points']
         self.__wetgnome_maxrounds = self.__data['wetgnome']['config']['maxrounds']
+        return True
 
     def craft_tickets(self) -> bool:
         Logger().print(f"{self.__points} points available. A ticket costs {self.__ticketcost} points.")
