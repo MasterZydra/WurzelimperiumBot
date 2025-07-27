@@ -5,7 +5,7 @@ from src.core.User import User
 from src.garden.Http import Http
 from src.logger.Logger import Logger
 from src.product.ProductData import ProductData
-from src.product.Products import WEEDS, TREE_STUMP, STONE, MOLE
+from src.product.Products import WEEDS, TREE_STUMP, STONE, MOLE, is_booster
 import i18n
 from collections import Counter, namedtuple
 
@@ -283,3 +283,14 @@ class Garden:
             #BG- В градината {self._id} бяха освободени от плевели {len(freeFields)} полета.
 
         return True
+
+    def get_fields(self):
+        return self.__http.get_empty_fields(self._id, '')['garden']
+
+    def get_booster_fields(self):
+        fields = {}
+        for field in self.get_fields():
+            if not is_booster(self.get_fields()[field][0]):
+                continue
+            fields[field] = self.get_fields()[field]
+        return fields

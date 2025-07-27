@@ -58,10 +58,10 @@ class Http:
             self.__http.check_http_state_ok(response)
             jContent = self.__http.get_json_and_check_for_ok(content)
             if param == "empty":
-                emptyFields = self.find_empty_fields_in_json(jContent)
+                return self.find_empty_fields_in_json(jContent)
             elif param == "grown":
-                emptyFields = self.__find_grown_fields(jContent)
-            return emptyFields
+                return self.__find_grown_fields(jContent)
+            return jContent
         except Exception:
             Logger().print_exception('Failed to get empty fields in garden')
             return None
