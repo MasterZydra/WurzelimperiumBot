@@ -89,6 +89,12 @@ BEAN = 181 # DE: Bohne
 
 FIELD_MINT = 225 # DE: Ackerminze
 
+PORCINI = 268 # DE: Steinpilz
+CHANTERELLE = 269 # DE: Pfifferlig
+MOREL = 270 # DE: Speisemorchel
+OYSTER_MUSHROOM = 271 # DE: Kräuter_Seitling
+GIANT_PUFFBALL = 272 # DE: Riesenträuchling
+
 # Booster
 EAGER_UNICORN_EBERHARD = 273 # DE: Eifriges Einhorn Eberhard
 DROLLY_DRAGON_DIETMAR = 274 # DE: Drolliger Drache Dietmar
