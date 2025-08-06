@@ -5,6 +5,7 @@ from src.logger.Logger import Logger
 from src.minigames.adventCalendar.AdventCalendar import AdventCalendar
 from src.minigames.birthdayCalendar.BirthdayCalendar import BirthdayCalendar
 from src.minigames.summerCalendar.SummerCalendar import SummerCalendar
+from src.minigames.summerMemory.SummerMemory import SummerMemory
 from src.minigames.fair.Fair import Fair
 from src.minigames.pumpkinDigging.PumpkinDigging import PumpkinDigging
 
@@ -26,6 +27,11 @@ class Minigames:
         if self.__summerCalendar.is_available():
             Logger().print('Opening summer calendar...')
             self.__summerCalendar.play()
+
+        self.__summerMemory = SummerMemory()
+        if self.__summerMemory.is_available():
+            Logger().print('Playing summer memory...')
+            self.__summerMemory.play()
 
         self.__fair = Fair()
         if self.__fair.is_available():
