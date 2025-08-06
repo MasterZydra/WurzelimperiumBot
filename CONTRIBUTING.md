@@ -47,3 +47,55 @@ Please follow the rules below:
 - **Python Coding Standard Recommendations**:  
   There is a coding standard on the official python website. We try to follow it:  
   https://peps.python.org/pep-0008/#function-and-variable-names
+
+# Coding Standard for Error handling
+Add a 'try-except' statement where errors can occur, in our code this is the case in the `Http.py` files.  
+In the 'except' section, you can use the logger to write the exception to the log file.  
+Although `None` is the default return value, an explicit return should still be used.
+
+```py
+from src.logger.Logger import Logger
+
+def get_some_data(self):
+    try:
+        response, content = self.__http.send('some/url')
+        # ...
+        return content
+    except Exception:
+        Logger().print_exception('Failed to get some data')
+        return None
+```
+
+The result of methods that return some data (`list`, `dict`, ...) or `None` should be used to check if the call was successful.  
+Methods that have no return value should return a bool to indicate if it was successful.
+```py
+def update(self) -> bool:
+    info = self.__http.get_honey_farm_info()
+    if info is None:
+        return False
+
+    return self.__set_data(info)
+```
+
+If all the code follows these recommendations, only critical sections will require a 'try-except' statement, and the rest of the code can check the return value.
+The code could then look like this:
+
+```py
+def login(self, server, user, pw, lang, portalacc) -> bool:
+    loginDaten = Login(server=server, user=user, password=pw, language=lang)
+
+    if portalacc == True:
+        if not self.__HTTPConn.logInPortal(loginDaten):
+            return False
+    else:
+        if not self.__HTTPConn.logIn(loginDaten):
+            return False
+
+    if not User().update():
+        return False
+
+    if not self.__init_gardens():
+        return False
+
+    return Stock().update()
+```
