@@ -90,9 +90,16 @@ def main():
         wurzelBot.minigames.play()
 
         # Cut bonsais
-        print('')
-        print('Cutting bonsais...')
-        wurzelBot.cut_and_renew_bonsais(2)
+        if wurzelBot.bonsaifarm is not None:
+            print('')
+            print('Cutting bonsais...')
+            wurzelBot.cut_and_renew_bonsais(2)
+
+        # Taking care of megafruit
+        if wurzelBot.megafruit is not None:
+            print('')
+            print('Taking care of megafruit...')
+            wurzelBot.check_megafruit()
     finally:
         # Close connection
         # BG-Затваряне на връзката

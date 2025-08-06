@@ -23,31 +23,14 @@ class Http:
             Logger().print_exception('Failed to check if aqua garden is available')
             return False
 
-    def is_bonsai_farm_available(self) -> bool:
+    def get_citymap_data(self) -> dict|None:
         try:
             response, content = self.__http.send(f'ajax/ajax.php?do=citymap_init&token={self.__http.token()}')
             self.__http.check_http_state_ok(response)
-            content = self.__http.get_json_and_check_for_ok(content)
-            if 'bonsai' in content['data']['location']:
-                return content['data']['location']['bonsai']['bought'] == 1
-            else:
-                return False
+            return self.__http.get_json_and_check_for_ok(content)
         except Exception:
-            Logger().print_exception('Failed to check if bonsai farm is available')
-            return False
-
-    def is_honey_farm_available(self) -> bool:
-        try:
-            response, content = self.__http.send(f'ajax/ajax.php?do=citymap_init&token={self.__http.token()}')
-            self.__http.check_http_state_ok(response)
-            content = self.__http.get_json_and_check_for_ok(content)
-            if 'bees' in content['data']['location']:
-                return content['data']['location']['bees']['bought'] == 1
-            else:
-                return False
-        except Exception:
-            Logger().print_exception('Failed to check if honey farm is available')
-            return False
+            Logger().print_exception('Failed to get citymap data')
+            return None
 
     def is_greenhouse_available(self) -> bool:
         try:

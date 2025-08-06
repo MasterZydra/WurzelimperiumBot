@@ -63,6 +63,7 @@ def main():
         elif inputLower.startswith('grow-water'): grow_aqua_garden(user_input)
         elif inputLower.startswith('grow'): grow(user_input)
         elif inputLower.startswith('lowest'): lowest(user_input)
+        elif inputLower == 'megafruit': megafruit()
         elif inputLower.startswith('stock'): stock(user_input)
         elif inputLower == 'user': user_info()
         elif inputLower == 'water': water()
@@ -120,6 +121,7 @@ def help():
     print('help         Show all available commands')
     print('lowest       Show the plant with the lowest stock (unequal zero)')
     print('             Opt. argument: "single", "water"')
+    print('megafruit    Take care of megafruits')
     print('stock        Show all plants in stock')
     print('             Opt. argument: "sort", "water"')
     print('user         Show details to the current user')
@@ -235,6 +237,10 @@ def lowest(arg_str : str):
         print(bot.getLowestSingleVegetableStockEntry())
     elif args[0] == 'water':
         print(bot.getLowestWaterPlantStockEntry())
+
+def megafruit():
+    print('Taking care of megafruit...')
+    bot.check_megafruit()
 
 def stock(arg_str : str):
     arg_str = arg_str.replace('stock', '', 1).strip()

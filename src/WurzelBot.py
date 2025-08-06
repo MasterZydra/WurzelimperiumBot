@@ -20,6 +20,8 @@ from src.greenhouse.Greenhouse import Greenhouse
 from src.honey.Honey import Honey
 from src.logger.Logger import Logger
 from src.marketplace.Marketplace import Marketplace
+from src.megafruit.Megafruit import Megafruit
+from src.megafruit.MegafruitData import Mushroom, Care_OID
 from src.message.Messenger import Messenger
 from src.minigames.Minigames import Minigames
 from src.note.Note import Note
@@ -56,6 +58,7 @@ class WurzelBot:
         self.note = None
         self.park = None
         self.greenhouse = None
+        self.megafruit = None
         self.minigames = Minigames()
 
 
@@ -87,6 +90,9 @@ class WurzelBot:
             
             if Feature().is_note_available():
                 self.note = Note()
+
+            if Feature().is_megafruit_available():
+                self.megafruit = Megafruit()
 
             return True
 
@@ -662,3 +668,36 @@ class WurzelBot:
             return False
 
         return self.greenhouse.do_all_cactus_care()
+
+    # Megafruit
+    def check_megafruit(self, mushroom: Mushroom = Mushroom.MUSHROOM, buy_from_shop: bool = False, allowed_care_item_prices: list = ['money', 'fruits']) -> bool:
+        """
+        allowed_care_item_prices: All allowed values: ['money', 'coins', 'fruits']
+        """
+        if self.megafruit is None:
+            return False
+
+        stock_list = Stock().get_ordered_stock_list(False)
+        id = mushroom.value
+        # TODO: adjust for different mushrooms / check Sporen for Goldener Flauschling
+        min_stock = 1800
+        if stock_list.get(str(id), 0) < min_stock:
+            if not buy_from_shop:
+                return False
+
+            if self.buy_from_shop(int(id), min_stock) == -1:
+                return False
+
+        if not self.megafruit.start(mushroom):
+            return False
+
+        # Get best care item for each type and apply it
+        for type in ['water', 'light', 'fertilize']:
+            best_item = self.megafruit.get_best_care_item(type, allowed_care_item_prices)
+            if best_item is None:
+                continue
+
+            if not self.megafruit.care(best_item):
+                return False
+
+        return self.megafruit.finish()
