@@ -8,11 +8,11 @@ class SummerCalendar:
     def __init__(self):
         self.__http = Http()
 
-    def is_available(self) -> bool:
+    def is_available(self, page_content: str) -> bool:
         if not self.__check_time_span():
             return False
 
-        if not self.__http.game_available():
+        if 'id="calendar" class="summer short"' not in page_content:
             return False
 
         # Check if current day is already opened

@@ -23,8 +23,8 @@ class Fair:
         self.__wetgnome = Wetgnome(data)
         return True
 
-    def is_available(self) -> bool:
-        return self.__http.game_available()
+    def is_available(self, page_content: str) -> bool:
+        return 'id="fair"' in page_content
 
     def play(self) -> bool:
         if not self.__init_game():

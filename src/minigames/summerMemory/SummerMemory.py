@@ -8,10 +8,9 @@ from src.minigames.summerMemory.Http import Http
 class SummerMemory:
     def __init__(self):
         self.__http = Http()
-        self.__flipped_cards = {}
 
-    def is_available(self) -> bool:
-        if not self.__http.game_available():
+    def is_available(self, page_content: str) -> bool:
+        if 'id="memory" class="summer"' not in page_content:
             return False
 
         # Check for rounds

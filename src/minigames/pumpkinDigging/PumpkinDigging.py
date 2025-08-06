@@ -8,8 +8,8 @@ class PumpkinDigging:
     def __init__(self):
         self.__http = Http()
 
-    def is_available(self) -> bool:
-        if not self.__http.game_available():
+    def is_available(self, page_content: str) -> bool:
+        if 'id="diggame_bar_img" class="autumn"' not in page_content:
             return False
 
         # Check for cooldown
