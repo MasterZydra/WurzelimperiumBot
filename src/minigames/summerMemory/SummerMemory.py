@@ -3,6 +3,7 @@
 
 import random
 import time
+from src.logger.Logger import Logger
 from src.minigames.summerMemory.Http import Http
 
 class SummerMemory:
@@ -60,6 +61,12 @@ class SummerMemory:
 
             # Flip random unmatched card
             content = self.__http.flip(positions.pop(0))
+            if content is None:
+                return False
+            # TODO Remove after bug is found: From time to time this section breaks
+            if not isinstance(content['data'], dict):
+                Logger().info('SummerMemory.flip_cards: ' + str(content))
+                return False
             if content is None or 'flipped' not in content['data']:
                 return False
             time.sleep(random.choice([0, 3]))
