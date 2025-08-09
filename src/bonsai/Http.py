@@ -19,7 +19,7 @@ class Http:
             Logger().print_exception('Failed to init bonsai')
             return None
 
-    def buyAndPlaceBonsaiItem(self, item, pack, slot):
+    def buy_and_place(self, item, pack, slot):
         """
         Buys and places an item from the bonsai shop and returns JSON content
 
@@ -43,7 +43,7 @@ class Http:
             Logger().print_exception('Failed to buy and place bonsai item')
             return None
 
-    def cutBranch(self, slot, sissor, branch):
+    def cut(self, slot, sissor, branch):
         """Cuts the branch from the bonsai and returns JSON content(status, data, branchclick, updateMenu)"""
         try:
             address = f'ajax/ajax.php?do=bonsai_branch_click&slot={slot}&' \
@@ -55,7 +55,7 @@ class Http:
             Logger().print_exception('Failed to cut bonsai branch')
             return None
 
-    def finishBonsai(self, slot):
+    def finish(self, slot):
         """Finishes bonsai to the bonsaigarden and returns JSON content"""
         try:
             address = f'ajax/ajax.php?do=bonsai_finish_breed&slot={slot}&token={self.__http.token()}'

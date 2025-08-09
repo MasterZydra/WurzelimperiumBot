@@ -639,9 +639,9 @@ class WurzelBot:
         if self.bonsaifarm is None:
             return
 
-        self.bonsaifarm.cutAllBonsai()
-        self.bonsaifarm.checkBonsai(finish_level, bonsai)
-        self.bonsaifarm.cutAllBonsai()
+        self.bonsaifarm.cut_all()
+        self.bonsaifarm.check(finish_level, bonsai)
+        self.bonsaifarm.cut_all()
 
     # City park
     def check_park(self) -> bool:
