@@ -120,13 +120,13 @@ class Bonsai:
             if value['item'] == str(NORMAL_SCISSOR):
                 sissorID = key
                 sissorLoads = value['loads']
-                Logger().info(f"In storage: {sissorLoads} normal scissors with ID {sissorID}")
+                Logger().debug(f"In storage: {sissorLoads} normal scissors with ID {sissorID}")
 
         if sissorID is None or int(sissorLoads) < min_scissor_stock:
             self.buy_scissors(money_to_spend)
 
         for key in self.__slotinfos.keys():
-            Logger().info(f'Bonsai in slot {key}:')
+            Logger().debug(f'Bonsai in slot {key}:')
 
             if self.__slotinfos[key][2] is None:
                 # No tree in slot
@@ -164,6 +164,6 @@ class Bonsai:
 
                 self.setBonsaiFarmData(jContent)
             else:
-                Logger().print(f'Do nothing: Bonsai in slot {key} is level {level}')
+                Logger().debug(f'Do nothing: Bonsai in slot {key} is level {level}')
 
         return True
