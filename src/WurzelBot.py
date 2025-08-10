@@ -680,19 +680,24 @@ class WurzelBot:
         if self.megafruit is None:
             return False
 
-        stock_list = Stock().get_ordered_stock_list(False)
-        id = mushroom.value
-        # TODO: adjust for different mushrooms / check Sporen for Goldener Flauschling
-        min_stock = 1800
-        if stock_list.get(str(id), 0) < min_stock:
-            if not buy_from_shop:
-                return False
-
-            if self.buy_from_shop(int(id), min_stock) == -1:
-                return False
-
-        if not self.megafruit.start(mushroom):
+        if not self.megafruit.finish():
             return False
+
+        # Only check for stock if not plant is growing
+        if self.megafruit.is_planted() and self.megafruit.get_remaining_time() > 0:
+            stock_list = Stock().get_ordered_stock_list(False)
+            id = mushroom.value
+            # TODO: adjust for different mushrooms / check Sporen for Goldener Flauschling
+            min_stock = 1800
+            if stock_list.get(str(id), 0) < min_stock:
+                if not buy_from_shop:
+                    return False
+
+                if self.buy_from_shop(int(id), min_stock) == -1:
+                    return False
+
+            if not self.megafruit.start(mushroom):
+                return False
 
         # Get best care item for each type and apply it
         for type in ['water', 'light', 'fertilize']:

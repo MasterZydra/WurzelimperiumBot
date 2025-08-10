@@ -26,10 +26,10 @@ class Megafruit:
     # MARK: Base functions
 
     def start(self, plant: Mushroom = 0) -> bool:
-        if not plant:
-            return False
+        if self.is_planted():
+            return True
 
-        if self.__data.get('entry', 0):
+        if not plant:
             return False
 
         Logger().debug(f'Start megafruit {plant}')
@@ -42,7 +42,7 @@ class Megafruit:
         return self.__set_data(data)
 
     def finish(self) -> bool:
-        if self.__data.get('remain', 0) >= 0:
+        if self.get_remaining_time() >= 0:
             return True
 
         data = self.__http.finish()
@@ -52,15 +52,12 @@ class Megafruit:
 
     def care(self, oid: int) -> bool:
         if is_water_care_item(oid):
-            Logger().print('Care megafruit with water')
             return self.__care(Care.WATER, oid)
 
         if is_light_care_item(oid):
-            Logger().print('Care megafruit with light')
             return self.__care(Care.LIGHT, oid)
 
         if is_fertilize_care_item(oid):
-            Logger().print('Care megafruit with fertilizer')
             return self.__care(Care.FERTILIZE, oid)
 
         Logger().debug(f'Unhandled care OID {oid}')
@@ -68,7 +65,13 @@ class Megafruit:
 
     # MARK: Helpers
 
-    def get_fruits(self) -> int:
+    def is_planted(self) -> bool:
+        return bool(self.__data.get('entry', 0))
+
+    def get_remaining_time(self) -> int:
+        return self.__data.get('remain', 0)
+
+    def get_spores(self) -> int:
         return int(self.__data['count'])
 
     def get_unlocked_care_items(self) -> list:
@@ -106,7 +109,7 @@ class Megafruit:
 
             # Check is user has enough money, fruits or coins to pay for item
             if (unit == 'money' and User().get_bar() >= price) or \
-                (unit == 'fruits' and self.get_fruits() >= price) or \
+                (unit == 'fruits' and self.get_spores() >= price) or \
                 (unit == 'coins' and User().get_coins() >= price):
                 best_item = item
 
@@ -143,23 +146,17 @@ class Megafruit:
         if data is None:
             return False
 
-        # New fruit, no Careitem used
-        if data == "":
-            Logger().debug('New fruit, no Careitem used')
-            data = self.__http.care(oid)
-            return self.__set_data(data)
+        # Check if care item is still in use
+        if data.get("used", 0).get(care_name.value, 0).get("remain", 0) > 0:
+            return True
 
-        # No Careitem used
-        if not data.get("used", 0).get(care_name.value, 0):
-            Logger().debug('No Careitem used')
-            data = self.__http.care(oid)
-            return self.__set_data(data)
+        match care_name:
+            case Care.WATER:
+                Logger().print('Care megafruit with water')
+            case Care.LIGHT:
+                Logger().print('Care megafruit with light')
+            case Care.FERTILIZE:
+                Logger().print('Care megafruit with fertilizer')
 
-        # Careitem expired
-        if data.get("used", 0).get(care_name.value, 0).get("remain", 0) < 0:
-            Logger().debug('Careitem expired')
-            data = self.__http.care(oid)
-            return self.__set_data(data)
-
-        Logger().debug(f'Megafruit.__care: Unhandled case')
-        return False
+        data = self.__http.care(oid)
+        return self.__set_data(data)
