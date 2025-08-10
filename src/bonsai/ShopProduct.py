@@ -50,3 +50,12 @@ SCISSOR_PACKS = [
     (3, 100, 17000),
     (4, 500, 80000)
 ]
+
+def get_tree_price(tree: int) -> list|None:
+    if tree == MAIDENHAIR_PINE:
+        return [5000, 'money']
+    if tree == MANGROVE:
+        return [1000, 'money']
+    if tree == MONEY_TREE:
+        return [20, 'coins']
+    return None

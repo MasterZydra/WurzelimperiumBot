@@ -41,7 +41,28 @@ class Bonsai:
         trees = [MAIDENHAIR_PINE]  # Always available
         trees.extend(tree for lvl, tree in TREE_LEVELS if level >= lvl)
         return trees
-    
+
+    def get_best_tree(self, allowed_prices: list = ['money', 'coins']) -> int:
+        trees = self.get_available_trees()
+        best_tree = None
+        for tree in trees:
+            # Get price of tree
+            price = get_tree_price(tree)
+            if price is None:
+                continue
+            price, unit = price
+
+            # Check if the unit of price is allowed
+            if unit not in allowed_prices:
+                continue
+
+            # Check is user has enough money, fruits or coins to pay for item
+            if (unit == 'money' and User().get_bar() >= price) or \
+                (unit == 'coins' and User().get_coins() >= price):
+                best_tree = tree
+
+        return best_tree
+
     def get_available_scissor_packs(self, money_to_spend : int = None) -> list:
         if money_to_spend is None:
             money_to_spend = User().get_bar()
@@ -86,7 +107,8 @@ class Bonsai:
             reward: dict = content['data']['breed'][bonsai]['reward']
             slot_no = content['data']['breed'][bonsai]['slot']
             branches = content['data']['breed'][bonsai]['branches']
-            available_bonsais[slot_no] = [level, reward, branches]
+            bowl = content['data']['breed'][bonsai]['bowl']
+            available_bonsais[slot_no] = [level, reward, branches, bowl]
 
         return available_bonsais
 
@@ -141,29 +163,41 @@ class Bonsai:
 
         return True
 
-    def check(self, finish_level: int = 2, bonsai = None) -> bool:
-        """Checks if bonsai is a given level: finishes bonsai to bonsaigarden, renews it with highest available bonsai and a normal pot"""
+    def check(self, finish_level: int = 2, bonsai = None, allowed_prices: list = ['money', 'coins']) -> bool:
+        """
+        Checks if bonsai is a given level: finishes bonsai to bonsaigarden, renews it with highest available bonsai and a normal pot
+        """
         if bonsai is None:
-            bonsai = self.get_available_trees()[-1]
+            bonsai = self.get_best_tree(allowed_prices)
+            if bonsai is None:
+                Logger().print('No bonsai available or affordable')
+                return False
 
         for key in self.__slot_infos.keys():
             level = self.__slot_infos[key][0]
             if level is None or level >= finish_level:
-                Logger().print(f'Finish Bonsai in slot {key} with level {level}')
+                if level is not None:
+                    Logger().print(f'Finish Bonsai in slot {key} with level {level}')
+                else:
+                    Logger().print(f'Place Bonsai in slot {key}')
 
                 if level is not None:
                     if self.__http.finish(key) is None:
                         return False
 
-                # TODO Check if pot is already placed
-                if self.__http.buy_and_place(SIMPLE_POT, 1, key) is None:
-                    return False
+                if self.__slot_infos[key][3] is None:
+                    # TODO use pot/bowl from stock if possible
+                    if self.__http.buy_and_place(SIMPLE_POT, 1, key) is None:
+                        return False
 
                 content = self.__http.buy_and_place(bonsai, 1, key)
                 if content is None:
                     return False
 
                 self.__set_data(content)
+
+                if not User().update():
+                    return False
             else:
                 Logger().debug(f'Do nothing: Bonsai in slot {key} is level {level}')
 
