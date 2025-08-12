@@ -142,12 +142,8 @@ class Megafruit:
         if entry is None:
             return False
 
-        data = entry.get('data', None)
-        if data is None:
-            return False
-
         # Check if care item is still in use
-        if data.get("used", 0).get(care_name.value, 0).get("remain", 0) > 0:
+        if entry.get('data', 0).get('used', 0).get(care_name.value, 0).get('remain', 0) > 0:
             return True
 
         match care_name:
