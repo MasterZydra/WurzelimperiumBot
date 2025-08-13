@@ -175,7 +175,7 @@ class Garden:
         #BG- """Отглежда растение от всякакъв размер."""
 
         grown_fields = self.get_grown_fields()
-        print('grown_fields:', grown_fields)
+        Logger().debug('grown_fields:', grown_fields)
 
         for field, plant_id in grown_fields.items():
             sx = ProductData().get_product_by_id(plant_id).get_sx()

@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from src.logger.Logger import Logger
 from src.note.Http import Http
 
 class Note:
@@ -21,7 +22,7 @@ class Note:
         try:
             return int(min_stock_str)
         except Exception:
-            print(f'Error: "{prefix}" must be an int')
+            Logger().error(f'Error: "{prefix}" must be an int')
         return 0
 
     def get_min_stock(self, plant_name = None) -> int:

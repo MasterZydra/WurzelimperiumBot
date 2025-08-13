@@ -8,6 +8,7 @@ Created on 23.01.2019
 '''
 
 import datetime
+from src.logger.Logger import Logger
 
 CATEGORY_DECORATION       = 'd'
 CATEGORY_HERBS            = 'h'
@@ -82,7 +83,7 @@ class Product:
         # Show empty string instead of "None"
         xstr = lambda s: s or ""
 
-        print('ID:', str(self.__id).rjust(3), ' ', \
+        Logger.print('ID:', str(self.__id).rjust(3), ' ', \
               'CAT:', str(self.__category).ljust(5), ' ', \
               'Name:', str(self.__name).ljust(35), ' ', \
               'Plantable:', str(self.__is_plantable).ljust(5), ' ', \

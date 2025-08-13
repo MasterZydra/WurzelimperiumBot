@@ -252,7 +252,7 @@ class WurzelBot:
                 counter += 1
                 Logger().print(f"Selling products to wimp: {wimp}")
                 Logger().print(self.wimparea.products_to_string(products))
-                print("")
+                Logger().print("")
                 self.wimparea.sell(wimp)
                 for id, amount in products[1].items():
                     stock_list[id] -= amount
@@ -582,16 +582,16 @@ class WurzelBot:
             questnr = self.__HTTPConn.initInfinityQuest()['questnr']
             if int(questnr) <= 500:
                 for item in self.__HTTPConn.initInfinityQuest()['questData']['products']:
-                    #print(item)
+                    #Logger().print(item)
                     product = item['pid']
                     product = ProductData().get_product_by_id(product)
-                    #print(f'Pid {product.get_id()}')
+                    #Logger().print(f'Pid {product.get_id()}')
                     needed = item['amount']
                     stored = Stock().get_stock_by_product_id(product.get_id())
-                    #print(f'stored {stored}')
+                    #Logger().print(f'stored {stored}')
                     if needed >= stored:
                         missing = abs(needed - stored) + 10
-                        #print(f'missing {missing}')
+                        #Logger().print(f'missing {missing}')
                         self.shop.buy(product.get_id(),missing)
 
                     self.__HTTPConn.sendInfinityQuest(questnr, product.get_id(), needed)

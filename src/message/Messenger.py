@@ -175,10 +175,9 @@ class Messenger:
                 tmp_Msg = Message(self.__user.get_username(), recipient, subject, body, messageDeliveryState)
                 self.__sent.append(tmp_Msg)
                 i += 1
-                print(f'{i} von {n}')
+                Logger().debug(f'{i} von {n}')
             except Exception:
-                Logger().print_exception('Failed to write message')
-                print(f'Exception {recipient}')
+                Logger().print_exception(f'Failed to write message to {recipient}')
                 return False
 
         return True

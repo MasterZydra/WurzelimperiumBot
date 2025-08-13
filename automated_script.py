@@ -5,6 +5,7 @@ import argparse
 import time
 import i18n
 from src.core.Config import Config
+from src.logger.Logger import Logger
 from src.WurzelBot import WurzelBot
 
 def main():
@@ -35,19 +36,19 @@ def main():
         # Check if the bot should be stopped
         # BG-Проверка дали бота трябва да бъде спрян
         if wurzelBot.get_stop_bot_note():
-            print(i18n.t('wimpb.stop_wbot'))
+            Logger().print(i18n.t('wimpb.stop_wbot'))
             wurzelBot.logout()
             return
 
         # Remove weed
         # BG-Премахване на плевели
-        print('')
-        print(i18n.t('wimpb.remove_weed_from_all_gardens'))
+        Logger().print('')
+        Logger().print(i18n.t('wimpb.remove_weed_from_all_gardens'))
         wurzelBot.remove_weeds()
 
         # Harvest
         # BG-Жътва
-        print('')
+        Logger().print('')
         wurzelBot.harvest()
 
         # Plant plants
@@ -56,54 +57,54 @@ def main():
             lowest = wurzelBot.getLowestVegetableStockEntry()
             if lowest == 'Your stock is empty':
                 break
-            print(i18n.t('wimpb.grow_plant_X', plant=lowest))
+            Logger().print(i18n.t('wimpb.grow_plant_X', plant=lowest))
             planted = wurzelBot.growVegetablesInGardens(lowest)
             if planted == 0:
                 lowestSingle = wurzelBot.getLowestSingleVegetableStockEntry()
                 if lowestSingle == 'Your stock is empty':
                     break
-                print(i18n.t('wimpb.grow_plant_X', plant=lowestSingle))
+                Logger().print(i18n.t('wimpb.grow_plant_X', plant=lowestSingle))
                 wurzelBot.growVegetablesInGardens(lowestSingle)
 
         # Water plants
         # BG-Поливане на растенията
         time.sleep(3)
-        print('')
-        print(i18n.t('wimpb.watering_all_plants'))
+        Logger().print('')
+        Logger().print(i18n.t('wimpb.watering_all_plants'))
         wurzelBot.water()
 
         # Claim Daily
         # BG-Събиране на дневният бонус
-        print('')
-        print(i18n.t('wimpb.claim_bonus'))
+        Logger().print('')
+        Logger().print(i18n.t('wimpb.claim_bonus'))
         wurzelBot.get_daily_bonuses()
 
         # Process Wimp Customers in Gardens
         # BG-Изпълни нуждите на Wimps в градините
-        print('')
-        print(i18n.t('wimpb.process_wimps'))
+        Logger().print('')
+        Logger().print(i18n.t('wimpb.process_wimps'))
         wurzelBot.sell_to_wimps()
 
         # Play minigames
-        print('')
-        print('Playing minigames...')
+        Logger().print('')
+        Logger().print('Playing minigames...')
         wurzelBot.minigames.play()
 
         # Cut bonsais
         if wurzelBot.bonsaifarm is not None:
-            print('')
-            print('Cutting bonsais...')
+            Logger().print('')
+            Logger().print('Cutting bonsais...')
             wurzelBot.cut_and_renew_bonsais(2)
 
         # Taking care of megafruit
         if wurzelBot.megafruit is not None:
-            print('')
-            print('Taking care of megafruit...')
+            Logger().print('')
+            Logger().print('Taking care of megafruit...')
             wurzelBot.check_megafruit()
     finally:
         # Close connection
         # BG-Затваряне на връзката
-        print('')
+        Logger().print('')
         wurzelBot.logout()
 
 if __name__ == "__main__":
