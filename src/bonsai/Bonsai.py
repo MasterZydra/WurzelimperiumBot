@@ -173,6 +173,11 @@ class Bonsai:
                 Logger().print('No bonsai available or affordable')
                 return False
 
+        # Add unused slot to slot_infos so that it can be used to place a bonsai
+        for slot in self.__bonsaiavailable:
+            if str(slot) not in self.__slot_infos:
+                self.__slot_infos[str(slot)] = [None, None, None, None]
+
         for key in self.__slot_infos.keys():
             level = self.__slot_infos[key][0]
             if level is None or level >= finish_level:
@@ -185,7 +190,7 @@ class Bonsai:
                     if self.__http.finish(key) is None:
                         return False
 
-                if self.__slot_infos[key][3] is None:
+                if self.__slot_infos[key][3] is None or self.__slot_infos[key][3] == '0':
                     # TODO use pot/bowl from stock if possible
                     if self.__http.buy_and_place(SIMPLE_POT, 1, key) is None:
                         return False
