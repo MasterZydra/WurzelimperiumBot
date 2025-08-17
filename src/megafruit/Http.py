@@ -35,11 +35,11 @@ class Http(object):
             Logger().print_exception(f'Failed to care about megafruit with oid "{oid}"')
             return None
 
-    def finish(self):
+    def harvest(self):
         try:
-            response, content = self.__http.send(f'ajax/ajax.php?do=megafruit_finish&token={self.__http.token()}')
+            response, content = self.__http.send(f'ajax/ajax.php?do=megafruit_harvest&token={self.__http.token()}')
             self.__http.check_http_state_ok(response)
             return self.__http.get_json_and_check_for_ok(content)
         except Exception:
-            Logger().print_exception('Failed to finish megafruit')
+            Logger().print_exception('Failed to harvest megafruit')
             return None

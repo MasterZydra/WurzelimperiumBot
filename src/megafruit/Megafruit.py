@@ -41,11 +41,11 @@ class Megafruit:
 
         return self.__set_data(data)
 
-    def finish(self) -> bool:
+    def harvest(self) -> bool:
         if self.get_remaining_time() >= 0:
             return True
 
-        data = self.__http.finish()
+        data = self.__http.harvest()
         if data is None:
             return False
         return self.__set_data(data)
@@ -143,7 +143,7 @@ class Megafruit:
             return False
 
         # Check if care item is still in use
-        if entry.get('data', 0).get('used', 0).get(care_name.value, 0).get('remain', 0) > 0:
+        if entry.get('data', {}).get('used', {}).get(care_name.value, {}).get('remain', 0) > 0:
             return True
 
         match care_name:
