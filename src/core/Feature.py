@@ -57,6 +57,8 @@ class Feature:
             return False
 
     def is_megafruit_available(self) -> bool:
+        if User().get_level() < 17:
+            return False
         if 'megafruit' in self.__city_data['data']['location']:
             return self.__city_data['data']['location']['megafruit']['bought'] == 1
         else:
