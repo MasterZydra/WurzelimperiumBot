@@ -63,3 +63,43 @@ class Feature:
             return self.__city_data['data']['location']['megafruit']['bought'] == 1
         else:
             return False
+    
+    def is_biogas_available(self) -> bool:
+        if User().get_level() < 25:
+            return False
+        if 'biogas' in self.__city_data['data']['location']:
+            return self.__city_data['data']['location']['biogas']['bought'] == 1
+        else:
+            return False
+    
+    def is_snailracing_available(self) -> bool:
+        if User().get_level() < 24:
+            return False
+        if 'snailracing' in self.__city_data['data']['location']:
+            return self.__city_data['data']['location']['snailracing']['bought'] == 1
+        else:
+            return False
+    
+    def is_ivyhouse_available(self) -> bool:
+        if User().get_level() < 23:
+            return False
+        if 'ivyhouse' in self.__city_data['data']['location']:
+            return self.__city_data['data']['location']['ivyhouse']['bought'] == 1
+        else:
+            return False
+
+    def is_decogarden2_available(self) -> bool:
+        if not User().is_premium_active():
+            return False
+        if 'decogarden2' in self.__city_data['data']['location']:
+            return self.__city_data['data']['location']['decogarden2']['bought'] == 1
+        else:
+            return False
+        
+    def is_vacation_available(self) -> bool:
+        if User().get_level() < 23:
+            return False
+        if 'vacation' in self.__city_data['data']['location']:
+            return self.__city_data['data']['location']['vacation']['bought'] == 1
+        else:
+            return False
