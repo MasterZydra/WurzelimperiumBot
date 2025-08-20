@@ -9,6 +9,7 @@ Created on 23.05.2019
 import json
 from src.product.Http import Http
 from src.product.Product import Product
+from src.product.Products import *
 
 class ProductData:
     _instance = None
@@ -33,8 +34,10 @@ class ProductData:
             if product_name in prices.keys():
                 product.set_price_npc(prices[product_name])
 
-        # Set value for Coin manually because it is not listed in the table
-        self.get_product_by_id(0).set_price_npc(300.0)
+        self.get_product_by_id(COINS).set_price_npc(300.0)
+        # Event plants
+        self.get_product_by_id(CHRISTMAS_CACTUS).set_price_npc(0)
+        self.get_product_by_id(POENY).set_price_npc(0)
 
     def get_product_by_id(self, id):
         product: Product

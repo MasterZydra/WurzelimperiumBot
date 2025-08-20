@@ -85,6 +85,9 @@ BASIL = 70 # DE: Basilikum
 ORANGE = 71 # DE: Orange
 COCOA = 72 # DE: Kakao
 
+CHRISTMAS_CACTUS = 112 # DE: Weihnachskaktus
+POENY = 156 # DE: Pfingsrose
+
 BEAN = 181 # DE: Bohne
 
 FIELD_MINT = 225 # DE: Ackerminze
