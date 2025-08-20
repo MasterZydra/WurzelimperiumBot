@@ -701,9 +701,16 @@ class WurzelBot:
     # City park
     def check_park(self) -> bool:
         """automate Park: first collect the cashpoint, then check if any item has to be renewed"""
+        if self.park is None:
+            return False
         if not self.park.collect_cash():
             return False
         return self.park.renew_all_items()
+
+    def remove_park_items(self) -> bool:
+        if self.park is None:
+            return False
+        return self.park.remove_all_items()
 
     # Herb garden
     def check_herb_garden(self) -> bool:
