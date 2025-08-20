@@ -12,7 +12,7 @@ class Bonsai:
 
     def __init__(self):
         self.__http = Http()
-        self.__init_info(self.__http.init())
+        self.update()
 
     def __init_info(self, content) -> bool:
         """initialise info from JSON content of the bonsaigarden"""
@@ -26,12 +26,18 @@ class Bonsai:
         self.__bonsaiavailable = self.__get_available_bonsai_slots(content)
         self.__slot_infos = self.__get_slot_infos(content)
         return True
+    
+    def update(self) -> bool:
+        return self.__init_info(self.__http.init())
 
     def __set_data(self, content):
         """function to update the bonsaigarden data"""
         #BG - Функция за актуализиране на данните за бонсаевата градина
         self.__data = content['data']
         self.__slot_infos = self.__get_slot_infos(content)
+
+    def __get_zen_points(self) -> int:
+        return int(self.__data['data']['count'])
 
     def get_level(self) -> int:
         return self.__data['data']['level']
@@ -42,7 +48,7 @@ class Bonsai:
         trees.extend(tree for lvl, tree in TREE_LEVELS if level >= lvl)
         return trees
 
-    def get_best_tree(self, allowed_prices: list = ['money', 'coins']) -> int:
+    def get_best_tree(self, allowed_prices: list = ['money', 'coins', 'zen_points']) -> int:
         trees = self.get_available_trees()
         best_tree = None
         for tree in trees:
@@ -58,7 +64,8 @@ class Bonsai:
 
             # Check is user has enough money, fruits or coins to pay for item
             if (unit == 'money' and User().get_bar() >= price) or \
-                (unit == 'coins' and User().get_coins() >= price):
+                (unit == 'coins' and User().get_coins() >= price) or \
+                (unit == 'zen_points' and self.__get_zen_points() >= price):
                 best_tree = tree
 
         return best_tree
@@ -163,9 +170,10 @@ class Bonsai:
 
         return True
 
-    def check(self, finish_level: int = 2, bonsai = None, allowed_prices: list = ['money', 'coins']) -> bool:
+    def check(self, finish_level: int = 2, bonsai = None, allowed_prices: list = ['money', 'zen_points']) -> bool:
         """
         Checks if bonsai is a given level: finishes bonsai to bonsaigarden, renews it with highest available bonsai and a normal pot
+        allowed_prices: list = ['money', 'coins', 'zen_points']
         """
         if bonsai is None:
             bonsai = self.get_best_tree(allowed_prices)
@@ -187,19 +195,22 @@ class Bonsai:
                     Logger().print(f'Place Bonsai in slot {key}')
 
                 if level is not None:
-                    if self.__http.finish(key) is None:
+                    data = self.__http.finish(key)
+                    if data is None:
                         return False
+                    self.__set_data(data)
 
                 if self.__slot_infos[key][3] is None or self.__slot_infos[key][3] == '0':
                     # TODO use pot/bowl from stock if possible
-                    if self.__http.buy_and_place(SIMPLE_POT, 1, key) is None:
+                    data = self.__http.buy_and_place(SIMPLE_POT, 1, key)
+                    if data is None:
                         return False
+                    self.__set_data(data)
 
-                content = self.__http.buy_and_place(bonsai, 1, key)
-                if content is None:
+                data = self.__http.buy_and_place(bonsai, 1, key)
+                if data is None:
                     return False
-
-                self.__set_data(content)
+                self.__set_data(data)
 
                 if not User().update():
                     return False
