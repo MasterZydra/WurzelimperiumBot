@@ -35,9 +35,6 @@ class ProductData:
                 product.set_price_npc(prices[product_name])
 
         self.get_product_by_id(COINS).set_price_npc(300.0)
-        # Event plants
-        self.get_product_by_id(CHRISTMAS_CACTUS).set_price_npc(0)
-        self.get_product_by_id(POENY).set_price_npc(0)
 
     def get_product_by_id(self, id):
         product: Product

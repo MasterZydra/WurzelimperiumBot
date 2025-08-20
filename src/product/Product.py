@@ -56,6 +56,8 @@ class Product:
         return self.__edge
 
     def get_price_npc(self):
+        if self.__price_NPC is None:
+            return 0
         return self.__price_NPC
 
     def get_growing_time(self):
@@ -80,15 +82,9 @@ class Product:
         self.__price_NPC = price
 
     def print_all(self):
-        # Show empty string instead of "None"
-        xstr = lambda s: s or ""
-
-        Logger.print('ID:', str(self.__id).rjust(3), ' ', \
-              'CAT:', str(self.__category).ljust(5), ' ', \
-              'Name:', str(self.__name).ljust(35), ' ', \
-              'Plantable:', str(self.__is_plantable).ljust(5), ' ', \
-              'NPC:', str(xstr(self.__price_NPC)).rjust(6), ' ', \
-              'Time:', str(str(datetime.timedelta(seconds=self.__time_until_harvest))).rjust(8), ' ', \
-              'SX:', str(xstr(self.__sx)), ' ', \
-              'SY:', str(xstr(self.__sy)))
-
+        Logger().print('ID: {} | CAT: {} | Name: {} | Plantable: {} | NPC: {} | S: {}x{} | Time: {}'.format(
+            str(self.__id).rjust(3), str(self.__category).ljust(5), str(self.__name).ljust(35),
+            str(self.__is_plantable).ljust(5), str(self.__price_NPC).rjust(7),
+            str(self.__sx), str(self.__sy),
+            str(datetime.timedelta(seconds=self.__time_until_harvest)).replace(', 0:00:00', '').rjust(8)
+        ))
