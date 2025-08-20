@@ -70,6 +70,7 @@ def main():
         elif inputLower == 'weed': remove_weeds()
         elif inputLower == 'bonus': getDailyLoginBonus()
         elif inputLower == 'wimp': wimp()
+        elif inputLower == 'deco': deco()
         elif inputLower.startswith('details'): productDetails(user_input)
         else:
             print('Unknown command type \'help\' or \'?\' to see all available commands')
@@ -113,6 +114,7 @@ def help():
     print('details      Show details to the products')
     print('             Opt. argument: "all", "water"')
     print('buy          Buy a given plant')
+    print('deco         Collect decogarden points')
     print('exit         Close connection and exit bot')
     print('games        Play the minigames')
     print('grow         Grow a given plant')
@@ -299,6 +301,10 @@ def wimp():
     """Process Wimp Customers in Gardens"""
     print(i18n.t('wimpb.process_wimps'))
     bot.sell_to_wimps()
+
+def deco():
+    print('Collecting decogardens...')
+    bot.collect_decogardens()
 
 if __name__ == "__main__":
     main()

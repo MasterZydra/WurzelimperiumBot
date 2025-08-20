@@ -14,6 +14,7 @@ from src.core.HTTPCommunication import HTTPConnection
 from src.core.Login import Login
 from src.core.User import User
 from src.garden.aqua.AquaGarden import AquaGarden
+from src.garden.deco.Decogarden import Decogarden1, Decogarden2
 from src.garden.Garden import Garden
 from src.garden.herb.HerbGarden import HerbGarden
 from src.greenhouse.Greenhouse import Greenhouse
@@ -46,6 +47,8 @@ class WurzelBot:
         self.__HTTPConn = HTTPConnection()
         self.messenger = Messenger()
         self.shop = Shop()
+        self.decogarden1 = None
+        self.decogarden2 = None
         self.gardens = []
         self.aquagarden = None
         self.herbgarden = None
@@ -93,6 +96,12 @@ class WurzelBot:
 
             if Feature().is_megafruit_available():
                 self.megafruit = Megafruit()
+
+            if Feature().is_decogarden1_available():
+                self.decogarden1 = Decogarden1()
+
+            if Feature().is_decogarden2_available():
+                self.decogarden2 = Decogarden2()
 
             return True
 
@@ -712,3 +721,10 @@ class WurzelBot:
                 return False
 
         return self.megafruit.harvest()
+
+    # Decogarden  # DE: Erholungsgarten
+    def collect_decogardens(self):
+        if self.decogarden1 is not None:
+            self.decogarden1.collect()
+        if self.decogarden2 is not None:
+            self.decogarden2.collect()

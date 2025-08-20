@@ -85,6 +85,11 @@ def main():
         Logger().print(i18n.t('wimpb.process_wimps'))
         wurzelBot.sell_to_wimps()
 
+        # Collect decogarden points
+        Logger().print('')
+        Logger().print('Collecting decogardens...')
+        wurzelBot.collect_decogardens()
+
         # Play minigames
         Logger().print('')
         Logger().print('Playing minigames...')

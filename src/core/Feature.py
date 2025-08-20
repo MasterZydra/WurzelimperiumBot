@@ -88,6 +88,12 @@ class Feature:
         else:
             return False
 
+    def is_decogarden1_available(self) -> bool:
+        if 'decogarden' in self.__city_data['data']['location']:
+            return self.__city_data['data']['location']['decogarden']['bought'] == 1
+        else:
+            return False
+
     def is_decogarden2_available(self) -> bool:
         if not User().is_premium_active():
             return False
