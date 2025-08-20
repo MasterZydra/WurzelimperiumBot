@@ -99,6 +99,10 @@ class ShopProducts:
             "Schlüsselblume": 4,
             "Klatschmohn": 4,
             "Langblättriger Ehrenpreis": 4,
+            "Besenheide": 4,
+            "Großer Wiesenknopf": 4,
+            "Vierblättrige Einbeere": 4,
+            "Kleine Braunelle": 4,
             "Seerose": 0,  #BG-Водна лилия
             "Scheincalla": 0,  #BG-Блатна Кала
             "gelbe Teichrose": 0,  #BG-Жълта водна лилия
@@ -113,4 +117,5 @@ class ShopProducts:
             "Schilfsetzling": 0,  #BG-Фиданка от Тръстика
             "Schilf": 0,  #BG-Тръстика
             "Schwanenblume": 0,
+            "Fieberklee": 0,
         }

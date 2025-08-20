@@ -8,7 +8,15 @@ from src.stock.Stock import Stock
 from src.product.ProductData import ProductData
 
 class Shop:
-    def __init__(self):
+    _instance = None
+
+    def __new__(self):
+        if self._instance is None:
+            self._instance = super(Shop, self).__new__(self)
+            self._instance.__initClass()
+        return self._instance
+    
+    def __initClass(self):
         self.__http = Http()
 
     def buy(self, product_name, amount: int) -> bool:
