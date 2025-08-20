@@ -93,7 +93,7 @@ def main():
         # Play minigames
         Logger().print('')
         Logger().print('Playing minigames...')
-        wurzelBot.minigames.play()
+        wurzelBot.minigames.play(['all'])
 
         # Cut bonsais
         if wurzelBot.bonsaifarm is not None:
