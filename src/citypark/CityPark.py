@@ -29,7 +29,18 @@ class CityPark:
             self.__set_park_data(content)
         return True
 
-    def __get_expired_deko(self, park_id=1):
+    def __get_all_deco(self, park_id=1):
+        """get all items"""
+        items = self.__data["data"]["park"][str(park_id)]["items"]
+        all_items = {}
+        for key, value in items.items():
+            if 'parent' in value: 
+                continue
+            all_items.update({key:value})
+        Logger().print("count of all park items: {}".format(len(all_items)))
+        return all_items
+
+    def __get_expired_deco(self, park_id=1):
         """get all expired items"""
         items = self.__data["data"]["park"][str(park_id)]["items"]
         renewable_items = {}
@@ -38,16 +49,26 @@ class CityPark:
                 continue
             if value["remain"] < 0:
                 renewable_items.update({key:value})
-        Logger().info("renewable items: {}".format(len(renewable_items)))            
+        Logger().info("renewable items: {}".format(len(renewable_items)))
         return renewable_items
-    
+
     def renew_all_items(self) -> bool:
         """renew all expired items"""
-        renewable_items = self.__get_expired_deko()
+        renewable_items = self.__get_expired_deco()
         for itemID in renewable_items.keys():
             content = self.__http.renew_item(itemID)
             if content is None:
                 return False
             self.__set_park_data(content)
         Logger().print("Renewed {} Items.".format(len(renewable_items)))
+        return True
+
+    def remove_all_items(self) -> bool:
+        all_items = self.__get_all_deco()
+        for itemID in all_items.keys():
+            content = self.__http.remove_item(itemID)
+            if content is None:
+                return False
+            self.__set_park_data(content)
+        Logger().print("Removed {} Items.".format(len(all_items)))
         return True

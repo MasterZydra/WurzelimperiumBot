@@ -37,3 +37,12 @@ class Http:
         except Exception:
             Logger().print_exception('Failed to renew city park item')
             return None
+
+    def remove_item(self, tile, park_id=1):
+        try:
+            response, content = self.__http.send(f'ajax/ajax.php?do=park_removeitem&parkid={park_id}&tile={tile}&token={self.__http.token()}')
+            self.__http.check_http_state_ok(response)
+            return self.__http.get_json_and_check_for_ok(content)
+        except Exception:
+            Logger().print_exception('Failed to remove city park items')
+            return None
