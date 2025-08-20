@@ -143,8 +143,9 @@ class Megafruit:
             return False
 
         # Check if care item is still in use
-        if entry.get('data', {}).get('used', {}).get(care_name.value, {}).get('remain', 0) > 0:
-            return True
+        if not entry.get('data', {}) == "":
+            if entry.get('data', {}).get('used', {}).get(care_name.value, {}).get('remain', 0) > 0:
+                return True
 
         match care_name:
             case Care.WATER:
