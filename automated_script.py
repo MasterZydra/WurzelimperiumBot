@@ -35,7 +35,7 @@ def main():
     try:
         # Check if the bot should be stopped
         # BG-Проверка дали бота трябва да бъде спрян
-        if wurzelBot.get_stop_bot_note():
+        if wurzelBot.get_stop_bot():
             Logger().print(i18n.t('wimpb.stop_wbot'))
             wurzelBot.logout()
             return

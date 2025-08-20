@@ -6,66 +6,30 @@ from src.note.Http import Http
 
 class Note:
     """This class handles reading from the user notes"""
+    _instance = None
 
-    def __init__(self):
+    def __new__(self):
+        if self._instance is None:
+            self._instance = super(Note, self).__new__(self)
+            self._instance.__initClass()
+        return self._instance
+    
+    def __initClass(self):
         self.__http = Http()
 
     # MARK: Basic functions
 
     def get_note(self) -> str:
-        return self.__http.get_note() or ''
+        return (self.__http.get_note() or '').replace('\r\n', '\n')
 
-    # MARK: Extended features
-
-    def __extract_amount(self, line, prefix) -> int:
-        min_stock_str = line.replace(prefix, '').strip()
-        try:
-            return int(min_stock_str)
-        except Exception:
-            Logger().error(f'Error: "{prefix}" must be an int')
-        return 0
-
-    def get_min_stock(self, plant_name = None) -> int:
-        note = self.get_note().replace('\r\n', '\n')
-        lines = note.split('\n')
-
-        is_plant_given = not plant_name is None
-        for line in lines:
-            if line.strip() == '':
-                continue
-
-            if not is_plant_given and line.startswith('minStock:'):
-                return self.__extract_amount(line, 'minStock:')
-
-            if is_plant_given and line.startswith(f'minStock({plant_name}):'):
-                return self.__extract_amount(line, f'minStock({plant_name}):')
-
-        # Return default 0 if not found in note
-        return 0
-
-    def get_grow_only(self) -> list[str]:
-        note = self.get_note().replace('\r\n', '\n')
-        lines = note.split('\n')
-
-        for line in lines:
-            if line.strip() == '' or not line.startswith('growOnly:'):
-                continue
-
-            line = line.replace('growOnly:', '').strip()
-            return list(map(str.strip, line.split(',')))
-
-        # Return default [] if not found in note
-        return []
-
-    def get_stop_bot(self) -> bool:
-        note = self.get_note().replace("\r\n", "\n")
-        lines = note.split("\n")
+    def get_line(self, starts_with: str) -> str:
+        lines = self.get_note().split("\n")
         for line in lines:
             if line.strip() == "":
                 continue
 
-            if line.startswith("stopWIB"):
-                return True
+            if line.startswith(starts_with):
+                return line
+        return ''
 
-        # Return default False if not found in note
-        return False
+    # MARK: Extended features

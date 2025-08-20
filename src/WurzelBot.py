@@ -149,12 +149,12 @@ class WurzelBot:
         if self.__HTTPConn.logOut():
             Logger().print(i18n.t('wimpb.logout_success'))
 
-    def get_stop_bot_note(self) -> bool:
+    def get_stop_bot(self) -> bool:
         """Check notes for stop bot entry"""
-        if self.note is None:
+        if not Feature().is_note_available():
             return False
 
-        return self.note.get_stop_bot()
+        return Note().get_line('stopWIB') != ''
 
     def water(self) -> bool:
         """Waters all of the player's gardens"""
@@ -326,8 +326,8 @@ class WurzelBot:
             product = ProductData().get_product_by_id(id)
 
             min_stock = minimal_balance
-            if self.note is not None:
-                min_stock = max(self.note.get_min_stock(), self.note.get_min_stock(product.get_name()), min_stock)
+            if Feature().is_note_available():
+                min_stock = max(self.get_min_stock(), self.get_min_stock(product.get_name()), min_stock)
 
             if stock_list.get(id, None) < amount + min_stock:
                 if not buy_from_shop:
@@ -489,8 +489,8 @@ class WurzelBot:
 
     def getLowestVegetableStockEntry(self):
         # Grow only plants
-        if self.note is not None:
-            plantOnly = self.note.get_grow_only()
+        if Feature().is_note_available():
+            plantOnly = self.get_grow_only()
             if len(plantOnly) != 0:
                 for productID in Stock().get_ordered_stock_list():
                     if ProductData().get_product_by_id(productID).get_name() in plantOnly:
@@ -604,6 +604,46 @@ class WurzelBot:
                         self.shop.buy(product.get_id(),missing)
 
                     self.__HTTPConn.sendInfinityQuest(questnr, product.get_id(), needed)
+
+    def get_grow_only(self) -> list[str]:
+        if not Feature.is_note_available():
+            return []
+
+        line = Note().get_line('growOnly:')
+        if line == '':
+            # Return default [] if not found in note
+            return []
+
+        line = line.replace('growOnly:', '').strip()
+        return list(map(str.strip, line.split(',')))
+
+    # Stock
+    def __extract_amount(self, line, prefix) -> int:
+        min_stock_str = line.replace(prefix, '').strip()
+        try:
+            return int(min_stock_str)
+        except Exception:
+            Logger().error(f'Error: "{prefix}" must be an int')
+        return 0
+
+    def get_min_stock(self, plant_name = None) -> int:
+        if not Feature().is_note_available():
+            return 0
+
+        lines = Note().get_note().split('\n')
+        is_plant_given = plant_name is not None
+        for line in lines:
+            if line.strip() == '':
+                continue
+
+            if not is_plant_given and line.startswith('minStock:'):
+                return self.__extract_amount(line, 'minStock:')
+
+            if is_plant_given and line.startswith(f'minStock({plant_name}):'):
+                return self.__extract_amount(line, f'minStock({plant_name}):')
+
+        # Return default 0 if not found in note
+        return 0
 
     # Bees
     def send_bees(self, tour: int) -> bool:
