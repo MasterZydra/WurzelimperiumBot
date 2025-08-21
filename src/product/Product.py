@@ -84,7 +84,7 @@ class Product:
     def print_all(self):
         Logger().print('ID: {} | CAT: {} | Name: {} | Plantable: {} | NPC: {} | S: {}x{} | Time: {}'.format(
             str(self.__id).rjust(3), str(self.__category).ljust(5), str(self.__name).ljust(35),
-            str(self.__is_plantable).ljust(5), str(self.__price_NPC).rjust(7),
+            str(self.__is_plantable).ljust(5), str(self.get_price_npc()).rjust(7),
             str(self.__sx), str(self.__sy),
             str(datetime.timedelta(seconds=self.__time_until_harvest)).replace(', 0:00:00', '').rjust(8)
         ))
