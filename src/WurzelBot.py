@@ -606,7 +606,7 @@ class WurzelBot:
                     self.__HTTPConn.sendInfinityQuest(questnr, product.get_id(), needed)
 
     def get_grow_only(self) -> list[str]:
-        if not Feature.is_note_available():
+        if not Feature().is_note_available():
             return []
 
         line = Note().get_line('growOnly:')
