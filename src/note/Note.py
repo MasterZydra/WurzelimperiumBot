@@ -16,11 +16,19 @@ class Note:
     
     def __initClass(self):
         self.__http = Http()
+        self.__content = None
+        self.update()
+
+    def update(self) -> bool:
+        self.__content = self.__http.get_note()
+        return self.__content is not None
 
     # MARK: Basic functions
 
     def get_note(self) -> str:
-        return (self.__http.get_note() or '').replace('\r\n', '\n')
+        if self.__content is None:
+            self.update()
+        return (self.__content or '').replace('\r\n', '\n')
 
     def get_line(self, starts_with: str) -> str:
         lines = self.get_note().split("\n")
