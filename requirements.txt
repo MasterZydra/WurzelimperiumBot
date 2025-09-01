@@ -1,4 +1,4 @@
-httplib2==0.22.0
+httplib2==0.30.0
 lxml==6.0.1
 pyparsing==3.2.3
 PyYAML==6.0.2
