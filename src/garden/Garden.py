@@ -288,9 +288,11 @@ class Garden:
         return self.__http.get_empty_fields(self._id, '')['garden']
 
     def get_booster_fields(self):
-        fields = {}
-        for field in self.get_fields():
-            if not is_booster(self.get_fields()[field][0]):
+        fields = self.get_fields()
+        booster_fields = {}
+        
+        for field in fields:
+            if not is_booster(fields[field][0]):
                 continue
-            fields[field] = self.get_fields()[field]
-        return fields
+            booster_fields[field] = fields[field]
+        return booster_fields
