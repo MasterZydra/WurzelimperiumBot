@@ -109,3 +109,11 @@ class Feature:
             return self.__city_data['data']['location']['vacation']['bought'] == 1
         else:
             return False
+        
+    def is_birds_available(self) -> bool:
+        if User().get_level() < 22:
+            return False
+        if 'birds' in self.__city_data['data']['location']:
+            return self.__city_data['data']['location']['birds']['bought'] == 1
+        else:
+            return False
