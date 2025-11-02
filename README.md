@@ -10,11 +10,14 @@ A forked from [MrFlamez/Wurzelimperium-Bot](https://github.com/MrFlamez/Wurzelim
 # Wurzelimperium-Bot
 A Bot for the browsergame Wurzelimperium from Upjers. Enjoy free premium features in the game thanks to this bot!
 
-**Inhaltsverzeichnis**
+**Table of contents**
 - [Usage](#usage)
 - [Features](#features)
 - [Installation](#installation)
 - [Installation script für Linux](#installation-script-für-linux)
+
+**Documentation**
+- [Modules](doc/Modules.md)
 
 ## Usage
 Usage of this bot is possible in various situations:
