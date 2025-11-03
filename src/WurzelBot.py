@@ -19,6 +19,7 @@ from src.garden.Garden import Garden
 from src.garden.herb.HerbGarden import HerbGarden
 from src.greenhouse.Greenhouse import Greenhouse
 from src.honey.Honey import Honey
+from src.ivyhouse.Ivyhouse import Ivyhouse
 from src.logger.Logger import Logger
 from src.marketplace.Marketplace import Marketplace
 from src.megafruit.Megafruit import Megafruit
@@ -61,6 +62,7 @@ class WurzelBot:
         self.note = None
         self.park = None
         self.greenhouse = None
+        self.ivyhouse = None
         self.megafruit = None
         self.minigames = Minigames()
 
@@ -99,6 +101,9 @@ class WurzelBot:
 
             if Feature().is_decogarden1_available():
                 self.decogarden1 = Decogarden1()
+
+            if Feature().is_ivyhouse_available():
+                self.ivyhouse = Ivyhouse()
 
             if Feature().is_decogarden2_available():
                 self.decogarden2 = Decogarden2()
@@ -777,3 +782,7 @@ class WurzelBot:
             self.decogarden1.collect()
         if self.decogarden2 is not None:
             self.decogarden2.collect()
+
+    # Ivyhouse
+    def check_ivyhouse(self, slot):
+        self.ivyhouse.check_breed(slot)
