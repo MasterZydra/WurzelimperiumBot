@@ -785,4 +785,5 @@ class WurzelBot:
 
     # Ivyhouse
     def check_ivyhouse(self, slot):
-        self.ivyhouse.check_breed(slot)
+        if self.ivyhouse is not None:
+            self.ivyhouse.check_breed(slot)
