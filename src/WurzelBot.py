@@ -508,7 +508,7 @@ class WurzelBot:
         lowestProductId = -1
         for productID in Stock().get_ordered_stock_list():
             product = ProductData().get_product_by_id(productID)
-            if not product.is_vegetable() or not product.is_plantable() or product.get_price_npc() == 0:
+            if not product.is_vegetable() or not product.is_plantable() or product.get_price_npc() == 0 or product.get_level() > User().get_level():
                 continue
 
             currentStock = Stock().get_stock_by_product_id(productID)
@@ -528,6 +528,7 @@ class WurzelBot:
             if not product.is_vegetable() or \
                 not product.is_plantable() or \
                 product.get_price_npc() == 0 or \
+                product.get_level() > User().get_level() or \
                 not product.get_name() in ProductData().get_single_field_vegetable_list():
                 continue
 
@@ -545,7 +546,7 @@ class WurzelBot:
         lowestProductId = -1
         for productID in Stock().get_ordered_stock_list():
             product = ProductData().get_product_by_id(productID)
-            if not product.is_water_plant() or not product.is_plantable():
+            if not product.is_water_plant() or not product.is_plantable() or product.get_level() > User().get_level():
                 continue
 
             currentStock = Stock().get_stock_by_product_id(productID)
