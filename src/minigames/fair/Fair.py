@@ -68,7 +68,7 @@ class Fair:
         while self.__tickets > 0:
             if self.__thimblerig_points >= REWARD_MAX:
                 Logger().print("Thimblerig already finished!")
-                return
+                return False
 
             if not self.__data["thimblerig"]["data"].get("wait", 0):
                 if not self.__pay_ticket_thimblerig():
