@@ -36,12 +36,14 @@ def main():
 
     print('Done')
 
-def extract_imports(file_path):
+def extract_imports(file_path, ignore_native_packages: bool = True):
     imports = []
     with open(file_path, 'r') as f:
         for line in f:
             line = line.strip()
             if line.startswith('import ') or line.startswith('from '):
+                if ignore_native_packages and not line.startswith('from src.'):
+                    continue
                 imports.append(line)
 
     module_name = os.path.relpath(file_path, root_dir)
