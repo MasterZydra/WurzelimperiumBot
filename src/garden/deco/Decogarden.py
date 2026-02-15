@@ -43,5 +43,5 @@ class Decogarden2():
     def collect(self):
         self.__http.init_decogarden_2()
         content = self.__http.collect_decogarden_2()
-        collected = content.get('data', 'None').get('reward', 'None')
+        collected = content.get('data', {}).get('reward', 'None')
         Logger().print(collected)
