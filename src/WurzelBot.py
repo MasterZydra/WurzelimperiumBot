@@ -18,6 +18,7 @@ from src.core.User import User
 from src.garden.aqua.AquaGarden import AquaGarden
 from src.garden.deco.Decogarden import Decogarden1, Decogarden2
 from src.garden.Garden import Garden
+from src.garden.Garden import Http as Garden_Http
 from src.garden.herb.HerbGarden import HerbGarden
 from src.greenhouse.Greenhouse import Greenhouse
 from src.honey.Honey import Honey
