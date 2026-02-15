@@ -173,7 +173,7 @@ class Bonsai:
 
         return True
 
-    def check(self, finish_level: int|None = None, bonsai: int|None = None, allowed_prices: list = ['money', 'zen_points']) -> bool:
+    def check(self, finish_level: int|None = 2, bonsai: int|None = None, allowed_prices: list = ['money', 'zen_points']) -> bool:
         """
         Checks if bonsai is a given level: finishes bonsai to bonsaigarden, renews it with highest available bonsai and a normal pot
         allowed_prices: list = ['money', 'coins', 'zen_points']
@@ -184,13 +184,13 @@ class Bonsai:
                 Logger().print('No bonsai available or affordable')
                 return False
 
-        if finish_level is None:
-            # If finish_level is specified, use maximum level of bonsai
-            bonsai_max_level = get_tree_max_level(bonsai)
-            if bonsai_max_level is None:
-                Logger().print(f'No max. level found for specified bonsai {bonsai}')
-                return False
-            finish_level = bonsai_max_level
+#        if finish_level is None:
+#            # If finish_level is specified, use maximum level of bonsai
+#            bonsai_max_level = get_tree_max_level(bonsai)
+#            if bonsai_max_level is None:
+#                Logger().print(f'No max. level found for specified bonsai {bonsai}')
+#                return False
+#            finish_level = bonsai_max_level
 
         # Add unused slot to slot_infos so that it can be used to place a bonsai
         for slot in self.__bonsaiavailable:
