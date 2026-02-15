@@ -16,6 +16,7 @@ class Http(object):
             return self.__http.get_json_and_check_for_ok(content)
         except Exception:
             Logger().print_exception('Failed to init deco garden 1')
+            return None
 
     def collect_decogarden_1_item(self, pos: str):
         try:
@@ -24,6 +25,7 @@ class Http(object):
             return json.loads(content)
         except Exception:
             Logger().print_exception(f'Failed to collect deco garden 1 item at pos {pos}')
+            return None
 
     def collect_decogarden_1_premium(self):
         try:
@@ -32,6 +34,7 @@ class Http(object):
             return json.loads(content)
         except Exception:
             Logger().print_exception('Failed to collect deco garden 1 with premium collector')
+            return None
 
     def init_decogarden_2(self):
         try:
@@ -40,6 +43,7 @@ class Http(object):
             return self.__http.get_json_and_check_for_ok(content)
         except Exception:
             Logger().print_exception('Failed to init deco garden 2')
+            return None
 
     def collect_decogarden_2(self):
         try:
@@ -48,3 +52,4 @@ class Http(object):
             return self.__http.get_json_and_check_for_ok(content)
         except Exception:
             Logger().print_exception('Failed to collect deco garden 2')
+            return None
