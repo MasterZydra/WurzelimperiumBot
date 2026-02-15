@@ -39,9 +39,19 @@ class Decogarden2():
 
     def __init__(self):
         self.__http = Http()
+        self.__data = self.__http.init_decogarden_2()
 
     def collect(self):
-        self.__http.init_decogarden_2()
-        content = self.__http.collect_decogarden_2()
-        collected = content.get('data', {}).get('reward', 'None')
-        Logger().print(collected)
+        if self.__check_for_points_deco():
+            content = self.__http.collect_decogarden_2()
+            collected = content.get('data', {}).get('reward', 'None')
+            Logger().print(collected)
+
+    def __check_for_points_deco(self):
+        placed_deco = self.__data.get("data", {}).get("data", {}).get("data_grid", {})
+        if placed_deco == []: return False # no decoration placed
+        for field, attributes in placed_deco.items():
+            if attributes.get("nextclick", 0):
+                return True
+        return False
+
