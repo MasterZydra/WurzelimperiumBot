@@ -73,3 +73,26 @@ def get_tree_price(tree: int) -> list|None:
     if tree == CHERRY_TREE:
         return [100, 'coins']
     return None
+
+def get_tree_max_level(tree: int) -> int|None:
+    if tree == MAIDENHAIR_PINE:
+        return 3
+    if tree == MANGROVE:
+        return 4
+    if tree == MONEY_TREE:
+        return 6
+    if tree == SPRUCE_FOREST:
+        return 5
+    if tree == CYPRESS:
+        return 5
+    if tree == JUNIPER:
+        return 8
+    if tree == OAK:
+        return 8
+    if tree == MAPLE:
+        return 9
+    if tree == ASH:
+        return 9
+    if tree == CHERRY_TREE:
+        return 10
+    return None

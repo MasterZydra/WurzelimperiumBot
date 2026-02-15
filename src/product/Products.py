@@ -88,6 +88,10 @@ COCOA = 72 # DE: Kakao
 CHRISTMAS_CACTUS = 112 # DE: Weihnachskaktus
 POENY = 156 # DE: Pfingsrose
 
+OLD_ROOT = 177 # DE: alte Wurzel
+DUCKWEED = 178 # DE: Wasserlinse
+GREAT_DIVING_BEATLE = 179 # DE: Gelbrandkäfer
+
 BEAN = 181 # DE: Bohne
 
 FIELD_MINT = 225 # DE: Ackerminze

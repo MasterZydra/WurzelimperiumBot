@@ -12,7 +12,7 @@ class Hive:
         self.__pid_change_remain = attributes.get('pid_change_remain')
         self.__tour_start = attributes.get('tour_start')
         self.__tour_duration = attributes.get('tour_duration')
-        self.__tour_remain = attributes.get('tour_remain')
+        self.__tour_remain = attributes.get('tour_remain', 0)
 
     def get_nr(self):
         return self.__nr

@@ -45,10 +45,8 @@ class Fair:
         self.__tickets = self.__data['data']['tickets']
         self.__ticketcost = self.__data['config']['ticketcost']
         self.__thimblerig_round = self.__data['thimblerig']['data']['round']
-        self.__thimblerig_points = self.__data['thimblerig']['data']['points']
         self.__thimblerig_maxrounds = self.__data['thimblerig']['config']['maxrounds']
         self.__wetgnome_round = self.__data['wetgnome']['data']['round']
-        self.__wetgnome_points = self.__data['wetgnome']['data']['points']
         self.__wetgnome_maxrounds = self.__data['wetgnome']['config']['maxrounds']
         return True
 
@@ -66,7 +64,7 @@ class Fair:
     def play_thimblerig(self) -> bool:
         Logger().print(f"Thimblerig: {self.__thimblerig.get_points()}/300 balloons.")
         while self.__tickets > 0:
-            if self.__thimblerig_points >= REWARD_MAX:
+            if self.__thimblerig.get_points() >= REWARD_MAX:
                 Logger().print("Thimblerig already finished!")
                 return True
 
@@ -101,7 +99,7 @@ class Fair:
     def play_wetgnome(self) -> bool:
         Logger().print(f"Wetgnome: {self.__wetgnome.get_points()}/300 airsnakes.")
         while self.__tickets > 0:
-            if self.__wetgnome_points >= REWARD_MAX:
+            if self.__wetgnome.get_points() >= REWARD_MAX:
                 Logger().print("Wetgnome already finished!")
                 return True
 
