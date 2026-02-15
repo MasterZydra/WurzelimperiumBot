@@ -130,9 +130,13 @@ class Http:
             content = content.decode('UTF-8')
             self.__http.update_token_from_content(content)
             self.__http.check_http_state_ok(response)
-            re_gnome = re.search(r'wimparea.init.*\"helper\":.*(water).*\"garbage', content)
-            return re_gnome is not None and re_gnome.group(1) == "water"
+            re_gnome = re.search(r'wimparea\.init.*\"helper\":.*(\"water\"):', content)
+            pattern = re.compile(r"water")
+            if re_gnome:
+                result = pattern.search(re_gnome.group(1))
+                if result:
+                    return True
+            return False
         except Exception:
-            Logger().print_exception('Failed to check is user has watering gnome')
+            Logger().print_exception('Failed to check if user has watering gnome')
             return None
-
