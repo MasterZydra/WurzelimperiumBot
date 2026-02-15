@@ -55,6 +55,7 @@ def main():
 
         if inputLower == 'exit': logout()
         elif inputLower.startswith('bee'): bee(user_input)
+        elif inputLower == 'birds': birds()
         elif inputLower.startswith('bonsai'): bonsai(user_input)
         elif inputLower == 'harvest': harvest()
         elif inputLower == '?' or inputLower == 'help': help()
@@ -108,6 +109,7 @@ def help():
     print('-------------------')
     print('bee          Send bees')
     print('             Opt. argument: "2h" (default), "8h", "24h"')
+    print('birds        Take car of birds')
     print('bonsai       Cut all branches and renew bonsais')
     print('             Opt. argument: 2 (default level) - 10')
     print('bonus        Get the daily login bonus')
@@ -157,6 +159,10 @@ def bee(arg_str : str):
 
     print(f'Sending bees for {args[0]}...')
     bot.send_bees(tour)
+
+def birds():
+    print('Sending birds...')
+    bot.check_birds()
 
 def bonsai(arg_str : str):
     arg_str = arg_str.replace('bonsai', '', 1).strip()

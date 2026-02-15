@@ -106,6 +106,12 @@ def main():
             Logger().print('')
             Logger().print('Taking care of megafruit...')
             wurzelBot.check_megafruit()
+
+        # Birds
+        if wurzelBot.birds is not None:
+            Logger().print('')
+            Logger().print('Taking care of the birds...')
+            wurzelBot.check_birds()
     finally:
         # Close connection
         # BG-Затваряне на връзката
