@@ -6,6 +6,7 @@ Created on 21.03.2017
 @author: MrFlamez
 '''
 
+from src.biogas.Biogas import Biogas
 from src.birds.Birds import Birds
 from src.bonsai.Bonsai import Bonsai
 from src.bonus.Bonus import Bonus
@@ -63,6 +64,7 @@ class WurzelBot:
         self.note = None
         self.park = None
         self.greenhouse = None
+        self.biogas = None
         self.ivyhouse = None
         self.megafruit = None
         self.minigames = Minigames()
@@ -103,6 +105,9 @@ class WurzelBot:
 
             if Feature().is_decogarden1_available():
                 self.decogarden1 = Decogarden1()
+
+            if Feature().is_biogas_available():
+                self.biogas = Biogas()
 
             if Feature().is_ivyhouse_available():
                 self.ivyhouse = Ivyhouse()
@@ -386,6 +391,22 @@ class WurzelBot:
         """Harvest all gardens"""
         garden: Garden
         for garden in self.gardens:
+            # check rubbish for biogas
+            if self.biogas:
+                j_content = Garden_Http().change_garden(garden.getID())
+                grown_plants = Garden_Http()._get_grown_plants(j_content)
+                rubbish_to_collect = self.biogas.calculate_rubbish(grown_plants)
+                Logger().print(f'➡ src/WurzelBot.py:420 rubbish_to_collect: {rubbish_to_collect}')
+
+                if not self.biogas.check_rubbish_capacity(rubbish_to_collect):
+                    counter = 0
+                    print('➡ src/WurzelBot.py:425 counter:', counter)
+                    while not self.biogas.check_rubbish_capacity(rubbish_to_collect) and counter < 20:
+                        self.biogas.sell_to_wimp(slot=1)
+                        counter += 1
+                        Logger().print(f'➡ src/WurzelBot.py:423 counter: {counter}')
+
+            # if capacity is available: harvest garden
             if not garden.harvest():
                 return False
 
