@@ -117,7 +117,9 @@ class Birds:
                 content = self.__http.finish_job(slot)
                 self.__set_data(content)
 
-    def feed_and_renew_birds(self, buy_from_shop: bool = True, bird_nr = 5) -> None:
+    def feed_and_renew_birds(self, buy_from_shop: bool = True, bird_nr: int = 1) -> None:
+        # Default for bird_nr is one, otherwise you can buy a bird that should not be available
+        # TODO bird_nr default value None => check for last available bird. Add param allowed_prices: list = ['money', 'coins']
         for house, data in self.__houses.items():
             if house in self.__get_occupied_houses():
                 continue
