@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import random
+from datetime import date
 from src.minigames.pumpkinDigging.Http import Http
 
 class EasterDigging:
