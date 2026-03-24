@@ -5,17 +5,18 @@ from src.core.HTTPCommunication import HTTPConnection
 from src.logger.Logger import Logger
 from src.minigames.adventCalendar.AdventCalendar import AdventCalendar
 from src.minigames.birthdayCalendar.BirthdayCalendar import BirthdayCalendar
-from src.minigames.summerCalendar.SummerCalendar import SummerCalendar
-from src.minigames.summerMemory.SummerMemory import SummerMemory
+from src.minigames.easterDigging.EasterDigging import EasterDigging
 from src.minigames.fair.Fair import Fair
 from src.minigames.pumpkinDigging.PumpkinDigging import PumpkinDigging
+from src.minigames.summerCalendar.SummerCalendar import SummerCalendar
+from src.minigames.summerMemory.SummerMemory import SummerMemory
 
 
 class Minigames:
-    def play(self, allowed_events: list = ['all', 'advent_calendar', 'birthday_calendar', 'summer_calendar', 'summer_memory', 'fair', 'pumpkin_digging']) -> bool:
+    def play(self, allowed_events: list = ['all', 'advent_calendar', 'birthday_calendar', 'summer_calendar', 'summer_memory', 'fair', 'pumpkin_digging', 'easter_digging']) -> bool:
         """
         Args:
-            allowed_events (list): all, advent_calendar, birthday_calendar, summer_calendar, summer_memory, fair, pumpkin_digging.
+            allowed_events (list): all, advent_calendar, birthday_calendar, summer_calendar, summer_memory, fair, pumpkin_digging, easter_digging.
         """
         # Get page content only once to reduce the amount of page loads
         content = self.__get_content()
@@ -62,6 +63,12 @@ class Minigames:
             if self.__pumpkinDigging.is_available(content):
                 Logger().print('Playing pumkin digging game...')
                 self.__pumpkinDigging.play()
+
+        if 'all' in allowed_events or 'easter_digging' in allowed_events: 
+            self.__easterDigging = EasterDigging()
+            if self.__easterDigging.is_available(content):
+                Logger().print('Playing easter digging game...')
+                self.__easterDigging.play()
 
         return True
 
