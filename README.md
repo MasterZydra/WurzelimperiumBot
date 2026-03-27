@@ -17,6 +17,7 @@ A Bot for the browsergame Wurzelimperium from Upjers. Enjoy free premium feature
 - [Installation script für Linux](#installation-script-für-linux)
 
 **Documentation**
+- [Features](doc/Features.md)
 - [Modules](doc/Modules.md)
 
 ## Usage
@@ -96,16 +97,10 @@ options:
 There is also a standalone executable file for windows. [Win32-CLI-Standalone](https://github.com/MasterZydra/WurzelimperiumBot/releases/)
 
 ## Features
-- Headless login without need of a browser.
-- Completely automated watering of gardens.
-- Automated planting and harvesting.  
-  You can set the focus to grow only given plants in the account notes:  
-  e.g. `growOnly: Sonnenblume, Apfel` or `growOnly: Kaffee`
-- Automated processing of Wimps in gardens.  
-  You can set the minimum stock in the account notes:  
-  e.g. `minStock: 100` or `minStock(Apple): 200`
-- You can disable the Bot by adding `stopWIB` in your notes
-- Automatically claiming of daily login bonus.
+- Headless login
+- Automatic daily login bonus
+- Automatic planting and harvesting
+- [and much more...](doc/Features.md)
 
 ## Installation
 **Using venv**  <small>[askUbuntu](https://askubuntu.com/questions/1465218/pip-error-on-ubuntu-externally-managed-environment-%C3%97-this-environment-is-extern)</small>  
