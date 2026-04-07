@@ -81,3 +81,15 @@ class Http:
         except Exception:
             Logger().print_exception(f'Birds: Failed to buy bird {bird_nr} for house {house}')
             return None
+        
+    def start_contest(self, house_nr, products):
+        address = f'ajax/ajax.php?do=birds_contest_send&data={{"house":{house_nr},"slots":{products}}}&token={self.__http.token()}'
+        address = address.replace("'", '"')
+        print('➡ src/birds/Http.py:90 address:', address)
+        try:
+            response, content = self.__http.send(address)
+            self.__http.check_http_state_ok(response)
+            return self.__http.get_json_and_check_for_ok(content)
+        except Exception:
+            Logger().print_exception(f'Failed to start contest for house {house_nr}')
+            return None
