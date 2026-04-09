@@ -821,5 +821,6 @@ class WurzelBot:
         if self.birds is not None:
            self.birds.finish_jobs()
            self.birds.feed_and_renew_birds()
-           self.birds.check_contest()
+            # TODO check why contest runs into error
+            # self.birds.check_contest()
            self.birds.start_birds()
