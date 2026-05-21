@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v6
-    - uses: fregante/daily-version-action@v2
+    - uses: fregante/daily-version-action@v3
       name: Create tag if necessary
       id: daily-version
     outputs: # Shares the action’s outputs to the Next jobs
