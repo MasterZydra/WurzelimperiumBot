@@ -12,7 +12,7 @@ class SummerCalendar:
         if not self.__check_time_span():
             return False
 
-        if 'id="calendar" class="summer short"' not in page_content:
+        if 'id="calendar" class="summer long"' not in page_content:
             return False
 
         # Check if current day is already opened
