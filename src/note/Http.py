@@ -4,6 +4,7 @@
 from src.core.HTTPCommunication import HTTPConnection
 from src.logger.Logger import Logger
 from lxml import etree
+from urllib.parse import urlencode
 
 class Http:
     def __init__(self):
@@ -12,7 +13,7 @@ class Http:
     def get_note(self) -> (str | None):
         """Get the users note"""
         try:
-            response, content = self.__http.send('notiz.php', 'POST')
+            response, content = self.__http.send('notiz.php')
             self.__http.check_http_state_ok(response)
             content = content.decode('UTF-8')
             my_parser = etree.HTMLParser(recover=True)
@@ -28,3 +29,15 @@ class Http:
         except Exception:
             Logger().print_exception('Failed to get note')
             return None
+
+    def write_note(self, text: str) -> bool:
+        try:
+            parameter = urlencode({'text': text})
+            header = {'Content-Type': 'application/x-www-form-urlencoded'}
+            response, content = self.__http.send('notiz.php', 'POST', parameter, header)
+
+            self.__http.check_http_state_ok(response)
+            return True
+        except Exception:
+            Logger().print_exception('Failed to write note')
+            return False

@@ -40,4 +40,8 @@ class Note:
                 return line
         return ''
 
+    def write(self, text: str) -> bool:
+        self.__content = None
+        return self.__http.write_note(text)
+
     # MARK: Extended features
