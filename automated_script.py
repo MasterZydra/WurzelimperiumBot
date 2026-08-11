@@ -112,6 +112,12 @@ def main():
             Logger().print('')
             Logger().print('Taking care of the birds...')
             wurzelBot.check_birds()
+
+        # Museum
+        if wurzelBot.museum is not None:
+            Logger().print('')
+            Logger().print('Taking care of the museum...')
+            wurzelBot.check_museum()
     finally:
         # Close connection
         # BG-Затваряне на връзката

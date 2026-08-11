@@ -63,7 +63,7 @@ class Feature:
             return self.__city_data['data']['location']['megafruit']['bought'] == 1
         else:
             return False
-    
+
     def is_biogas_available(self) -> bool:
         if User().get_level() < 25:
             return False
@@ -71,7 +71,7 @@ class Feature:
             return self.__city_data['data']['location']['biogas']['bought'] == 1
         else:
             return False
-    
+
     def is_snailracing_available(self) -> bool:
         if User().get_level() < 24:
             return False
@@ -79,7 +79,7 @@ class Feature:
             return self.__city_data['data']['location']['snailracing']['bought'] == 1
         else:
             return False
-    
+
     def is_ivyhouse_available(self) -> bool:
         if User().get_level() < 23:
             return False
@@ -105,7 +105,7 @@ class Feature:
             return self.__city_data['data']['location']['decogarden2']['bought'] == 1
         else:
             return False
-        
+
     def is_vacation_available(self) -> bool:
         if User().get_level() < 23:
             return False
@@ -113,11 +113,19 @@ class Feature:
             return self.__city_data['data']['location']['vacation']['bought'] == 1
         else:
             return False
-        
+
     def is_birds_available(self) -> bool:
         if User().get_level() < 22:
             return False
         if 'birds' in self.__city_data['data']['location']:
             return self.__city_data['data']['location']['birds']['bought'] == 1
+        else:
+            return False
+
+    def is_museum_available(self) -> bool:
+        if User().get_level() < 10:
+            return False
+        if 'museum' in self.__city_data['data']['location']:
+            return self.__city_data['data']['location']['museum']['bought'] == 1
         else:
             return False

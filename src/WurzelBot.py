@@ -29,6 +29,7 @@ from src.megafruit.Megafruit import Megafruit
 from src.megafruit.MegafruitData import Mushroom, Care_OID
 from src.message.Messenger import Messenger
 from src.minigames.Minigames import Minigames
+from src.museum.Museum import Museum
 from src.note.Note import Note
 from src.product.ProductData import ProductData
 from src.quest.Quest import Quest
@@ -70,7 +71,7 @@ class WurzelBot:
         self.megafruit = None
         self.minigames = Minigames()
         self.birds = None
-
+        self.museum = None
 
     def __init_gardens(self) -> bool:
         """Ermittelt die Anzahl der Gärten und initialisiert alle."""
@@ -115,6 +116,9 @@ class WurzelBot:
 
             if Feature().is_birds_available():
                 self.birds = Birds()
+
+            if Feature().is_museum_available():
+                self.museum = Museum()
 
             if Feature().is_decogarden2_available():
                 self.decogarden2 = Decogarden2()
@@ -824,3 +828,8 @@ class WurzelBot:
             # TODO check why contest runs into error
             # self.birds.check_contest()
            self.birds.start_birds()
+
+    #Museum
+    def check_museum(self, booster_active = False):
+        if self.museum is not None:
+            self.museum.collect_points()

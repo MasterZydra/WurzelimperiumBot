@@ -72,6 +72,7 @@ def main():
         elif inputLower == 'bonus': getDailyLoginBonus()
         elif inputLower == 'wimp': wimp()
         elif inputLower == 'deco': deco()
+        elif inputLower == 'museum': museum()
         elif inputLower.startswith('details'): productDetails(user_input)
         else:
             print('Unknown command type \'help\' or \'?\' to see all available commands')
@@ -126,6 +127,7 @@ def help():
     print('lowest       Show the plant with the lowest stock (unequal zero)')
     print('             Opt. argument: "single", "water"')
     print('megafruit    Take care of megafruits')
+    print('museum       Collect the points in the museum')
     print('stock        Show all plants in stock')
     print('             Opt. argument: "sort", "water"')
     print('user         Show details to the current user')
@@ -311,6 +313,10 @@ def wimp():
 def deco():
     print('Collecting decogardens...')
     bot.collect_decogardens()
+
+def museum():
+    print('Checking museum...')
+    bot.check_museum()
 
 if __name__ == "__main__":
     main()

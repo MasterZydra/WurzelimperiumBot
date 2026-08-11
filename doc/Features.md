@@ -46,6 +46,9 @@ For an overview of **ongoing and planned features**, see the tracking issue:
 - **Biogas plant**  
   Automates biogas production and resource collection.
 
+- **Museum**  
+  Collects available points automatically.
+
 ## 🎮 Mini Games / Event
 
 ### 📅 Calendars
