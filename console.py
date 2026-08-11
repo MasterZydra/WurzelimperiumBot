@@ -73,6 +73,7 @@ def main():
         elif inputLower == 'wimp': wimp()
         elif inputLower == 'deco': deco()
         elif inputLower == 'museum': museum()
+        elif inputLower == 'trophies': trophies()
         elif inputLower.startswith('details'): productDetails(user_input)
         else:
             print('Unknown command type \'help\' or \'?\' to see all available commands')
@@ -130,6 +131,7 @@ def help():
     print('museum       Collect the points in the museum')
     print('stock        Show all plants in stock')
     print('             Opt. argument: "sort", "water"')
+    print('trophies     Collect the points for trophies')
     print('user         Show details to the current user')
     print('water        Water all plants')
     print('weed         Remove all weed')
@@ -267,6 +269,10 @@ def stock(arg_str : str):
         bot.printStock(CATEGORY_WATER_PLANTS)
     elif args[0] == 'sort':
         print(bot.get_ordered_stock_list())
+
+def trophies():
+    print('Collecting the points for trophies...')
+    bot.gardenhouse.collect_trophy_points()
 
 def user_info():
     colWidth = 20

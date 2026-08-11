@@ -26,6 +26,9 @@ For an overview of **ongoing and planned features**, see the tracking issue:
   **Config:** Set minimum stock levels in account notes:  
   `minStock: 100` or `minStock(Apple): 200`
 
+- **Trophies**  
+  Collects available points automatically.
+
 - **Bot disable switch**  
   Add `stopWIB` in account notes to disable the bot.
 

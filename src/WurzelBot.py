@@ -20,6 +20,7 @@ from src.garden.deco.Decogarden import Decogarden1, Decogarden2
 from src.garden.Garden import Garden
 from src.garden.Garden import Http as Garden_Http
 from src.garden.herb.HerbGarden import HerbGarden
+from src.gardenhouse.GardenHouse import GardenHouse
 from src.greenhouse.Greenhouse import Greenhouse
 from src.honey.Honey import Honey
 from src.ivyhouse.Ivyhouse import Ivyhouse
@@ -57,6 +58,7 @@ class WurzelBot:
         self.gardens = []
         self.aquagarden = None
         self.herbgarden = None
+        self.gardenhouse = GardenHouse()
         self.honey = None
         self.bonsaifarm = None
         self.marketplace = Marketplace()
