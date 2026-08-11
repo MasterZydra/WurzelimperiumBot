@@ -31,14 +31,15 @@ def main():
                 mermaid_diagram += f"    {file.replace('.', '_')}[{file}] --> {module.replace('.', '_')}[{module}]\n"
     mermaid_diagram += "```"
     # Write "/doc/Modules.md"
-    with open(os.path.join(root_dir, 'doc', 'Modules.md'), 'w') as md_file:
+    with open(os.path.join(root_dir, 'doc', 'Modules.md'), 'w', encoding='utf-8') as md_file:
         md_file.write(mermaid_diagram)
 
     print('Done')
 
 def extract_imports(file_path, ignore_native_packages: bool = True):
     imports = []
-    with open(file_path, 'r') as f:
+    # Read files as UTF-8 and replace invalid bytes to avoid platform default decode issues.
+    with open(file_path, 'r', encoding='utf-8', errors='replace') as f:
         for line in f:
             line = line.strip()
             if line.startswith('import ') or line.startswith('from '):
