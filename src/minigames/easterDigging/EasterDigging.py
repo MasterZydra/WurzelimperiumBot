@@ -3,7 +3,7 @@
 
 import random
 from datetime import date
-from src.minigames.pumpkinDigging.Http import Http
+from src.minigames.digging.Http import Http
 
 class EasterDigging:
     def __init__(self):

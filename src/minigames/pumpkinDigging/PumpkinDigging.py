@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import random
-from src.minigames.pumpkinDigging.Http import Http
+from src.minigames.digging.Http import Http
 
 class PumpkinDigging:
     def __init__(self):

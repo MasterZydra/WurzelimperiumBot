@@ -14,7 +14,7 @@ class Http:
             self.__http.check_http_state_ok(response)
             return self.__http.get_json_and_check_for_ok(content)
         except Exception:
-            Logger().print_exception('Failed to init pumpkin digging')
+            Logger().print_exception('Failed to init digging game')
             return None
 
     def hit(self, zone: int):
@@ -23,7 +23,7 @@ class Http:
             self.__http.check_http_state_ok(response)
             return self.__http.get_json_and_check_for_ok(content)
         except Exception:
-            Logger().print_exception('Failed to hit zone in pumpkin digging')
+            Logger().print_exception('Failed to hit zone in digging game')
             return None
 
     def finish_game(self):
@@ -32,5 +32,5 @@ class Http:
             self.__http.check_http_state_ok(response)
             return self.__http.get_json_and_check_for_ok(content)
         except Exception:
-            Logger().print_exception('Failed to finish pumpkin digging')
+            Logger().print_exception('Failed to finish digging game')
             return None
