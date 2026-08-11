@@ -30,12 +30,13 @@ class Http:
             return None
 
     def click_trophy(self, trophy_id: str):
-        parameter = urlencode({
-            'item': trophy_id,
-            'token': self.__http.token(),
-        })
         try:
-            response, content = self.__http.send('ajax/presentclick.php', 'POST', parameter)
+            parameter = urlencode({
+                'item': trophy_id,
+                'token': self.__http.token(),
+            })
+            header = {'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'}
+            response, content = self.__http.send('ajax/presentclick.php', 'POST', parameter, header)
             self.__http.check_http_state_ok(response)
             return self.__http.get_json_and_check_for_ok(content)
         except:
