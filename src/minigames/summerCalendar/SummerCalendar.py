@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from src.minigames.summerCalendar.Http import Http
+from src.minigames.calendar.Http import Http
 from datetime import date
 
 class SummerCalendar:

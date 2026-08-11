@@ -14,7 +14,7 @@ class Http:
             self.__http.check_http_state_ok(response)
             return self.__http.get_json_and_check_for_ok(content)
         except Exception:
-            Logger().print_exception('Failed to init advent calender')
+            Logger().print_exception('Failed to init calendar')
             return None
 
     def open(self, field: int):
@@ -23,5 +23,5 @@ class Http:
             self.__http.check_http_state_ok(response)
             return self.__http.get_json_and_check_for_ok(content)
         except Exception:
-            Logger().print_exception('Failed to open advent calender')
+            Logger().print_exception('Failed to open calendar')
             return None
