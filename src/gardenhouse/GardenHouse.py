@@ -3,6 +3,8 @@
 
 from src.gardenhouse.Http import Http
 from src.logger.Logger import Logger
+import time
+import random
 import re
 
 class GardenHouse:
@@ -25,14 +27,24 @@ class GardenHouse:
         collected_points = 0
 
         for gift_id, gift_data in gifts.items():
-            if isinstance(gift_data, dict) and gift_data.get("click") is True:
-                data = self.__http.click_trophy(str(gift_id))
-                if isinstance(data, dict):
-                    msg = data.get("msg", "")
-                    if isinstance(msg, str):
-                        match = re.search(r"(\d+)", msg)
-                        if match:
-                            collected_points += int(match.group(1))
+            if not isinstance(gift_data, dict) or gift_data.get("click") is not True:
+                continue
+
+            time.sleep(random.choice([0, 3]))
+
+            data = self.__http.click_trophy(str(gift_id))
+            if not isinstance(data, dict):
+                continue
+
+            msg = data.get("msg", "")
+            if not isinstance(msg, str):
+                continue
+
+            match = re.search(r"(\d+)", msg)
+            if not match:
+                continue
+
+            collected_points += int(match.group(1))
 
         Logger().print(f"Collected {collected_points} points.")
 
