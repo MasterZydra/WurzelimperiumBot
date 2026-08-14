@@ -69,7 +69,7 @@ class GardenHouse:
         noteText = Note().get_note()
 
         if Note().get_line('trophies.last_collection: ') == '':
-            noteText = f"\r\ntrophies.last_collection: {datetime.now().strftime('%Y-%m-%d %H:%M')}"
+            noteText = noteText + f"\r\ntrophies.last_collection: {datetime.now().strftime('%Y-%m-%d %H:%M')}"
         else:
             noteText = re.sub(
                 r"trophies\.last_collection: .*\n",
