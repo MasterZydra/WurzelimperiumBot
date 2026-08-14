@@ -36,6 +36,7 @@ from src.product.ProductData import ProductData
 from src.quest.Quest import Quest
 from src.shop.Shop import Shop
 from src.stock.Stock import Stock
+from src.snailracing.Snailracing import Snailracing
 from src.wimp.Wimp import Wimp
 from collections import Counter
 import i18n, datetime
@@ -69,6 +70,7 @@ class WurzelBot:
         self.park = None
         self.greenhouse = None
         self.biogas = None
+        self.snailracing = None
         self.ivyhouse = None
         self.megafruit = None
         self.minigames = Minigames()
@@ -112,6 +114,9 @@ class WurzelBot:
 
             if Feature().is_biogas_available():
                 self.biogas = Biogas()
+
+            if Feature().is_snailracing_available():
+                self.snailracing = Snailracing()
 
             if Feature().is_ivyhouse_available():
                 self.ivyhouse = Ivyhouse()
@@ -816,6 +821,17 @@ class WurzelBot:
             self.decogarden1.collect()
         if self.decogarden2 is not None:
             self.decogarden2.collect()
+
+    # Snailracing
+    def check_snailracing(self):
+        if self.snailracing is None:
+            return
+
+        self.snailracing.collect_bar_production()
+        self.snailracing.start_bar_production()
+        self.snailracing.check_race_finish()
+        self.snailracing.check_race_start()
+        self.snailracing.check_race_feeding()
 
     # Ivyhouse
     def check_ivyhouse(self, slot):
