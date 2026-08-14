@@ -85,7 +85,6 @@ class Http:
     def start_contest(self, house_nr, products):
         address = f'ajax/ajax.php?do=birds_contest_send&data={{"house":{house_nr},"slots":{products}}}&token={self.__http.token()}'
         address = address.replace("'", '"')
-        print('➡ src/birds/Http.py:90 address:', address)
         try:
             response, content = self.__http.send(address)
             self.__http.check_http_state_ok(response)
