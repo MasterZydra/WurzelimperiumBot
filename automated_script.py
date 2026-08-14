@@ -118,6 +118,13 @@ def main():
             Logger().print('')
             Logger().print('Taking care of the museum...')
             wurzelBot.check_museum()
+
+        # Trophies
+        if wurzelBot.note is not None:
+            Logger().print('')
+            Logger().print('Collecting trophy points...')
+            wurzelBot.gardenhouse.collect_trophy_points()
+
     finally:
         # Close connection
         # BG-Затваряне на връзката
