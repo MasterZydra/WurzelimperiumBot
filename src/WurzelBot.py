@@ -37,6 +37,7 @@ from src.quest.Quest import Quest
 from src.shop.Shop import Shop
 from src.stock.Stock import Stock
 from src.snailracing.Snailracing import Snailracing
+from src.vacation.Vacation import Vacation
 from src.wimp.Wimp import Wimp
 from collections import Counter
 import i18n, datetime
@@ -74,6 +75,7 @@ class WurzelBot:
         self.ivyhouse = None
         self.megafruit = None
         self.minigames = Minigames()
+        self.vacation = None
         self.birds = None
         self.museum = None
 
@@ -120,6 +122,9 @@ class WurzelBot:
 
             if Feature().is_ivyhouse_available():
                 self.ivyhouse = Ivyhouse()
+
+            if Feature().is_vacation_available():
+                self.vacation = Vacation()
 
             if Feature().is_birds_available():
                 self.birds = Birds()
@@ -838,14 +843,23 @@ class WurzelBot:
         if self.ivyhouse is not None:
             self.ivyhouse.check_breed(slot)
 
+    # Vacation
+    def check_vacation(self):
+        if self.vacation is None:
+            return
+
+        self.vacation.harvest_locations()
+        self.vacation.refill_locations()
+        self.vacation.check_customers()
+
     # Birds
     def check_birds(self):
         if self.birds is not None:
-           self.birds.finish_jobs()
-           self.birds.feed_and_renew_birds()
+            self.birds.finish_jobs()
+            self.birds.feed_and_renew_birds()
             # TODO check why contest runs into error
             # self.birds.check_contest()
-           self.birds.start_birds()
+            self.birds.start_birds()
 
     #Museum
     def check_museum(self, booster_active = False):
