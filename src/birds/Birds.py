@@ -48,7 +48,6 @@ class Birds:
         for job_id, job_data in self.__jobs.items():
             if job_data.get("house", None) == "0" and job_data.get("remove_remain", 0) <= 0:
                 free_jobs.append(job_id)
-        Logger().print(f'➡ src/birds/Birds.py:55 free_jobs: {free_jobs}')
         return free_jobs
 
     # Job nicht zugeteilt
@@ -167,16 +166,12 @@ class Birds:
             possible_jobs={}
             #TODO: get best job (maximize rewards?!)
             for job in self.__get_free_jobs():
-                Logger().print(f'\n➡ src/birds/Birds.py:242 impossible_jobs: {impossible_jobs}')
-                Logger().print(f'➡ src/birds/Birds.py:192 job: {job}')
                 job_data = self.__jobs.get(job, 0)
                 if not job_data:
                     if job not in impossible_jobs:
                         impossible_jobs.append(job)
                     continue
-                Logger().print(f'➡ src/birds/Birds.py:195 job_data: {job_data}')
                 job_size = job_data.get("size", 0) #str; size --> load --> load_max of bird
-                Logger().print(f'➡ src/birds/Birds.py:216 job_size: {job_size}')
                 load = 999
                 match job_size:
                     case "1":
@@ -189,23 +184,18 @@ class Birds:
                         load = 6
                     case "5":
                         load = 8
-                Logger().print(f'➡ src/birds/Birds.py:234 self.__get_house_bird_load_max(): {self.__get_house_bird_load_max(house)}')
                 if not self.__get_house_bird_load_max(house) >= load:
                     if job not in impossible_jobs:
                         impossible_jobs.append(job)
                     continue
-                Logger().print("load ok")
 
                 job_distance = job_data.get("distance", 0) #not relevant (je höher, desto mehr rewards)
-                Logger().print(f'➡ src/birds/Birds.py:220 job_distance: {job_distance}')
 
                 job_endurance = job_data.get("endurance", 0)#str; compare with bird_endurance
-                Logger().print(f'➡ src/birds/Birds.py:222 job_endurance: {job_endurance}')
                 if not self.__get_house_bird_endurance(house) >= int(job_endurance):
                     if job not in impossible_jobs:
                         impossible_jobs.append(job)
                     continue
-                Logger().print("endurance ok")
 
                 if job in impossible_jobs:
                     impossible_jobs.remove(job)
@@ -219,10 +209,8 @@ class Birds:
                             return #TODO: log error
 
                 job_rewards = job_data.get("rewards", 0)#TODO: for future, maybe calc best combination...?!
-                Logger().print(f'➡ src/birds/Birds.py:238 job_rewards: {job_rewards}')
 
                 possible_jobs.update({job: job_rewards.get("xp", 0)})
-            Logger().print(f'➡ src/birds/Birds.py:264 possible_jobs: {possible_jobs}')
             if possible_jobs:
                 best_job = max(possible_jobs, key=possible_jobs.get)
             else:
@@ -243,15 +231,12 @@ class Birds:
 
         # check if contest available
         if '10' in self.__jobs.keys():
-            Logger().debug(f'➡ src/birds/Birds.py:246 self.__jobs: {self.__jobs}')
-            Logger().info("### CONTEST STILL ACTIVE ###")
+            Logger().info("Contest is still active")
             return False
         
         # select free house/bird #TODO: endurance >= 3
         free_houses = [x for x in self.__get_available_houses() if x not in self.__get_occupied_houses()]
-        Logger().debug(f'➡ src/birds/Birds.py:195 free_houses: {free_houses}')
         house = free_houses[0]
-        Logger().debug(f'➡ src/birds/Birds.py:250 house: {house}')
         if not house: return False
 
         # select (boosted) products and start bird/contest
@@ -259,16 +244,12 @@ class Birds:
         last_entry = self.__contest.get("entry", {}).get("products", {})# dict with pid: amount
         last_entry = {int(k):int(v) for k,v in last_entry.items()} #convert str to int
         last_entry_products = list(last_entry.keys()) #convert dict to list
-        Logger().debug(f'➡ src/birds/Birds.py:269 last_entry_products: {last_entry_products}')
         boosted_products_available = [x for x in boosted_products if x not in last_entry]
-        Logger().debug(f'➡ src/birds/Birds.py:273 boosted_products_available: {boosted_products_available}')
 
         products = {"1":{},"2":{},"3":{}}#{"1":{"pid":17,"amount":5},"2":{"pid":32,"amount":71},"3":{"pid":35,"amount":53}}
         job_products = boosted_products_available[:3] #select first 3 boosted products
-        Logger().debug(f'➡ src/birds/Birds.py:276 job_products: {job_products}')
         counter=1
         load_max = self.__get_house_bird_load_max(house)*200
-        Logger().debug(f'➡ src/birds/Birds.py:285 load_max: {load_max}')
 
         for pid in job_products:
             product: Product = ProductData().get_product_by_id(pid)
@@ -278,11 +259,10 @@ class Birds:
                 if buy_from_shop:
                     self.__shop.buy(product_name=pid, amount=amount)
                 else:
-                    Logger().error("### BUYING IN SHOP DISABLED")
+                    Logger().error("Buying in shop is disabled")
                     return False
             products.update({f"{counter}": {"pid": pid, "amount": amount}})
-            Logger().debug(f'➡ src/birds/Birds.py:290 products: {products}')
             counter=counter+1
-        Logger().info("\n\n\n ### START CONTEST ###")
+        Logger().info("Starting contest ...")
         content = self.__http.start_contest(house, products)
         self.__set_data(content)
