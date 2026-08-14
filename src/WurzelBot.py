@@ -111,7 +111,7 @@ class WurzelBot:
             if Feature().is_megafruit_available():
                 self.megafruit = Megafruit()
 
-            if Feature().is_decogarden1_available():
+            if Feature().is_decogarden_available():
                 self.decogarden1 = Decogarden1()
 
             if Feature().is_biogas_available():
