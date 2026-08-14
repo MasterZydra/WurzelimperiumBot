@@ -27,26 +27,16 @@ class Feature:
     def is_city_park_available(self) -> bool:
         return User().get_level() >= 5
 
-    def is_herb_garden_available(self) -> bool:
-        return User().get_level() >= 10
-
-    def is_aqua_garden_available(self) -> bool:
-        if User().get_level() < 19:
+    def is_decogarden_available(self) -> bool:
+        if User().get_level() < 7:
             return False
-        return self.__http.is_aqua_garden_available()
-
-    def is_greenhouse_available(self) -> bool:
-        if User().get_level() < 12:
-            return False
-        return self.__http.is_greenhouse_available()
-
-    def is_bonsai_farm_available(self) -> bool:
-        if User().get_level() < 20:
-            return False
-        if 'bonsai' in self.__city_data['data']['location']:
-            return self.__city_data['data']['location']['bonsai']['bought'] == 1
+        if 'decogarden' in self.__city_data['data']['location']:
+            return self.__city_data['data']['location']['decogarden']['bought'] == 1
         else:
             return False
+
+    def is_herb_garden_available(self) -> bool:
+        return User().get_level() >= 10
 
     def is_honey_farm_available(self) -> bool:
         if User().get_level() < 10:
@@ -56,45 +46,18 @@ class Feature:
         else:
             return False
 
-    def is_megafruit_available(self) -> bool:
-        if User().get_level() < 17:
+    def is_museum_available(self) -> bool:
+        if User().get_level() < 10:
             return False
-        if 'megafruit' in self.__city_data['data']['location']:
-            return self.__city_data['data']['location']['megafruit']['bought'] == 1
+        if 'museum' in self.__city_data['data']['location']:
+            return self.__city_data['data']['location']['museum']['bought'] == 1
         else:
             return False
 
-    def is_biogas_available(self) -> bool:
-        if User().get_level() < 25:
+    def is_greenhouse_available(self) -> bool:
+        if User().get_level() < 12:
             return False
-        if 'biogas' in self.__city_data['data']['location']:
-            return self.__city_data['data']['location']['biogas']['bought'] == 1
-        else:
-            return False
-
-    def is_snailracing_available(self) -> bool:
-        if User().get_level() < 24:
-            return False
-        if 'snailracing' in self.__city_data['data']['location']:
-            return self.__city_data['data']['location']['snailracing']['bought'] == 1
-        else:
-            return False
-
-    def is_ivyhouse_available(self) -> bool:
-        if User().get_level() < 23:
-            return False
-        if 'ivyhouse' in self.__city_data['data']['location']:
-            return self.__city_data['data']['location']['ivyhouse']['bought'] == 1
-        else:
-            return False
-
-    def is_decogarden1_available(self) -> bool:
-        if User().get_level() < 7:
-            return False
-        if 'decogarden' in self.__city_data['data']['location']:
-            return self.__city_data['data']['location']['decogarden']['bought'] == 1
-        else:
-            return False
+        return self.__http.is_greenhouse_available()
 
     def is_decogarden2_available(self) -> bool:
         if User().get_level() < 13:
@@ -106,11 +69,32 @@ class Feature:
         else:
             return False
 
-    def is_vacation_available(self) -> bool:
-        if User().get_level() < 23:
+    def is_megafruit_available(self) -> bool:
+        if User().get_level() < 17:
             return False
-        if 'vacation' in self.__city_data['data']['location']:
-            return self.__city_data['data']['location']['vacation']['bought'] == 1
+        if 'megafruit' in self.__city_data['data']['location']:
+            return self.__city_data['data']['location']['megafruit']['bought'] == 1
+        else:
+            return False
+
+    def is_aqua_garden_available(self) -> bool:
+        if User().get_level() < 19:
+            return False
+        return self.__http.is_aqua_garden_available()
+
+    def is_bonsai_farm_available(self) -> bool:
+        if User().get_level() < 20:
+            return False
+        if 'bonsai' in self.__city_data['data']['location']:
+            return self.__city_data['data']['location']['bonsai']['bought'] == 1
+        else:
+            return False
+
+    def is_mine_available(self) -> bool:
+        if User().get_level() < 21:
+            return False
+        if 'mine' in self.__city_data['data']['location']:
+            return self.__city_data['data']['location']['mine']['bought'] == 1
         else:
             return False
 
@@ -122,10 +106,34 @@ class Feature:
         else:
             return False
 
-    def is_museum_available(self) -> bool:
-        if User().get_level() < 10:
+    def is_ivyhouse_available(self) -> bool:
+        if User().get_level() < 23:
             return False
-        if 'museum' in self.__city_data['data']['location']:
-            return self.__city_data['data']['location']['museum']['bought'] == 1
+        if 'ivyhouse' in self.__city_data['data']['location']:
+            return self.__city_data['data']['location']['ivyhouse']['bought'] == 1
+        else:
+            return False
+
+    def is_vacation_available(self) -> bool:
+        if User().get_level() < 23:
+            return False
+        if 'vacation' in self.__city_data['data']['location']:
+            return self.__city_data['data']['location']['vacation']['bought'] == 1
+        else:
+            return False
+
+    def is_snailracing_available(self) -> bool:
+        if User().get_level() < 24:
+            return False
+        if 'snailracing' in self.__city_data['data']['location']:
+            return self.__city_data['data']['location']['snailracing']['bought'] == 1
+        else:
+            return False
+
+    def is_biogas_available(self) -> bool:
+        if User().get_level() < 25:
+            return False
+        if 'biogas' in self.__city_data['data']['location']:
+            return self.__city_data['data']['location']['biogas']['bought'] == 1
         else:
             return False
