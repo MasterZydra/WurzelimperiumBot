@@ -5,7 +5,7 @@ from src.core.Feature import Feature
 from src.gardenhouse.Http import Http
 from src.logger.Logger import Logger
 from src.note.Note import Note
-from datetime import datetime, timedelta
+from datetime import datetime
 import time
 import random
 import re
@@ -66,7 +66,7 @@ class GardenHouse:
     # Helpers
 
     def _write_last_trophy_collection_time(self) -> bool:
-        noteText = Note().get_note()
+        noteText = Note().get_note() + f"\r\n"
 
         if Note().get_line('trophies.last_collection: ') == '':
             noteText = noteText + f"\r\ntrophies.last_collection: {datetime.now().strftime('%Y-%m-%d %H:%M')}"
@@ -92,4 +92,4 @@ class GardenHouse:
         timestamp = datetime.strptime(last_trophy_collection_time, "%Y-%m-%d %H:%M")
         now = datetime.now()
 
-        return timestamp.date() == (now.date() + timedelta(days=1))
+        return timestamp.date() < now.date()
