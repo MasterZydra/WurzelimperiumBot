@@ -222,6 +222,8 @@ flowchart LR
     src_quest_Quest[src.quest.Quest] --> src_quest_Missions[src.quest.Missions]
     src_quest_Quest[src.quest.Quest] --> src_core_User[src.core.User]
     src_quest_Quest[src.quest.Quest] --> src_logger_Logger[src.logger.Logger]
+    src_quest_Quest[src.quest.Quest] --> src_product_ProductData[src.product.ProductData]
+    src_quest_Quest[src.quest.Quest] --> src_stock_Stock[src.stock.Stock]
     src_shop_Http[src.shop.Http] --> src_core_HTTPCommunication[src.core.HTTPCommunication]
     src_shop_Http[src.shop.Http] --> src_logger_Logger[src.logger.Logger]
     src_shop_Shop[src.shop.Shop] --> src_logger_Logger[src.logger.Logger]
