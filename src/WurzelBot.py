@@ -36,8 +36,8 @@ from src.note.Note import Note
 from src.product.ProductData import ProductData
 from src.quest.Quest import Quest
 from src.shop.Shop import Shop
-from src.stock.Stock import Stock
 from src.snailracing.Snailracing import Snailracing
+from src.stock.Stock import Stock
 from src.vacation.Vacation import Vacation
 from src.wimp.Wimp import Wimp
 from collections import Counter
@@ -54,32 +54,32 @@ class WurzelBot:
 
     def __init__(self):
         self.__HTTPConn = HTTPConnection()
-        self.messenger = Messenger()
-        self.shop = Shop()
+        self.aquagarden = None
+        self.biogas = None
+        self.birds = None
+        self.bonsaifarm = None
+        self.bonus = Bonus()
         self.decogarden1 = None
         self.decogarden2 = None
-        self.gardens = []
-        self.aquagarden = None
-        self.herbgarden = None
         self.gardenhouse = GardenHouse()
+        self.gardens = []
+        self.greenhouse = None
+        self.herbgarden = None
         self.honey = None
-        self.bonsaifarm = None
+        self.ivyhouse = None
         self.marketplace = Marketplace()
-        self.wimparea = Wimp()
-        self.quest = Quest()
-        self.bonus = Bonus()
+        self.megafruit = None
+        self.messenger = Messenger()
+        self.mine = None
+        self.minigames = Minigames()
+        self.museum = None
         self.note = None
         self.park = None
-        self.greenhouse = None
-        self.biogas = None
+        self.quest = Quest()
+        self.shop = Shop()
         self.snailracing = None
-        self.ivyhouse = None
-        self.megafruit = None
-        self.minigames = Minigames()
         self.vacation = None
-        self.birds = None
-        self.museum = None
-        self.mine = None
+        self.wimparea = Wimp()
 
     def __init_gardens(self) -> bool:
         """Ermittelt die Anzahl der Gärten und initialisiert alle."""
@@ -92,11 +92,11 @@ class WurzelBot:
             if Feature().is_aqua_garden_available():
                 self.aquagarden = AquaGarden()
 
-            if Feature().is_herb_garden_available():
-                self.herbgarden = HerbGarden()
+            if Feature().is_biogas_available():
+                self.biogas = Biogas()
 
-            if Feature().is_honey_farm_available():
-                self.honey = Honey()
+            if Feature().is_birds_available():
+                self.birds = Birds()
 
             if Feature().is_bonsai_farm_available():
                 self.bonsaifarm = Bonsai()
@@ -104,41 +104,41 @@ class WurzelBot:
             if Feature().is_city_park_available():
                 self.park = CityPark()
 
-            if Feature().is_greenhouse_available():
-                self.greenhouse = Greenhouse()
-            
-            if Feature().is_note_available():
-                self.note = Note()
-
-            if Feature().is_megafruit_available():
-                self.megafruit = Megafruit()
-
             if Feature().is_decogarden_available():
                 self.decogarden1 = Decogarden1()
 
-            if Feature().is_biogas_available():
-                self.biogas = Biogas()
+            if Feature().is_decogarden2_available():
+                self.decogarden2 = Decogarden2()
 
-            if Feature().is_snailracing_available():
-                self.snailracing = Snailracing()
+            if Feature().is_greenhouse_available():
+                self.greenhouse = Greenhouse()
+
+            if Feature().is_herb_garden_available():
+                self.herbgarden = HerbGarden()
+
+            if Feature().is_honey_farm_available():
+                self.honey = Honey()
 
             if Feature().is_ivyhouse_available():
                 self.ivyhouse = Ivyhouse()
 
-            if Feature().is_vacation_available():
-                self.vacation = Vacation()
-
-            if Feature().is_birds_available():
-                self.birds = Birds()
-
-            if Feature().is_museum_available():
-                self.museum = Museum()
+            if Feature().is_megafruit_available():
+                self.megafruit = Megafruit()
 
             if Feature().is_mine_available():
                 self.mine = Mine()
 
-            if Feature().is_decogarden2_available():
-                self.decogarden2 = Decogarden2()
+            if Feature().is_museum_available():
+                self.museum = Museum()
+
+            if Feature().is_note_available():
+                self.note = Note()
+
+            if Feature().is_snailracing_available():
+                self.snailracing = Snailracing()
+
+            if Feature().is_vacation_available():
+                self.vacation = Vacation()
 
             return True
 
