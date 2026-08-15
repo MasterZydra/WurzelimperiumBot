@@ -24,7 +24,7 @@ For an overview of **ongoing and planned features**, see the tracking issue:
 - **Automated Wimp handling**  
   Serves Wimps based on available stock.  
   **Config:** Set minimum stock levels in account notes:  
-  `minStock: 100` or `minStock(Apple): 200`
+  `stock.min: 100` or `stock.min.Apple: 200`
 
 - **Trophies**  
   Collects available points automatically.

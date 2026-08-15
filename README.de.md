@@ -39,7 +39,7 @@ Es gibt auch eine portable Windows Commandline Version ohne Vorraussetzungen. [W
   z.B. `growOnly: Sonnenblume, Apfel` or `growOnly: Kaffee`
 - Automatische Abfertigung der Wimps in den Gärten.  
   Der minimale Bestand kann in den Account-Notizen eingestellt werden.  
-  z.B. `minStock: 100` oder `minStock(Apfel): 200`
+  z.B. `stock.min: 100` oder `stock.min.Apfel: 200`
 - Du kannst den Bot deaktivieren, indem du `stopWIB` in den Notizblock schreibst.
 - Automatisches claimen des täglichen Login Bonus
 

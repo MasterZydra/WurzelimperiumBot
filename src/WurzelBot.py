@@ -692,11 +692,11 @@ class WurzelBot:
             if line.strip() == '':
                 continue
 
-            if not is_plant_given and line.startswith('minStock:'):
-                return self.__extract_amount(line, 'minStock:')
+            if not is_plant_given and line.startswith('stock.min:'):
+                return self.__extract_amount(line, 'stock.min:')
 
-            if is_plant_given and line.startswith(f'minStock({plant_name}):'):
-                return self.__extract_amount(line, f'minStock({plant_name}):')
+            if is_plant_given and line.startswith(f'stock.min.{plant_name}:'):
+                return self.__extract_amount(line, f'stock.min.{plant_name}:')
 
         # Return default 0 if not found in note
         return 0
