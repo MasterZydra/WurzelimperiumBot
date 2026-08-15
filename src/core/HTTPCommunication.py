@@ -253,26 +253,3 @@ class HTTPConnection:
         except Exception:
             Logger().print_exception("Failed to log out")
             return False
-
-    def initInfinityQuest(self):
-        adresse = f'ajax/ajax.php?do=infinite_quest_get&token={self.__token}'
-        try:
-            response, content = self.send(adresse)
-            self.check_http_state_ok(response)
-            jContent = self.get_json_and_check_for_ok(content)
-            return jContent
-        except Exception:
-            Logger().print_exception("Failed to init infinity quest")
-            return None
-
-    def sendInfinityQuest(self, questnr, product, amount):
-        try:
-            address =   f'ajax/ajax.php?do=infinite_quest_entry&pid={product}' \
-                        f'&amount={amount}&questnr={questnr}&token={self.__token}'
-            response, content = self.send(address)
-            self.check_http_state_ok(response)
-            jContent = self.get_json_and_check_for_ok(content)
-            return jContent
-        except Exception:
-            Logger().print_exception('Failed to send infinity quest')
-            return None

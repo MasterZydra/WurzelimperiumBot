@@ -637,30 +637,6 @@ class WurzelBot:
 
         return True
 
-    def infinityQuest(self, MINwt):
-        #TODO: Mehr Checks bzw Option wieviele Quests/WT man ausgeben mag - da es kein cooldown gibt! (hoher wt verlust)
-        if User().get_bar() < MINwt:
-            Logger().print('Zu wenig WT')
-            return
-
-        if User().get_level() > 21 and User().get_bar() > MINwt:
-            questnr = self.__HTTPConn.initInfinityQuest()['questnr']
-            if int(questnr) <= 500:
-                for item in self.__HTTPConn.initInfinityQuest()['questData']['products']:
-                    #Logger().print(item)
-                    product = item['pid']
-                    product = ProductData().get_product_by_id(product)
-                    #Logger().print(f'Pid {product.get_id()}')
-                    needed = item['amount']
-                    stored = Stock().get_stock_by_product_id(product.get_id())
-                    #Logger().print(f'stored {stored}')
-                    if needed >= stored:
-                        missing = abs(needed - stored) + 10
-                        #Logger().print(f'missing {missing}')
-                        self.shop.buy(product.get_id(),missing)
-
-                    self.__HTTPConn.sendInfinityQuest(questnr, product.get_id(), needed)
-
     def get_grow_only(self) -> list[str]:
         if not Feature().is_note_available():
             return []

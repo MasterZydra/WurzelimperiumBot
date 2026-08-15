@@ -5,6 +5,8 @@ from src.quest.Http import Http
 from src.quest.Missions import Missions
 from src.core.User import User
 from src.logger.Logger import Logger
+from src.product.ProductData import ProductData
+from src.stock.Stock import Stock
 from collections import Counter
 
 class Quest:
@@ -24,6 +26,36 @@ class Quest:
             return self.__get_cactus_quest_products()
         Logger().print_exception(f'Quest {quest_name} is not implemented')
         return None
+
+    def do_infinity_quest(self, MINwt):
+        if User().get_level() <= 21:
+            return
+
+        #TODO: Mehr Checks bzw Option wieviele Quests/WT man ausgeben mag - da es kein cooldown gibt! (hoher wt verlust)
+        if User().get_bar() < MINwt:
+            Logger().print('Zu wenig WT')
+            return
+
+        data = self.__http.init_infinity_quest()
+        questnr = data['questnr']
+
+        if int(questnr) > 500:
+            return
+
+        for item in data['questData']['products']:
+            product = item['pid']
+            product = ProductData().get_product_by_id(product)
+
+            needed = item['amount']
+            stored = Stock().get_stock_by_product_id(product.get_id())
+
+            if needed >= stored:
+                missing = abs(needed - stored) + 10
+                self.shop.buy(product.get_id(),missing)
+
+            self.__http.send_infinity_quest(questnr, product.get_id(), needed)
+
+    # Helpers
 
     def __get_big_quest_products(self):
         """Returns a dictionary of monthly big quest products with amount of products"""

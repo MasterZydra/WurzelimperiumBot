@@ -80,7 +80,7 @@ wurzelBot.honey.start_all_hives(1) # Send bees for 2 hours
 wurzelBot.cut_and_renew_bonsais()
 
 # Try to do the next infinity quest
-wurzelBot.infinityQuest()
+wurzelBot.quest.do_infinity_quest()
 
 # Logout
 wurzelBot.logout()
