@@ -208,7 +208,7 @@ def bee(arg_str : str):
         tour = 3
 
     print(f'Sending bees for {args[0]}...')
-    bot.send_bees(tour)
+    bot.honey.start_all_hives(tour)
 
 def bonsai(arg_str : str):
     arg_str = arg_str.replace('bonsai', '', 1).strip()

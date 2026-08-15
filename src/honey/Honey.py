@@ -6,6 +6,7 @@ from src.core.User import User
 from src.honey.Hive import Hive
 from src.honey.Http import Http
 from src.logger.Logger import Logger
+from src.product import ProductData
 
 class Honey:
     """All important informations for the honey garden"""
@@ -24,6 +25,23 @@ class Honey:
             return False
 
         return self.__set_data(info)
+
+    def start_all_hives(self, tour: int) -> bool:
+        """@param tour: 1 = 2h, 2 = 8h, 3 = 24h"""
+        honey_count = {}
+        if not self.__update_honey_count(honey_count, self.check_pour_honey()):
+            return False
+
+        while self.check_start_hives():
+            if not self.start_tour(tour):
+                return False
+            if not self.__update_honey_count(honey_count, self.check_pour_honey()):
+                return False
+
+        for key, value in honey_count.items():
+            Logger().print(f'Collected {value} {ProductData().get_product_by_id(key).get_name()}.')
+
+        return True
 
     def start_tour(self, tour: int) -> bool:
         """@param tour: 1 = 2h, 2 = 8h, 3 = 24h"""
@@ -77,6 +95,9 @@ class Honey:
             transfer_stock = self.__data['data']['transfer_stock'] #honey-pid, and count
         return transfer_stock
 
+    def change_all_hives_types_by_product_name(self, product_name: str) -> bool:
+        return self.change_all_hives_types(ProductData().get_product_by_name(product_name).get_id())
+
     def change_all_hives_types(self, product_ID) -> bool:
         pid = product_ID
         honey_pid = self.__honey_types[f'{pid}']
@@ -120,6 +141,16 @@ class Honey:
         return {str(product['pid']): product['missing'] for product in products_list}
 
     # Internal helper functions
+
+    def __update_honey_count(self, honey_count, transfer) -> bool:
+        if transfer is None:
+            return False
+        for key, value in transfer.items():
+            if key in honey_count:
+                honey_count[key] += value
+            else:
+                honey_count[key] = value
+        return True
 
     def __set_data(self, data) -> bool:
         if isinstance(data['data'], int) or not 'data' in data['data']:

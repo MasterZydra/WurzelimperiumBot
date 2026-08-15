@@ -74,7 +74,7 @@ wurzelBot.shop.buy('Salat', 1) #buy plant with name and amount #BG-Купете 
 
 # Send bees for 2 hours
 # 1 = 2h, 2 = 8h, 3 = 24h
-wurzelBot.send_bees(1) # Send bees for 2 hours
+wurzelBot.honey.start_all_hives(1) # Send bees for 2 hours
 
 # Cut and renew bonsais
 wurzelBot.cut_and_renew_bonsais()

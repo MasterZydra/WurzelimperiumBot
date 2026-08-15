@@ -701,42 +701,6 @@ class WurzelBot:
         # Return default 0 if not found in note
         return 0
 
-    # Bees
-    def send_bees(self, tour: int) -> bool:
-        """@param tour: 1 = 2h, 2 = 8h, 3 = 24h"""
-        if not self.honey:
-            return
-
-        honey_count = {}
-        if not self.__update_honey_count(honey_count, self.honey.check_pour_honey()):
-            return False
-
-        while self.honey.check_start_hives():
-            if not self.honey.start_tour(tour):
-                return False
-            if not self.__update_honey_count(honey_count, self.honey.check_pour_honey()):
-                return False
-
-        for key, value in honey_count.items():
-            Logger().print(f'Collected {value} {ProductData().get_product_by_id(key).get_name()}.')
-
-        return True
-
-    def __update_honey_count(self, honey_count, transfer) -> bool:
-        if transfer is None:
-            return False
-        for key, value in transfer.items():
-            if key in honey_count:
-                honey_count[key] += value
-            else:
-                honey_count[key] = value
-        return True
-
-    def change_all_hives_types(self, product_name: str) -> bool:
-        if not self.honey:
-            return False
-        return self.honey.change_all_hives_types(ProductData().get_product_by_name(product_name).get_id())
-
     # Bonsai
     def cut_and_renew_bonsais(self, finish_level: int = 2, bonsai = None, allowed_prices: list = ['money', 'zen_points']):
         """
