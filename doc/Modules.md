@@ -137,7 +137,7 @@ flowchart LR
     src_honey_Honey[src.honey.Honey] --> src_honey_Hive[src.honey.Hive]
     src_honey_Honey[src.honey.Honey] --> src_honey_Http[src.honey.Http]
     src_honey_Honey[src.honey.Honey] --> src_logger_Logger[src.logger.Logger]
-    src_honey_Honey[src.honey.Honey] --> src_product[src.product]
+    src_honey_Honey[src.honey.Honey] --> src_product_ProductData[src.product.ProductData]
     src_honey_Http[src.honey.Http] --> src_core_HTTPCommunication[src.core.HTTPCommunication]
     src_honey_Http[src.honey.Http] --> src_logger_Logger[src.logger.Logger]
     src_ivyhouse_Http[src.ivyhouse.Http] --> src_core_HTTPCommunication[src.core.HTTPCommunication]

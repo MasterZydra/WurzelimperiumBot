@@ -6,7 +6,7 @@ from src.core.User import User
 from src.honey.Hive import Hive
 from src.honey.Http import Http
 from src.logger.Logger import Logger
-from src.product import ProductData
+from src.product.ProductData import ProductData
 
 class Honey:
     """All important informations for the honey garden"""
