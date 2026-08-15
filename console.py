@@ -54,30 +54,30 @@ def main():
         inputLower = user_input.lower()
 
         if inputLower == 'exit': logout()
-        elif inputLower.startswith('bee'): bee(user_input)
-        elif inputLower == 'birds': birds()
-        elif inputLower.startswith('bonsai'): bonsai(user_input)
-        elif inputLower == 'harvest': harvest()
         elif inputLower == '?' or inputLower == 'help': help()
-        elif inputLower.startswith('buy'): buy(user_input)
+        elif inputLower == 'birds': birds()
+        elif inputLower == 'bonus': get_daily_login_bonus()
+        elif inputLower == 'deco': deco()
         elif inputLower == 'games': games()
-        elif inputLower.startswith('grow-water'): grow_aqua_garden(user_input)
-        elif inputLower.startswith('grow'): grow(user_input)
-        elif inputLower.startswith('lowest'): lowest(user_input)
+        elif inputLower == 'harvest': harvest()
         elif inputLower == 'megafruit': megafruit()
-        elif inputLower.startswith('stock'): stock(user_input)
+        elif inputLower == 'mine': mine()
+        elif inputLower == 'museum': museum()
+        elif inputLower == 'trophies': trophies()
         elif inputLower == 'user': user_info()
         elif inputLower == 'water': water()
         elif inputLower == 'weed': remove_weeds()
-        elif inputLower == 'bonus': getDailyLoginBonus()
         elif inputLower == 'wimp': wimp()
-        elif inputLower == 'deco': deco()
-        elif inputLower == 'museum': museum()
-        elif inputLower == 'trophies': trophies()
+        elif inputLower.startswith('bee'): bee(user_input)
+        elif inputLower.startswith('bonsai'): bonsai(user_input)
+        elif inputLower.startswith('buy'): buy(user_input)
         elif inputLower.startswith('details'): productDetails(user_input)
+        elif inputLower.startswith('grow-water'): grow_aqua_garden(user_input)
+        elif inputLower.startswith('grow'): grow(user_input)
+        elif inputLower.startswith('lowest'): lowest(user_input)
+        elif inputLower.startswith('stock'): stock(user_input)
         else:
             print('Unknown command type \'help\' or \'?\' to see all available commands')
-
 
 def logo():
     print('  _      __                 _____       __ ')
@@ -128,6 +128,7 @@ def help():
     print('lowest       Show the plant with the lowest stock (unequal zero)')
     print('             Opt. argument: "single", "water"')
     print('megafruit    Take care of megafruits')
+    print('mine         Take care of mine')
     print('museum       Collect the points in the museum')
     print('stock        Show all plants in stock')
     print('             Opt. argument: "sort", "water"')
@@ -137,9 +138,54 @@ def help():
     print('weed         Remove all weed')
     print('wimp         Process Wimp Customers in Gardens')
 
+def birds():
+    print('Sending birds...')
+    bot.check_birds()
+
+def deco():
+    print('Collecting decogardens...')
+    bot.collect_decogardens()
+
+def games():
+    print('Playing minigames...')
+    bot.minigames.play()
+
+def get_daily_login_bonus():
+    print('Claiming daily login bonus...')
+    bot.get_daily_bonuses()
+
 def harvest():
     print('Harvest all gardens...')
     bot.harvest()
+
+def megafruit():
+    print('Taking care of megafruit...')
+    bot.check_megafruit()
+
+def mine():
+    print('Taking care of mine...')
+    bot.check_mine()
+
+def museum():
+    print('Checking museum...')
+    bot.check_museum()
+
+def remove_weeds():
+    print(i18n.t('wimpb.remove_weed_from_all_gardens'))
+    bot.remove_weeds()
+
+def trophies():
+    print('Collecting the points for trophies...')
+    bot.gardenhouse.collect_trophy_points()
+
+def water():
+    print('Water all plants in all gardens...')
+    bot.water()
+
+def wimp():
+    """Process Wimp Customers in Gardens"""
+    print(i18n.t('wimpb.process_wimps'))
+    bot.sell_to_wimps()
 
 def bee(arg_str : str):
     arg_str = arg_str.replace('bee', '', 1).strip()
@@ -163,10 +209,6 @@ def bee(arg_str : str):
 
     print(f'Sending bees for {args[0]}...')
     bot.send_bees(tour)
-
-def birds():
-    print('Sending birds...')
-    bot.check_birds()
 
 def bonsai(arg_str : str):
     arg_str = arg_str.replace('bonsai', '', 1).strip()
@@ -197,10 +239,6 @@ def buy(arg_str : str):
 
     print('Buying ' + args[1] + ' ' + args[0] + '...')
     bot.shop.buy(args[0], int(args[1]))
-
-def games():
-    print('Playing minigames...')
-    bot.minigames.play()
 
 def grow(arg_str : str):
     arg_str = arg_str.replace('grow', '', 1).strip()
@@ -250,9 +288,21 @@ def lowest(arg_str : str):
     elif args[0] == 'water':
         print(bot.getLowestWaterPlantStockEntry())
 
-def megafruit():
-    print('Taking care of megafruit...')
-    bot.check_megafruit()
+def productDetails(arg_str : str):
+    arg_str = arg_str.replace('details', '', 1).strip()
+    args = shlex.split(arg_str)
+
+    if len(args) > 1 or (len(args) == 1 and args[0] not in ['all', 'water'] and args[0] != ''):
+        print('Cannot parse input.')
+        print('Expected format: details [all|water]')
+        return
+
+    if len(args) == 0:
+        bot.printVegetableDetails()
+    elif args[0] == 'all':
+        bot.printProductDetails()
+    elif args[0] == 'water':
+        bot.printWaterPlantDetails()
 
 def stock(arg_str : str):
     arg_str = arg_str.replace('stock', '', 1).strip()
@@ -270,10 +320,6 @@ def stock(arg_str : str):
     elif args[0] == 'sort':
         print(bot.get_ordered_stock_list())
 
-def trophies():
-    print('Collecting the points for trophies...')
-    bot.gardenhouse.collect_trophy_points()
-
 def user_info():
     colWidth = 20
     print('User:'.ljust(colWidth) + User().get_username())
@@ -282,47 +328,6 @@ def user_info():
     print('Bar:'.ljust(colWidth) + User().get_bar_formatted())
     print('Points:'.ljust(colWidth) + f'{User().get_points():,}'.replace(',', '.'))
     print('Coins:'.ljust(colWidth) + str(User().get_coins()))
-
-def water():
-    print('Water all plants in all gardens...')
-    bot.water()
-
-def productDetails(arg_str : str):
-    arg_str = arg_str.replace('details', '', 1).strip()
-    args = shlex.split(arg_str)
-
-    if len(args) > 1 or (len(args) == 1 and args[0] not in ['all', 'water'] and args[0] != ''):
-        print('Cannot parse input.')
-        print('Expected format: details [all|water]')
-        return
-
-    if len(args) == 0:
-        bot.printVegetableDetails()
-    elif args[0] == 'all':
-        bot.printProductDetails()
-    elif args[0] == 'water':
-        bot.printWaterPlantDetails()
-
-def remove_weeds():
-    print(i18n.t('wimpb.remove_weed_from_all_gardens'))
-    bot.remove_weeds()
-
-def getDailyLoginBonus():
-    print('Claiming daily login bonus...')
-    bot.get_daily_bonuses()
-
-def wimp():
-    """Process Wimp Customers in Gardens"""
-    print(i18n.t('wimpb.process_wimps'))
-    bot.sell_to_wimps()
-
-def deco():
-    print('Collecting decogardens...')
-    bot.collect_decogardens()
-
-def museum():
-    print('Checking museum...')
-    bot.check_museum()
 
 if __name__ == "__main__":
     main()
