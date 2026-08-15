@@ -879,3 +879,8 @@ class WurzelBot:
         self.mine.harvest_layer()
         self.mine.feed_worker()
         self.mine.start_worker(dino_active, dino_fav)
+
+    # Biogas
+    def check_biogas(self):
+        self.biogas.harvest_productions()
+        self.biogas.start_worker()
