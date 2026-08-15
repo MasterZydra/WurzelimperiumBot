@@ -29,6 +29,7 @@ from src.marketplace.Marketplace import Marketplace
 from src.megafruit.Megafruit import Megafruit
 from src.megafruit.MegafruitData import Mushroom, Care_OID
 from src.message.Messenger import Messenger
+from src.mine.Mine import Mine
 from src.minigames.Minigames import Minigames
 from src.museum.Museum import Museum
 from src.note.Note import Note
@@ -78,6 +79,7 @@ class WurzelBot:
         self.vacation = None
         self.birds = None
         self.museum = None
+        self.mine = None
 
     def __init_gardens(self) -> bool:
         """Ermittelt die Anzahl der Gärten und initialisiert alle."""
@@ -131,6 +133,9 @@ class WurzelBot:
 
             if Feature().is_museum_available():
                 self.museum = Museum()
+
+            if Feature().is_mine_available():
+                self.mine = Mine()
 
             if Feature().is_decogarden2_available():
                 self.decogarden2 = Decogarden2()
@@ -865,3 +870,12 @@ class WurzelBot:
     def check_museum(self, booster_active = False):
         if self.museum is not None:
             self.museum.collect_points()
+
+    # Mine
+    def check_mine(self, dino_active=0, dino_fav = 1):
+        if self.mine is None:
+            return
+
+        self.mine.harvest_layer()
+        self.mine.feed_worker()
+        self.mine.start_worker(dino_active, dino_fav)
