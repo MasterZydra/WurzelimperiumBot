@@ -101,7 +101,7 @@ class Snailracing:
 
         for slot, data in productions.items():
             if data.get("remain", None) <= 0:
-                Logger.print(f"Slot {slot} finished")
+                Logger().print(f"Slot {slot} finished")
                 data = self.__http.harvest_bar_production(slot)
                 self.__set_data(data)
 
@@ -300,13 +300,13 @@ class Snailracing:
 
     def check_race_feeding(self, pid=473, amount=1):
         if self.__race_energy < 150000 and self.__race_remain >= 10000: 
-            Logger.print("Feeding snail ...")
+            Logger().print("Feeding snail ...")
             content = self.__http.feed_snail(pid, amount) # feed snail with energy bar
             self.__set_data(content)
 
     def check_race_start(self):
         if self.__race_remain == 999999999:
-            Logger.print("Staring race ...")
+            Logger().print("Staring race ...")
             dis = self.calculate_optimal_snail()
             setup = self.setup_optimal_snail(dis)
             content = self.__http.start_race(setup)
@@ -314,7 +314,7 @@ class Snailracing:
 
     def check_race_finish(self):
         if self.__race_remain < 0:
-            Logger.print("Finishing race ...")
+            Logger().print("Finishing race ...")
             content = self.__http.finish_race()
             self.__set_data(content)
             reward = self.__data.get("reward", "not found")
