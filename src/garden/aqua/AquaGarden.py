@@ -65,6 +65,7 @@ class AquaGarden(Garden):
         return self.__httpAqua.get_empty_fields()
 
     def water(self) -> bool:
+        nPlants = 0
         try:
             plants = self.__httpAqua.get_plants_to_water()
             if plants is None:
