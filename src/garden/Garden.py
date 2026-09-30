@@ -134,7 +134,7 @@ class Garden:
 
     def get_grown_fields(self):
         """Returns all grown fields in the garden."""
-        return self.__http.get_empty_fields(self._id, param="grown") or []
+        return self.__http.get_empty_fields(self._id, param="grown") or {}
 
     def get_weed_fields(self):
         """Returns all weed fields in the garden."""
@@ -175,7 +175,7 @@ class Garden:
         #BG- """Отглежда растение от всякакъв размер."""
 
         grown_fields = self.get_grown_fields()
-        Logger().debug('grown_fields:', grown_fields)
+        Logger().debug(f'grown_fields: {grown_fields}')
 
         for field, plant_id in grown_fields.items():
             sx = ProductData().get_product_by_id(plant_id).get_sx()
