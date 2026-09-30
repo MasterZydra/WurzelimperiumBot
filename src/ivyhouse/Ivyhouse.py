@@ -19,7 +19,7 @@ class Ivyhouse():
 
         if "rewards" in jContent['data']:
             Logger().print("### REWARDS")
-            Logger().print(f'{jContent['data']['rewards']}')
+            Logger().print(f'{jContent["data"]["rewards"]}')
             if self.__breed:
                 Logger().print(self.__breed.get("daily", "no daily found"))
 
