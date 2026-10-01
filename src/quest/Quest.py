@@ -6,12 +6,14 @@ from src.quest.Missions import Missions
 from src.core.User import User
 from src.logger.Logger import Logger
 from src.product.ProductData import ProductData
+from src.shop.Shop import Shop
 from src.stock.Stock import Stock
 from collections import Counter
 
 class Quest:
     def __init__(self):
         self.__http = Http()
+        self.shop = Shop()
 
     def get_quest_products(self, quest_name, quest_number=0):
         """
